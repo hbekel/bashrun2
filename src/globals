@@ -4,13 +4,13 @@
 
 source utils 
 
+BASHRUN_DEBUG=${BASHRUN_DEBUG:-0}
+
 path=$(which bashrun) 
 BASHRUN_PREFIX=${path/\/bin\/bashrun/} && unset path
 
 BASHRUN_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}/bashrun
 BASHRUN_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}/bashrun
 BASHRUN_CACHE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}/bashrun
-
-BASHRUN_DEBUG=${BASHRUN_DEBUG:-0}
 
 ################################################################################

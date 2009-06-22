@@ -12,7 +12,7 @@ function bashrun_engine_init {
     bashrun_engine_install_directories
     
     # escape from trap in interactive mode
-    PROMPT_COMMAND="$PROMPT_COMMAND; trap DEBUG"
+    PROMPT_COMMAND="trap DEBUG; $PROMPT_COMMAND"
 }
 
 function bashrun_engine_perform_action {
@@ -93,5 +93,6 @@ function bashrun_engine_install_directories {
 }
 
 function bashrun_engine_shutdown {
-    bashrun_remote_cleanup
+    
+    bashrun_remote_cleanup    
 }    
