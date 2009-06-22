@@ -2,7 +2,11 @@
 
 ################################################################################
 
+BASHRUN_ACTION=''
 BASHRUN_COMMAND=''
+BASHRUN_EXECMODE=''
+
+BASHRUN_LOGFILE=$BASHRUN_CACHE_HOME/log
 
 object "action" "name type desc"
 
@@ -13,6 +17,9 @@ function bashrun_engine_init {
     
     # escape from trap in interactive mode
     PROMPT_COMMAND="trap DEBUG; $PROMPT_COMMAND"
+
+    # enable extended debugging features
+    shopt -s extdebug
 }
 
 function bashrun_engine_perform_action {
@@ -23,6 +30,7 @@ function bashrun_engine_perform_action {
 
     if actions_seek $action; then
 	
+	BASHRUN_ACTION=$action
 	bashrun_log "action: $action"
 
 	# type override
@@ -35,6 +43,7 @@ function bashrun_engine_perform_action {
 	    
 	    trap)
 	        # set the trap
+		bashrun_log "trap is set"
 		trap bashrun_engine_trap DEBUG
 		;; 
 	    
@@ -62,7 +71,26 @@ function bashrun_engine_perform_action {
 }
 
 function bashrun_engine_trap {
-    :
+    
+    # the command about to be executed,
+    # as expanded by the shell
+    BASHRUN_COMMAND="$BASH_COMMAND"
+    bashrun_log "$BASHRUN_COMMAND"
+    
+    # assume execmode background
+    BASHRUN_EXECMODE="&"
+
+    # remove quotes (;|&)
+    # unquote_command
+    
+    # pass through trap builtin
+    if [[ "$BASHRUN_COMMAND" =~ ^trap ]]; then
+	bashrun_log "trap is removed"
+	return 0
+    fi
+    
+    bashrun_engine_run
+    return 1
 }
 
 function bashrun_engine_run {
@@ -73,7 +101,43 @@ function bashrun_engine_run {
     if [[ $command != '' ]]; then
 	BASHRUN_COMMAND=$command
     fi
-    bashrun_log BASHRUN_COMMAND
+
+    bashrun-action-$BASHRUN_ACTION
+    
+    bashrun_log "$BASHRUN_COMMAND"
+
+    bashrun_engine_execute
+}
+
+function bashrun_engine_execute {
+
+    local logfile="$BASHRUN_LOGFILE"
+    
+    # set logfile to /dev/null if empty
+    [[ "$logfile" == "" ]] && logfile="/dev/null"
+ 
+    # create logfile unless it exists
+    if [[ ! -e "$logfile" ]]; then
+	bashrun_log "creating logfile $logfile"
+	touch "$logfile"
+    fi
+
+    # revert logfile to /dev/null unless it's writable
+    if [[ ! -w "$logfile" ]]; then
+	bashrun_log "logfile $logfile is not writeable"
+	logfile="/dev/null"
+    fi
+    
+    bashrun_log "redirecting stdout/stderr to $logfile" 
+    bashrun_log "$BASHRUN_COMMAND"
+
+    # execute command
+    if [ "$BASHRUN_EXECMODE" == "&" ]; then
+	/bin/bash -c "$BASHRUN_COMMAND >> $logfile 2>&1 &" > /dev/null 2>&1
+    else
+	# this can only be a su command (so far)
+	/bin/bash -c "$BASHRUN_COMMAND"
+    fi
 }
 
 function bashrun_engine_install_directories {
@@ -92,7 +156,6 @@ function bashrun_engine_install_directories {
     done
 }
 
-function bashrun_engine_shutdown {
-    
+function bashrun_engine_shutdown { 
     bashrun_remote_cleanup    
 }    

@@ -2,7 +2,7 @@
 
 ################################################################################
 
-function bashrun-signal-usr1 {
+function bashrun_signal_usr1 {
 
     local command
     bashrun_log "received"
@@ -10,6 +10,6 @@ function bashrun-signal-usr1 {
     bashrun_remote_run
 }
 
-trap bashrun-signal-usr1 SIGUSR1
+trap bashrun_signal_usr1 SIGUSR1
 
 ################################################################################
