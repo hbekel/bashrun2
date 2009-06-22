@@ -27,7 +27,12 @@ function bashrun_remote_run {
 	bashrun_engine_perform_action "$action" "$type" "$command"
 	
     else
-	bashrun_log "no command pending in $BASHRUN_REMOTE"
+	bashrun_log "no command(s) pending in $BASHRUN_REMOTE"
 	return 1
     fi
+}
+
+function bashrun_remote_cleanup {
+
+    [[ -f $BASHRUN_REMOTE ]] && rm -v $BASHRUN_REMOTE
 }

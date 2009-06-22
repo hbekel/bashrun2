@@ -84,4 +84,8 @@ function bashrun_engine_install_directories {
 	    install -d -m 700 $dir
 	fi
     done
+}
+
+function bashrun_engine_shutdown {
+    bashrun_remote_cleanup
 }    
