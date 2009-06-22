@@ -1,0 +1,15 @@
+# -*- shell-script -*-
+
+################################################################################
+
+function bashrun-signal-usr1 {
+
+    local command
+    log "received"
+
+    bashrun_remote_run
+}
+
+trap bashrun-signal-usr1 SIGUSR1
+
+################################################################################

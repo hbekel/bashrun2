@@ -1,0 +1,26 @@
+# -*- shell-script -*-
+
+################################################################################
+
+function bashrun_defined {
+    [ ${!1-X} == ${!1-Y} ]
+}
+
+function bashrun_log {
+    local msg=$1
+    
+    local func=${FUNCNAME[1]}
+    local from=${FUNCNAME[2]}
+    func=${func//}
+    from=${from//}
+    from=${from:-source}
+
+    if bashrun_defined $msg; then
+	echo "$func: $msg=${!msg}"
+	return 0
+    else
+	echo "$func: $msg"
+    fi
+}
+
+################################################################################

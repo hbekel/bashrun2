@@ -1,0 +1,87 @@
+# -*- shell-script -*-
+
+################################################################################
+
+BASHRUN_ACTION=''
+BASHRUN_COMMAND=''
+BASHRUN_COMMANDLINE=''
+
+object "action" "name type desc"
+
+function bashrun_engine_init {
+    
+    # setup
+    bashrun_engine_install_directories
+    
+    # escape from trap
+    PROMPT_COMMAND="$PROMPT_COMMAND: trap DEBUG"
+}
+
+function bashrun_engine_perform_action {
+
+    local action=$1      # action to perform
+    local type=$2        # action type override
+    local command=$3     # command override
+
+    if actions_seek $action; then
+	
+	BASHRUN_ACTION=$action	
+
+	# type override
+	[[ -z type ]] && type=$(action_type)
+
+	# dispatch action according to type
+	case $type in
+	    
+	    trap)
+	        # set the trap 
+		trap bashrun_engine_trap DEBUG
+		;; 
+	    
+	    run)
+		# command override
+		[[ -z $command ]] && command=':'
+     
+		# run command directly
+		bashrun_engine_run $command
+		;;
+	    
+	    call)
+		# call action directly
+		if $(type -t bashrun-action-$action &> /dev/null); then		    
+		    bashrun-action-$action
+		fi
+		;;
+	    *)
+		bashrun_log "no such action type: $type"
+		;;
+	esac
+    else
+	bashrun_log "no such action: $action"
+    fi
+    bashrun_log "'$action' '$type' '$command'"
+}
+
+function bashrun_engine_trap {
+    :
+}
+
+function bashrun_engine_run {
+    :
+}
+
+function bashrun_engine_install_directories {
+
+    # create XDG directories
+    local dir
+    for dir in 'CONFIG' 'DATA' 'CACHE'; do
+
+	dir="BASHRUN_${dir}_HOME"
+	dir=${!dir}
+	
+	if [[ ! -d $dir ]]; then
+	    bashrun_log "$dir"
+	    install -d -m 700 $dir
+	fi
+    done
+}    

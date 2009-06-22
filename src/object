@@ -1,0 +1,67 @@
+# -*- shell-script -*-
+
+################################################################################
+
+function object {
+
+    local name=$1
+    local keys=$2
+
+    local NAME=$(echo $name | tr "[:lower:]" "[:upper:]")
+
+    cat objects | \
+	sed "s|_OBJECTS_KEYS=()|_OBJECTS_KEYS=($keys)|;" | \
+	sed "s|object|$name|g;s|OBJECT|$NAME|g" \
+	> /tmp/$name.tmp
+
+    local i=0
+    local key
+    for key in $keys; do
+	object_create_reader $name $NAME $key $i
+	object_create_reader $name $NAME $key $i 1
+	object_create_writer $name $NAME $key $i
+	let i++
+    done
+    
+    source /tmp/$name.tmp
+    rm /tmp/$name.tmp
+}
+
+function object_create_reader {
+    local name=$1
+    local NAME=$2
+    local key=$3
+    local field=$4
+    local sugar=${5:0}
+
+    local method_name
+    if [[ sugar -eq 1 ]]; then
+	method_name="${name}_${key}"
+    else
+	method_name="${name}_get_${key}"
+    fi
+    echo $(cat <<EOF
+
+function ${method_name} {
+    echo "\${_${NAME}S[\$_${NAME}S_POSITION+$field]}";
+}
+EOF
+    ) >> /tmp/$name.tmp
+}
+
+function object_create_writer {
+    local name=$1
+    local NAME=$2
+    local key=$3
+    local field=$4
+    echo $(cat <<EOF
+
+function ${name}_set_${key} {
+    _${NAME}S[\$_${NAME}S_POSITION+$field]=\$1;
+    _${NAME}S_MODIFIED=1;
+}
+EOF
+    ) >> /tmp/$name.tmp
+}
+
+
