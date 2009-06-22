@@ -21,7 +21,7 @@ function bashrun_remote_run {
 	    type=${BASH_REMATCH[2]}
 	fi
 	
-	command="${words[@]:1}; trap DEBUG"
+	command=${words[@]:1}
 	bashrun_log "action: '$action', type: '$type', command: '$command'"
 	
 	bashrun_engine_perform_action "$action" "$type" "$command"

@@ -2,9 +2,7 @@
 
 ################################################################################
 
-BASHRUN_ACTION=''
 BASHRUN_COMMAND=''
-BASHRUN_COMMANDLINE=''
 
 object "action" "name type desc"
 
@@ -13,8 +11,8 @@ function bashrun_engine_init {
     # setup
     bashrun_engine_install_directories
     
-    # escape from trap
-    PROMPT_COMMAND="$PROMPT_COMMAND: trap DEBUG"
+    # escape from trap in interactive mode
+    PROMPT_COMMAND="$PROMPT_COMMAND; trap DEBUG"
 }
 
 function bashrun_engine_perform_action {
@@ -25,22 +23,24 @@ function bashrun_engine_perform_action {
 
     if actions_seek $action; then
 	
-	BASHRUN_ACTION=$action	
+	bashrun_log "action: $action"
 
 	# type override
-	[[ -z type ]] && type=$(action_type)
+	[[ $type == '' ]] && type=$(action_type)
+
+	bashrun_log "type: $type"
 
 	# dispatch action according to type
 	case $type in
 	    
 	    trap)
-	        # set the trap 
+	        # set the trap
 		trap bashrun_engine_trap DEBUG
 		;; 
 	    
 	    run)
 		# command override
-		[[ -z $command ]] && command=':'
+		[[ $command == '' ]] && command=':'
      
 		# run command directly
 		bashrun_engine_run $command
@@ -59,7 +59,6 @@ function bashrun_engine_perform_action {
     else
 	bashrun_log "no such action: $action"
     fi
-    bashrun_log "'$action' '$type' '$command'"
 }
 
 function bashrun_engine_trap {
@@ -67,7 +66,14 @@ function bashrun_engine_trap {
 }
 
 function bashrun_engine_run {
-    :
+
+    local command=$1
+
+    # command override
+    if [[ $command != '' ]]; then
+	BASHRUN_COMMAND=$command
+    fi
+    bashrun_log BASHRUN_COMMAND
 }
 
 function bashrun_engine_install_directories {

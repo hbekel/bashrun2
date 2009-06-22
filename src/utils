@@ -7,6 +7,9 @@ function bashrun_defined {
 }
 
 function bashrun_log {
+    
+    [[ ! BASHRUN_DEBUG -eq 1 ]] && return
+    
     local msg=$1
     
     local func=${FUNCNAME[1]}
