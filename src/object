@@ -6,13 +6,19 @@ function object {
 
     local name=$1
     local keys=$2
+    local tmpfile=/tmp/$name.bash
+
+    if [[ -f $tmpfile ]]; then
+	source $tmpfile
+	return 0
+    fi
 
     local NAME=$(echo $name | tr "[:lower:]" "[:upper:]")
 
     cat objects | \
 	sed "s|_OBJECTS_KEYS=()|_OBJECTS_KEYS=($keys)|;" | \
 	sed "s|object|$name|g;s|OBJECT|$NAME|g" \
-	> /tmp/$name.tmp
+	> $tmpfile
 
     local i=0
     local key
@@ -23,8 +29,9 @@ function object {
 	let i++
     done
     
-    source /tmp/$name.tmp
-    rm /tmp/$name.tmp
+    source $tmpfile
+
+    return 0
 }
 
 function object_create_reader {
@@ -33,6 +40,7 @@ function object_create_reader {
     local key=$3
     local field=$4
     local sugar=${5:0}
+    local tmpfile=/tmp/$name.bash
 
     local method_name
     if [[ sugar -eq 1 ]]; then
@@ -46,7 +54,7 @@ function ${method_name} {
     echo "\${_${NAME}S[\$_${NAME}S_POSITION+$field]}";
 }
 EOF
-    ) >> /tmp/$name.tmp
+    ) >> $tmpfile
 }
 
 function object_create_writer {
@@ -54,6 +62,8 @@ function object_create_writer {
     local NAME=$2
     local key=$3
     local field=$4
+    local tmpfile=/tmp/$name.bash
+
     echo $(cat <<EOF
 
 function ${name}_set_${key} {
@@ -61,7 +71,7 @@ function ${name}_set_${key} {
     _${NAME}S_MODIFIED=1;
 }
 EOF
-    ) >> /tmp/$name.tmp
+    ) >> $tmpfile
 }
 
 
