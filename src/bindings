@@ -1,0 +1,19 @@
+# -*- shell-script -*-
+
+################################################################################
+
+object "binding" "keyseq keymap action is_bound"  # keybindings
+object "keyname" "keyseq name"                    # user supplied keynames
+object "internal" "action keymap char"            # internal bindings
+
+BASHRUN_BINDINGS_NEXT_CHAR=1                      # next char to
+						  # internally bind to
+
+################################################################################
+
+function binding_is_bound? {
+    [[ "$(binding_get_is_bound)" == '1' ]] && return 0
+    [[ "$(binding_get_is_bound)" == '0' ]] && return 1
+}
+
+################################################################################

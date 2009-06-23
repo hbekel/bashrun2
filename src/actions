@@ -4,6 +4,8 @@
 
 object "action" "name type desc"
 
+################################################################################
+
 function actions_add {
     action_new $1 ${3:-trap-and-launch} "${2:-$1}"
 }
@@ -33,3 +35,5 @@ function action_run_function {
     bashrun-action-$(action_name)
     return $?
 }
+
+################################################################################
