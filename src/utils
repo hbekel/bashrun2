@@ -26,4 +26,43 @@ function bashrun_log {
     fi
 }
 
+function bashrun_prepare_directories {
+
+    # create XDG directories
+    local dir
+    for dir in 'CONFIG' 'DATA' 'CACHE'; do
+
+	dir="BASHRUN_${dir}_HOME"
+	dir=${!dir}
+	
+	if [[ ! -d $dir ]]; then
+	    bashrun_log "$dir"
+	    install -d -m 700 $dir
+	fi
+    done
+}
+
+function bashrun_prepare_logfile {
+
+    # set to /dev/null if empty
+    if [[ "$BASHRUN_LOGFILE" == "" ]]; then 
+	BASHRUN_LOGFILE="/dev/null"
+    fi
+ 
+    # touch unless exists
+    if [[ ! -e "$BASHRUN_LOGFILE" ]]; then
+	bashrun_log "creating logfile $BASHRUN_LOGFILE"
+	touch "$BASHRUN_LOGFILE"
+    fi
+
+    # revert to /dev/null unless writable
+    if [[ ! -w "$BASHRUN_LOGFILE" ]]; then
+	bashrun_log "logfile $BASHRUN_LOGFILE is not writeable"
+	BASHRUN_LOGFILE="/dev/null"
+    fi
+
+    bashrun_log "$BASHRUN_LOGFILE" 
+}
+
+
 ################################################################################

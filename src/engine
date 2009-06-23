@@ -13,7 +13,7 @@ object "action" "name type desc"
 function bashrun_engine_init {
     
     # setup
-    bashrun_engine_install_directories
+    bashrun_prepare_directories
     
     # escape from trap in interactive mode
     PROMPT_COMMAND="trap DEBUG; $PROMPT_COMMAND"
@@ -22,7 +22,7 @@ function bashrun_engine_init {
     shopt -s extdebug
 }
 
-function bashrun_engine_perform_action {
+function bashrun_engine_action {
 
     local action=$1      # action to perform
     local type=$2        # action type override
@@ -31,12 +31,11 @@ function bashrun_engine_perform_action {
     if actions_seek $action; then
 	
 	BASHRUN_ACTION=$action
-	bashrun_log "action: $action"
 
 	# type override
 	[[ $type == '' ]] && type=$(action_type)
 
-	bashrun_log "type: $type"
+	bashrun_log "$action ($type)"
 
 	# dispatch action according to type
 	case $type in
@@ -75,7 +74,6 @@ function bashrun_engine_trap {
     # the command about to be executed,
     # as expanded by the shell
     BASHRUN_COMMAND="$BASH_COMMAND"
-    bashrun_log "$BASHRUN_COMMAND"
     
     # assume execmode background
     BASHRUN_EXECMODE="&"
@@ -88,7 +86,8 @@ function bashrun_engine_trap {
 	bashrun_log "trap is removed"
 	return 0
     fi
-    
+    bashrun_log "$BASHRUN_COMMAND"
+
     bashrun_engine_launch
     return 1
 }
@@ -111,7 +110,7 @@ function bashrun_engine_launch {
 
 function bashrun_engine_execute {
 
-    bashrun_engine_prepare_logfile
+    bashrun_prepare_logfile
 
     # execute command
     if [ "$BASHRUN_EXECMODE" == "&" ]; then
@@ -122,44 +121,13 @@ function bashrun_engine_execute {
     fi
 }
 
-function bashrun_engine_install_directories {
-
-    # create XDG directories
-    local dir
-    for dir in 'CONFIG' 'DATA' 'CACHE'; do
-
-	dir="BASHRUN_${dir}_HOME"
-	dir=${!dir}
-	
-	if [[ ! -d $dir ]]; then
-	    bashrun_log "$dir"
-	    install -d -m 700 $dir
-	fi
-    done
-}
-
-function bashrun_engine_prepare_logfile {
-
-    # set to /dev/null if empty
-    if [[ "$BASHRUN_LOGFILE" == "" ]]; then 
-	BASHRUN_LOGFILE="/dev/null"
-    fi
- 
-    # touch unless exists
-    if [[ ! -e "$BASHRUN_LOGFILE" ]]; then
-	bashrun_log "creating logfile $BASHRUN_LOGFILE"
-	touch "$BASHRUN_LOGFILE"
-    fi
-
-    # revert to /dev/null unless writable
-    if [[ ! -w "$BASHRUN_LOGFILE" ]]; then
-	bashrun_log "logfile $BASHRUN_LOGFILE is not writeable"
-	BASHRUN_LOGFILE="/dev/null"
-    fi
-
-    bashrun_log "$BASHRUN_LOGFILE" 
-}
-
 function bashrun_engine_shutdown { 
+
+    # remove untrap from prompt command
+    PROMPT_COMMAND=${PROMPT_COMMAND/trap DEBUG\;/}
+
+    # disable extended debugging features
+    shopt -u extdebug
+
     bashrun_remote_cleanup    
 }    

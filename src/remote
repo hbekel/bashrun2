@@ -33,7 +33,7 @@ function bashrun_remote_run {
 
 	bashrun_log "action: '$action', type: '$type', command: '$command'"
 	
-	bashrun_engine_perform_action "$action" "$type" "$command"
+	bashrun_engine_action "$action" "$type" "$command"
 	
     else
 	bashrun_log "no command(s) pending in $BASHRUN_REMOTE"
