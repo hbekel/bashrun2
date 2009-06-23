@@ -1,0 +1,35 @@
+# -*- shell-script -*-
+
+################################################################################
+
+object "action" "name type desc"
+
+function actions_add {
+    action_new $1 ${3:-trap-and-launch} "${2:-$1}"
+}
+
+function action_bind {
+    :
+}
+
+function action_unbind {
+    :
+}
+
+function action_rebind {
+    :
+} 
+
+function action_is_bound? {
+    :
+}
+
+function action_has_function? {
+    type -t bashrun-action-$(action_name) &> /dev/null
+    return $?
+}
+
+function action_run_function {
+    bashrun-action-$(action_name)
+    return $?
+}

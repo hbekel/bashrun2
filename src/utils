@@ -60,8 +60,6 @@ function bashrun_prepare_logfile {
 	bashrun_log "logfile $BASHRUN_LOGFILE is not writeable"
 	BASHRUN_LOGFILE="/dev/null"
     fi
-
-    bashrun_log "$BASHRUN_LOGFILE" 
 }
 
 

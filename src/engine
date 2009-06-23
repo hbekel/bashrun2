@@ -8,8 +8,6 @@ BASHRUN_EXECMODE=''
 
 BASHRUN_LOGFILE=$BASHRUN_CACHE_HOME/log
 
-object "action" "name type desc"
-
 function bashrun_engine_init {
     
     # setup
@@ -24,9 +22,9 @@ function bashrun_engine_init {
 
 function bashrun_engine_action {
 
-    local action=$1      # action to perform
-    local type=$2        # action type override
-    local command=$3     # command override
+    local action=$1       # action to perform
+    local type=$2         # action type override
+    local command="$3"    # command override
 
     if actions_seek $action; then
 	
@@ -51,13 +49,13 @@ function bashrun_engine_action {
 		[[ $command == '' ]] && command=':'
      
 		# run action directly
-		bashrun_engine_launch $command
+		bashrun_engine_launch "$command"
 		;;
 	    
 	    shell)
 		# just run action here
-		if $(type -t bashrun-action-$action &> /dev/null); then
-		    bashrun-action-$action
+		if action_has_function?; then
+		    action_run_function
 		fi
 		;;
 	    *)
@@ -98,11 +96,15 @@ function bashrun_engine_launch {
 
     # command override
     if [[ $command != '' ]]; then
-	BASHRUN_COMMAND=$command
+	BASHRUN_COMMAND="$command"
     fi
 
-    bashrun-action-$BASHRUN_ACTION
-    
+    if actions_seek $BASHRUN_ACTION; then
+	if action_has_function?; then
+	    action_run_function
+	fi
+    fi
+
     bashrun_log "$BASHRUN_COMMAND"
 
     bashrun_engine_execute
