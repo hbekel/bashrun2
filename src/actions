@@ -7,7 +7,13 @@ object "action" "name type desc"
 ################################################################################
 
 function actions_add {
-    action_new $1 ${3:-trap-and-launch} "${2:-$1}"
+
+    if actions_seek $1; then
+	[[ $2 != '' ]] && action_set_desc "$2"
+	[[ $3 != '' ]] && action_set_type "$3"
+    else
+	action_new $1 ${3:-trap-and-launch} "${2:-$1}"
+    fi
 }
 
 function action_bind {

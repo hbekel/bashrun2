@@ -1,0 +1,31 @@
+# -*- shell-script -*-
+
+################################################################################
+#
+# User interface functions
+
+################################################################################
+
+function bashrun-add-action {
+    actions_add $1 "$2" $3
+
+    if ! action_has_function?; then
+	echo "bashrun-add-action: warning: no such function: bashrun-action-$1"
+    fi
+}
+
+function bashrun-bind-action {
+
+    local action=$1
+    local keyseq=$2
+    local keymap=$3
+    local keyname=$4
+
+    if actions_seek $action; then
+	action_bind $keyseq $keymap "$keyname"
+    else
+	echo "bashrun-bind-action: error: no such action: $action"
+    fi
+}
+
+################################################################################

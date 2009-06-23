@@ -2,7 +2,7 @@
 
 ################################################################################
 
-BASHRUN_REMOTE=$BASHRUN_DATA_HOME/remote
+BASHRUN_REMOTE_COMMAND=$BASHRUN_DATA_HOME/remote
 
 function bashrun_remote_run {
 
@@ -11,9 +11,9 @@ function bashrun_remote_run {
     local type
     local command
 
-    if [[ -f $BASHRUN_REMOTE ]]; then
+    if [[ -f $BASHRUN_REMOTE_COMMAND ]]; then
 	
-	words=($(cat $BASHRUN_REMOTE))
+	words=($(cat $BASHRUN_REMOTE_COMMAND))
 	action=${words[0]}	
 
 	# action may have ":type" appended
@@ -31,17 +31,17 @@ function bashrun_remote_run {
 	# everything else goes into command
 	command=${words[@]:1}
 
-	bashrun_log "action: '$action', type: '$type', command: '$command'"
+	bashrun_log "$action ($type): '$command'"
 	
 	bashrun_engine_action "$action" "$type" "$command"
 	
     else
-	bashrun_log "no command(s) pending in $BASHRUN_REMOTE"
+	bashrun_log "no command(s) pending in $BASHRUN_REMOTE_COMMAND"
 	return 1
     fi
 }
 
 function bashrun_remote_cleanup {
 
-    [[ -f $BASHRUN_REMOTE ]] && rm -v $BASHRUN_REMOTE
+    [[ -f $BASHRUN_REMOTE_COMMAND ]] && rm $BASHRUN_REMOTE_COMMAND
 }
