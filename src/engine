@@ -41,23 +41,23 @@ function bashrun_engine_perform_action {
 	# dispatch action according to type
 	case $type in
 	    
-	    trap)
+	    trap-and-launch)
 	        # set the trap
 		bashrun_log "trap is set"
 		trap bashrun_engine_trap DEBUG
 		;; 
 	    
-	    run)
+	    launch)
 		# command override
 		[[ $command == '' ]] && command=':'
      
-		# run command directly
-		bashrun_engine_run $command
+		# run action directly
+		bashrun_engine_launch $command
 		;;
 	    
-	    call)
-		# call action directly
-		if $(type -t bashrun-action-$action &> /dev/null); then		    
+	    shell)
+		# just run action here
+		if $(type -t bashrun-action-$action &> /dev/null); then
 		    bashrun-action-$action
 		fi
 		;;
@@ -89,11 +89,11 @@ function bashrun_engine_trap {
 	return 0
     fi
     
-    bashrun_engine_run
+    bashrun_engine_launch
     return 1
 }
 
-function bashrun_engine_run {
+function bashrun_engine_launch {
 
     local command=$1
 
@@ -111,29 +111,11 @@ function bashrun_engine_run {
 
 function bashrun_engine_execute {
 
-    local logfile="$BASHRUN_LOGFILE"
-    
-    # set logfile to /dev/null if empty
-    [[ "$logfile" == "" ]] && logfile="/dev/null"
- 
-    # create logfile unless it exists
-    if [[ ! -e "$logfile" ]]; then
-	bashrun_log "creating logfile $logfile"
-	touch "$logfile"
-    fi
-
-    # revert logfile to /dev/null unless it's writable
-    if [[ ! -w "$logfile" ]]; then
-	bashrun_log "logfile $logfile is not writeable"
-	logfile="/dev/null"
-    fi
-    
-    bashrun_log "redirecting stdout/stderr to $logfile" 
-    bashrun_log "$BASHRUN_COMMAND"
+    bashrun_engine_prepare_logfile
 
     # execute command
     if [ "$BASHRUN_EXECMODE" == "&" ]; then
-	/bin/bash -c "$BASHRUN_COMMAND >> $logfile 2>&1 &" > /dev/null 2>&1
+	/bin/bash -c "$BASHRUN_COMMAND >> $BASHRUN_LOGFILE 2>&1 &" > /dev/null 2>&1
     else
 	# this can only be a su command (so far)
 	/bin/bash -c "$BASHRUN_COMMAND"
@@ -154,6 +136,28 @@ function bashrun_engine_install_directories {
 	    install -d -m 700 $dir
 	fi
     done
+}
+
+function bashrun_engine_prepare_logfile {
+
+    # set to /dev/null if empty
+    if [[ "$BASHRUN_LOGFILE" == "" ]]; then 
+	BASHRUN_LOGFILE="/dev/null"
+    fi
+ 
+    # touch unless exists
+    if [[ ! -e "$BASHRUN_LOGFILE" ]]; then
+	bashrun_log "creating logfile $BASHRUN_LOGFILE"
+	touch "$BASHRUN_LOGFILE"
+    fi
+
+    # revert to /dev/null unless writable
+    if [[ ! -w "$BASHRUN_LOGFILE" ]]; then
+	bashrun_log "logfile $BASHRUN_LOGFILE is not writeable"
+	BASHRUN_LOGFILE="/dev/null"
+    fi
+
+    bashrun_log "$BASHRUN_LOGFILE" 
 }
 
 function bashrun_engine_shutdown { 

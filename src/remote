@@ -23,9 +23,9 @@ function bashrun_remote_run {
 	fi
 	actions_seek $action
 
-	# trap actions become run actions if invoked remotely
-	if [[ "$(action_type)" == "trap" ]]; then
-	    type="run"
+	# "trap-and-launch"  becomes "launch" if invoked remotely (nothing to trap)
+	if [[ "$(action_type)" == "trap-and-lauch" ]]; then
+	    type="launch"
 	fi
 	
 	# everything else goes into command
