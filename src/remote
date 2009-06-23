@@ -14,14 +14,23 @@ function bashrun_remote_run {
     if [[ -f $BASHRUN_REMOTE ]]; then
 	
 	words=($(cat $BASHRUN_REMOTE))
-	
-	action=${words[0]}
+	action=${words[0]}	
+
+	# action may have ":type" appended
 	if [[ $action =~ (.+?):(.*) ]]; then
 	    action=${BASH_REMATCH[1]}
 	    type=${BASH_REMATCH[2]}
 	fi
+	actions_seek $action
+
+	# trap actions become run actions if invoked remotely
+	if [[ "$(action_type)" == "trap" ]]; then
+	    type="run"
+	fi
 	
+	# everything else goes into command
 	command=${words[@]:1}
+
 	bashrun_log "action: '$action', type: '$type', command: '$command'"
 	
 	bashrun_engine_perform_action "$action" "$type" "$command"
