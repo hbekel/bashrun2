@@ -12,6 +12,7 @@ function bashrun-add-action {
     if ! action_has_function?; then
 	echo "bashrun-add-action: warning: no such function: bashrun-action-$1"
     fi
+    return 0
 }
 
 function bashrun-bind-action {
@@ -23,9 +24,40 @@ function bashrun-bind-action {
 
     if actions_seek $action; then
 	action_bind $keyseq $keymap "$keyname"
+	return $?
     else
 	echo "bashrun-bind-action: error: no such action: $action"
+	return 1
     fi
 }
+
+function bashrun-unbind-action {
+
+    local action=$1
+    local keymap=$2
+
+    if actions_seek $action; then
+	action_unbind $keymap
+	return $?
+    else
+	echo "bashrun-bind-action: error: no such action: $action"
+	return 1
+    fi
+}
+
+function bashrun-rebind-action {
+
+    local action=$1
+    local keymap=$2
+
+    if actions_seek $action; then
+	action_rebind $keymap
+	return $?
+    else
+	echo "bashrun-bind-action: error: no such action: $action"
+	return 1
+    fi
+}
+
 
 ################################################################################
