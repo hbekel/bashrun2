@@ -62,5 +62,44 @@ function bashrun_prepare_logfile {
     fi
 }
 
+function ks2kn {
+    local keyseq=$1
+
+    if keynames_seek $(qks $keyseq); then
+	echo $(keyname_get_name)
+	return 0
+    fi
+
+    local enter="Ret"
+    local keyname=$keyseq
+
+    keyname=${keyname/\\e/M-}
+    keyname=${keyname/\\C-/C-}
+    keyname=${keyname/\\M-/M-}
+    keyname=${keyname/\\C-/C-}
+    keyname=${keyname/\\\?/?}
+
+    keyname=${keyname/C-m/$enter}
+    if [[ "$keyname" =~ [a-zA-z]$enter ]]; then
+	keyname=${keyname/$enter/-$enter}
+    fi
+    echo "$keyname"
+}
+
+function qks { # qoute keyseq
+    local keyseq=$1
+    keyseq=${keyseq//\\C/<ctrl>}
+    keyseq=${keyseq//\\e/<meta>}
+    keyseq=${keyseq//\\M/<meta>}
+    echo "$keyseq"
+}
+
+function uks { # unquote keyseq
+    local keyseq=$1
+    keyseq=${keyseq//<ctrl>/\\C}
+    keyseq=${keyseq//<meta>/\\e}
+    keyseq=${keyseq//<meta>/\\M}
+    echo "$keyseq"
+}
 
 ################################################################################

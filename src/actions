@@ -11,7 +11,86 @@ function actions_add {
 }
 
 function action_bind {
-    :
+
+    local action=$(action_name)
+    local type=$(action_type)
+
+    local keyseq=$1
+    local keymap=${2:-emacs}
+    local keyname=${3:-$(ks2kn $keyseq)}
+
+    local bind=''
+    local accept='\C-z\x01'
+    local char=''
+
+    # if "pass", bind keyseq directly to accept-line (readline) and return
+    if [[ "$action" == "pass" ]]; then
+	bind="-m $keymap '\"$keyseq\": accept-line'"
+	eval "bind $bind"
+	return 0
+    fi
+
+    if ! internals_seek $action $keymap; then
+	internal_new $action $keymap "new"
+    fi
+    internals_seek $action $keymap
+
+    if [[ "$(internal_char)" == "new" ]]; then
+	
+        # no previous internal binding, get next invalid character to bind to
+	char=$(printf "%.2X" $BASHRUN_BINDINGS_NEXT_CHAR)
+
+	if [[ BASHRUN_BINDINGS_NEXT_CHAR -gt 0x7f ]]; then
+	    bashrun_log "maximum number of internal keyseqs reached, skipping..." "fail"
+	    return 1
+	fi
+	
+	bind="-m $keymap -x \$'\"\C-z\\x$char\":"
+	bind="$bind tput cr; bashrun_engine_action $action'"
+
+	bashrun_log "int: $action ($type) -> \C-z\\x$char ($keymap)"
+	eval "bind $bind"	    
+	
+	 # save char in internal	
+	internal_set_char $char
+	
+	# next free char
+	let BASHRUN_BINDINGS_NEXT_CHAR+=1
+    else
+	# there's already a internal character bound, use it
+	char=$(internal_char)
+	bashrun_log "redirecting: $action ($type) -> $char ($keymap)"
+    fi
+    
+    # don't accept-line for 'launch' or 'shell' bindings
+    if [[ "$type" != 'trap-and-launch' ]]; then
+	accept=''
+    fi
+
+    # bind the requested keyseq to the internal character
+    bind="-m $keymap '\"$keyseq\"':$'\"\C-z\x$char$accept\"'"
+    
+    # bind
+    bashrun_log "usr: $action ($type) -> $keyname ($keymap)"
+    eval "bind $bind"
+
+    keyseq=$(qks $keyseq)
+    
+    # create or set binding
+    if bindings_seek $keyseq $keymap; then
+	binding_set_action $action
+	binding_set_is_bound 1 
+    else
+	binding_new $keyseq $keymap $action 1
+    fi    
+    
+    # create or set keyname
+    if keynames_seek $keyseq; then
+	keyname_set_name $keyname
+    else
+	keyname_new $keyseq $keyname
+    fi
+    return 0
 }
 
 function action_unbind {

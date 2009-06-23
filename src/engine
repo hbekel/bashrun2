@@ -18,6 +18,9 @@ function bashrun_engine_init {
 
     # enable extended debugging features
     shopt -s extdebug
+
+    # init exec mode
+    BASHRUN_EXECMODE='&'
 }
 
 function bashrun_engine_action {

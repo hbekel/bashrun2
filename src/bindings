@@ -6,8 +6,9 @@ object "binding" "keyseq keymap action is_bound"  # keybindings
 object "keyname" "keyseq name"                    # user supplied keynames
 object "internal" "action keymap char"            # internal bindings
 
-BASHRUN_BINDINGS_NEXT_CHAR=1                      # next char to
-						  # internally bind to
+bind "'\C-z\x01': accept-line"                    # accept-line                    
+
+BASHRUN_BINDINGS_NEXT_CHAR=2                      # next char to bind
 
 ################################################################################
 
