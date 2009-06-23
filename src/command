@@ -1,0 +1,111 @@
+# -*- shell-script -*-
+
+################################################################################
+
+BASHRUN_COMMAND=''
+BASHRUN_COMMAND_LINE=''
+BASHRUN_COMMAND_WORD=''
+
+function bashrun_command_unquote {
+
+    command="$BASHRUN_COMMAND"
+    # unquote quoted &;|
+    command=${command//\\&/&}
+    command=${command//\\|/|}
+    command=${command// \\; /;}
+    command=${command//&&/ && }
+    command=${command//||/ || }
+
+    BASHRUN_COMMAND=$command
+}
+
+function bashrun_command_get_line {
+    # updates BASHRUN_COMMAND_LINE to contain the complete and
+    # verbatim line entered by the user.
+    
+    local command_line=''
+    local histtimeformat=$HISTTIMEFORMAT
+    unset HISTTIMEFORMAT
+
+    [[ $(history 1) =~ \ +[0-9]+?\ +(.+?) ]]
+    BASHRUN_COMMAND_LINE=${BASH_REMATCH[1]}
+    
+    if [[ "$histtimeformat" != "" ]]; then
+	HISTTIMEFORMAT=$histtimeformat
+    fi
+    echo "$BASHRUN_COMMAND_LINE"
+}
+
+function bashrun_command_get_word {
+
+    # updates BASHRUN_COMMAND_WORD to contain the first word of the
+    # current command.
+
+    local word="$BASHRUN_COMMAND"
+
+    word=${word//\\ /<qspace>}
+    if [[ "$word" =~ ([^\ \&\;\|]+) ]]; then
+	word=${BASH_REMATCH[1]}
+    fi
+    word=${word//<qspace>/\\ }
+    word=$(echo $word | sed -r "s/^ +//;s/ +$//")
+    word=$(echo $word | sed -r "s/^\\(+//;s/\\)+$//")
+
+    BASHRUN_COMMAND_WORD=$word
+}
+
+function bashrun_command_word_is_executable? {
+    
+    # check if BASHRUN_COMMAND_WORD is executable
+
+    bashrun_command_get_command_word
+
+    local word="$BASHRUN_COMMAND_WORD"
+    local type=`type -t $BINARY`
+
+    if [[ "$type" =~ (alias|keyword|builtin) ]]; then
+	bashrun_log "$word-> $type -> yes"
+	return 0
+    fi
+
+    if [[ "$type" == "function" ]]; then
+	if is_bookmark?; then
+	    bashrun_log "$word -> bookmark$ -> no"
+	    return 1
+	else
+	    bashrun_log "$word -> $type -> yes"
+	    return 0
+	fi
+    fi
+
+    if [[ "$type" == "file" ]]; then
+	if [[ `which $word 2> /dev/null` ]]; then
+	    bashrun_log "which: `which $word` -> yes"
+	    return 0
+	fi
+	if [[ -x $word ]]; then
+	    bashrun_log "+x $word -> yes"
+	    return 0
+	fi
+    fi
+
+    bashrun_log "$word -> no"
+    return 1
+}
+
+function bashrun_command_word_is_builtin? {
+
+    # check if BINARY is a shell builtin command
+
+    bashrun_command_get_word
+    local word="$BASHRUN_COMMAND_WORD"
+
+    local result=`type $BINARY 2>&1 | head -n1`
+
+    if [[ "$result" =~ builtin ]]; then
+	bashrun_log "$word: yes"
+	return 0
+    fi
+    bashrun_log "$word: no"
+    return 1
+}

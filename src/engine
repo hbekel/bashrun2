@@ -3,8 +3,6 @@
 ################################################################################
 
 BASHRUN_ACTION=''
-BASHRUN_COMMAND=''
-BASHRUN_COMMANDLINE=''
 BASHRUN_EXECMODE=''
 
 BASHRUN_LOGFILE=$BASHRUN_CACHE_HOME/log
@@ -74,7 +72,7 @@ function bashrun_engine_action {
 function bashrun_engine_trap {
     
     # the verbatim command line entered
-    BASHRUN_COMMANDLINE=$(bashrun_engine_get_commandline)
+    BASHRUN_COMMAND_LINE=$(bashrun_command_get_line)
 
     # the command about to be executed,
     # as expanded by the shell
@@ -84,7 +82,7 @@ function bashrun_engine_trap {
     BASHRUN_EXECMODE="&"
 
     # remove quotes (;|&)
-    # unquote_command
+    bashrun_command_unquote
     
     # pass through trap builtin
     if [[ "$BASHRUN_COMMAND" =~ ^trap ]]; then
@@ -104,7 +102,7 @@ function bashrun_engine_launch {
     # command override
     if [[ $command != '' ]]; then
 	BASHRUN_COMMAND="$command"
-	BASHRUN_COMMANDLINE="$command"
+	BASHRUN_COMMAND_LINE="$command"
     fi
 
     if actions_seek $BASHRUN_ACTION; then
@@ -129,21 +127,6 @@ function bashrun_engine_execute {
 	# this can only be a su command (so far)
 	/bin/bash -c "$BASHRUN_COMMAND"
     fi
-}
-
-function bashrun_engine_get_commandline {
-
-    local commandline=''
-    local histtimeformat=$HISTTIMEFORMAT
-    unset HISTTIMEFORMAT
-
-    [[ $(history 1) =~ \ +[0-9]+?\ +(.+?) ]]
-    commandline=${BASH_REMATCH[1]}
-    
-    if [[ "$histtimeformat" != "" ]]; then
-	HISTTIMEFORMAT=$histtimeformat
-    fi
-    echo "$commandline"
 }
 
 function bashrun_engine_shutdown { 
