@@ -230,7 +230,7 @@ function action_code {
 
     local code="$code bashrun-add-action"
     code="$code '$name'"
-    code="$code '$desc'"
+    [[ "$desc" != "$name" ]] && code="$code '$desc'"
     [[ "$type" != "trap-and-launch" ]] && code="$code '$type'"
     
     # print header
@@ -238,7 +238,9 @@ function action_code {
     echo -n "# $(action_name): $(action_desc)"
     echo -e '\n'
 
-    function_code "bashrun-action-$name"    
+    if action_has_function?; then
+	function_code "bashrun-action-$name"
+    fi
     echo $code
 
     if action_is_bound?; then
