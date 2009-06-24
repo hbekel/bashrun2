@@ -85,6 +85,7 @@ function action_bind {
     # create or set binding
     if bindings_seek $keyseq $keymap; then
 	binding_set_action $action
+	binding_set_keymap $keymap
 	binding_set_is_bound 1 
     else
 	binding_new $keyseq $keymap $action 1
@@ -218,6 +219,48 @@ function action_run_function {
 	rules \
 	terminal \
 	root
+}
+
+function action_code {
+    
+    local name=$(action_name)
+    local desc=$(action_desc)
+    local type=$(action_type)
+    local id=''
+
+    local code="$code bashrun-add-action"
+    code="$code '$name'"
+    code="$code '$desc'"
+    [[ "$type" != "trap-and-launch" ]] && code="$code '$type'"
+    
+    # print header
+    print_line '#'
+    echo -n "# $(action_name): $(action_desc)"
+    echo -e '\n'
+
+    function_code "bashrun-action-$name"    
+    echo $code
+
+    if action_is_bound?; then
+	bindings_seek_start
+	for id in $(bindings_select action $name); do
+	    bindings_seek --next $id 
+	    binding_code
+	done
+    fi
+}
+
+function actions_code {
+    
+    local saved="$(action_name)"
+
+    actions_seek_start
+    while actions_have_next; do
+	action_code
+	actions_next
+	echo
+    done
+    actions_seek "$saved"
 }
 
 ################################################################################

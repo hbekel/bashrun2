@@ -102,4 +102,18 @@ function uks { # unquote keyseq
     echo "$keyseq"
 }
 
-################################################################################
+function print_line {
+
+    local char=${1:--}
+    local width=${2:-$COLUMNS}
+    local i;
+
+    for((i=0; i<$width; i++)); do
+	echo -n $char
+    done
+    [[ width -ne COLUMNS ]] && echo
+}
+
+function function_code {
+    echo "$(type $1 | sed '1 d')"
+}

@@ -17,4 +17,19 @@ function binding_is_bound? {
     [[ "$(binding_get_is_bound)" == '0' ]] && return 1
 }
 
+function binding_code {
+    
+    local keyseq=$(uks $(binding_keyseq))
+    local keymap=$(binding_keymap)
+    local action=$(binding_action)
+
+    local code="bashrun-bind-action"
+    code="$code '$action'"
+    code="$code '$keyseq'"
+    [[ "$keymap" != 'emacs' ]] && code="$code '$keymap'"
+    
+    echo $code
+}
+
+
 ################################################################################

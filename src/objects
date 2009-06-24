@@ -19,14 +19,24 @@ _OBJECTS_MODIFIED=0
 function objects_seek { # args
     
     local matched=0
+    local start=0
+    local num_args=$#
     local i=0
-    local k=0
 
-    for ((i=0; i<=${#_OBJECTS[@]}; i+=${#_OBJECTS_KEYS[@]})); do
+    if [[ "$1" == "--next" ]]; then	
+	(( start = _OBJECTS_POSITION + _OBJECTS_WIDTH ))
+	if (( start > _OBJECTS_SIZE*_OBJECTS_WIDTH )); then
+	    start=0
+	fi
+	shift
+	(( num_args-=1 ))
+    fi
+
+    for ((i=$start; i<=${#_OBJECTS[@]}; i+=${#_OBJECTS_KEYS[@]})); do
 	matched=0
 	if [[ "${_OBJECTS[$i]}" == "$1" ]]; then
 	    matched=1
-	    if [[ $# -eq 2 ]]; then
+	    if [[ $num_args -eq 2 ]]; then
 		if [[ "${_OBJECTS[$i+1]}" == "$2" ]]; then
 		    matched=1
 		else
@@ -38,7 +48,7 @@ function objects_seek { # args
 	if [[ matched -eq 1 ]]; then
 	    _OBJECTS_POSITION=$i
 	    break
-	fi
+	fi	
     done
     
     [[ matched -eq 0 ]] && return 1
@@ -180,6 +190,20 @@ function object_set { # key value
     fi
 }
 
+function object_code {
+    
+    local i=0;
+    local args=''
+    local here=$_OBJECTS_POSITION
+    
+    for ((i=this; i<=${#_OBJECTS_WIDTH}; i++)); do
+	args="$args '${_OBJECTS[$i]}'"
+    done
+    _OBJECTS_POSITION=here
+
+    echo "object_new $args"
+}
+    
 function object_list {
     local key
     for key in ${_OBJECTS_KEYS[@]}; do
