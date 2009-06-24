@@ -23,7 +23,7 @@ function binding_code {
     local keymap=$(binding_keymap)
     local action=$(binding_action)
 
-    local code="bashrun-bind-action"
+    local code="§bind"
     code="$code '$action'"
     code="$code '$keyseq'"
     [[ "$keymap" != 'emacs' ]] && code="$code '$keymap'"
