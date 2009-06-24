@@ -263,4 +263,17 @@ function actions_code {
     actions_seek "$saved"
 }
 
+function actions_names {
+
+    local saved="$(action_name)"
+
+    actions_seek_start
+    while actions_have_next; do
+	echo -n "$(action_name) "
+	actions_next
+    done
+    actions_seek "$saved"
+    echo
+}
+
 ################################################################################
