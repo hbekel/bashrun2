@@ -2,7 +2,7 @@
 
 ################################################################################
 
-object "action" "name type desc"
+object "action" "name type desc deps"
 
 ################################################################################
 
@@ -11,8 +11,9 @@ function actions_add {
     if actions_seek $1; then
 	[[ $2 != '' ]] && action_set_desc "$2"
 	[[ $3 != '' ]] && action_set_type "$3"
+	[[ $4 != '' ]] && action_set_deps "$4"
     else
-	action_new $1 ${3:-trap-and-launch} "${2:-$1}"
+	action_new $1 ${3:-trap-and-launch} "${2:-$1}" "$4"
     fi
 }
 
@@ -180,6 +181,19 @@ function action_has_function? {
     return $?
 }
 
+function action_is_available? {
+
+    local dep=''
+    declare -i result=0
+
+    for dep in $(action_deps); do
+	if ! `which $dep &> /dev/null`; then
+	    result=1
+	fi
+    done
+    return $result
+}
+
 function action_run_function {
 
     function command {
@@ -221,6 +235,28 @@ function action_run_function {
 	root
 }
 
+function action_pretty_print_deps {
+
+    local dep=''
+    local deps="$(action_deps)"
+    local str=''
+    local found=$R
+
+    if [[ $deps != '' ]]; then
+	
+	for dep in $deps; do
+	    if `which $dep &> /dev/null`; then
+		found=$G
+	    else
+		found=$R
+	    fi
+	    str=", $found$dep$N$str" 
+	done
+	str="${str:2}"
+	echo -ne "$str"
+    fi
+}
+
 function action_pretty_print {
 
     local action=$(action_name)
@@ -234,7 +270,11 @@ function action_pretty_print {
     if action_has_function?; then
 	echo "func: action-$action"
     fi
-    echo 
+
+    if [[ $(action_deps) != '' ]]; then
+	echo -e "deps: $(action_pretty_print_deps)"
+    fi
+    echo
 
     if action_is_bound?; then
 	bindings_seek_start
@@ -263,12 +303,25 @@ function action_code {
     local name=$(action_name)
     local desc=$(action_desc)
     local type=$(action_type)
+    local deps=$(action_deps)
     local id=''
 
     local code="$code §add"
     code="$code '$name'"
-    [[ "$desc" != "$name" ]] && code="$code '$desc'"
-    [[ "$type" != "trap-and-launch" ]] && code="$code '$type'"
+
+    if [[ "$desc" != "$name" ]]; then
+	code="$code '$desc'"
+    else
+	code="$code ''"
+    fi
+    
+    if [[ "$type" != "trap-and-launch" ]]; then
+	code="$code '$type'"
+    else
+	code="$code ''"
+    fi	
+
+    [[ "$deps" != "" ]] && code="$code '$deps'"
     
     # print header
     print_line '' '#'

@@ -37,7 +37,7 @@ function §action {
 }
 
 function §add {
-    actions_add $1 "$2" $3
+    actions_add "$1" "$2" "$3" "$4"
 
     if [[ "$1" == '' ]]; then
 	echo "error: missing action argument"
