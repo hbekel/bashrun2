@@ -271,9 +271,10 @@ function action_code {
     [[ "$type" != "trap-and-launch" ]] && code="$code '$type'"
     
     # print header
-    print_line '#'
-    echo -n "# $(action_name): $(action_desc)"
-    echo -e '\n'
+    print_line '' '#'
+    print_line "$desc" '#' '-1'
+    print_line '' '#'
+    echo
 
     if action_has_function?; then
 	function_code "action-$name"

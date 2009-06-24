@@ -104,14 +104,20 @@ function uks { # unquote keyseq
 
 function print_line {
 
-    local char=${1:--}
-    local width=${2:-$COLUMNS}
+    local title=$1
+    local char=${2:--}
+    local width=${3:-$COLUMNS}
     local i;
+
+    if [[ "$title" != '' ]]; then
+	(( width = width - ${#title} - 4 )) 
+	echo -n "$char$char $title "
+    fi
 
     for((i=0; i<$width; i++)); do
 	echo -n $char
     done
-    [[ width -ne COLUMNS ]] && echo
+    echo
 }
 
 function function_code {
