@@ -9,6 +9,9 @@ BASHRUN_LOGFILE=$BASHRUN_CACHE_HOME/log
 
 function bashrun_engine_init {
     
+    function bashrun? { return 0; }
+    export -f bashrun?
+
     # setup
     bashrun_prepare_directories
     
