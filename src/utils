@@ -66,7 +66,7 @@ function ks2kn {
     local keyseq=$1
 
     if keynames_seek $(qks $keyseq); then
-	echo $(keyname_get_name)
+	echo $(keyname_name)
 	return 0
     fi
 
