@@ -59,5 +59,8 @@ function bashrun-rebind-action {
     fi
 }
 
+function bashrun-add-handler {
+    handlers_add "$1" "$2"
+}
 
 ################################################################################

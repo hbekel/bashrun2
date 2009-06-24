@@ -202,7 +202,7 @@ function action_run_function {
 	return $?
     }
 
-    function handlers { :; }
+    function handlers { handlers_apply; }
     function rules { :; }
     function terminal { :; }
     function root { :; }
@@ -215,6 +215,7 @@ function action_run_function {
 	executable? \
 	builtin? \
 	handlers \
+	rules \
 	terminal \
 	root
 }

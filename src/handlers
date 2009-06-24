@@ -1,0 +1,101 @@
+# -*- shell-script -*-
+
+################################################################################
+
+object "handler" "pattern string"
+
+################################################################################
+
+function handlers_add {
+
+    if handlers_seek $1; then
+	[[ $2 != '' ]] && handler_set_pattern "$2"
+    else
+	handler_new "$1" "$2"
+    fi
+}
+
+function handlers_apply {
+    
+    # applies matching handlers to BASHRUN_BASHRUN_COMMAND
+
+    bashrun_log "trying to match handlers..." "info"
+    
+    handlers_seek_start
+    while handlers_have_next; do
+	
+	local append=1
+	local pattern=$(handler_pattern)
+	local string=$(handler_string)
+
+	if [[ "$BASHRUN_COMMAND" =~ $pattern ]]; then	    
+
+	    bashrun_log "$BASHRUN_COMMAND matches $pattern"
+
+	    # check for file test prefix
+	    if [[ "$string" =~ ^([abcdefghkprstuwxOGLSN!]+): ]]; then
+		local tests=${BASH_REMATCH[1]}
+		string=${string/$tests:/}
+
+		# perform tests
+		local test=""
+		local success=0
+		local k=0
+		for(( k=0; k<${#tests}; k++ )); do
+		    local CHAR=${tests:$k:1}
+		    if [ "$CHAR" == "!" ]; then
+			test="!"
+			continue
+		    else
+			test="$test -$CHAR"
+			if eval "test $test $BASHRUN_COMMAND_WORD"; then
+			    bashrun_log "test $test $BASHRUN_COMMAND_WORD -> success"
+			    success=1
+			else
+			    bashrun_log "test $test $BASHRUN_COMMAND_WORD -> FAIL"
+			    success=0
+			    break
+			fi			
+			test=""
+		    fi
+		done
+		if [[ ! success -eq 1 ]]; then
+		    bashrun_log "not handled"
+		    continue
+		fi
+	    fi
+
+	    # rewrite handler if subpatterns matched
+	    local i=0
+
+	    [[ "$BASHRUN_COMMAND" =~ $pattern ]]
+	    for (( i=1; i<${#BASH_REMATCH[*]}; i++ )); do
+
+		local match=${BASH_REMATCH[$i]}
+		bashrun_log "subexpression match \$$i $match"
+		string=${string//\$$i/$match}
+
+		bashrun_log "$string"
+		export append=0
+	    done
+	    # fail if unmatched $n's remain in handler string
+	    if [[ $string =~ (\$[0-9]) ]]; then
+		local missing=${BASH_REMATCH[1]}
+		bashrun_log "handler incomplete: no content for $missing"
+		bashrun_log " -> not executing, informing user"
+		BASHRUN_COMMAND="bashrun_show_error No content for \\$missing in $pattern handler."
+		return 1
+	    fi
+
+	    if [[ append -eq 1 ]]; then
+		BASHRUN_COMMAND="$string $BASHRUN_COMMAND"
+	    else
+		BASHRUN_COMMAND="$string"
+	    fi
+
+	    bashrun_log "handled"
+	    return
+	fi
+	handlers_next
+    done
+}
