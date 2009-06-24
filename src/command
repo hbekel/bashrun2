@@ -58,10 +58,10 @@ function bashrun_command_word_is_executable? {
     
     # check if BASHRUN_COMMAND_WORD is executable
 
-    bashrun_command_get_command_word
+    bashrun_command_get_word
 
     local word="$BASHRUN_COMMAND_WORD"
-    local type=`type -t $BINARY`
+    local type=`type -t $word`
 
     if [[ "$type" =~ (alias|keyword|builtin) ]]; then
 	bashrun_log "$word-> $type -> yes"
@@ -95,12 +95,12 @@ function bashrun_command_word_is_executable? {
 
 function bashrun_command_word_is_builtin? {
 
-    # check if BINARY is a shell builtin command
+    # check if BASHRUN_COMMAND_WORD is a shell builtin command
 
     bashrun_command_get_word
     local word="$BASHRUN_COMMAND_WORD"
 
-    local result=`type $BINARY 2>&1 | head -n1`
+    local result=`type $word 2>&1 | head -n1`
 
     if [[ "$result" =~ builtin ]]; then
 	bashrun_log "$word: yes"

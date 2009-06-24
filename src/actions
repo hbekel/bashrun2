@@ -180,8 +180,43 @@ function action_has_function? {
 }
 
 function action_run_function {
+
+    function command {
+	if [[ "$#" == "0" ]]; then
+	    echo $BASHRUN_COMMAND
+	else
+	    bashrun_log "setting command to $@"
+	    BASHRUN_COMMAND="$@"
+	fi
+    }
+
+    function line { echo $BASHRUN_COMMAND_LINE; }
+
+    function executable? {
+	bashrun_command_word_is_executable?
+	return $?
+    }
+
+    function builtin? {
+	bashrun_command_word_is_builtin?
+	return $?
+    }
+
+    function handlers { :; }
+    function rules { :; }
+    function terminal { :; }
+    function root { :; }
+
     bashrun-action-$(action_name)
-    return $?
+    
+    unset -f \
+	command \
+	line \
+	executable? \
+	builtin? \
+	handlers \
+	terminal \
+	root
 }
 
 ################################################################################
