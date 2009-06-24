@@ -185,8 +185,8 @@ function action_run_function {
 	if [[ "$#" == "0" ]]; then
 	    echo $BASHRUN_COMMAND
 	else
-	    bashrun_log "setting command to $@"
 	    BASHRUN_COMMAND="$@"
+	    bashrun_log "$BASHRUN_COMMAND"
 	fi
     }
 
