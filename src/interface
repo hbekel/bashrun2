@@ -7,6 +7,17 @@
 # These function provide a commandline interface to creating and
 # changing actions and binding them.
 #
+# §action
+# §name
+# §type
+# §desc
+# §add
+# §bind
+# §unbind
+# §rebind
+# §code
+# §ls
+#
 ################################################################################
 
 function §action {
@@ -164,7 +175,7 @@ function §code {
 	local id
 	for id in $@; do
 	    if actions_seek $id; then
-		actions_code
+		action_code
 	    fi
 	done
     else
@@ -190,5 +201,32 @@ function §ls {
 	actions_pretty_print
     fi
 }
+
+# completion
+
+_bashrun_actions() 
+{
+    local cur prev opts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    opts="$(actions_names)"
+
+    if [[ ${cur} == * ]] ; then
+        COMPREPLY=( $(compgen -W "${opts}" ${cur}) )
+        return 0
+    fi
+}
+
+complete -F _bashrun_actions §action
+complete -F _bashrun_actions §name
+complete -F _bashrun_actions §type
+complete -F _bashrun_actions §desc
+complete -F _bashrun_actions §bind
+complete -F _bashrun_actions §unbind
+complete -F _bashrun_actions §rebind
+complete -F _bashrun_actions §code
+complete -F _bashrun_actions §ls
+
 
 ################################################################################
