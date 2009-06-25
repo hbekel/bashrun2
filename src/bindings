@@ -3,8 +3,10 @@
 ################################################################################
 
 object "binding" "keyseq keymap action is_bound"  # keybindings
-object "keyname" "keyseq name"                    # user supplied keynames
 object "internal" "action keymap char"            # internal bindings
+object "keyname" "keyseq name"                    # user supplied keynames
+
+keyname_new '\x7f' 'C-<bsp>'
 
 bind "'\C-z\x01': accept-line"                    # accept-line                    
 

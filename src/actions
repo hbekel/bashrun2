@@ -2,7 +2,7 @@
 
 ################################################################################
 
-object "action" "name type desc deps"
+object "action" "name type desc deps help"
 
 ################################################################################
 
@@ -265,29 +265,35 @@ function action_pretty_print_deps {
 
 function action_pretty_print {
 
-    local action=$(action_name)
-    local id=''
+    local name=$(action_name)
+    local desc=$(action_desc)
+    local type=$(action_type)
+    local deps=$(action_deps)
+    local help=$(action_help)
     
-    print_line
-    echo "name: $(action_name)"
-    echo "desc: $(action_desc)"
-    echo "type: $(action_type)"
-    
-    if action_has_function?; then
-	echo "func: action-$action"
-    fi
+    # print header
+    print_line '' '-'
+    print_line "$name -> $desc ($type)" '-' '-1'
+    print_line '' '-'
 
-    if [[ $(action_deps) != '' ]]; then
+    if [[ $deps != '' ]]; then
 	echo -e "deps: $(action_pretty_print_deps)"
     fi
     echo
 
+    local id=''
     if action_is_bound?; then
 	bindings_seek_start
-	for id in $(bindings_select action $action); do
+	for id in $(bindings_select action $name); do
 	    bindings_seek --next $id 
-	    echo "binding: $(ks2kn $(binding_keyseq)) ($(binding_keymap)-mode)"
+	    echo -ne '\t'
+	    echo "$(ks2kn $(binding_keyseq)) ($(binding_keymap)-mode)"
 	done
+	echo
+    fi
+
+    if [[ "$help" != '' ]]; then
+	echo "$help"
 	echo
     fi
 }
@@ -310,8 +316,20 @@ function action_code {
     local desc=$(action_desc)
     local type=$(action_type)
     local deps=$(action_deps)
-    local id=''
+    local help=$(action_help)
 
+    # print header
+    print_line '' '#'
+    print_line "$desc" '#' '-1'
+    print_line '' '#'
+    echo
+
+    # print function
+    if action_has_function?; then
+	function_code "action-$name"
+    fi
+
+    # add 
     local code="$code §add"
     code="$code '$name'"
 
@@ -333,17 +351,10 @@ function action_code {
 
     [[ "$deps" != "" ]] && code="$code '$deps'"
     
-    # print header
-    print_line '' '#'
-    print_line "$desc" '#' '-1'
-    print_line '' '#'
-    echo
-
-    if action_has_function?; then
-	function_code "action-$name"
-    fi
     echo $code
 
+    # bind
+    local id=''
     if action_is_bound?; then
 	bindings_seek_start
 	for id in $(bindings_select action $name); do
@@ -351,11 +362,20 @@ function action_code {
 	    binding_code
 	done
     fi
+
+    # help
+    echo "§help '$name' \"$help\""
 }
 
 function actions_code {
     
     local saved="$(action_name)"
+
+    # print header
+    print_line '' '#'
+    print_line "BASHRUN_ACTIONS" '#' '-1'
+    print_line '' '#'
+    echo
 
     actions_seek_start
     while actions_have_next; do
