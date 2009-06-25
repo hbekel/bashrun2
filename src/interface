@@ -21,22 +21,6 @@
 ################################################################################
 
 function §action {
-    local action=$1
-    if actions_seek $action; then
-	shift
-    else
-	action=$(action_name)
-    fi
-
-    if actions_seek $action; then
-	action_pretty_print
-    else
-	echo "error: no such action: $action"
-	return 1
-    fi
-}
-
-function §make {
     actions_add "$1" "$2" "$3" "$4"
 
     if [[ "$1" == '' ]]; then
