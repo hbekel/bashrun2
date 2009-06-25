@@ -14,6 +14,9 @@ function bashrun_engine_init {
 
     # setup
     bashrun_prepare_directories
+
+    # get current readline bindings
+    readline_get_bindings
     
     # escape from trap in interactive mode
     PROMPT_COMMAND="trap DEBUG; $PROMPT_COMMAND"

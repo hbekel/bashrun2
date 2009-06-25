@@ -1,0 +1,38 @@
+# -*- shell-script -*-
+
+################################################################################
+
+BASHRUN_READLINE=()
+
+function readline_get_bindings {
+
+    local restore=$IFS
+    IFS=$'\n' 
+    BASHRUN_READLINE=($(bind -p; bind -s))
+    IFS=$restore
+}
+
+function readline_get_binding {
+
+    local keyseq=$1
+    local line='';
+    
+    for (( i=0; i<${#BASHRUN_READLINE[@]}; i+=1 )); do
+	line=${BASHRUN_READLINE[$i]}
+	[[ "$line" =~ ^# ]] && continue
+
+	# echo "if [[ $line =~ ^.$keyseq.: ]]; then"
+	if [[ "$line" =~ .?${keyseq}\" ]]; then # FIXME: regexp ^ ?!
+	    echo $line
+	    return 0
+	fi
+    done    
+}
+
+function readline_rebind {
+    local keyseq=$1
+    local keymap=${2:-emacs}
+    local binding="-m $keymap '$(readline_get_binding $keyseq)'"
+    bashrun_log "bind $binding"
+    eval "bind $binding"
+}
