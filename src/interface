@@ -128,7 +128,6 @@ function §help {
 
     if actions_seek $action; then
 	if [[ "$numargs" == "2" ]]; then
-	    bashrun_log "setting help: $help"
 	    action_set_help "$help"
 	else
 	    echo "$(action_help)"
@@ -226,6 +225,14 @@ function §ls {
     else
 	actions_pretty_print
     fi
+}
+
+function §handler {
+    handler_new "$1" "$2"
+}
+
+function §bookmark {
+    bashrun_log "not implemented: bookmark_new '$1'"
 }
 
 # completion

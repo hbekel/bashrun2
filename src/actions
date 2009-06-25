@@ -330,7 +330,7 @@ function action_code {
     fi
 
     # add 
-    local code="$code §add"
+    local code="$code §make"
     code="$code '$name'"
 
     if [[ "$desc" != "$name" && "$desc" != '' ]]; then
@@ -353,6 +353,11 @@ function action_code {
     
     echo $code
 
+    # help
+    if [[ "$help" != '' ]]; then
+	echo "§help '$name' \"$help\""
+    fi
+
     # bind
     local id=''
     if action_is_bound?; then
@@ -362,9 +367,6 @@ function action_code {
 	    binding_code
 	done
     fi
-
-    # help
-    echo "§help '$name' \"$help\""
 }
 
 function actions_code {
