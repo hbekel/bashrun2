@@ -219,8 +219,8 @@ function action_run_function {
 
     function handlers { handlers_apply; }
     function rules { :; }
-    function terminal { :; }
-    function root { :; }
+    function terminal { bashrun_command_wrap_in_terminal; }
+    function user { bashrun_command_wrap_in_su ${1:-root}; }
 
     action-$(action_name)
     
@@ -232,7 +232,7 @@ function action_run_function {
 	handlers \
 	rules \
 	terminal \
-	root
+	user
 }
 
 function action_pretty_print_deps {

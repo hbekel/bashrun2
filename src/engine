@@ -124,7 +124,7 @@ function bashrun_engine_execute {
     bashrun_prepare_logfile
 
     # execute command
-    if [ "$BASHRUN_EXECMODE" == "&" ]; then
+    if [[ "$BASHRUN_EXECMODE" == "&" ]]; then
 	/bin/bash -c "$BASHRUN_COMMAND >> $BASHRUN_LOGFILE 2>&1 &" > /dev/null 2>&1
     else
 	# this can only be a su command (so far)

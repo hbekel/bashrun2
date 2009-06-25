@@ -109,3 +109,44 @@ function bashrun_command_word_is_builtin? {
     bashrun_log "$word: no"
     return 1
 }
+
+function bashrun_command_wrap_in_su {
+
+    local user=${1:-root}
+
+    # COMMAND goes into su -c '' -> escape single quotes
+    BASHRUN_COMMAND=${BASHRUN_COMMAND//\'/\\\'}
+
+    # run the command itself in the background
+    if [[ ! "$BASHRUN_COMMAND" =~ \&\ *$ ]]; then
+	BASHRUN_COMMAND="su $user -c '$BASHRUN_COMMAND &> /dev/null &'"
+    fi
+    # run the su part (passwort entry) in foreground 
+    BASHRUN_EXECMODE="" 
+    bashrun_log "$BASHRUN_COMMAND"
+}
+
+function bashrun_command_wrap_in_terminal {
+
+    local xterm=''
+
+    bashrun_command_get_word
+
+    if [[ "$BASHRUN_COMMAND_WORD" == "xterm" ]]; then
+	bashrun_log "already in terminal"
+	return 1
+    fi
+
+    # COMMAND goes into xterm -e "" -> escape double quotes
+    BASHRUN_COMMAND=${BASHRUN_COMMAND//\"/\\\"}
+
+    # command template
+    xterm="xterm -e \"\$1\""
+    
+    # insert
+    BASHRUN_COMMAND=${xterm/\$1/$BASHRUN_COMMAND}
+
+    bashrun_log "$BASHRUN_COMMAND"
+
+    return 0
+}

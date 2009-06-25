@@ -43,7 +43,7 @@ function handlers_apply {
 		local k=0
 		for(( k=0; k<${#tests}; k++ )); do
 		    local CHAR=${tests:$k:1}
-		    if [ "$CHAR" == "!" ]; then
+		    if [[ "$CHAR" == "!" ]]; then
 			test="!"
 			continue
 		    else
