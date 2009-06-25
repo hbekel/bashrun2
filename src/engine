@@ -6,10 +6,18 @@ BASHRUN_ACTION=''
 BASHRUN_EXECMODE=''
 
 BASHRUN_LOGFILE=$BASHRUN_CACHE_HOME/log
+BASHRUN_PIDFILE=$BASHRUN_CACHE_HOME/pid
+BASHRUN_PONGFILE=$BASHRUN_CACHE_HOME/pong
 
 function bashrun_engine_init {
     
     bashrun_log "initializing..."
+
+    # shutdown on exit
+    trap bashrun_engine_shutdown EXIT
+
+    # write pidfile
+    echo $$ > $BASHRUN_PIDFILE
 
     # setup
     bashrun_prepare_directories
@@ -135,6 +143,11 @@ function bashrun_engine_execute {
 }
 
 function bashrun_engine_shutdown { 
+
+    # remove pidfile if ours
+    if [[ "$$" == $(cat $BASHRUN_PIDFILE) ]]; then
+	rm $BASHRUN_PIDFILE
+    fi
 
     # remove untrap from prompt command
     PROMPT_COMMAND=${PROMPT_COMMAND/trap DEBUG\;/}
