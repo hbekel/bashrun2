@@ -16,8 +16,8 @@ function bashrun_engine_init {
     # shutdown on exit
     trap bashrun_engine_shutdown EXIT
 
-    # write pidfile
-    echo $$ > $BASHRUN_PIDFILE
+    # append pid to shared pidfile
+    echo $$ >> $BASHRUN_PIDFILE
 
     # setup
     bashrun_prepare_directories
@@ -144,10 +144,16 @@ function bashrun_engine_execute {
 
 function bashrun_engine_shutdown { 
 
-    # remove pidfile if ours
-    if [[ "$$" == $(cat $BASHRUN_PIDFILE) ]]; then
-	rm $BASHRUN_PIDFILE
-    fi
+    # remove this pid from the pidfile
+    local pid=''
+    echo -n '' > $BASHRUN_PIDFILE.tmp
+
+    for pid in $(cat $BASHRUN_PIDFILE); do
+	if [[ "$pid" != "$$" ]]; then
+	    echo $pid > $BASHRUN_PIDFILE.tmp
+	fi
+    done
+    mv $BASHRUN_PIDFILE.tmp $BASHRUN_PIDFILE
 
     # remove untrap from prompt command
     PROMPT_COMMAND=${PROMPT_COMMAND/trap DEBUG\;/}
@@ -156,4 +162,6 @@ function bashrun_engine_shutdown {
     shopt -u extdebug
 
     bashrun_remote_cleanup    
+
+    bashrun_log "exit"
 }    
