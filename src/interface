@@ -130,8 +130,7 @@ function §help {
 	if [[ "$numargs" == "2" ]]; then
 	    action_set_help "$help"
 	else
-	    echo "$(action_help)"
-	    echo
+	    §ls $action
 	fi
     else
 	echo "error: no such action: $action"
@@ -282,6 +281,7 @@ function bashrun_action_interface_disable {
 	    §handlers \
 	    §rules \
 	    §terminal \
+	    §help \
 	    §user
 }
 
