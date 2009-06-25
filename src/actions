@@ -315,16 +315,20 @@ function action_code {
     local code="$code §add"
     code="$code '$name'"
 
-    if [[ "$desc" != "$name" ]]; then
+    if [[ "$desc" != "$name" && "$desc" != '' ]]; then
 	code="$code '$desc'"
     else
-	code="$code ''"
+	if [[ "$type" != 'trap-and-launch' ]]; then
+	    code="$code ''"
+	fi
     fi
     
     if [[ "$type" != "trap-and-launch" ]]; then
 	code="$code '$type'"
     else
-	code="$code ''"
+	if [[ "$deps" != "" ]]; then
+	    code="$code ''"	
+	fi
     fi	
 
     [[ "$deps" != "" ]] && code="$code '$deps'"

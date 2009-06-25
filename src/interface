@@ -218,15 +218,15 @@ _bashrun_actions()
     fi
 }
 
-complete -F _bashrun_actions §action
-complete -F _bashrun_actions §name
-complete -F _bashrun_actions §type
-complete -F _bashrun_actions §desc
-complete -F _bashrun_actions §bind
-complete -F _bashrun_actions §unbind
-complete -F _bashrun_actions §rebind
-complete -F _bashrun_actions §code
-complete -F _bashrun_actions §ls
+complete -F _bashrun_actions §action \
+    §name \
+    §type \
+    §desc \
+    §bind \
+    §unbind \
+    §rebind \
+    §code \
+    §ls
 
 
 ################################################################################
