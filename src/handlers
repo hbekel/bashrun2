@@ -113,9 +113,13 @@ function handler_code {
 
 function handlers_code {
 
+    print_header 'BASHRUN_HANDLERS' '#'
+
     handlers_seek_start
     while handlers_have_next; do
 	handler_code
 	handlers_next
     done
+    handlers_seek_start
+    echo
 }

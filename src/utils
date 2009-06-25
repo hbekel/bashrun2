@@ -120,6 +120,16 @@ function print_line {
     echo
 }
 
+function print_header {
+    
+    local title="$1"
+    local char=${2:-#}
+    print_line '' "$char"
+    print_line "$title" "$char" '-1'
+    print_line '' "$char"
+    echo
+}
+
 function function_code {
     echo "$(type $1 | sed '1 d')"
 }

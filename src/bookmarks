@@ -16,9 +16,13 @@ function bookmarks_code {
 
     local bookmark=''
     local i=0
+
+    print_header "BASHRUN_BOOKMARKS" "#"
+
     for ((i=0; i<${#_BOOKMARKS[@]}; i++)); do
 	bookmark=${_BOOKMARKS[$i]}
 	bookmark=${bookmark//\'/\\\'}
 	echo "§bookmark '$bookmark'"
     done
+    echo
 }

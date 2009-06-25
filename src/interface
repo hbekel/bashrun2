@@ -192,8 +192,10 @@ function §rebind {
 function §code {
 
     if [[ $# -gt 0 ]]; then
-	if [[ "$1" == "--all" ]]; then
-	    actions_code
+	if ! actions_seek $1; then
+	    [[ "$1" == "--handlers" || "$1" == "--all" ]] && handlers_code
+	    [[ "$1" == "--bookmarks" || "$1" == "--all" ]] && bookmarks_code
+	    [[ "$1" == "--actions" || "$1" == "--all" ]] && actions_code
 	    return
 	fi
 
@@ -204,7 +206,8 @@ function §code {
 	    fi
 	done
     else
-	actions_code
+	# default
+	§code --all
     fi
 }
 
