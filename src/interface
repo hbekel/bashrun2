@@ -279,13 +279,17 @@ _bashrun_actions()
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     opts="$(actions_names)"
 
-    if [[ ${cur} == * ]] ; then
-        COMPREPLY=( $(compgen -W "${opts}" ${cur}) )
+    if [[ ${cur} == * ]]; then
+	if [[ ${prev} =~ ^§ ]] ; then
+            COMPREPLY=( $(compgen -W "${opts}" ${cur}) )
+	else
+	    COMPREPLY=()	    
+	fi
         return 0
     fi
 }
 
-complete -F _bashrun_actions §action \
+complete -o default -F _bashrun_actions \
     §name \
     §type \
     §desc \
@@ -294,6 +298,5 @@ complete -F _bashrun_actions §action \
     §rebind \
     §code \
     §ls
-
 
 ################################################################################
