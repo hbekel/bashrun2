@@ -328,7 +328,7 @@ function action_code {
     fi
 
     # add 
-    local code="$code §make"
+    local code="$code §action"
     code="$code '$name'"
 
     if [[ "$desc" != "$name" && "$desc" != '' ]]; then

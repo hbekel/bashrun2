@@ -19,7 +19,7 @@ function handlers_apply {
     
     # applies matching handlers to BASHRUN_BASHRUN_COMMAND
 
-    bashrun_log "trying to match handlers..." "info"
+    bashrun_log "trying to match handlers..."
     
     handlers_seek_start
     while handlers_have_next; do

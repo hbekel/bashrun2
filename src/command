@@ -51,7 +51,7 @@ function bashrun_command_get_word {
     word=$(echo $word | sed -r "s/^ +//;s/ +$//")
     word=$(echo $word | sed -r "s/^\\(+//;s/\\)+$//")
 
-    BASHRUN_COMMAND_WORD=$word
+    BASHRUN_COMMAND_WORD="$word"
 }
 
 function bashrun_command_word_is_executable? {
@@ -70,7 +70,7 @@ function bashrun_command_word_is_executable? {
 
     if [[ "$type" == "function" ]]; then
 	if bashrun_command_word_is_bookmark?; then
-	    bashrun_log "$word -> bookmark$ -> no"
+	    bashrun_log "$word -> bookmark -> no"
 	    return 1
 	else
 	    bashrun_log "$word -> $type -> yes"

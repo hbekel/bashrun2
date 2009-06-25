@@ -11,9 +11,6 @@ function bashrun_engine_init {
     
     bashrun_log "initializing..."
 
-    function bashrun? { return 0; }
-    export -f bashrun?
-
     # setup
     bashrun_prepare_directories
 
