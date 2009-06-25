@@ -34,6 +34,14 @@ function action_bind {
     if [[ "$action" == "pass" ]]; then
 	bind="-m $keymap '\"$keyseq\": accept-line'"
 	eval "bind $bind"
+	# create or set binding
+	if bindings_seek $keyseq $keymap; then
+	    binding_set_action $action
+	    binding_set_keymap $keymap
+	    binding_set_is_bound 1 
+	else
+	    binding_new $keyseq $keymap $action 1
+	fi    
 	return 0
     fi
 
@@ -200,6 +208,29 @@ function action_is_available? {
     return $result
 }
 
+function action_uses {
+
+    local code="$(type action-$(action_name))"
+    local applies=""
+    local methods=""
+    methods="$methods §command §line §handlers §rules §terminal §user"
+
+    local method=''
+    for method in $methods; do
+	if [[ "$code" =~ ${method} ]]; then
+	    if [[ "$method" == "§user" ]]; then
+		if [[ "$code" =~ §user\ +?([^\}\;]+) ]]; then 
+		    applies="$applies, user:${BASH_REMATCH[1]}"
+		fi
+	    else
+		applies="$applies, ${method/§/}"
+	    fi
+	fi
+    done
+    applies="${applies:2}"
+    echo "$applies"
+}
+
 function action_run_function {
 
     bashrun_action_interface_enable
@@ -236,12 +267,19 @@ function action_pretty_print {
     local type=$(action_type)
     local deps=$(action_deps)
     local help=$(action_help)
+    local uses=$(action_uses)
     
     # print header
-    print_header "$name -> $desc ($type)" "-"
+    print_header "$name -> $desc" "-"
+
+    echo "type: $type"
 
     if [[ $deps != '' ]]; then
 	echo -e "deps: $(action_pretty_print_deps)"
+    fi
+
+    if [[ "$uses" != '' ]]; then
+	echo "uses: $uses"
     fi
     echo
 

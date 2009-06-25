@@ -240,7 +240,7 @@ function §bookmark {
 
 function bashrun_action_interface_enable {
 
-    function command {
+    function §command {
 	if [[ "$#" == "0" ]]; then
 	    echo $BASHRUN_COMMAND
 	else
@@ -249,40 +249,40 @@ function bashrun_action_interface_enable {
 	fi
     }
 
-    function line { echo $BASHRUN_COMMAND_LINE; }
+    function §line { echo $BASHRUN_COMMAND_LINE; }
 
-    function is_executable {
+    function §is_executable {
 	bashrun_command_word_is_executable?
 	return $?
     }
 
-    function is_builtin {
+    function §is_builtin {
 	bashrun_command_word_is_builtin?
 	return $?
     }
 
-    function is_bookmark {
+    function §is_bookmark {
 	bashrun_command_word_is_bookmark?
     }
     
-    function handlers { handlers_apply; }
-    function rules { :; }
-    function terminal { bashrun_command_wrap_in_terminal; }
-    function user { bashrun_command_wrap_in_su ${1:-root}; }
+    function §handlers { handlers_apply; }
+    function §rules { :; }
+    function §terminal { bashrun_command_wrap_in_terminal; }
+    function §user { bashrun_command_wrap_in_su ${1:-root}; }
 }
 
 function bashrun_action_interface_disable {
 
         unset -f \
-	    command \
-	    line \
-	    is_executable \
-	    is_builtin \
-	    is_bookmark \
-	    handlers \
-	    rules \
-	    terminal \
-	    user
+	    §command \
+	    §line \
+	    §is_executable \
+	    §is_builtin \
+	    §is_bookmark \
+	    §handlers \
+	    §rules \
+	    §terminal \
+	    §user
 }
 
 # completion
