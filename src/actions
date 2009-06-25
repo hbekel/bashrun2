@@ -104,31 +104,37 @@ function action_bind {
 function action_unbind {
     
     local action=$(action_name)
-
     local keymap=${1:-emacs}
-    local keyseq=''
+    local keyseq=$2
     local unbind=''
     local found=0
     local id=''
-    
-    # find the next bound binding
-    for id in $(bindings_select action $action); do
-	if bindings_seek $id $keymap; then
-	    if binding_is_bound?; then
-		found=1
-		break
+
+    bashrun_log "'$keyseq'"
+
+    if [[ "$keyseq" == '' ]]; then
+        # find the next bound binding
+	for id in $(bindings_select action $action); do
+	    if bindings_seek $id $keymap; then
+		if binding_is_bound?; then
+		    found=1
+		    break
+		fi
 	    fi
-	fi
-    done
-    [[ found -eq 0 ]] && return 1
-    
-    # get the keyseq that it's bound to
-    keyseq=$(uks $(binding_keyseq))
+	done
+	[[ found -eq 0 ]] && return 1
+	
+        # get the keyseq that it's bound to
+	keyseq=$(uks $(binding_keyseq))
+    fi
     
     # unbind keyseq
     unbind="-m $keymap -r '$keyseq'"
     bashrun_log "$action from $keyseq ($keymap)"
     eval "bind $unbind"
+
+    # rebind original readline binding
+    readline_rebind "$keyseq" "$keymap"
 
     # clear binding
     binding_set_is_bound 0

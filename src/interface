@@ -140,9 +140,9 @@ function §unbind {
 
     local action=$1
     local keymap=$2
-
+    local keyseq=$3
     if actions_seek $action; then
-	action_unbind $keymap
+	action_unbind "$keymap" "$keyseq"
 	return $?
     else
 	echo "error: no such action: $action"
