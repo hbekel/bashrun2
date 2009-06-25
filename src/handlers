@@ -99,3 +99,23 @@ function handlers_apply {
 	handlers_next
     done
 }
+
+function handler_code {
+
+    local pattern=$(handler_pattern)
+    local string=$(handler_string)
+
+    pattern=${pattern//\'/\\\'}
+    string=${string//\'/\\\'}
+
+    echo "§handler '$pattern'" "'$string'"
+}
+
+function handlers_code {
+
+    handlers_seek_start
+    while handlers_have_next; do
+	handler_code
+	handlers_next
+    done
+}

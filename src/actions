@@ -223,6 +223,10 @@ function action_run_function {
 	return $?
     }
 
+    function bookmark? {
+	bashrun_command_word_is_bookmark?
+    }
+    
     function handlers { handlers_apply; }
     function rules { :; }
     function terminal { bashrun_command_wrap_in_terminal; }

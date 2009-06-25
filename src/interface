@@ -232,7 +232,7 @@ function §handler {
 }
 
 function §bookmark {
-    bashrun_log "not implemented: bookmark_new '$1'"
+    bookmark_new "$1"
 }
 
 # completion

@@ -1,0 +1,24 @@
+# -*- shell-script -*-
+
+################################################################################
+
+_BOOKMARKS=()
+
+################################################################################
+
+function bookmark_new {
+
+    _BOOKMARKS[${#_BOOKMARKS[@]}]="$1"
+    eval "function $1 { :; }"
+}
+
+function bookmarks_code {
+
+    local bookmark=''
+    local i=0
+    for ((i=0; i<${#_BOOKMARKS[@]}; i++)); do
+	bookmark=${_BOOKMARKS[$i]}
+	bookmark=${bookmark//\'/\\\'}
+	echo "§bookmark '$bookmark'"
+    done
+}

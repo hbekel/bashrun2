@@ -69,7 +69,7 @@ function bashrun_command_word_is_executable? {
     fi
 
     if [[ "$type" == "function" ]]; then
-	if is_bookmark?; then
+	if bashrun_command_word_is_bookmark?; then
 	    bashrun_log "$word -> bookmark$ -> no"
 	    return 1
 	else
@@ -107,6 +107,15 @@ function bashrun_command_word_is_builtin? {
 	return 0
     fi
     bashrun_log "$word: no"
+    return 1
+}
+
+function bashrun_command_word_is_bookmark? {
+
+    local bookmark=''
+    for bookmark in ${_BOOKMARKS[@]}; do
+	[[ "$BASHRUN_COMMAND_WORD" == "$bookmark" ]] && return 0
+    done;
     return 1
 }
 
