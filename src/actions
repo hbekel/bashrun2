@@ -202,47 +202,9 @@ function action_is_available? {
 
 function action_run_function {
 
-    function command {
-	if [[ "$#" == "0" ]]; then
-	    echo $BASHRUN_COMMAND
-	else
-	    BASHRUN_COMMAND="$@"
-	    bashrun_log "$BASHRUN_COMMAND"
-	fi
-    }
-
-    function line { echo $BASHRUN_COMMAND_LINE; }
-
-    function executable? {
-	bashrun_command_word_is_executable?
-	return $?
-    }
-
-    function builtin? {
-	bashrun_command_word_is_builtin?
-	return $?
-    }
-
-    function bookmark? {
-	bashrun_command_word_is_bookmark?
-    }
-    
-    function handlers { handlers_apply; }
-    function rules { :; }
-    function terminal { bashrun_command_wrap_in_terminal; }
-    function user { bashrun_command_wrap_in_su ${1:-root}; }
-
+    bashrun_action_interface_enable
     action-$(action_name)
-    
-    unset -f \
-	command \
-	line \
-	executable? \
-	builtin? \
-	handlers \
-	rules \
-	terminal \
-	user
+    bashrun_action_interface_disable
 }
 
 function action_pretty_print_deps {
@@ -276,9 +238,7 @@ function action_pretty_print {
     local help=$(action_help)
     
     # print header
-    print_line '' '-'
-    print_line "$name -> $desc ($type)" '-' '-1'
-    print_line '' '-'
+    print_header "$name -> $desc ($type)" "-"
 
     if [[ $deps != '' ]]; then
 	echo -e "deps: $(action_pretty_print_deps)"
@@ -322,11 +282,7 @@ function action_code {
     local deps=$(action_deps)
     local help=$(action_help)
 
-    # print header
-    print_line '' '#'
-    print_line "$desc" '#' '-1'
-    print_line '' '#'
-    echo
+    print_header "$desc" "#"
 
     # print function
     if action_has_function?; then
@@ -377,12 +333,8 @@ function actions_code {
     
     local saved="$(action_name)"
 
-    # print header
-    print_line '' '#'
-    print_line "BASHRUN_ACTIONS" '#' '-1'
-    print_line '' '#'
-    echo
-
+    print_header "BASHRUN_ACTIONS" "#"
+ 
     actions_seek_start
     while actions_have_next; do
 	action_code
