@@ -230,10 +230,28 @@ function action_uses {
 }
 
 function action_run_function {
+    
+    local action=$(action_name)
 
+    local retval
+    declare -i retval
+
+    # enable the action interface
     bashrun_action_interface_enable
+    
+    # run the action function
     action-$(action_name)
+    retval=$?
+
+    # disable the action interface
     bashrun_action_interface_disable
+
+    local msg="action-$action returned $retval ->"
+    [[ retval -eq 0 ]] && msg="$msg execute"
+    [[ retval -eq 1 ]] && msg="$msg done"
+    bashrun_log "$msg"
+
+    return $retval
 }
 
 function action_pretty_print_deps {

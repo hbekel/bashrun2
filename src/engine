@@ -130,7 +130,10 @@ function bashrun_engine_launch {
 
     if actions_seek $BASHRUN_ACTION; then
 	if action_has_function?; then
-	    action_run_function
+	    if ! action_run_function; then
+		bashrun_engine_busy 0
+		return 0
+	    fi
 	fi
     fi
 
