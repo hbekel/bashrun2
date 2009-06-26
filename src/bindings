@@ -21,7 +21,7 @@ function binding_is_bound? {
 
 function binding_code {
     
-    local keyseq=$(uks $(binding_keyseq))
+    local keyseq=$(binding_keyseq)
     local keymap=$(binding_keymap)
     local action=$(binding_action)
 

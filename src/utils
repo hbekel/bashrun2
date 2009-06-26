@@ -65,7 +65,7 @@ function bashrun_prepare_logfile {
 function ks2kn {
     local keyseq=$1
 
-    if keynames_seek $(qks $keyseq); then
+    if keynames_seek "$keyseq"; then
 	echo $(keyname_name)
 	return 0
     fi
@@ -84,22 +84,6 @@ function ks2kn {
 	keyname=${keyname/$enter/-$enter}
     fi
     echo "$keyname"
-}
-
-function qks { # qoute keyseq
-    local keyseq=$1
-    keyseq=${keyseq//\\C/<ctrl>}
-    keyseq=${keyseq//\\e/<meta>}
-    keyseq=${keyseq//\\M/<meta>}
-    echo "$keyseq"
-}
-
-function uks { # unquote keyseq
-    local keyseq=$1
-    keyseq=${keyseq//<ctrl>/\\C}
-    keyseq=${keyseq//<meta>/\\e}
-    keyseq=${keyseq//<meta>/\\M}
-    echo "$keyseq"
 }
 
 function print_line {

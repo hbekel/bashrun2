@@ -89,8 +89,6 @@ function action_bind {
     bashrun_log "usr: $action ($type) -> $keyname ($keymap)"
     eval "bind $bind"
 
-    keyseq=$(qks $keyseq)
-    
     # create or set binding
     if bindings_seek $keyseq $keymap; then
 	binding_set_action $action
@@ -133,7 +131,7 @@ function action_unbind {
 	[[ found -eq 0 ]] && return 1
 	
         # get the keyseq that it's bound to
-	keyseq=$(uks $(binding_keyseq))
+	keyseq=$(binding_keyseq)
     fi
     
     # unbind keyseq
@@ -171,7 +169,7 @@ function action_rebind {
     [[ found -eq 0 ]] && return 1
 
     # get the keyseq that it was bound to before
-    keyseq=$(uks $(binding_keyseq))
+    keyseq=$(binding_keyseq)
 
     action_bind $keyseq
     return $?
