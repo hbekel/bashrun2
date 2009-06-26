@@ -4,9 +4,10 @@
 
 BASHRUN_ACTION=''
 BASHRUN_EXECMODE=''
+BASHRUN_ENGINE_BUSY=0
 
 BASHRUN_LOGFILE=$BASHRUN_CACHE_HOME/log
-BASHRUN_PIDFILE=$BASHRUN_CACHE_HOME/pid
+BASHRUN_PIDFILE=$BASHRUN_CACHE_HOME/pids
 BASHRUN_PONGFILE=$BASHRUN_CACHE_HOME/pong
 
 function bashrun_engine_init {
@@ -42,7 +43,14 @@ function bashrun_engine_action {
     local command="$3"    # command override
 
     if actions_seek $action; then
-	
+
+	# wait until engine is ready
+	while bashrun_engine_busy?; do
+	    sleep 0.25
+	done
+
+	bashrun_engine_busy 1
+
 	BASHRUN_ACTION=$action
 
 	# type override
@@ -72,6 +80,7 @@ function bashrun_engine_action {
 		if action_has_function?; then
 		    action_run_function
 		fi
+		bashrun_engine_busy 0
 		;;
 	    *)
 		bashrun_log "no such action type: $type"
@@ -100,6 +109,7 @@ function bashrun_engine_trap {
     # pass through trap builtin
     if [[ "$BASHRUN_COMMAND" =~ ^trap ]]; then
 	bashrun_log "trap is removed"
+	bashrun_engine_busy 0
 	return 0
     fi
     bashrun_log "$BASHRUN_COMMAND"
@@ -125,8 +135,14 @@ function bashrun_engine_launch {
     fi
 
     bashrun_log "$BASHRUN_COMMAND"
+    
+    if bashrun_command_word_is_executable?; then
+	bashrun_engine_execute
+    else
+	bashrun_log "not executable."
+    fi
 
-    bashrun_engine_execute
+    bashrun_engine_busy 0
 }
 
 function bashrun_engine_execute {
@@ -140,6 +156,15 @@ function bashrun_engine_execute {
 	# this can only be a su command (so far)
 	/bin/bash -c "$BASHRUN_COMMAND"
     fi
+}
+
+function bashrun_engine_busy {
+    BASHRUN_ENGINE_BUSY=$1
+}
+
+function bashrun_engine_busy? {
+    [[ "$BASHRUN_ENGINE_BUSY" == "1" ]]
+    return $?
 }
 
 function bashrun_engine_shutdown { 
