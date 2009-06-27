@@ -2,7 +2,7 @@
 
 ################################################################################
 
-object "handler" "pattern string"
+object "handler" "name pattern string" ""
 
 ################################################################################
 
@@ -11,7 +11,7 @@ function handlers_add {
     if handlers_seek $1; then
 	[[ $2 != '' ]] && handler_set_pattern "$2"
     else
-	handler_new "$1" "$2"
+	handler_new "$1" "$2" "$3"
     fi
 }
 
