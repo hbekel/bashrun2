@@ -290,6 +290,7 @@ _bashrun_actions()
 }
 
 complete -o default -F _bashrun_actions \
+    §action \
     §name \
     §type \
     §desc \
