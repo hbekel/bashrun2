@@ -167,6 +167,10 @@ function objects_all {
 
 # "instance methods" (always operate on the object at the current position) ####
 
+function object__id {
+    echo ${_OBJECTS[$_OBJECTS_POSITION]}
+}
+
 function object_new {
     local i
     
@@ -176,10 +180,6 @@ function object_new {
     (( _OBJECTS_SIZE+=1 ))
     _OBJECTS_MODIFIED=1
     objects_seek $1
-}
-
-function object__id {
-    echo ${_OBJECTS[$_OBJECTS_POSITION]}
 }
 
 function object_get { # key -> "value"
