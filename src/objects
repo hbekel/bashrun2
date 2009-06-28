@@ -16,6 +16,7 @@ _OBJECTS_MODIFIED=0
 
 _OBJECTS_HAVE_INTERFACE=0
 _OBJECTS_INTERFACE=''
+_OBJECTS_INTERFACE_METHODS=''
 _OBJECTS_INTERFACE_OPTIONS_FOUND=()
 
 
@@ -177,6 +178,10 @@ function object_new {
     objects_seek $1
 }
 
+function object__id {
+    echo ${_OBJECTS[$_OBJECTS_POSITION]}
+}
+
 function object_get { # key -> "value"
     local key=$1
     local index=-1
@@ -289,16 +294,14 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	    return 0
 	fi
 
-	objects_interface_clear_options
-
-        # non-option arg 'id' -> seek id
-        # + --<id_key_name> (reader for prop)
-        # + --<methods>
-	
+	# parse commandline arguments	
 	local current=""
 	local left=()
+	local var=''
 	local expect='arg' # optarg or arg
 	
+	objects_interface_clear_options
+
 	while [[ "$1" != '' ]]; do
 	    
 	    if [[ "$1" =~ ^-- ]]; then
@@ -308,66 +311,100 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 		expect='optarg'
 	    else
 		if [[ "$expect" == "optarg" ]]; then
-		    eval "_OBJECTS_INTERFACE_OPTION_$current=\"$1\""
-		    expect='arg'
+		    var="_OBJECTS_INTERFACE_OPTION_$current" 
+		    eval "$var=\"${!var} $1\""
 		else
 		    left[${#left[@]}]="$1"
 		fi
 	    fi
 	    shift
 	done
+
+	# trim leading whitespace from values
+	local func=''
+	for f in ${_OBJECTS_INTERFACE_OPTIONS_FOUND[@]}; do
+	    var="_OBJECTS_INTERFACE_OPTION_$f"
+	    eval "$var=\"${!var:1}\""
+	done
 	
-	# check for name in leftover args and seek
-	if [[ "${#left[@]}" != '0' ]]; then
-	    if objects_seek ${left[0]}; then
-		return 0
+	# --new
+	var="_OBJECTS_INTERFACE_OPTION_new"
+	if defined? $var; then
+	    if [[ ${!var} != '' ]]; then
+		if ! objects_seek ${!var}; then
+		    object_new "${!var}"
+		else
+		    echo "error: object exists: ${!var}"
+		fi
 	    else
-		echo "error: no such object: ${left[0]} (use '+object --new ${left[0]}' to create)"
+		echo "--new: syntax error: name argument missing"
 		return 1
 	    fi
 	fi
 
-        # process...
-	
-	local i=0
-	local key=''
-	local var=''
-	local val=''
+	# get objects       
+	local which=""
+	var="_OBJECTS_INTERFACE_OPTION_all"
 
-	# --new
-
-	var="_OBJECTS_INTERFACE_OPTION_new"
 	if defined? $var; then
-	    if [[ ${!var} != '' ]]; then
-		object_new "${!var}"
+	    which="$(objects_all)"
+	else
+	    if [[ "${#left[@]}" != "0" ]]; then
+		which="${left[@]}"
 	    else
-		echo "+object: syntax error: --new requires a name argument"
-		    return 1
+		which="$(object__id)"
 	    fi
 	fi
 	
-	# get/set attributes
+	local id=''
+	for id in $which; do
 
-	for ((i=0; i<${#_OBJECTS_KEYS[@]}; i++)); do
-	    key=${_OBJECTS_KEYS[$i]}
-	    var="_OBJECTS_INTERFACE_OPTION_$key"
-
-	    if defined? $var; then
-		val="${!var}"
-		if [[ "$val" == '' ]]; then
-		    echo $(object_get $key)
-		else
-		    object_set "$key" "$val"
-		fi
+	    # seek object
+	    if ! objects_seek $id; then
+		echo "warning: no such object: $id"
+		echo "         use '+object --new $id' to create it"
+		continue
 	    fi
-	done	
 
-	# code
-	var="_OBJECTS_INTERFACE_OPTION_code"
-	if defined? $var; then	    
-	    object_code
-	    return 0
-	fi
+	    local i=0
+	    local key=''
+	    local var=''
+	    local val=''
+	    
+	    # --code
+	    var="_OBJECTS_INTERFACE_OPTION_code"
+	    if defined? $var; then	    
+		object_code
+	    fi
+	    
+	    # call methods
+	    local method=''
+	    for method in $_OBJECTS_INTERFACE_METHODS; do
+		var="_OBJECTS_INTERFACE_OPTION_$method"
+		if defined? $var; then
+		    if $(type -t object_$method &> /dev/null); then
+			eval "object_$method ${!var}"
+		    else
+			echo "method object_$method not implemented."
+		    fi
+		fi
+	    done
+	    
+	    # get/set attributes
+	    for ((i=0; i<${#_OBJECTS_KEYS[@]}; i++)); do
+		key=${_OBJECTS_KEYS[$i]}
+		var="_OBJECTS_INTERFACE_OPTION_$key"
+		
+		if defined? $var; then
+		    val="${!var}"
+		    if [[ "$val" == '' ]]; then
+			echo $(object_get $key)
+		    else
+			object_set "$key" "$val"
+		    fi
+		fi
+	    done	
+	done
     }
 
     # completion

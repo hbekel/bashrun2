@@ -8,15 +8,15 @@ function object {
 
     local name=$1
     local keys=$2
-    local opts="nil"
+    local methods="nil"
     local have_interface=0
     
     if [[ "$#" == "3" ]]; then 
-	opts=${3}
+	methods=${3}
     fi
 
-    if [[ "$opts" != 'nil' ]]; then
-	local interface=(new code $keys $opts)
+    if [[ "$methods" != 'nil' ]]; then
+	local interface=(new code $keys $methods)
 	have_interface=1
         # prepare interface (prefix with --)
 
@@ -40,6 +40,7 @@ function object {
 	sed "s|_OBJECTS_KEYS=()|_OBJECTS_KEYS=($keys)|" | \
 	sed "s|_OBJECTS_INTERFACE=''|_OBJECTS_INTERFACE='$interface' |" | \
 	sed "s|_OBJECTS_HAVE_INTERFACE=0|_OBJECTS_HAVE_INTERFACE=$have_interface|" | \
+	sed "s|_OBJECTS_INTERFACE_METHODS=''|_OBJECTS_INTERFACE_METHODS='$methods'|" | \
 	sed "s|object|$name|g;s|OBJECT|$NAME|g" \
 	> $tmpfile
 
@@ -108,6 +109,6 @@ EOF
 }
 
 function defined? {
-    [[ ${!1-X} == ${!1-Y} ]]
+    [[ "${!1-X}" == "${!1-Y}" ]]
 }
 
