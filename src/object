@@ -54,8 +54,6 @@ function object {
     
     source $tmpfile
 
-    object_type "$name"
-
     return 0
 }
 
