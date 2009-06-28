@@ -6,15 +6,13 @@ object "action" "name type desc deps help" "bind unbind rebind"
 
 ################################################################################
 
-function actions_add {
+function_clone "action_new" "action_new_super"
 
-    if actions_seek $1; then
-	[[ $2 != '' ]] && action_set_desc "$2"
-	[[ $3 != '' ]] && action_set_type "$3"
-	[[ $4 != '' ]] && action_set_deps "$4"
-    else
-	action_new $1 ${3:-trap-and-launch} "${2:-$1}" "$4"
-    fi
+function action_new {
+
+    action_new_super "$1"
+    action_set_type "trap-and-launch"
+    action_set_desc "$1"
 }
 
 function action_bind {

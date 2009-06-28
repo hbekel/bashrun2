@@ -407,6 +407,10 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	done
     }
 
+    function +ls {
+	${_OBJ_CURRENT_TYPE}s_list 
+    }
+    
     # completion
     function _objects_ids {
 
