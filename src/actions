@@ -13,6 +13,16 @@ function action_new {
     _action_new "$1"
     action_set_type "trap-and-launch"
     action_set_desc "$1"
+
+    if ! type -t action-$1; then
+	eval "
+	action-$1 ()
+	{ 
+	    !executable? && +handlers
+	    +terminal
+	    return 0
+	}"
+    fi
 }
 
 function action_bind {
