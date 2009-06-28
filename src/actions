@@ -274,7 +274,7 @@ function action_pretty_print_deps {
     fi
 }
 
-function action_pretty_print {
+function action_list {
 
     local name=$(action_name)
     local desc=$(action_desc)
@@ -314,18 +314,6 @@ function action_pretty_print {
     fi
 }
 
-function actions_pretty_print {
-
-    local saved="$(action_name)"
-
-    actions_seek_start
-    while actions_next?; do
-	action_pretty_print
-	actions_next
-    done
-    actions_seek "$saved"
-}
-
 function action_code {
     
     local name=$(action_name)
@@ -336,41 +324,15 @@ function action_code {
 
     print_header "$desc" "#"
 
-    # print function
-    if action_function?; then
-	function_code "action-$name"
-    fi
-
-    # add 
-    local code="$code §action"
-    code="$code '$name'"
-
-    if [[ "$desc" != "$name" && "$desc" != '' ]]; then
-	code="$code '$desc'"
-    else
-	if [[ "$type" != 'trap-and-launch' ]]; then
-	    code="$code ''"
-	fi
-    fi
+    # add action 
+    echo "+action --new '$name'"
+    echo
+    echo "--desc '$desc'"
+    echo "--type '$type'"
+    [[ "$deps" != "" ]] && echo "--deps '$deps'"
+    [[ "$help" != "" ]] && echo "--help '$help'"
     
-    if [[ "$type" != "trap-and-launch" ]]; then
-	code="$code '$type'"
-    else
-	if [[ "$deps" != "" ]]; then
-	    code="$code ''"	
-	fi
-    fi	
-
-    [[ "$deps" != "" ]] && code="$code '$deps'"
-    
-    echo $code
-
-    # help
-    if [[ "$help" != '' ]]; then
-	echo "§help '$name' \"$help\""
-    fi
-
-    # bind
+    # bind action
     local id=''
     if action_bound?; then
 	bindings_seek_start
@@ -379,33 +341,12 @@ function action_code {
 	    binding_code
 	done
     fi
-}
+    echo
 
-function actions_code {
-    
-    local saved="$(action_name)"
-
-    print_header "BASHRUN_ACTIONS" "#"
- 
-    actions_seek_start
-    while actions_next?; do
-	action_code
-	actions_next
-	echo
-    done
-    actions_seek "$saved"
-}
-
-function actions_names {
-
-    local saved="$(action_name)"
-
-    actions_seek_start
-    while actions_next?; do
-	echo -n "$(action_name) "
-	actions_next
-    done
-    actions_seek "$saved"
+    # function
+    if action_function?; then
+	function_code "action-$name"
+    fi
     echo
 }
 

@@ -25,12 +25,10 @@ function binding_code {
     local keymap=$(binding_keymap)
     local action=$(binding_action)
 
-    local code="§bind"
-    code="$code '$action'"
-    code="$code '$keyseq'"
-    [[ "$keymap" != 'emacs' ]] && code="$code '$keymap'"
+    local args="'$keyseq'"
+    [[ "$keymap" != 'emacs' ]] && args="$args '$keymap'"
     
-    echo $code
+    echo "--bind $args"
 }
 
 

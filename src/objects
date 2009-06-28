@@ -11,6 +11,7 @@ _OBJECTS=()
 _OBJECTS_KEYS=()
 _OBJECTS_WIDTH=${#_OBJECTS_KEYS[@]}
 _OBJECTS_POSITION=0
+_OBJECTS_NEXT=0
 _OBJECTS_SIZE=0
 _OBJECTS_MODIFIED=0
 
@@ -27,6 +28,7 @@ function objects_seek { # args
     local num_args=$#
     local start=0
     local saved=$_OBJECTS_POSITION
+    local next=0
     local i=0
 
     if [[ num_args -eq 0 ]]; then
@@ -34,10 +36,8 @@ function objects_seek { # args
     fi
 
     if [[ "$1" == "--next" ]]; then	
-	(( start = _OBJECTS_POSITION + _OBJECTS_WIDTH ))
-	if (( start > _OBJECTS_SIZE*_OBJECTS_WIDTH )); then
-	    start=0
-	fi
+	next=1
+	start=$_OBJECTS_NEXT
 	shift
 	(( num_args-=1 ))
     fi
@@ -60,7 +60,14 @@ function objects_seek { # args
 	    break
 	fi	
     done
-    
+
+    if [[ next -eq 1 ]]; then 
+	(( _OBJECTS_NEXT = _OBJECTS_POSITION + _OBJECTS_WIDTH ))
+	if [[ _OBJECTS_NEXT -ge ${#_OBJECTS[@]} ]]; then
+	    _OBJECTS_NEXT=0
+	fi
+    fi
+
     if [[ matched -eq 0 ]]; then
 	_OBJECTS_POSITION=$saved
 	return 1
@@ -71,10 +78,12 @@ function objects_seek { # args
 
 function objects_seek_start {
     _OBJECTS_POSITION=0
+    _OBJECTS_NEXT=0
 }
 
 function objects_seek_end {
     (( _OBJECTS_POSITION = (_OBJECTS_SIZE-1) * _OBJECTS_WIDTH ))
+    _OBJECTS_NEXT=0
 }
 
 function objects_next? {
@@ -363,11 +372,14 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	    
 	    # call methods
 	    local method=''
+	    local args=''
 	    for method in $_OBJECTS_INTERFACE_METHODS; do
 		var="_OBJECTS_INTERFACE_OPTION_$method"
 		if defined? $var; then
 		    if $(type -t object_$method &> /dev/null); then
-			eval "object_$method \"${!var}\""
+			args="${!var}"
+			args=${args//\\/\\\\}
+			eval "object_$method ${args}"
 		    else
 			echo "method object_$method not implemented."
 		    fi
@@ -398,10 +410,6 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	    unset $var
 	done
 	_OBJECTS_INTERFACE_OPTIONS_FOUND=()
-    }
-
-    function +ls {
-	${_OBJ_CURRENT_TYPE}s_list 
     }
     
     # completion

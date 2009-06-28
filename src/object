@@ -68,6 +68,11 @@ function object_type {
     fi
 }
 
+
+function objects_list {
+    ${_OBJ_CURRENT_TYPE}s_list 
+}
+
 function object_create_reader {
     local name=$1
     local NAME=$2
