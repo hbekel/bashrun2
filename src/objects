@@ -261,19 +261,6 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	    unset -f -- $opt
 	done
     } 
-
-    function objects_interface_clear_options {
-
-        # cleanup all _OBJECTS_INTERFACE_OPTION_* vars
-
-	local f=''
-	local var=''
-	for f in ${_OBJECTS_INTERFACE_OPTIONS_FOUND[@]}; do
-	    var="_OBJECTS_INTERFACE_OPTION_$f"
-	    unset $var
-	done
-	_OBJECTS_INTERFACE_OPTIONS_FOUND=()
-    }
     
     function +object {
 	
@@ -298,9 +285,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	local current=""
 	local left=()
 	local var=''
-	local expect='arg' # optarg or arg
-	
-	objects_interface_clear_options
+	local expect='arg' # optarg or arg       
 
 	while [[ "$1" != '' ]]; do
 	    
@@ -383,7 +368,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 		var="_OBJECTS_INTERFACE_OPTION_$method"
 		if defined? $var; then
 		    if $(type -t object_$method &> /dev/null); then
-			eval "object_$method ${!var}"
+			eval "object_$method \"${!var}\""
 		    else
 			echo "method object_$method not implemented."
 		    fi
@@ -405,6 +390,15 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 		fi
 	    done	
 	done
+
+        # cleanup all _OBJECTS_INTERFACE_OPTION_* vars
+
+	local f=''
+	for f in ${_OBJECTS_INTERFACE_OPTIONS_FOUND[@]}; do
+	    var="_OBJECTS_INTERFACE_OPTION_$f"
+	    unset $var
+	done
+	_OBJECTS_INTERFACE_OPTIONS_FOUND=()
     }
 
     function +ls {
@@ -412,7 +406,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
     }
     
     # completion
-    function _objects_ids {
+    function objects_complete {
 
 	local cur prev opts
 	COMPREPLY=()
@@ -433,7 +427,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
         return 0
     }
 
-    complete -F _objects_ids +object
+    complete -F objects_complete +object
     
 fi # end _OBJECTS_HAVE_INTERFACE
 
