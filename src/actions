@@ -120,7 +120,7 @@ function action_unbind {
         # find the next bound binding
 	for id in $(bindings_select action $action); do
 	    if bindings_seek $id $keymap; then
-		if binding_is_bound?; then
+		if binding_bound?; then
 		    found=1
 		    break
 		fi
@@ -158,7 +158,7 @@ function action_rebind {
     # find the next unbound binding
     for id in $(bindings_select action $action); do
 	if bindings_seek $id $keymap; then
-	    if ! binding_is_bound?; then
+	    if ! binding_bound?; then
 		found=1
 		break
 	    fi
@@ -173,7 +173,7 @@ function action_rebind {
     return $?
 } 
 
-function action_is_bound? {
+function action_bound? {
     local action=$(action_name)
     local id=0
 
@@ -186,12 +186,12 @@ function action_is_bound? {
     return 1
 }
 
-function action_has_function? {
+function action_function? {
     type -t action-$(action_name) &> /dev/null
     return $?
 }
 
-function action_is_available? {
+function action_available? {
 
     local dep=''
     declare -i result=0
@@ -298,7 +298,7 @@ function action_pretty_print {
     echo
 
     local id=''
-    if action_is_bound?; then
+    if action_bound?; then
 	bindings_seek_start
 	for id in $(bindings_select action $name); do
 	    bindings_seek --next $id 
@@ -319,7 +319,7 @@ function actions_pretty_print {
     local saved="$(action_name)"
 
     actions_seek_start
-    while actions_have_next; do
+    while actions_next?; do
 	action_pretty_print
 	actions_next
     done
@@ -337,7 +337,7 @@ function action_code {
     print_header "$desc" "#"
 
     # print function
-    if action_has_function?; then
+    if action_function?; then
 	function_code "action-$name"
     fi
 
@@ -372,7 +372,7 @@ function action_code {
 
     # bind
     local id=''
-    if action_is_bound?; then
+    if action_bound?; then
 	bindings_seek_start
 	for id in $(bindings_select action $name); do
 	    bindings_seek --next $id 
@@ -388,7 +388,7 @@ function actions_code {
     print_header "BASHRUN_ACTIONS" "#"
  
     actions_seek_start
-    while actions_have_next; do
+    while actions_next?; do
 	action_code
 	actions_next
 	echo
@@ -401,7 +401,7 @@ function actions_names {
     local saved="$(action_name)"
 
     actions_seek_start
-    while actions_have_next; do
+    while actions_next?; do
 	echo -n "$(action_name) "
 	actions_next
     done

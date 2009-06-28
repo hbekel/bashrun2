@@ -22,7 +22,7 @@ function handlers_apply {
     bashrun_log "trying to match handlers..."
     
     handlers_seek_start
-    while handlers_have_next; do
+    while handlers_next?; do
 	
 	local append=1
 	local pattern=$(handler_pattern)
@@ -116,7 +116,7 @@ function handlers_code {
     print_header 'BASHRUN_HANDLERS' '#'
 
     handlers_seek_start
-    while handlers_have_next; do
+    while handlers_next?; do
 	handler_code
 	handlers_next
     done

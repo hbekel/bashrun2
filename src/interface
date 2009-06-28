@@ -28,7 +28,7 @@ function §action {
 	return 1
     fi
 
-    if ! action_has_function?; then
+    if ! action_function?; then
 	eval "function action-$1 { :; }"
     fi
     return 0
