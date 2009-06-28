@@ -241,6 +241,22 @@ function object_list {
 
 if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 
+    function objects_interface_create {
+	local opt=''
+	for opt in $_OBJECTS_INTERFACE; do
+	    eval "function $opt {
+		+object $opt \"\$@\"
+	    }"
+	done
+    }
+    
+    function objects_interface_destroy {
+	local opt=''
+	for opt in $_OBJECTS_INTERFACE; do
+	    unset -f -- $opt
+	done
+    } 
+
     function objects_interface_clear_options {
 
         # cleanup all _OBJECTS_INTERFACE_OPTION_* vars
@@ -256,6 +272,15 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
     
     function +object {
 	
+	# remove a previous type's interface
+	local destroy_interface="${_OBJ_CURRENT_TYPE}s_interface_destroy"
+	if [[ "$_OBJ_CURRENT_TYPE" != "object" ]]; then
+	    if $(type -t $destroy_interface &> /dev/null); then
+		eval "$destroy_interface"
+	    fi
+	    objects_interface_create
+	fi
+
 	# set global current object type
 	_OBJ_CURRENT_TYPE="object"
 
@@ -322,6 +347,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	fi
 	
 	# get/set attributes
+
 	for ((i=0; i<${#_OBJECTS_KEYS[@]}; i++)); do
 	    key=${_OBJECTS_KEYS[$i]}
 	    var="_OBJECTS_INTERFACE_OPTION_$key"
@@ -342,17 +368,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	    object_code
 	    return 0
 	fi
-
-	objects_interface_create
     }
-
-    function objects_interface_create {
-	:
-    }
-    
-    function objects_interface_destroy {
-	:
-    } 
 
     # completion
     function _objects_ids {
