@@ -8,7 +8,7 @@ object "keyname" "keyseq name"                    # user supplied keynames
 
 keyname_new '\x7f' 'C-<bsp>'
 
-bind "'\C-z\x01': accept-line"                    # accept-line                    
+bind "'\C-z\x01': accept-line"                    # accept-line
 
 BASHRUN_BINDINGS_NEXT_CHAR=2                      # next char to bind
 

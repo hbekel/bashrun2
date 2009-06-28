@@ -62,6 +62,7 @@ function action_bind {
 	bind="$bind tput cr; bashrun_engine_action $action'"
 
 	bashrun_log "int: $action ($type) -> \C-z\\x$char ($keymap)"
+	# echo "bind $bind"
 	eval "bind $bind"	    
 	
 	 # save char in internal	
@@ -85,6 +86,7 @@ function action_bind {
     
     # bind
     bashrun_log "usr: $action ($type) -> $keyname ($keymap)"
+    # echo "bind $bind"
     eval "bind $bind"
 
     # create or set binding
@@ -113,8 +115,6 @@ function action_unbind {
     local unbind=''
     local found=0
     local id=''
-
-    bashrun_log "'$keyseq'"
 
     if [[ "$keyseq" == '' ]]; then
         # find the next bound binding
@@ -235,14 +235,14 @@ function action_run_function {
     declare -i retval
 
     # enable the action interface
-    bashrun_action_interface_enable
+    # bashrun_action_interface_enable
     
     # run the action function
     action-$(action_name)
     retval=$?
 
     # disable the action interface
-    bashrun_action_interface_disable
+    # bashrun_action_interface_disable
 
     local msg="action-$action returned $retval ->"
     [[ retval -eq 0 ]] && msg="$msg execute"
