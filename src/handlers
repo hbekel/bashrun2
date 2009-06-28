@@ -72,14 +72,14 @@ function handlers_apply {
 	    for (( i=1; i<${#BASH_REMATCH[*]}; i++ )); do
 
 		local match=${BASH_REMATCH[$i]}
-		bashrun_log "subexpression match \$$i $match"
-		string=${string//\$$i/$match}
+		bashrun_log "subexpression match \%$i $match"
+		string=${string//%$i/$match}
 
 		bashrun_log "$string"
 		export append=0
 	    done
 	    # fail if unmatched $n's remain in handler string
-	    if [[ $string =~ (\$[0-9]) ]]; then
+	    if [[ $string =~ (%[0-9]) ]]; then
 		local missing=${BASH_REMATCH[1]}
 		bashrun_log "handler incomplete: no content for $missing"
 		bashrun_log " -> not executing, informing user"

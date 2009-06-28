@@ -6,11 +6,11 @@ object "action" "name type desc deps help" "bind unbind rebind"
 
 ################################################################################
 
-function_clone "action_new" "action_new_super"
+function_clone "action_new" "_action_new"
 
 function action_new {
 
-    action_new_super "$1"
+    _action_new "$1"
     action_set_type "trap-and-launch"
     action_set_desc "$1"
 }
@@ -235,14 +235,14 @@ function action_run_function {
     declare -i retval
 
     # enable the action interface
-    # bashrun_action_interface_enable
-    
+    action_runtime_interface_create
+
     # run the action function
     action-$(action_name)
     retval=$?
 
     # disable the action interface
-    # bashrun_action_interface_disable
+    action_runtime_interface_destroy
 
     local msg="action-$action returned $retval ->"
     [[ retval -eq 0 ]] && msg="$msg execute"
@@ -250,6 +250,53 @@ function action_run_function {
     bashrun_log "$msg"
 
     return $retval
+}
+
+function action_runtime_interface_create {
+
+    function +command {
+	if [[ "$#" == "0" ]]; then
+	    echo $BASHRUN_COMMAND
+	else
+	    BASHRUN_COMMAND="$@"
+	    bashrun_log "$BASHRUN_COMMAND"
+	fi
+    }
+
+    function +line { echo $BASHRUN_COMMAND_LINE; }
+
+    function +executable? {
+	bashrun_command_word_is_executable?
+	return $?
+    }
+
+    function +builtin? {
+	bashrun_command_word_is_builtin?
+	return $?
+    }
+
+    function +bookmark? {
+	bashrun_command_word_is_bookmark?
+    }
+    
+    function +handlers { handlers_apply; }
+    function +rules { :; }
+    function +terminal { bashrun_command_wrap_in_terminal; }
+    function +user { bashrun_command_wrap_in_su ${1:-root}; }
+}
+
+function action_runtime_interface_destroy {
+
+        unset -f \
+	    +command \
+	    +line \
+	    +executable? \
+	    +builtin? \
+	    +bookmark? \
+	    +handlers \
+	    +rules \
+	    +terminal \
+	    +user
 }
 
 function action_pretty_print_deps {
