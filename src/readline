@@ -32,7 +32,13 @@ function readline_get_binding {
 function readline_rebind {
     local keyseq=$1
     local keymap=${2:-emacs}
-    local binding="-m $keymap '$(readline_get_binding $keyseq)'"
-    bashrun_log "bind $binding"
-    eval "bind $binding"
+    local readline=$(readline_get_binding $keyseq)
+    local binding="-m $keymap '$readline'"    
+
+    if [[ "$readline" != '' ]]; then 
+	bashrun_log "bind $binding"
+	eval "bind $binding"
+    else
+	bashrun_log "$keyseq: no previous binding"
+    fi
 }

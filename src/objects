@@ -15,10 +15,9 @@ _OBJECTS_SIZE=0
 _OBJECTS_MODIFIED=0
 
 _OBJECTS_HAVE_INTERFACE=0
-_OBJECTS_INTERFACE=''
 _OBJECTS_INTERFACE_METHODS=''
+_OBJECTS_INTERFACE_OPTIONS=''
 _OBJECTS_INTERFACE_OPTIONS_FOUND=()
-
 
 # "class methods" (seeking to, matching and iterating objects) #################
 
@@ -248,7 +247,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 
     function objects_interface_create {
 	local opt=''
-	for opt in $_OBJECTS_INTERFACE; do
+	for opt in $_OBJECTS_INTERFACE_OPTIONS; do
 	    eval "function $opt {
 		+object $opt \"\$@\"
 	    }"
@@ -257,7 +256,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
     
     function objects_interface_destroy {
 	local opt=''
-	for opt in $_OBJECTS_INTERFACE; do
+	for opt in $_OBJECTS_INTERFACE_OPTIONS; do
 	    unset -f -- $opt
 	done
     } 
@@ -418,10 +417,10 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	if [[ ${cur} == * ]]; then
 	    if [[ ${cur} =~ ^\- ]]; then
 		cur=${cur//-/\\-}
-		COMPREPLY=( $(compgen -W "${_OBJECTS_INTERFACE}" ${cur}) )
+		COMPREPLY=( $(compgen -W "${_OBJECTS_INTERFACE_OPTIONS}" ${cur}) )
 	    else
 		cur=${cur//-/\\-}
-		COMPREPLY=( $(compgen -W "${opts} ${_OBJECTS_INTERFACE}" ${cur}) )
+		COMPREPLY=( $(compgen -W "${opts} ${_OBJECTS_INTERFACE_OPTIONS}" ${cur}) )
 	    fi
 	fi
         return 0

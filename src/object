@@ -38,7 +38,7 @@ function object {
 
     cat objects | \
 	sed "s|_OBJECTS_KEYS=()|_OBJECTS_KEYS=($keys)|" | \
-	sed "s|_OBJECTS_INTERFACE=''|_OBJECTS_INTERFACE='$interface' |" | \
+	sed "s|_OBJECTS_INTERFACE_OPTIONS=''|_OBJECTS_INTERFACE_OPTIONS='$interface' |" | \
 	sed "s|_OBJECTS_HAVE_INTERFACE=0|_OBJECTS_HAVE_INTERFACE=$have_interface|" | \
 	sed "s|_OBJECTS_INTERFACE_METHODS=''|_OBJECTS_INTERFACE_METHODS='$methods'|" | \
 	sed "s|object|$name|g;s|OBJECT|$NAME|g" \
