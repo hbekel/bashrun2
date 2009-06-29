@@ -60,7 +60,7 @@ function bashrun_engine_action {
 	BASHRUN_ACTION=$action
 
 	# type override
-	[[ $type == '' ]] && type=$(action.type)
+	[[ $type == '' ]] && type=$(action.get_type)
 
 	bashrun_log "$action ($type)"
 

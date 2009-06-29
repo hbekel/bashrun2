@@ -24,7 +24,7 @@ function bashrun_remote_run {
 	actions.seek $action
 
 	# "trap-and-launch"  becomes "launch" if invoked remotely (nothing to trap)
-	if [[ "$(action.type)" == "trap-and-launch" ]]; then
+	if [[ "$(action.get_type)" == "trap-and-launch" ]]; then
 	    type="launch"
 	fi
 	

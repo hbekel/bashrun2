@@ -2,7 +2,7 @@
 
 ################################################################################
 
-_OBJ_CURRENT_TYPE=''
+_OBJECTS_CURRENT_TYPE=''
 
 function object {
 
@@ -35,6 +35,7 @@ function object {
     fi
 
     local NAME=$(echo $name | tr "[:lower:]" "[:upper:]")
+    NAME="BASHRUN_$NAME"
 
     cat objects | \
 	sed "s|_OBJECTS_KEYS=()|_OBJECTS_KEYS=($keys)|" | \
@@ -56,19 +57,19 @@ function object {
     return 0
 }
 
-function object.type {
+function objects.current_type {
     
     local type=$1
     if [[ "$type" == '' ]]; then
-	echo "$_OBJ_CURRENT_TYPE"
+	echo "$_OBJECTS_CURRENT_TYPE"
     else
-	_OBJ_CURRENT_TYPE="$type"
+	_OBJECTS_CURRENT_TYPE="$type"
     fi
 }
 
 
 function objects.list {
-    ${_OBJ_CURRENT_TYPE}s_list 
+    ${_OBJECTS_CURRENT_TYPE}s_list 
 }
 
 function object.create_reader {

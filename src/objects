@@ -175,10 +175,6 @@ function objects.all {
 
 # "instance methods" (always operate on the object at the current position) ####
 
-function object._id {
-    echo ${_OBJECTS[$_OBJECTS_POSITION]}
-}
-
 function object.new {
     local i
     
@@ -287,8 +283,8 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
     function +object {
 	
 	# remove a previous type's interface
-	local destroy_interface="${_OBJ_CURRENT_TYPE}s_interface_destroy"
-	if [[ "$_OBJ_CURRENT_TYPE" != "object" ]]; then
+	local destroy_interface="${_OBJECTS_CURRENT_TYPE}s_interface_destroy"
+	if [[ "$_OBJECTS_CURRENT_TYPE" != "object" ]]; then
 	    if $(type -t $destroy_interface &> /dev/null); then
 		eval "$destroy_interface"
 	    fi
@@ -296,7 +292,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	fi
 
 	# set global current object type
-	_OBJ_CURRENT_TYPE="object"
+	_OBJECTS_CURRENT_TYPE="object"
 
         # no arg -> return (setting global type is sideeffect)
 	if [[ "$#" == "0" ]]; then
@@ -359,7 +355,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	    if [[ "${#left[@]}" != "0" ]]; then
 		which="${left[@]}"
 	    else
-		which="$(object._id)"
+		which="$(objects.current)"
 	    fi
 	fi
 	
