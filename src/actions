@@ -407,4 +407,22 @@ function action.code {
     echo
 }
 
+function_clone "actions.dump" "_actions.dump"
+
+function actions.dump {
+
+    local file=$_OBJECTS_HOME/actions
+    local action=''
+
+    _actions.dump
+
+    actions.seek_start
+    while actions.next?; do
+	action=$(action.get_name)
+	function_code "action-$action" >> $file
+	actions.next
+    done    
+}
+
+
 ################################################################################

@@ -30,10 +30,8 @@ function bashrun_engine_init {
     bashrun_engine_default_actions
     
     # source rc file
-    #if [[ /home/chenno/workspace/bashrun/src/rc -nt $BASHRUN_CACHE_HOME/actions ]]; then
-	source /home/chenno/workspace/bashrun/src/rc
-    #fi
-
+    source /home/chenno/workspace/bashrun/src/rc
+    
     # escape from trap in interactive mode
     PROMPT_COMMAND="trap DEBUG; $PROMPT_COMMAND"
 
@@ -202,8 +200,6 @@ function bashrun_engine_default_actions {
 }
 
 function bashrun_engine_shutdown { 
-
-    objects.dump
 
     # remove this pid from the pidfile
     local pid=''
