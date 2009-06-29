@@ -26,6 +26,9 @@ function bashrun_engine_init {
     # get current readline bindings
     readline_get_bindings
     
+    # install default actions
+    bashrun_engine_default_actions
+    
     # source rc file
     source /home/chenno/workspace/bashrun/src/rc
 
@@ -171,6 +174,29 @@ function bashrun_engine_busy {
 function bashrun_engine_busy? {
     [[ "$BASHRUN_ENGINE_BUSY" == "1" ]]
     return $?
+}
+
+function bashrun_engine_default_actions {
+
+    +action --new 'pass'
+    --desc 'passthrough command'
+    --type 'shell'
+    --bind '\ew'
+    
+    action-pass () 
+    { 
+	:
+    }
+
+    +action --new 'ping'
+    --desc 'Pong the process that pinged.'
+    --type 'launch'
+    
+    action-ping () 
+    { 
+	kill -USR1 $(command);
+	return 1
+    }
 }
 
 function bashrun_engine_shutdown { 
