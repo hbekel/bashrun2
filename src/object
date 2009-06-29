@@ -264,7 +264,7 @@ function object.code {
     local args=''
     local here=$_OBJECTS_POSITION
     
-    for ((i=this; i<=${#_OBJECTS_WIDTH}; i++)); do
+    for ((i=this; i<=${_OBJECTS_WIDTH}; i++)); do
 	args="$args '${_OBJECTS[$i]}'"
     done
     _OBJECTS_POSITION=here
