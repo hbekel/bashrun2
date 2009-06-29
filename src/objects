@@ -2,18 +2,29 @@
 
 ################################################################################
 
-_OBJECTS_HOME=''
+_OBJECTS_CACHE_HOME=''
+_OBJECTS_DATA_HOME=''
 _OBJECTS_NAMESPACE=''
 _OBJECTS_TYPES=''
 _OBJECTS_FOCUS=''
 
-function objects.home {
+function objects.cache_home {
     
-    local home=$1
-    if [[ "$home" == '' ]]; then
-	echo "$_OBJECTS_HOME"
+    local cache_home=$1
+    if [[ "$cache_home" == '' ]]; then
+	echo "$_OBJECTS_CACHE_HOME"
     else
-	_OBJECTS_HOME="$home"
+	_OBJECTS_CACHE_HOME="$cache_home"
+    fi
+}
+
+function objects.data_home {
+    
+    local data_home=$1
+    if [[ "$data_home" == '' ]]; then
+	echo "$_OBJECTS_DATA_HOME"
+    else
+	_OBJECTS_DATA_HOME="$data_home"
     fi
 }
 
@@ -71,7 +82,7 @@ function class {
 	interface="${interface[@]}"
     fi
 
-    local tmpfile=/tmp/$name.bash
+    local tmpfile=$_OBJECTS_CACHE_HOME/$name.bash
 
     if [[ -f $tmpfile ]]; then
 	source $tmpfile
@@ -132,7 +143,7 @@ function object.create_reader {
     local NAME=$2
     local key=$3
     local field=$4
-    local tmpfile=/tmp/$name.bash
+    local tmpfile=$_OBJECTS_CACHE_HOME/$name.bash
 
     echo $(cat <<EOF
 
@@ -148,7 +159,7 @@ function object.create_writer {
     local NAME=$2
     local key=$3
     local field=$4
-    local tmpfile=/tmp/$name.bash
+    local tmpfile=$_OBJECTS_CACHE_HOME/$name.bash
 
     echo $(cat <<EOF
 

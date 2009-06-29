@@ -418,7 +418,7 @@ function_clone "actions.dump" "_actions.dump"
 
 function actions.dump {
 
-    local file=$_OBJECTS_HOME/actions
+    local file=$_OBJECTS_DATA_HOME/actions.dump
     local action=''
 
     _actions.dump

@@ -37,7 +37,7 @@ function bindings.dump {
 
     _bindings.dump
 
-    local file=$_OBJECTS_HOME/bindings    
+    local file=$_OBJECTS_DATA_HOME/bindings.dump
 
     bindings.seek_start
     while bindings.next?; do
@@ -52,7 +52,7 @@ function internals.dump {
 
     _internals.dump
 
-    local file=$_OBJECTS_HOME/internals
+    local file=$_OBJECTS_DATA_HOME/internals.dump
 
     internals.seek_start
     while internals.next?; do
