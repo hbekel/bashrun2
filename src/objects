@@ -180,7 +180,7 @@ function objects.dump {
     echo "
     _OBJECTS_KEYS=(${_OBJECTS_KEYS[@]})
     _OBJECTS_WIDTH=${_OBJECTS_WIDTH}
-    _OBJECTS_POSITION=${_OBJECTS_POSITION}
+    _OBJECTS_POSITION=0
     _OBJECTS_NEXT=${_OBJECTS_NEXT}
     _OBJECTS_SIZE=${_OBJECTS_SIZE}
     _OBJECTS_MODIFIED=${_OBJECTS_MODIFIED}
@@ -190,12 +190,14 @@ function objects.dump {
     _OBJECTS_INTERFACE_OPTIONS='${_OBJECTS_INTERFACE_OPTIONS}'
     _OBJECTS_INTERFACE_OPTIONS_FOUND=()
 
-    _OBJECTS=($objects)" > $_ObJeCtS_HOME/objects
+    _OBJECTS=($objects)
+    " > $_ObJeCtS_HOME/objects
 
 }
 
 function objects.restore {
-    . $_ObJeCtS_HOME/objects
+    local file=$_ObJeCtS_HOME/objects
+    [[ -f "$file" ]] && . "$file"
 }
 
 function objects.clear {
@@ -210,7 +212,7 @@ function objects.clear {
 
 function object.new {
     local i
-    
+
     for ((i=1; i<=${#_OBJECTS_KEYS[@]}; i++)); do
 	_OBJECTS[${#_OBJECTS[@]}]=${!i}
     done
@@ -369,8 +371,6 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	    if [[ ${!var} != '' ]]; then
 		if ! objects.seek ${!var}; then
 		    object.new "${!var}"
-		else
-		    echo "error: object exists: ${!var}"
 		fi
 	    else
 		echo "--new: syntax error: name argument missing"
