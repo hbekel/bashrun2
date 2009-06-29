@@ -157,6 +157,7 @@ function action.unbind {
 
     # clear binding
     binding.set_is_bound 0
+    binding.set_readline ''
 
     return 0
 }
