@@ -14,9 +14,6 @@ function bashrun_engine_init {
     
     bashrun_log "initializing..."
 
-    # shutdown on exit
-    trap bashrun_engine_shutdown EXIT
-
     # append pid to shared pidfile
     echo $$ >> $BASHRUN_PIDFILE
 
@@ -40,6 +37,9 @@ function bashrun_engine_init {
 
     # init exec mode
     BASHRUN_EXECMODE='&'
+
+    # shutdown on exit
+    trap bashrun_engine_shutdown EXIT
 }
 
 function bashrun_engine_action {

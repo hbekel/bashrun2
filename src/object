@@ -2,9 +2,44 @@
 
 ################################################################################
 
-_OBJECTS_HOME=$BASHRUN_CACHE_HOME
-_OBJECTS_FOCUS=''
+_OBJECTS_HOME=''
+_OBJECTS_NAMESPACE=''
 _OBJECTS_TYPES=''
+_OBJECTS_FOCUS=''
+
+function objects.home {
+    
+    local home=$1
+    if [[ "$home" == '' ]]; then
+	echo "$_OBJECTS_HOME"
+    else
+	_OBJECTS_HOME="$home"
+    fi
+}
+
+function objects.namespace {
+    
+    local namespace=$1
+    if [[ "$namespace" == '' ]]; then
+	echo "$_OBJECTS_NAMESPACE"
+    else
+	_OBJECTS_NAMESPACE="$namespace"
+    fi
+}
+
+function objects.types {    
+    echo "$_OBJECTS_TYPES"
+}
+
+function objects.focus {
+    
+    local type=$1
+    if [[ "$type" == '' ]]; then
+	echo "$_OBJECTS_FOCUS"
+    else
+	_OBJECTS_FOCUS="$type"
+    fi
+}
 
 function object {
 
@@ -38,8 +73,8 @@ function object {
 	return 0
     fi
 
-    local NAME=$(echo $name | tr "[:lower:]" "[:upper:]")
-    NAME="BASHRUN_$NAME"
+    local NAME="$(objects.namespace)_$name"
+    NAME=$(echo $NAME | tr "[:lower:]" "[:upper:]")
 
     cat objects | \
 	sed "s|_OBJECTS_KEYS=()|_OBJECTS_KEYS=($keys)|" | \
@@ -60,16 +95,6 @@ function object {
     source $tmpfile
 
     return 0
-}
-
-function objects.focus {
-    
-    local type=$1
-    if [[ "$type" == '' ]]; then
-	echo "$_OBJECTS_FOCUS"
-    else
-	_OBJECTS_FOCUS="$type"
-    fi
 }
 
 function objects.list {
