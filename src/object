@@ -114,6 +114,7 @@ function objects.select { # key value [which=0]-> "id1 id2..."
     local key=$1
     local wanted=$2
     local which=${3:-1} # 0: any, 1: all
+    local regexp=''
     local value=''
     local ids=''
     local i=0
@@ -123,13 +124,25 @@ function objects.select { # key value [which=0]-> "id1 id2..."
 	_OBJECTS_POSITION=$i
 	
 	value=$(object.get $key)
-	    if [[ "$value" == "$wanted" ]]; then
+	if [[ "$value" == "$wanted" ]]; then
+	    # literal match
+	    ids="$ids ${_OBJECTS[$i]}"
+	    [[ which -eq 0 ]] && break
+	    
+	elif [[ "$wanted" =~ ^/.+?/$ ]]; then
+	    # regexp given
+	    regexp=${wanted:1:${#wanted}-2}
+	    
+	    if [[ "$value" =~ $regexp ]]; then
+		# regexp match
 		ids="$ids ${_OBJECTS[$i]}"
 		[[ which -eq 0 ]] && break
 	    fi
+	fi
     done
     objects.seek $saved
-
+    [[ "${ids:0:1}" == " " ]] && ids="${ids:1}"
+	
     echo "$ids"
 }
 
@@ -261,30 +274,26 @@ function object.set { # key value
 function object.code {
     
     local i=0;
+    local pos=0
     local args=''
-    local here=$_OBJECTS_POSITION
     
-    for ((i=this; i<${_OBJECTS_WIDTH}; i++)); do
-	args="$args '${_OBJECTS[$i]}'"
+    for ((i=0; i<${_OBJECTS_WIDTH}; i++)); do
+	(( pos = _OBJECTS_POSITION + i ))
+	args="$args '${_OBJECTS[$pos]}'"
     done
     args="${args:1}"
-
-    _OBJECTS_POSITION=here
 
     echo "object.new $args"
 }
 
 function objects.code {
 
-    print_line "" "#" 80
-    print_line "OBJECTS" '#' -1
-    echo    
-
     objects.seek_start
     while objects.next?; do
 	object.code
 	objects.next
     done
+    fruits.seek_start
 }
     
 function object.list {
