@@ -152,7 +152,7 @@ function bashrun_engine_launch {
 
     bashrun_log "$BASHRUN_COMMAND"
     
-    if bashrun_command_word_is_executable?; then
+    if bashrun_command_word_executable?; then
 	bashrun_engine_execute
     else
 	bashrun_log "not executable."

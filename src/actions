@@ -282,17 +282,17 @@ function action.runtime_interface_create {
     function line { echo $BASHRUN_COMMAND_LINE; }
 
     function executable? {
-	bashrun_command_word_is_executable?
+	bashrun_command_word_executable?
 	return $?
     }
 
     function builtin? {
-	bashrun_command_word_is_builtin?
+	bashrun_command_word_buitlin?
 	return $?
     }
 
     function bookmark? {
-	bashrun_command_word_is_bookmark?
+	bashrun_command_word_bookmark?
     }
     
     function +handlers { handlers.apply; }

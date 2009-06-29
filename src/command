@@ -54,7 +54,7 @@ function bashrun_command_get_word {
     BASHRUN_COMMAND_WORD="$word"
 }
 
-function bashrun_command_word_is_executable? {
+function bashrun_command_word_executable? {
     
     # check if BASHRUN_COMMAND_WORD is executable
 
@@ -69,7 +69,7 @@ function bashrun_command_word_is_executable? {
     fi
 
     if [[ "$type" == "function" ]]; then
-	if bashrun_command_word_is_bookmark?; then
+	if bashrun_command_word_bookmark?; then
 	    bashrun_log "$word -> bookmark -> no"
 	    return 1
 	else
@@ -93,7 +93,7 @@ function bashrun_command_word_is_executable? {
     return 1
 }
 
-function bashrun_command_word_is_builtin? {
+function bashrun_command_word_buitlin? {
 
     # check if BASHRUN_COMMAND_WORD is a shell builtin command
 
@@ -110,7 +110,7 @@ function bashrun_command_word_is_builtin? {
     return 1
 }
 
-function bashrun_command_word_is_bookmark? {
+function bashrun_command_word_bookmark? {
 
     local bookmark=''
     for bookmark in ${_BOOKMARKS[@]}; do
