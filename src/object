@@ -1,169 +1,489 @@
 # -*- shell-script -*-
 
 ################################################################################
+#
+# Set up a "hash of hashes" and allow access to objects OOP-Style
+#
 
-_OBJECTS_HOME=''
-_OBJECTS_NAMESPACE=''
-_OBJECTS_TYPES=''
-_OBJECTS_FOCUS=''
+# "class variables" ############################################################
 
-function objects.home {
+_OBJECTS=()
+_OBJECTS_KEYS=()
+_OBJECTS_WIDTH=${#_OBJECTS_KEYS[@]}
+_OBJECTS_POSITION=0
+_OBJECTS_NEXT=0
+_OBJECTS_SIZE=0
+_OBJECTS_MODIFIED=0
+
+_OBJECTS_HAVE_INTERFACE=0
+_OBJECTS_INTERFACE_METHODS=''
+_OBJECTS_INTERFACE_OPTIONS=''
+_OBJECTS_INTERFACE_OPTIONS_FOUND=()
+
+# "class methods" (seeking to, matching and iterating objects) #################
+
+function objects.seek { # args
     
-    local home=$1
-    if [[ "$home" == '' ]]; then
-	echo "$_OBJECTS_HOME"
-    else
-	_OBJECTS_HOME="$home"
-    fi
-}
+    local matched=0
+    local num_args=$#
+    local start=0
+    local saved=$_OBJECTS_POSITION
+    local next=0
+    local i=0
 
-function objects.namespace {
-    
-    local namespace=$1
-    if [[ "$namespace" == '' ]]; then
-	echo "$_OBJECTS_NAMESPACE"
-    else
-	_OBJECTS_NAMESPACE="$namespace"
-    fi
-}
-
-function objects.types {    
-    echo "$_OBJECTS_TYPES"
-}
-
-function objects.focus {
-    
-    local type=$1
-    if [[ "$type" == '' ]]; then
-	echo "$_OBJECTS_FOCUS"
-    else
-	_OBJECTS_FOCUS="$type"
-    fi
-}
-
-function object {
-
-    local name=$1
-    local keys=$2
-    local methods="nil"
-    local have_interface=0
-    
-    _OBJECTS_TYPES="$_OBJECTS_TYPES $name"
-    if [[ "${_OBJECTS_TYPES:0:1}" == ' ' ]]; then
-	_OBJECTS_TYPES="${_OBJECTS_TYPES:1}"
-    fi
-
-    if [[ "$#" == "3" ]]; then 
-	methods=${3}
-    fi
-
-    if [[ "$methods" != 'nil' ]]; then
-	local interface=(new code $keys $methods)
-	have_interface=1
-        # prepare interface (prefix with --)
-
-	local i=0
-	for ((i=0; i<${#interface[@]}; i++)); do
-	    interface[$i]="--${interface[$i]}"
-	done
-	interface="${interface[@]}"
-    fi
-
-    local tmpfile=/tmp/$name.bash
-
-    if [[ -f $tmpfile ]]; then
-	source $tmpfile
+    if [[ num_args -eq 0 ]]; then
 	return 0
     fi
 
-    local NAME="$(objects.namespace)_$name"
-    NAME=$(echo $NAME | tr "[:lower:]" "[:upper:]")
+    if [[ "$1" == "--next" ]]; then	
+	next=1
+	start=$_OBJECTS_NEXT
+	shift
+	(( num_args-=1 ))
+    fi
 
-    cat objects | \
-	sed "s|_OBJECTS_KEYS=()|_OBJECTS_KEYS=($keys)|" | \
-	sed "s|_OBJECTS_INTERFACE_OPTIONS=''|_OBJECTS_INTERFACE_OPTIONS='$interface' |" | \
-	sed "s|_OBJECTS_HAVE_INTERFACE=0|_OBJECTS_HAVE_INTERFACE=$have_interface|" | \
-	sed "s|_OBJECTS_INTERFACE_METHODS=''|_OBJECTS_INTERFACE_METHODS='$methods'|" | \
-	sed "s|object|$name|g;s|OBJECT|$NAME|g;" | \
-	sed "s|ObJeCt|OBJECT|g;s|oBjEcT|object|g" \
-	> $tmpfile
+    for ((i=$start; i<=${#_OBJECTS[@]}; i+=${#_OBJECTS_KEYS[@]})); do
+	matched=0
+	if [[ "${_OBJECTS[$i]}" == "$1" ]]; then
+	    matched=1
+	    if [[ $num_args -eq 2 ]]; then
+		if [[ "${_OBJECTS[$i+1]}" == "$2" ]]; then
+		    matched=1
+		else
+		    matched=0		    
+		fi
+	    fi		
+	fi
 
-    local i=0
-    local key
-    for key in $keys; do
-	object.create_accessors $name $NAME $key $i
-	let i++
+	if [[ matched -eq 1 ]]; then
+	    _OBJECTS_POSITION=$i
+	    break
+	fi	
     done
-    
-    source $tmpfile
 
-    return 0
+    if [[ next -eq 1 ]]; then 
+	(( _OBJECTS_NEXT = _OBJECTS_POSITION + _OBJECTS_WIDTH ))
+	if [[ _OBJECTS_NEXT -ge ${#_OBJECTS[@]} ]]; then
+	    _OBJECTS_NEXT=0
+	fi
+    fi
+
+    if [[ matched -eq 0 ]]; then
+	_OBJECTS_POSITION=$saved
+	return 1
+    else
+	return 0
+    fi
 }
 
-function objects.list {
-    ${_OBJECTS_FOCUS}s.list 
+function objects.seek_start {
+    _OBJECTS_POSITION=0
+    _OBJECTS_NEXT=0
+}
+
+function objects.seek_end {
+    (( _OBJECTS_POSITION = (_OBJECTS_SIZE-1) * _OBJECTS_WIDTH ))
+    _OBJECTS_NEXT=0
+}
+
+function objects.next? {
+    [[ $_OBJECTS_POSITION+$_OBJECTS_WIDTH -le ${#_OBJECTS[@]} ]] && return 0
+    return 1
+}
+
+function objects.current {
+    echo "${_OBJECTS[$_OBJECTS_POSITION]}"
+}
+
+function objects.next {
+    (( _OBJECTS_POSITION += _OBJECTS_WIDTH ))
+}
+
+function objects.previous? {
+    [[ $_OBJECTS_POSITION+1 -ge 0 ]] && return 0
+    _OBJECTS_POSITION=0
+    return 1
+}
+
+function objects.previous {
+    (( _OBJECTS_POSITION -= _OBJECTS_WIDTH ))
+}
+
+function objects.select { # key value [which=0]-> "id1 id2..."
+
+    local key=$1
+    local wanted=$2
+    local which=${3:-1} # 0: any, 1: all
+    local value=''
+    local ids=''
+    local i=0
+    local saved=${_OBJECTS[$_OBJECTS_POSITION]}
+
+    for ((i=0; i<=${#_OBJECTS[@]}; i+=${#_OBJECTS_KEYS[@]})); do
+	_OBJECTS_POSITION=$i
+	
+	value=$(object.get $key)
+	    if [[ "$value" == "$wanted" ]]; then
+		ids="$ids ${_OBJECTS[$i]}"
+		[[ which -eq 0 ]] && break
+	    fi
+    done
+    objects.seek $saved
+
+    echo "$ids"
+}
+
+function objects.modified? {
+
+    [[ _OBJECTS_MODIFIED -eq 0 ]] && return 1
+    [[ _OBJECTS_MODIFIED -eq 1 ]] && return 0
+}
+
+function objects.modified { # value
+    _OBJECTS_MODIFIED=$1
+}
+
+function objects.list { # [ids]
+
+    local saved=${_OBJECTS[$_OBJECTS_POSITION]}
+
+    if [[ $1 != '' ]]; then
+	for id in $@; do
+	    if objects.seek $id; then
+		object.list $id
+	    fi
+	done
+    else
+	objects.seek_start
+	while objects.next?; do
+	    object.list
+	    objects.next
+	done
+    fi
+    objects.seek $saved
+}
+
+function objects.all {
+    
+    local i=0
+    local all=""
+    for ((i=0; i<=${#_OBJECTS[@]}; i+=${#_OBJECTS_KEYS[@]})); do
+	all="$all ${_OBJECTS[$i]}"
+    done
+    echo "${all:1}"
 }
 
 function objects.dump {
-    local type=""
-    for type in $_OBJECTS_TYPES; do
-	eval "${type}s.dump"
-    done
+    
+    local objects="$(printf "%q " "${_OBJECTS[@]}")"
+
+    echo "
+    _OBJECTS_KEYS=(${_OBJECTS_KEYS[@]})
+    _OBJECTS_WIDTH=${_OBJECTS_WIDTH}
+    _OBJECTS_POSITION=0
+    _OBJECTS_NEXT=0
+    _OBJECTS_SIZE=${_OBJECTS_SIZE}
+    _OBJECTS_MODIFIED=0
+    
+    _OBJECTS_HAVE_INTERFACE=${_OBJECTS_HAVE_INTERFACE}
+    _OBJECTS_INTERFACE_METHODS='${_OBJECTS_INTERFACE_METHODS}'
+    _OBJECTS_INTERFACE_OPTIONS='${_OBJECTS_INTERFACE_OPTIONS}'
+    _OBJECTS_INTERFACE_OPTIONS_FOUND=()
+
+    _OBJECTS=($objects)
+    " > $_ObJeCtS_HOME/objects
+
 }
 
 function objects.restore {
-    local type=""
-    for type in $_OBJECTS_TYPES; do
-	eval "${type}s.restore"
-    done
+    local file=$_ObJeCtS_HOME/objects
+    [[ -f "$file" ]] && . "$file"
 }
 
 function objects.clear {
-    local type=""
-    for type in $_OBJECTS_TYPES; do
-	eval "${type}s.clear"
+    _OBJECTS=()
+    _OBJECTS_POSITION=0
+    _OBJECTS_NEXT=0
+    _OBJECTS_SIZE=0
+    _OBJECTS_MODIFIED=1
+}
+
+# "instance methods" (always operate on the object at the current position) ####
+
+function object.new {
+    local i
+
+    for ((i=1; i<=${#_OBJECTS_KEYS[@]}; i++)); do
+	_OBJECTS[${#_OBJECTS[@]}]=${!i}
+    done
+    (( _OBJECTS_SIZE+=1 ))
+    _OBJECTS_MODIFIED=1
+    objects.seek $1
+}
+
+function object.get { # key -> "value"
+    local key=$1
+    local index=-1
+    local i=0
+ 
+    for ((i=0; i<=${#_OBJECTS_KEYS[@]}; i++)); do
+	if [[ ${_OBJECTS_KEYS[$i]} == $key ]]; then
+	    index=$i
+	    break
+	fi
+    done
+
+    if [[ index -ge 0 ]]; then 
+	echo "${_OBJECTS[$_OBJECTS_POSITION+$index]}"
+    fi
+}
+
+function object.set { # key value
+
+    local key=$1
+    local value=$2
+    local index=-1
+    local i=0
+
+    for ((i=0; i<=${#_OBJECTS_KEYS[@]}; i++)); do
+	if [[ ${_OBJECTS_KEYS[$i]} == $key ]]; then
+	    index=$i
+	    break
+	fi
+    done
+
+    if [[ index -ge 0 ]]; then 
+	_OBJECTS[$_OBJECTS_POSITION+$index]=$value
+	_OBJECTS_MODIFIED=1
+    fi
+}
+
+function object.code {
+    
+    local i=0;
+    local args=''
+    local here=$_OBJECTS_POSITION
+    
+    for ((i=this; i<=${#_OBJECTS_WIDTH}; i++)); do
+	args="$args '${_OBJECTS[$i]}'"
+    done
+    _OBJECTS_POSITION=here
+
+    echo "object.new $args"
+}
+
+function objects.code {
+
+    print_line "" "#" 80
+    print_line "OBJECTS" '#' -1
+    echo    
+
+    objects.seek_start
+    while objects.next?; do
+	object.code
+	objects.next
     done
 }
-
-function object.create_reader {
-    local name=$1
-    local NAME=$2
-    local key=$3
-    local field=$4
-    local tmpfile=/tmp/$name.bash
-
-    echo $(cat <<EOF
-
-function ${name}.get_${key} {
-    echo "\${_${NAME}S[\$_${NAME}S_POSITION+$field]}";
-}
-EOF
-    ) >> $tmpfile
+    
+function object.list {
+    local key
+    for key in ${_OBJECTS_KEYS[@]}; do
+	echo "$key: $(object.get $key)"
+    done;
+    echo
 }
 
-function object.create_writer {
-    local name=$1
-    local NAME=$2
-    local key=$3
-    local field=$4
-    local tmpfile=/tmp/$name.bash
+################################################################################
+## INTERFACE
 
-    echo $(cat <<EOF
+if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 
-function ${name}.set_${key} {
-    _${NAME}S[\$_${NAME}S_POSITION+$field]=\$1;
-    _${NAME}S_MODIFIED=1;
-}
-EOF
-    ) >> $tmpfile
-}
+    function objects.interface_create {
+	local opt=''
+	for opt in $_OBJECTS_INTERFACE_OPTIONS; do
+	    eval "function $opt {
+		+object $opt \"\$@\"
+	    }"
+	done
+    }
+    
+    function objects.interface_destroy {
+	local opt=''
+	for opt in $_OBJECTS_INTERFACE_OPTIONS; do
+	    unset -f -- $opt
+	done
+    } 
+    
+    function +object {
+	
+	# remove a previous type's interface
+	local destroy_interface="${_ObJeCtS_FOCUS}s_interface_destroy"
+	if [[ "$_ObJeCtS_FOCUS" != "object" ]]; then
+	    if $(type -t $destroy_interface &> /dev/null); then
+		eval "$destroy_interface"
+	    fi
+	    objects.interface_create
+	fi
 
-function object.create_accessors {
-    object.create_reader "$@"
-    object.create_writer "$@"
-}
+	# set global current object type
+	_ObJeCtS_FOCUS="object"
 
-function defined? {
-    [[ "${!1-X}" == "${!1-Y}" ]]
-}
+        # no arg -> return (setting global type is sideeffect)
+	if [[ "$#" == "0" ]]; then
+	    return 0
+	fi
+
+	# parse commandline arguments	
+	local current=""
+	local left=()
+	local var=''
+	local expect='arg' # optarg or arg       
+
+	while [[ "$1" != '' ]]; do
+	    
+	    if [[ "$1" =~ ^-- ]]; then
+		current="${1:2}"
+		eval "_OBJECTS_INTERFACE_OPTION_$current=''"
+		_OBJECTS_INTERFACE_OPTIONS_FOUND[${#_OBJECTS_INTERFACE_OPTIONS_FOUND[@]}]="$current"		
+		expect='optarg'
+	    else
+		if [[ "$expect" == "optarg" ]]; then
+		    var="_OBJECTS_INTERFACE_OPTION_$current" 
+		    val="${!var} $1"
+		    val=$(printf '%q ' "$val") 		    
+		    val=${val//\$/\\\\\$}
+		    eval "$var=$val"
+		else
+		    left[${#left[@]}]="$1"
+		fi
+	    fi
+	    shift
+	done
+
+	# trim leading whitespace from values
+	local func=''
+	for f in ${_OBJECTS_INTERFACE_OPTIONS_FOUND[@]}; do
+	    var="_OBJECTS_INTERFACE_OPTION_$f"
+	    eval "$var=\"${!var:1}\""
+	done
+	
+	# --new
+	var="_OBJECTS_INTERFACE_OPTION_new"
+	if defined? $var; then
+	    if [[ ${!var} != '' ]]; then
+		if ! objects.seek ${!var}; then
+		    object.new "${!var}"
+		fi
+	    else
+		echo "--new: syntax error: name argument missing"
+		return 1
+	    fi
+	fi
+
+	# get objects       
+	local which=""
+	var="_OBJECTS_INTERFACE_OPTION_all"
+
+	if defined? $var; then
+	    which="$(objects.all)"
+	else
+	    if [[ "${#left[@]}" != "0" ]]; then
+		which="${left[@]}"
+	    else
+		which="$(objects.current)"
+	    fi
+	fi
+	
+	local id=''
+	for id in $which; do
+
+	    # seek object
+	    if ! objects.seek $id; then
+		echo "warning: no such object: $id"
+		echo "         use '+object --new $id' to create it"
+		continue
+	    fi
+
+	    local i=0
+	    local key=''
+	    local var=''
+	    local val=''
+	    
+	    # --code
+	    var="_OBJECTS_INTERFACE_OPTION_code"
+	    if defined? $var; then	    
+		object.code
+	    fi
+	    
+	    # call methods
+	    local method=''
+	    local args=''
+	    for method in $_OBJECTS_INTERFACE_METHODS; do
+		var="_OBJECTS_INTERFACE_OPTION_$method"
+		if defined? $var; then
+		    if $(type -t object.$method &> /dev/null); then
+			args="${!var}"
+			args=${args//\\/\\\\}
+			eval "object.$method ${args}"
+		    else
+			echo "method object.$method not implemented."
+		    fi
+		fi
+	    done
+	    
+	    # get/set attributes
+	    for ((i=0; i<${#_OBJECTS_KEYS[@]}; i++)); do
+		key=${_OBJECTS_KEYS[$i]}
+		var="_OBJECTS_INTERFACE_OPTION_$key"
+		
+		if defined? $var; then
+		    val="${!var}"
+		    if [[ "$val" == '' ]]; then
+			echo $(object.get $key)
+		    else
+			object.set "$key" "$val"
+		    fi
+		fi
+	    done	
+	done
+
+        # cleanup all _OBJECTS_INTERFACE_OPTION_* vars
+
+	local f=''
+	for f in ${_OBJECTS_INTERFACE_OPTIONS_FOUND[@]}; do
+	    var="_OBJECTS_INTERFACE_OPTION_$f"
+	    unset $var
+	done
+	_OBJECTS_INTERFACE_OPTIONS_FOUND=()
+    }
+    
+    # completion
+    function objects.complete {
+
+	local cur prev opts
+	COMPREPLY=()
+
+	cur="${COMP_WORDS[COMP_CWORD]}"
+	prev="${COMP_WORDS[COMP_CWORD-1]}"
+	opts="$(objects.all)"
+
+	if [[ ${cur} == * ]]; then
+	    if [[ ${cur} =~ ^\- ]]; then
+		cur=${cur//-/\\-}
+		COMPREPLY=( $(compgen -W "${_OBJECTS_INTERFACE_OPTIONS}" ${cur}) )
+	    else
+		cur=${cur//-/\\-}
+		COMPREPLY=( $(compgen -W "${opts} ${_OBJECTS_INTERFACE_OPTIONS}" ${cur}) )
+	    fi
+	fi
+        return 0
+    }
+
+    complete -o default -F objects.complete +object
+    
+fi # end _OBJECTS_HAVE_INTERFACE
+
+# "instance accessor methods" (generated by object) ###########
+
+# OBJECT OBJECTS object objects ObJeCtS ObJeCt oBjEcT oBjEcTs
 

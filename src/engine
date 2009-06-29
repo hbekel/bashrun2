@@ -6,7 +6,7 @@ BASHRUN_ACTION=''
 BASHRUN_EXECMODE=''
 BASHRUN_ENGINE_BUSY=0
 
-BASHRUN_RCFILE=/home/chenno/workspace/bashrun/src/rc
+BASHRUN_RCFILE=/home/chenno/workspace/bashrun/src/rcfile
 BASHRUN_TIMESTAMP=$BASHRUN_CACHE_HOME/timestamp
 
 BASHRUN_LOGFILE=$BASHRUN_CACHE_HOME/log
