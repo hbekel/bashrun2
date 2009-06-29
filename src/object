@@ -49,6 +49,9 @@ function object {
     local have_interface=0
     
     _OBJECTS_TYPES="$_OBJECTS_TYPES $name"
+    if [[ "${_OBJECTS_TYPES:0:1}" == ' ' ]]; then
+	_OBJECTS_TYPES="${_OBJECTS_TYPES:1}"
+    fi
 
     if [[ "$#" == "3" ]]; then 
 	methods=${3}
@@ -105,6 +108,20 @@ function objects.dump {
     local type=""
     for type in $_OBJECTS_TYPES; do
 	eval "${type}s.dump"
+    done
+}
+
+function objects.restore {
+    local type=""
+    for type in $_OBJECTS_TYPES; do
+	eval "${type}s.restore"
+    done
+}
+
+function objects.clear {
+    local type=""
+    for type in $_OBJECTS_TYPES; do
+	eval "${type}s.clear"
     done
 }
 

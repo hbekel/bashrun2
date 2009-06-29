@@ -2,9 +2,9 @@
 
 ################################################################################
 
-object "binding" "keyseq keymap action is_bound"  # keybindings
-object "internal" "action keymap char"            # internal bindings
-object "keyname" "keyseq name"                    # user supplied keynames
+object "binding" "keyseq keymap action is_bound readline"  
+object "internal" "action keymap char readline"                
+object "keyname" "keyseq name"                             
 
 keyname.new '\x7f' 'C-<bsp>'
 
@@ -29,6 +29,36 @@ function binding.code {
     [[ "$keymap" != 'emacs' ]] && args="$args '$keymap'"
     
     echo "--bind $args"
+}
+
+function_clone "bindings.dump" "_bindings.dump"
+
+function bindings.dump {
+
+    _bindings.dump
+
+    local file=$_OBJECTS_HOME/bindings    
+
+    bindings.seek_start
+    while bindings.next?; do
+	echo "bind $(binding.get_readline)" >> $file
+	bindings.next
+    done    
+}
+
+function_clone "internals.dump" "_internals.dump"
+
+function internals.dump {
+
+    _internals.dump
+
+    local file=$_OBJECTS_HOME/internals
+
+    internals.seek_start
+    while internals.next?; do
+	echo "bind $(internal.get_readline)" >> $file
+	internals.next
+    done    
 }
 
 

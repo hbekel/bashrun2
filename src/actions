@@ -45,10 +45,11 @@ function action.bind {
 	# create or set binding
 	if bindings.seek $keyseq $keymap; then
 	    binding.set_action $action
-	    binding.set_keymap $keymap
+	    binding.set_keymap $keymap	    
 	    binding.set_is_bound 1 
+	    binding.set_readline "$bind"
 	else
-	    binding.new $keyseq $keymap $action 1
+	    binding.new "$keyseq" "$keymap" "$action" "1" "$bind"
 	fi    
 	return 0
     fi
@@ -75,7 +76,10 @@ function action.bind {
 	# echo "bind $bind"
 	eval "bind $bind"	    
 	
-	 # save char in internal	
+	#save readline binding in internal
+	internal.set_readline "$bind"
+
+	# save char in internal	
 	internal.set_char $char
 	
 	# next free char
@@ -104,8 +108,9 @@ function action.bind {
 	binding.set_action $action
 	binding.set_keymap $keymap
 	binding.set_is_bound 1 
+	binding.set_readline "$bind" 
     else
-	binding.new $keyseq $keymap $action 1
+	binding.new $keyseq $keymap $action 1 "$bind"
     fi    
     
     # create or set keyname

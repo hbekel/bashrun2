@@ -6,9 +6,11 @@ BASHRUN_ACTION=''
 BASHRUN_EXECMODE=''
 BASHRUN_ENGINE_BUSY=0
 
+BASHRUN_RCFILE=/home/chenno/workspace/bashrun/src/rc
+BASHRUN_TIMESTAMP=$BASHRUN_CACHE_HOME/timestamp
+
 BASHRUN_LOGFILE=$BASHRUN_CACHE_HOME/log
 BASHRUN_PIDFILE=$BASHRUN_CACHE_HOME/pids
-BASHRUN_PONGFILE=$BASHRUN_CACHE_HOME/pong
 
 function bashrun_engine_init {
     
@@ -26,9 +28,14 @@ function bashrun_engine_init {
     # install default actions
     bashrun_engine_default_actions
     
-    # source rc file
-    source /home/chenno/workspace/bashrun/src/rc
-    
+    # source rc file or restore dumped state
+    if [[ "$BASHRUN_RCFILE" -nt "$BASHRUN_TIMESTAMP" ]]; then
+	source $BASHRUN_RCFILE
+	touch $BASHRUN_TIMESTAMP
+    else    
+	objects.restore
+    fi
+
     # escape from trap in interactive mode
     PROMPT_COMMAND="trap DEBUG; $PROMPT_COMMAND"
 
@@ -200,6 +207,9 @@ function bashrun_engine_default_actions {
 }
 
 function bashrun_engine_shutdown { 
+
+    # dump user data
+    objects.dump
 
     # remove this pid from the pidfile
     local pid=''
