@@ -21,14 +21,14 @@
 ################################################################################
 
 function §action {
-    actions_add "$1" "$2" "$3" "$4"
+    actions.add "$1" "$2" "$3" "$4"
 
     if [[ "$1" == '' ]]; then
 	echo "error: missing action argument"
 	return 1
     fi
 
-    if ! action_function?; then
+    if ! action.function?; then
 	eval "function action-$1 { :; }"
     fi
     return 0
@@ -37,12 +37,12 @@ function §action {
 function §name {
 
     local action=$1
-    if actions_seek $action; then
+    if actions.seek $action; then
 	shift
     else
-	action=$(action_name)
+	action=$(action.name)
     fi
-    echo $(action_name)
+    echo $(action.name)
 }
 
 function §desc {
@@ -51,19 +51,19 @@ function §desc {
     local action=$1
     local value=''
 
-    if actions_seek $action; then
+    if actions.seek $action; then
 	shift
 	(( num_args-=1 ))
     else
-	action=$(action_name)
+	action=$(action.name)
     fi
     value=$1
 
-    if actions_seek $action; then
+    if actions.seek $action; then
 	if [[ "$num_args" == "1" ]]; then
-	    action_set_desc "$value"
+	    action.set_desc "$value"
 	else
-	    echo "$(action_desc)"
+	    echo "$(action.desc)"
 	fi
     else
 	echo "error: no such action: $action"
@@ -78,19 +78,19 @@ function §type {
     local action=$1
     local value=''
 
-    if actions_seek $action; then
+    if actions.seek $action; then
 	shift
 	(( num_args-=1 ))
     else
-	action=$(action_name)
+	action=$(action.name)
     fi
     value=$1
 
-    if actions_seek $action; then
+    if actions.seek $action; then
 	if [[ "$num_args" == "1" ]]; then
-	    action_set_type "$value"
+	    action.set_type "$value"
 	else
-	    echo "$(action_type)"
+	    echo "$(action.type)"
 	fi
     else
 	echo "error: no such action: $action"
@@ -106,13 +106,13 @@ function §help {
     local help=$2
 
     if [[ "$action" == '' ]]; then
-	actions_help
+	actions.help
 	return 0
     fi
 
-    if actions_seek $action; then
+    if actions.seek $action; then
 	if [[ "$numargs" == "2" ]]; then
-	    action_set_help "$help"
+	    action.set_help "$help"
 	else
 	    §ls $action
 	fi
@@ -135,8 +135,8 @@ function §bind {
 	return 1
     fi
 
-    if actions_seek $action; then
-	action_bind $keyseq $keymap "$keyname"
+    if actions.seek $action; then
+	action.bind $keyseq $keymap "$keyname"
 	return $?
     else
 	echo "error: no such action: $action"
@@ -149,8 +149,8 @@ function §unbind {
     local action=$1
     local keymap=$2
     local keyseq=$3
-    if actions_seek $action; then
-	action_unbind "$keymap" "$keyseq"
+    if actions.seek $action; then
+	action.unbind "$keymap" "$keyseq"
 	return $?
     else
 	echo "error: no such action: $action"
@@ -163,8 +163,8 @@ function §rebind {
     local action=$1
     local keymap=$2
 
-    if actions_seek $action; then
-	action_rebind $keymap
+    if actions.seek $action; then
+	action.rebind $keymap
 	return $?
     else
 	echo "error: no such action: $action"
@@ -175,17 +175,17 @@ function §rebind {
 function §code {
 
     if [[ $# -gt 0 ]]; then
-	if ! actions_seek $1; then
-	    [[ "$1" == "--handlers" || "$1" == "--all" ]] && handlers_code
+	if ! actions.seek $1; then
+	    [[ "$1" == "--handlers" || "$1" == "--all" ]] && handlers.code
 	    [[ "$1" == "--bookmarks" || "$1" == "--all" ]] && bookmarks_code
-	    [[ "$1" == "--actions" || "$1" == "--all" ]] && actions_code
+	    [[ "$1" == "--actions" || "$1" == "--all" ]] && actions.code
 	    return
 	fi
 
 	local id
 	for id in $@; do
-	    if actions_seek $id; then
-		action_code
+	    if actions.seek $id; then
+		action.code
 	    fi
 	done
     else
@@ -198,30 +198,30 @@ function §ls {
 
     if [[ $# -gt 0 ]]; then
 	if [[ "$1" == "--all" ]]; then
-	    actions_pretty_print
+	    actions.pretty_print
 	    return
 	fi
 
 	local id
 	for id in $@; do
-	    if actions_seek $id; then
-		action_pretty_print
+	    if actions.seek $id; then
+		action.pretty_print
 	    fi
 	done
     else
-	actions_pretty_print
+	actions.pretty_print
     fi
 }
 
 function §handler {
-    handler_new "$1" "$2"
+    handler.new "$1" "$2"
 }
 
 function §bookmark {
     bookmark_new "$1"
 }
 
-function bashrun_action_interface_enable {
+function bashrun_action.interface_enable {
 
     function §command {
 	if [[ "$#" == "0" ]]; then
@@ -248,13 +248,13 @@ function bashrun_action_interface_enable {
 	bashrun_command_word_is_bookmark?
     }
     
-    function §handlers { handlers_apply; }
+    function §handlers { handlers.apply; }
     function §rules { :; }
     function §terminal { bashrun_command_wrap_in_terminal; }
     function §user { bashrun_command_wrap_in_su ${1:-root}; }
 }
 
-function bashrun_action_interface_disable {
+function bashrun_action.interface_disable {
 
         unset -f \
 	    §command \
@@ -277,7 +277,7 @@ _bashrun_actions()
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
-    opts="$(actions_names)"
+    opts="$(actions.names)"
 
     if [[ ${cur} == * ]]; then
 	if [[ ${prev} =~ ^§ ]] ; then

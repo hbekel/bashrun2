@@ -6,27 +6,27 @@ object "handler" "name pattern string" ""
 
 ################################################################################
 
-function handlers_add {
+function handlers.add {
 
-    if handlers_seek $1; then
-	[[ $2 != '' ]] && handler_set_pattern "$2"
+    if handlers.seek $1; then
+	[[ $2 != '' ]] && handler.set_pattern "$2"
     else
-	handler_new "$1" "$2" "$3"
+	handler.new "$1" "$2" "$3"
     fi
 }
 
-function handlers_apply {
+function handlers.apply {
     
     # applies matching handlers to BASHRUN_BASHRUN_COMMAND
 
     bashrun_log "trying to match handlers..."
     
-    handlers_seek_start
-    while handlers_next?; do
+    handlers.seek_start
+    while handlers.next?; do
 	
 	local append=1
-	local pattern=$(handler_pattern)
-	local string=$(handler_string)
+	local pattern=$(handler.pattern)
+	local string=$(handler.string)
 
 	if [[ "$BASHRUN_COMMAND" =~ $pattern ]]; then	    
 
@@ -96,14 +96,14 @@ function handlers_apply {
 	    bashrun_log "handled"
 	    return
 	fi
-	handlers_next
+	handlers.next
     done
 }
 
-function handler_code {
+function handler.code {
 
-    local pattern=$(handler_pattern)
-    local string=$(handler_string)
+    local pattern=$(handler.pattern)
+    local string=$(handler.string)
 
     pattern=${pattern//\'/\\\'}
     string=${string//\'/\\\'}
@@ -111,15 +111,15 @@ function handler_code {
     echo "§handler '$pattern'" "'$string'"
 }
 
-function handlers_code {
+function handlers.code {
 
     print_header 'BASHRUN_HANDLERS' '#'
 
-    handlers_seek_start
-    while handlers_next?; do
-	handler_code
-	handlers_next
+    handlers.seek_start
+    while handlers.next?; do
+	handler.code
+	handlers.next
     done
-    handlers_seek_start
+    handlers.seek_start
     echo
 }

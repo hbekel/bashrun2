@@ -47,9 +47,9 @@ function object {
     local i=0
     local key
     for key in $keys; do
-	object_create_reader $name $NAME $key $i
-	object_create_reader $name $NAME $key $i 1
-	object_create_writer $name $NAME $key $i
+	object.create_reader $name $NAME $key $i
+	object.create_reader $name $NAME $key $i 1
+	object.create_writer $name $NAME $key $i
 	let i++
     done
     
@@ -58,7 +58,7 @@ function object {
     return 0
 }
 
-function object_type {
+function object.type {
     
     local type=$1
     if [[ "$type" == '' ]]; then
@@ -69,11 +69,11 @@ function object_type {
 }
 
 
-function objects_list {
+function objects.list {
     ${_OBJ_CURRENT_TYPE}s_list 
 }
 
-function object_create_reader {
+function object.create_reader {
     local name=$1
     local NAME=$2
     local key=$3
@@ -83,9 +83,9 @@ function object_create_reader {
 
     local method_name
     if [[ sugar -eq 1 ]]; then
-	method_name="${name}_${key}"
+	method_name="${name}.${key}"
     else
-	method_name="${name}_get_${key}"
+	method_name="${name}.get_${key}"
     fi
     echo $(cat <<EOF
 
@@ -96,7 +96,7 @@ EOF
     ) >> $tmpfile
 }
 
-function object_create_writer {
+function object.create_writer {
     local name=$1
     local NAME=$2
     local key=$3
@@ -105,7 +105,7 @@ function object_create_writer {
 
     echo $(cat <<EOF
 
-function ${name}_set_${key} {
+function ${name}.set_${key} {
     _${NAME}S[\$_${NAME}S_POSITION+$field]=\$1;
     _${NAME}S_MODIFIED=1;
 }

@@ -21,10 +21,10 @@ function bashrun_remote_run {
 	    action=${BASH_REMATCH[1]}
 	    type=${BASH_REMATCH[2]}
 	fi
-	actions_seek $action
+	actions.seek $action
 
 	# "trap-and-launch"  becomes "launch" if invoked remotely (nothing to trap)
-	if [[ "$(action_type)" == "trap-and-launch" ]]; then
+	if [[ "$(action.type)" == "trap-and-launch" ]]; then
 	    type="launch"
 	fi
 	

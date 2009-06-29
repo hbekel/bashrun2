@@ -48,7 +48,7 @@ function bashrun_engine_action {
     local type=$2         # action type override
     local command="$3"    # command override
 
-    if actions_seek $action; then
+    if actions.seek $action; then
 
 	# wait until engine is ready
 	while bashrun_engine_busy?; do
@@ -60,7 +60,7 @@ function bashrun_engine_action {
 	BASHRUN_ACTION=$action
 
 	# type override
-	[[ $type == '' ]] && type=$(action_type)
+	[[ $type == '' ]] && type=$(action.type)
 
 	bashrun_log "$action ($type)"
 
@@ -83,8 +83,8 @@ function bashrun_engine_action {
 	    
 	    shell)
 		# just run action here
-		if action_function?; then
-		    action_run_function
+		if action.function?; then
+		    action.run_function
 		fi
 		bashrun_engine_busy 0
 		;;
@@ -134,9 +134,9 @@ function bashrun_engine_launch {
 	BASHRUN_COMMAND_LINE="$command"
     fi
 
-    if actions_seek $BASHRUN_ACTION; then
-	if action_function?; then
-	    if ! action_run_function; then
+    if actions.seek $BASHRUN_ACTION; then
+	if action.function?; then
+	    if ! action.run_function; then
 		bashrun_engine_busy 0
 		return 0
 	    fi

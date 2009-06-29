@@ -6,13 +6,13 @@ object "action" "name type desc deps help" "bind unbind rebind"
 
 ################################################################################
 
-function_clone "action_new" "_action_new"
+function_clone "action.new" "_action.new"
 
-function action_new {
+function action.new {
 
-    _action_new "$1"
-    action_set_type "trap-and-launch"
-    action_set_desc "$1"
+    _action.new "$1"
+    action.set_type "trap-and-launch"
+    action.set_desc "$1"
 
     if ! type -t action-$1 &> /dev/null; then
 	eval "
@@ -25,10 +25,10 @@ function action_new {
     fi
 }
 
-function action_bind {
+function action.bind {
 
-    local action=$(action_name)
-    local type=$(action_type)
+    local action=$(action.name)
+    local type=$(action.type)
 
     local keyseq=$1
     local keymap=${2:-emacs}
@@ -43,22 +43,22 @@ function action_bind {
 	bind="-m $keymap '\"$keyseq\": accept-line'"
 	eval "bind $bind"
 	# create or set binding
-	if bindings_seek $keyseq $keymap; then
-	    binding_set_action $action
-	    binding_set_keymap $keymap
-	    binding_set_is_bound 1 
+	if bindings.seek $keyseq $keymap; then
+	    binding.set_action $action
+	    binding.set_keymap $keymap
+	    binding.set_is_bound 1 
 	else
-	    binding_new $keyseq $keymap $action 1
+	    binding.new $keyseq $keymap $action 1
 	fi    
 	return 0
     fi
 
-    if ! internals_seek $action $keymap; then
-	internal_new $action $keymap "new"
+    if ! internals.seek $action $keymap; then
+	internal.new $action $keymap "new"
     fi
-    internals_seek $action $keymap
+    internals.seek $action $keymap
 
-    if [[ "$(internal_char)" == "new" ]]; then
+    if [[ "$(internal.char)" == "new" ]]; then
 	
         # no previous internal binding, get next invalid character to bind to
 	char=$(printf "%.2X" $BASHRUN_BINDINGS_NEXT_CHAR)
@@ -76,13 +76,13 @@ function action_bind {
 	eval "bind $bind"	    
 	
 	 # save char in internal	
-	internal_set_char $char
+	internal.set_char $char
 	
 	# next free char
 	let BASHRUN_BINDINGS_NEXT_CHAR+=1
     else
 	# there's already a internal character bound, use it
-	char=$(internal_char)
+	char=$(internal.char)
 	bashrun_log "redirecting: $action ($type) -> $char ($keymap)"
     fi
     
@@ -100,26 +100,26 @@ function action_bind {
     eval "bind $bind"
 
     # create or set binding
-    if bindings_seek $keyseq $keymap; then
-	binding_set_action $action
-	binding_set_keymap $keymap
-	binding_set_is_bound 1 
+    if bindings.seek $keyseq $keymap; then
+	binding.set_action $action
+	binding.set_keymap $keymap
+	binding.set_is_bound 1 
     else
-	binding_new $keyseq $keymap $action 1
+	binding.new $keyseq $keymap $action 1
     fi    
     
     # create or set keyname
-    if keynames_seek $keyseq; then
-	keyname_set_name $keyname
+    if keynames.seek $keyseq; then
+	keyname.set_name $keyname
     else
-	keyname_new $keyseq $keyname
+	keyname.new $keyseq $keyname
     fi
     return 0
 }
 
-function action_unbind {
+function action.unbind {
     
-    local action=$(action_name)
+    local action=$(action.name)
     local keymap=${1:-emacs}
     local keyseq=$2
     local unbind=''
@@ -128,9 +128,9 @@ function action_unbind {
 
     if [[ "$keyseq" == '' ]]; then
         # find the next bound binding
-	for id in $(bindings_select action $action); do
-	    if bindings_seek $id $keymap; then
-		if binding_bound?; then
+	for id in $(bindings.select action $action); do
+	    if bindings.seek $id $keymap; then
+		if binding.bound?; then
 		    found=1
 		    break
 		fi
@@ -139,7 +139,7 @@ function action_unbind {
 	[[ found -eq 0 ]] && return 1
 	
         # get the keyseq that it's bound to
-	keyseq=$(binding_keyseq)
+	keyseq=$(binding.keyseq)
     fi
     
     # unbind keyseq
@@ -151,14 +151,14 @@ function action_unbind {
     readline_rebind "$keyseq" "$keymap"
 
     # clear binding
-    binding_set_is_bound 0
+    binding.set_is_bound 0
 
     return 0
 }
 
-function action_rebind {
+function action.rebind {
 
-    local action=$(action_name)
+    local action=$(action.name)
 
     local keymap=${1:-emacs}
     local keyseq=''
@@ -166,9 +166,9 @@ function action_rebind {
     local id=''
 
     # find the next unbound binding
-    for id in $(bindings_select action $action); do
-	if bindings_seek $id $keymap; then
-	    if ! binding_bound?; then
+    for id in $(bindings.select action $action); do
+	if bindings.seek $id $keymap; then
+	    if ! binding.bound?; then
 		found=1
 		break
 	    fi
@@ -177,36 +177,36 @@ function action_rebind {
     [[ found -eq 0 ]] && return 1
 
     # get the keyseq that it was bound to before
-    keyseq=$(binding_keyseq)
+    keyseq=$(binding.keyseq)
 
-    action_bind $keyseq
+    action.bind $keyseq
     return $?
 } 
 
-function action_bound? {
-    local action=$(action_name)
+function action.bound? {
+    local action=$(action.name)
     local id=0
 
-    for id in $(bindings_select is_bound 1); do
-	bindings_seek $id
-	if [[ "$(binding_action)" == $action ]]; then
+    for id in $(bindings.select is_bound 1); do
+	bindings.seek $id
+	if [[ "$(binding.action)" == $action ]]; then
 	    return 0
 	fi
     done
     return 1
 }
 
-function action_function? {
-    type -t action-$(action_name) &> /dev/null
+function action.function? {
+    type -t action-$(action.name) &> /dev/null
     return $?
 }
 
-function action_available? {
+function action.available? {
 
     local dep=''
     declare -i result=0
 
-    for dep in $(action_deps); do
+    for dep in $(action.deps); do
 	if ! `which $dep &> /dev/null`; then
 	    result=1
 	fi
@@ -214,9 +214,9 @@ function action_available? {
     return $result
 }
 
-function action_uses {
+function action.uses {
 
-    local code="$(type action-$(action_name))"
+    local code="$(type action-$(action.name))"
     local applies=""
     local methods=""
     methods="$methods §command §line §handlers §rules §terminal §user"
@@ -237,22 +237,22 @@ function action_uses {
     echo "$applies"
 }
 
-function action_run_function {
+function action.run_function {
     
-    local action=$(action_name)
+    local action=$(action.name)
 
     local retval
     declare -i retval
 
     # enable the action interface
-    action_runtime_interface_create
+    action.runtime_interface_create
 
     # run the action function
-    action-$(action_name)
+    action-$(action.name)
     retval=$?
 
     # disable the action interface
-    action_runtime_interface_destroy
+    action.runtime_interface_destroy
 
     local msg="action-$action returned $retval ->"
     [[ retval -eq 0 ]] && msg="$msg execute"
@@ -262,7 +262,7 @@ function action_run_function {
     return $retval
 }
 
-function action_runtime_interface_create {
+function action.runtime_interface_create {
 
     function command {
 	if [[ "$#" == "0" ]]; then
@@ -289,13 +289,13 @@ function action_runtime_interface_create {
 	bashrun_command_word_is_bookmark?
     }
     
-    function +handlers { handlers_apply; }
+    function +handlers { handlers.apply; }
     function +rules { :; }
     function +terminal { bashrun_command_wrap_in_terminal; }
     function +user { bashrun_command_wrap_in_su ${1:-root}; }
 }
 
-function action_runtime_interface_destroy {
+function action.runtime_interface_destroy {
 
         unset -f \
 	    command \
@@ -309,10 +309,10 @@ function action_runtime_interface_destroy {
 	    +user
 }
 
-function action_pretty_print_deps {
+function action.pretty_print_deps {
 
     local dep=''
-    local deps="$(action_deps)"
+    local deps="$(action.deps)"
     local str=''
     local found=$R
 
@@ -331,14 +331,14 @@ function action_pretty_print_deps {
     fi
 }
 
-function action_list {
+function action.list {
 
-    local name=$(action_name)
-    local desc=$(action_desc)
-    local type=$(action_type)
-    local deps=$(action_deps)
-    local help=$(action_help)
-    local uses=$(action_uses)
+    local name=$(action.name)
+    local desc=$(action.desc)
+    local type=$(action.type)
+    local deps=$(action.deps)
+    local help=$(action.help)
+    local uses=$(action.uses)
     
     # print header
     print_header "$name -> $desc" "-"
@@ -346,7 +346,7 @@ function action_list {
     echo "type: $type"
 
     if [[ $deps != '' ]]; then
-	echo -e "deps: $(action_pretty_print_deps)"
+	echo -e "deps: $(action.pretty_print_deps)"
     fi
 
     if [[ "$uses" != '' ]]; then
@@ -355,12 +355,12 @@ function action_list {
     echo
 
     local id=''
-    if action_bound?; then
-	bindings_seek_start
-	for id in $(bindings_select action $name); do
-	    bindings_seek --next $id 
+    if action.bound?; then
+	bindings.seek_start
+	for id in $(bindings.select action $name); do
+	    bindings.seek --next $id 
 	    echo -ne '\t'
-	    echo "$(ks2kn $(binding_keyseq)) ($(binding_keymap)-mode)"
+	    echo "$(ks2kn $(binding.keyseq)) ($(binding.keymap)-mode)"
 	done
 	echo
     fi
@@ -371,13 +371,13 @@ function action_list {
     fi
 }
 
-function action_code {
+function action.code {
     
-    local name=$(action_name)
-    local desc=$(action_desc)
-    local type=$(action_type)
-    local deps=$(action_deps)
-    local help=$(action_help)
+    local name=$(action.name)
+    local desc=$(action.desc)
+    local type=$(action.type)
+    local deps=$(action.deps)
+    local help=$(action.help)
 
     print_line "$name" "#" "80"
     echo
@@ -391,17 +391,17 @@ function action_code {
     
     # bind action
     local id=''
-    if action_bound?; then
-	bindings_seek_start
-	for id in $(bindings_select action $name); do
-	    bindings_seek --next $id 
-	    binding_code
+    if action.bound?; then
+	bindings.seek_start
+	for id in $(bindings.select action $name); do
+	    bindings.seek --next $id 
+	    binding.code
 	done
     fi
     echo
 
     # function
-    if action_function?; then
+    if action.function?; then
 	function_code "action-$name"
     fi
     echo

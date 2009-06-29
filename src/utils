@@ -65,8 +65,8 @@ function bashrun_prepare_logfile {
 function ks2kn {
     local keyseq=$1
 
-    if keynames_seek "$keyseq"; then
-	echo $(keyname_name)
+    if keynames.seek "$keyseq"; then
+	echo $(keyname.name)
 	return 0
     fi
 

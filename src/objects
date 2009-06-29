@@ -22,7 +22,7 @@ _OBJECTS_INTERFACE_OPTIONS_FOUND=()
 
 # "class methods" (seeking to, matching and iterating objects) #################
 
-function objects_seek { # args
+function objects.seek { # args
     
     local matched=0
     local num_args=$#
@@ -76,40 +76,40 @@ function objects_seek { # args
     fi
 }
 
-function objects_seek_start {
+function objects.seek_start {
     _OBJECTS_POSITION=0
     _OBJECTS_NEXT=0
 }
 
-function objects_seek_end {
+function objects.seek_end {
     (( _OBJECTS_POSITION = (_OBJECTS_SIZE-1) * _OBJECTS_WIDTH ))
     _OBJECTS_NEXT=0
 }
 
-function objects_next? {
+function objects.next? {
     [[ $_OBJECTS_POSITION+$_OBJECTS_WIDTH -le ${#_OBJECTS[@]} ]] && return 0
     return 1
 }
 
-function objects_current {
+function objects.current {
     echo "${_OBJECTS[$_OBJECTS_POSITION]}"
 }
 
-function objects_next {
+function objects.next {
     (( _OBJECTS_POSITION += _OBJECTS_WIDTH ))
 }
 
-function objects_previous? {
+function objects.previous? {
     [[ $_OBJECTS_POSITION+1 -ge 0 ]] && return 0
     _OBJECTS_POSITION=0
     return 1
 }
 
-function objects_previous {
+function objects.previous {
     (( _OBJECTS_POSITION -= _OBJECTS_WIDTH ))
 }
 
-function objects_select { # key value [which=0]-> "id1 id2..."
+function objects.select { # key value [which=0]-> "id1 id2..."
 
     local key=$1
     local wanted=$2
@@ -122,48 +122,48 @@ function objects_select { # key value [which=0]-> "id1 id2..."
     for ((i=0; i<=${#_OBJECTS[@]}; i+=${#_OBJECTS_KEYS[@]})); do
 	_OBJECTS_POSITION=$i
 	
-	value=$(object_get $key)
+	value=$(object.get $key)
 	    if [[ "$value" == "$wanted" ]]; then
 		ids="$ids ${_OBJECTS[$i]}"
 		[[ which -eq 0 ]] && break
 	    fi
     done
-    objects_seek $saved
+    objects.seek $saved
 
     echo "$ids"
 }
 
-function objects_modified? {
+function objects.modified? {
 
     [[ _OBJECTS_MODIFIED -eq 0 ]] && return 1
     [[ _OBJECTS_MODIFIED -eq 1 ]] && return 0
 }
 
-function objects_modified { # value
+function objects.modified { # value
     _OBJECTS_MODIFIED=$1
 }
 
-function objects_list { # [ids]
+function objects.list { # [ids]
 
     local saved=${_OBJECTS[$_OBJECTS_POSITION]}
 
     if [[ $1 != '' ]]; then
 	for id in $@; do
-	    if objects_seek $id; then
-		object_list $id
+	    if objects.seek $id; then
+		object.list $id
 	    fi
 	done
     else
-	objects_seek_start
-	while objects_next?; do
-	    object_list
-	    objects_next
+	objects.seek_start
+	while objects.next?; do
+	    object.list
+	    objects.next
 	done
     fi
-    objects_seek $saved
+    objects.seek $saved
 }
 
-function objects_all {
+function objects.all {
     
     local i=0
     local all=""
@@ -175,11 +175,11 @@ function objects_all {
 
 # "instance methods" (always operate on the object at the current position) ####
 
-function object__id {
+function object._id {
     echo ${_OBJECTS[$_OBJECTS_POSITION]}
 }
 
-function object_new {
+function object.new {
     local i
     
     for ((i=1; i<=${#_OBJECTS_KEYS[@]}; i++)); do
@@ -187,10 +187,10 @@ function object_new {
     done
     (( _OBJECTS_SIZE+=1 ))
     _OBJECTS_MODIFIED=1
-    objects_seek $1
+    objects.seek $1
 }
 
-function object_get { # key -> "value"
+function object.get { # key -> "value"
     local key=$1
     local index=-1
     local i=0
@@ -207,7 +207,7 @@ function object_get { # key -> "value"
     fi
 }
 
-function object_set { # key value
+function object.set { # key value
 
     local key=$1
     local value=$2
@@ -227,7 +227,7 @@ function object_set { # key value
     fi
 }
 
-function object_code {
+function object.code {
     
     local i=0;
     local args=''
@@ -238,27 +238,27 @@ function object_code {
     done
     _OBJECTS_POSITION=here
 
-    echo "object_new $args"
+    echo "object.new $args"
 }
 
-function objects_code {
+function objects.code {
 
     print_line "" "#" 80
     print_line "OBJECTS" '#' -1
     print_line "" "#" 80
     echo    
 
-    objects_seek_start
-    while objects_next?; do
-	object_code
-	objects_next
+    objects.seek_start
+    while objects.next?; do
+	object.code
+	objects.next
     done
 }
     
-function object_list {
+function object.list {
     local key
     for key in ${_OBJECTS_KEYS[@]}; do
-	echo "$key: $(object_get $key)"
+	echo "$key: $(object.get $key)"
     done;
     echo
 }
@@ -268,7 +268,7 @@ function object_list {
 
 if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 
-    function objects_interface_create {
+    function objects.interface_create {
 	local opt=''
 	for opt in $_OBJECTS_INTERFACE_OPTIONS; do
 	    eval "function $opt {
@@ -277,7 +277,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	done
     }
     
-    function objects_interface_destroy {
+    function objects.interface_destroy {
 	local opt=''
 	for opt in $_OBJECTS_INTERFACE_OPTIONS; do
 	    unset -f -- $opt
@@ -292,7 +292,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	    if $(type -t $destroy_interface &> /dev/null); then
 		eval "$destroy_interface"
 	    fi
-	    objects_interface_create
+	    objects.interface_create
 	fi
 
 	# set global current object type
@@ -338,8 +338,8 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	var="_OBJECTS_INTERFACE_OPTION_new"
 	if defined? $var; then
 	    if [[ ${!var} != '' ]]; then
-		if ! objects_seek ${!var}; then
-		    object_new "${!var}"
+		if ! objects.seek ${!var}; then
+		    object.new "${!var}"
 		else
 		    echo "error: object exists: ${!var}"
 		fi
@@ -354,12 +354,12 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	var="_OBJECTS_INTERFACE_OPTION_all"
 
 	if defined? $var; then
-	    which="$(objects_all)"
+	    which="$(objects.all)"
 	else
 	    if [[ "${#left[@]}" != "0" ]]; then
 		which="${left[@]}"
 	    else
-		which="$(object__id)"
+		which="$(object._id)"
 	    fi
 	fi
 	
@@ -367,7 +367,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	for id in $which; do
 
 	    # seek object
-	    if ! objects_seek $id; then
+	    if ! objects.seek $id; then
 		echo "warning: no such object: $id"
 		echo "         use '+object --new $id' to create it"
 		continue
@@ -381,7 +381,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	    # --code
 	    var="_OBJECTS_INTERFACE_OPTION_code"
 	    if defined? $var; then	    
-		object_code
+		object.code
 	    fi
 	    
 	    # call methods
@@ -390,12 +390,12 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	    for method in $_OBJECTS_INTERFACE_METHODS; do
 		var="_OBJECTS_INTERFACE_OPTION_$method"
 		if defined? $var; then
-		    if $(type -t object_$method &> /dev/null); then
+		    if $(type -t object.$method &> /dev/null); then
 			args="${!var}"
 			args=${args//\\/\\\\}
-			eval "object_$method ${args}"
+			eval "object.$method ${args}"
 		    else
-			echo "method object_$method not implemented."
+			echo "method object.$method not implemented."
 		    fi
 		fi
 	    done
@@ -408,9 +408,9 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 		if defined? $var; then
 		    val="${!var}"
 		    if [[ "$val" == '' ]]; then
-			echo $(object_get $key)
+			echo $(object.get $key)
 		    else
-			object_set "$key" "$val"
+			object.set "$key" "$val"
 		    fi
 		fi
 	    done	
@@ -427,14 +427,14 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
     }
     
     # completion
-    function objects_complete {
+    function objects.complete {
 
 	local cur prev opts
 	COMPREPLY=()
 
 	cur="${COMP_WORDS[COMP_CWORD]}"
 	prev="${COMP_WORDS[COMP_CWORD-1]}"
-	opts="$(objects_all)"
+	opts="$(objects.all)"
 
 	if [[ ${cur} == * ]]; then
 	    if [[ ${cur} =~ ^\- ]]; then
@@ -448,7 +448,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
         return 0
     }
 
-    complete -o default -F objects_complete +object
+    complete -o default -F objects.complete +object
     
 fi # end _OBJECTS_HAVE_INTERFACE
 
