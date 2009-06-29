@@ -4,6 +4,7 @@
 
 _OBJECTS_HOME=$BASHRUN_CACHE_HOME
 _OBJECTS_FOCUS=''
+_OBJECTS_TYPES=''
 
 function object {
 
@@ -12,6 +13,8 @@ function object {
     local methods="nil"
     local have_interface=0
     
+    _OBJECTS_TYPES="$_OBJECTS_TYPES $name"
+
     if [[ "$#" == "3" ]]; then 
 	methods=${3}
     fi
@@ -32,6 +35,7 @@ function object {
 
     if [[ -f $tmpfile ]]; then
 	source $tmpfile
+	eval "${name}s.restore"
 	return 0
     fi
 
@@ -55,6 +59,7 @@ function object {
     done
     
     source $tmpfile
+    eval "${name}s.restore"
 
     return 0
 }
@@ -71,6 +76,13 @@ function objects.focus {
 
 function objects.list {
     ${_OBJECTS_FOCUS}s.list 
+}
+
+function objects.dump {
+    local type=""
+    for type in $_OBJECTS_TYPES; do
+	eval "${type}s.dump"
+    done
 }
 
 function object.create_reader {
