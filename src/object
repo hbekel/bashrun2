@@ -35,7 +35,6 @@ function object {
 
     if [[ -f $tmpfile ]]; then
 	source $tmpfile
-	eval "${name}s.restore"
 	return 0
     fi
 
@@ -59,7 +58,6 @@ function object {
     done
     
     source $tmpfile
-    eval "${name}s.restore"
 
     return 0
 }

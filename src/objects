@@ -350,7 +350,10 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	    else
 		if [[ "$expect" == "optarg" ]]; then
 		    var="_OBJECTS_INTERFACE_OPTION_$current" 
-		    eval "$var=\"${!var} $1\""
+		    val="${!var} $1"
+		    val=$(printf '%q ' "$val") 		    
+		    val=${val//\$/\\\\\$}
+		    eval "$var=$val"
 		else
 		    left[${#left[@]}]="$1"
 		fi
