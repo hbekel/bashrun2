@@ -25,8 +25,8 @@ function handlers.apply {
     while handlers.next?; do
 	
 	local append=1
-	local pattern=$(handler.pattern)
-	local string=$(handler.string)
+	local pattern=$(handler.get_pattern)
+	local string=$(handler.get_string)
 
 	if [[ "$BASHRUN_COMMAND" =~ $pattern ]]; then	    
 
@@ -102,18 +102,25 @@ function handlers.apply {
 
 function handler.code {
 
-    local pattern=$(handler.pattern)
-    local string=$(handler.string)
+    local name=$(handler.get_name)
+    local pattern=$(handler.get_pattern)
+    local string=$(handler.get_string)
 
+    name=${name//\'/\\\'}
     pattern=${pattern//\'/\\\'}
     string=${string//\'/\\\'}
 
-    echo "§handler '$pattern'" "'$string'"
+    print_line "$name" "#" "80"
+    echo
+    echo "+handler --new '$name'"
+    echo "--pattern '$pattern'" 
+    echo "--string '$string'"
+    echo
 }
 
 function handlers.code {
 
-    print_header 'BASHRUN_HANDLERS' '#'
+    print_header 'HANDLERS' '#'
 
     handlers.seek_start
     while handlers.next?; do

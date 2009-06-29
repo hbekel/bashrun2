@@ -21,9 +21,9 @@ function binding.bound? {
 
 function binding.code {
     
-    local keyseq=$(binding.keyseq)
-    local keymap=$(binding.keymap)
-    local action=$(binding.action)
+    local keyseq=$(binding.get_keyseq)
+    local keymap=$(binding.get_keymap)
+    local action=$(binding.get_action)
 
     local args="'$keyseq'"
     [[ "$keymap" != 'emacs' ]] && args="$args '$keymap'"

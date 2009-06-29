@@ -47,9 +47,7 @@ function object {
     local i=0
     local key
     for key in $keys; do
-	object.create_reader $name $NAME $key $i
-	object.create_reader $name $NAME $key $i 1
-	object.create_writer $name $NAME $key $i
+	object.create_accessors $name $NAME $key $i
 	let i++
     done
     
@@ -78,18 +76,11 @@ function object.create_reader {
     local NAME=$2
     local key=$3
     local field=$4
-    local sugar=${5:0}
     local tmpfile=/tmp/$name.bash
 
-    local method_name
-    if [[ sugar -eq 1 ]]; then
-	method_name="${name}.${key}"
-    else
-	method_name="${name}.get_${key}"
-    fi
     echo $(cat <<EOF
 
-function ${method_name} {
+function ${name}.get_${key} {
     echo "\${_${NAME}S[\$_${NAME}S_POSITION+$field]}";
 }
 EOF
@@ -111,6 +102,11 @@ function ${name}.set_${key} {
 }
 EOF
     ) >> $tmpfile
+}
+
+function object.create_accessors {
+    object.create_reader "$@"
+    object.create_writer "$@"
 }
 
 function defined? {
