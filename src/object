@@ -2,7 +2,7 @@
 
 ################################################################################
 
-_OBJECTS_CURRENT_TYPE=''
+_OBJECTS_FOCUS=''
 
 function object {
 
@@ -42,7 +42,8 @@ function object {
 	sed "s|_OBJECTS_INTERFACE_OPTIONS=''|_OBJECTS_INTERFACE_OPTIONS='$interface' |" | \
 	sed "s|_OBJECTS_HAVE_INTERFACE=0|_OBJECTS_HAVE_INTERFACE=$have_interface|" | \
 	sed "s|_OBJECTS_INTERFACE_METHODS=''|_OBJECTS_INTERFACE_METHODS='$methods'|" | \
-	sed "s|object|$name|g;s|OBJECT|$NAME|g" \
+	sed "s|object|$name|g;s|OBJECT|$NAME|g;" | \
+	sed "s|ObJeCt|OBJECT|g;s|oBjEcT|object|g" \
 	> $tmpfile
 
     local i=0
@@ -57,19 +58,19 @@ function object {
     return 0
 }
 
-function objects.current_type {
+function objects.focus {
     
     local type=$1
     if [[ "$type" == '' ]]; then
-	echo "$_OBJECTS_CURRENT_TYPE"
+	echo "$_OBJECTS_FOCUS"
     else
-	_OBJECTS_CURRENT_TYPE="$type"
+	_OBJECTS_FOCUS="$type"
     fi
 }
 
 
 function objects.list {
-    ${_OBJECTS_CURRENT_TYPE}s_list 
+    ${_OBJECTS_FOCUS}s.list 
 }
 
 function object.create_reader {
