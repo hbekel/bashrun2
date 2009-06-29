@@ -2,9 +2,9 @@
 
 ################################################################################
 
-object "binding" "keyseq keymap action is_bound readline"  
-object "internal" "action keymap char readline"                
-object "keyname" "keyseq name"                             
+class "binding" "keyseq keymap action is_bound readline"  
+class "internal" "action keymap char readline"                
+class "keyname" "keyseq name"                             
 
 keyname.new '\x7f' 'C-<bsp>'
 

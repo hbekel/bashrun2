@@ -2,7 +2,7 @@
 
 ################################################################################
 
-object "action" "name type desc deps help" "bind unbind rebind"
+class "action" "name type desc deps help" "bind unbind rebind"
 
 ################################################################################
 

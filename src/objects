@@ -41,7 +41,9 @@ function objects.focus {
     fi
 }
 
-function object {
+function class {
+
+    # create object from 'objects' template
 
     local name=$1
     local keys=$2
