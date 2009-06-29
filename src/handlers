@@ -87,12 +87,18 @@ function handlers.apply {
 		return 1
 	    fi
 
+	    # eval if this contains vars (e.g. $PAGER, $BROWSER)
+	    if [[ $string =~ \$.[a-zA-z0-9_] ]]; then
+		eval "string=\"$string\""
+	    fi
+	    bashrun_log "$string"
+
 	    if [[ append -eq 1 ]]; then
 		BASHRUN_COMMAND="$string $BASHRUN_COMMAND"
 	    else
 		BASHRUN_COMMAND="$string"
 	    fi
-
+	    
 	    bashrun_log "handled"
 	    return
 	fi
