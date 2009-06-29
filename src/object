@@ -2,6 +2,7 @@
 
 ################################################################################
 
+_OBJECTS_HOME=$BASHRUN_CACHE_HOME
 _OBJECTS_FOCUS=''
 
 function object {
@@ -67,7 +68,6 @@ function objects.focus {
 	_OBJECTS_FOCUS="$type"
     fi
 }
-
 
 function objects.list {
     ${_OBJECTS_FOCUS}s.list 
