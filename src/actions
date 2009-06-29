@@ -14,11 +14,11 @@ function action_new {
     action_set_type "trap-and-launch"
     action_set_desc "$1"
 
-    if ! type -t action-$1; then
+    if ! type -t action-$1 &> /dev/null; then
 	eval "
 	action-$1 ()
 	{ 
-	    !executable? && +handlers
+	    ! executable? && +handlers
 	    +terminal
 	    return 0
 	}"
@@ -379,11 +379,11 @@ function action_code {
     local deps=$(action_deps)
     local help=$(action_help)
 
-    print_header "$desc" "#"
+    print_line "$name" "#" "80"
+    echo
 
     # add action 
     echo "+action --new '$name'"
-    echo
     echo "--desc '$desc'"
     echo "--type '$type'"
     [[ "$deps" != "" ]] && echo "--deps '$deps'"

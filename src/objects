@@ -240,6 +240,20 @@ function object_code {
 
     echo "object_new $args"
 }
+
+function objects_code {
+
+    print_line "" "#" 80
+    print_line "OBJECTS" '#' -1
+    print_line "" "#" 80
+    echo    
+
+    objects_seek_start
+    while objects_next?; do
+	object_code
+	objects_next
+    done
+}
     
 function object_list {
     local key
@@ -434,7 +448,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
         return 0
     }
 
-    complete -F objects_complete +object
+    complete -o default -F objects_complete +object
     
 fi # end _OBJECTS_HAVE_INTERFACE
 

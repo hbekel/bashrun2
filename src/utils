@@ -94,8 +94,8 @@ function print_line {
     local i;
 
     if [[ "$title" != '' ]]; then
-	(( width = width - ${#title} - 4 )) 
-	echo -n "$char$char $title "
+	(( width = width - ${#title} - 8 )) 
+	echo -n "$char$char-- $title --"
     fi
 
     for((i=0; i<$width; i++)); do

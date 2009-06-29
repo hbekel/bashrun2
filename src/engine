@@ -26,6 +26,9 @@ function bashrun_engine_init {
     # get current readline bindings
     readline_get_bindings
     
+    # source rc file
+    source /home/chenno/workspace/bashrun/src/rc
+
     # escape from trap in interactive mode
     PROMPT_COMMAND="trap DEBUG; $PROMPT_COMMAND"
 
