@@ -2,9 +2,10 @@
 
 ################################################################################
 
-_OBJECTS_CACHE_HOME=''
-_OBJECTS_DATA_HOME=''
-_OBJECTS_NAMESPACE=''
+_OBJECTS_CACHE_HOME='/tmp'
+_OBJECTS_DATA_HOME='/tmp'
+_OBJECTS_NAMESPACE='boop'
+
 _OBJECTS_TYPES=''
 _OBJECTS_FOCUS=''
 
@@ -174,6 +175,26 @@ EOF
 function object.create_accessors {
     object.create_reader "$@"
     object.create_writer "$@"
+}
+
+# utility functions
+
+function function_code {
+    echo "$(type $1 | sed '1 d')"
+}
+
+function function_clone {
+
+    local function="$1"
+    local newname="$2"
+
+    if $(type -t $function &> /dev/null); then
+	local code="$(echo -n '#'; type $function)"
+	code="${code/$function \(\)/$newname ()}"
+	eval "$code"
+    else
+	echo "function_clone: error: no such function: $function"
+    fi
 }
 
 function defined? {
