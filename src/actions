@@ -298,6 +298,7 @@ function action.runtime_interface_create {
     function +handlers { handlers.apply; }
     function +rules { :; }
     function +terminal { bashrun_command_wrap_in_terminal; }
+    function +pager { bashrun_command_append_pager; }
     function +user { bashrun_command_wrap_in_su ${1:-root}; }
 }
 
@@ -312,6 +313,7 @@ function action.runtime_interface_destroy {
 	    +handlers \
 	    +rules \
 	    +terminal \
+	    +pager \
 	    +user
 }
 

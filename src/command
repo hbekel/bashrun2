@@ -159,3 +159,7 @@ function bashrun_command_wrap_in_terminal {
 
     return 0
 }
+
+function bashrun_command_append_pager {
+    BASHRUN_COMMAND="$BASHRUN_COMMAND | ${PAGER:-less -f}"
+}
