@@ -208,6 +208,9 @@ function bashrun_engine_default_actions {
 
 function bashrun_engine_shutdown { 
 
+    # run shutdown callbacks
+    actions.shutdown
+
     # dump user data
     objects.dump
 
