@@ -276,7 +276,6 @@ function objects.code {
 
     print_line "" "#" 80
     print_line "OBJECTS" '#' -1
-    print_line "" "#" 80
     echo    
 
     objects.seek_start

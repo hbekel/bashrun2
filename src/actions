@@ -379,7 +379,8 @@ function action.code {
     local deps=$(action.get_deps)
     local help=$(action.get_help)
 
-    print_line "$name" "#" "80"
+    print_line "" '#' 80
+    print_line "$name" "#" "-1"
     echo
 
     # add action 
