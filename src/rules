@@ -1,0 +1,67 @@
+# -*- shell-script -*-
+
+################################################################################
+
+class "rule" "name progs" ""
+
+BASHRUN_RULES_APPLIED=0
+
+################################################################################
+
+function rules_apply {
+
+    [[ BASHRUN_RULES_APPLIED -eq 1 ]] && return 0
+
+    local action=$(actions.current)
+    local program=''
+    local word="$BASHRUN_COMMAND_WORD"
+    local command="$BASHRUN_COMMAND"
+    local regexp=''
+
+    bashrun_command_get_word
+
+    rules.seek_start
+    while rules.next?; do
+
+	for program in $(rule.get_progs); do
+
+	    if [[ "$word" == "$program" ]]; then
+		# literal match
+
+		bashrun_log "$word == $program -> $(rule.get_name)"
+		BASHRUN_RULES_APPLIED=1
+
+		if actions.seek $(rule.get_name); then
+		    action.run_function
+		fi
+		return 0
+	    else
+		if [[ "$program" =~ /.+?/ ]]; then
+		    # regexp given
+		    regexp=${program:1:${#program}-2}
+
+		    # match the whole command against regexp
+		    if [[ "$command" =~ $regexp ]]; then
+			# regexp match
+		
+			bashrun_log "'$command' =~ $program -> $(rule.get_name)"
+			BASHRUN_RULES_APPLIED=1
+
+			if actions.seek $(rule.get_name); then
+			    action.run_function
+			fi
+			return 0
+		    fi
+		fi
+	    fi
+	done
+	rules.next
+    done
+    rules.seek_start
+}
+
+function rules_applied? {
+    [[ BASHRUN_RULES_APPLIED -eq 1 ]] && return 0
+    [[ BASHRUN_RULES_APPLIED -eq 0 ]] && return 1
+}
+

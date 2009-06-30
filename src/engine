@@ -144,6 +144,7 @@ function bashrun_engine_launch {
     if actions.seek $BASHRUN_ACTION; then
 	if action.function?; then
 	    if ! action.run_function; then
+		BASHRUN_RULES_APPLIED=0
 		bashrun_engine_busy 0
 		return 0
 	    fi
@@ -158,7 +159,9 @@ function bashrun_engine_launch {
 	bashrun_log "not executable."
     fi
 
+    BASHRUN_RULES_APPLIED=0
     bashrun_engine_busy 0
+    return 0
 }
 
 function bashrun_engine_execute {

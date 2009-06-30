@@ -293,7 +293,7 @@ function objects.code {
 	object.code
 	objects.next
     done
-    fruits.seek_start
+    objects.seek_start
 }
     
 function object.list {
