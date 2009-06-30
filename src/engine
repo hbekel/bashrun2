@@ -18,9 +18,6 @@ function bashrun_engine_init {
     
     bashrun_log "initializing..."
 
-    # setup
-    bashrun_prepare_directories
-
     # append pid to shared pidfile
     echo $$ >> $BASHRUN_PIDFILE
 

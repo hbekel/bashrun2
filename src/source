@@ -17,6 +17,8 @@ share=$prefix/share/bashrun-engine
 source $share/utils
 source $share/globals
 
+bashrun_prepare_directories
+
 source $share/actions
 source $share/bindings
 source $share/handlers
