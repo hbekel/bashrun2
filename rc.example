@@ -1,0 +1,198 @@
+# -*- shell-script -*-
+
+################################################################################
+#-- RULES --
+################################################################################
+
++rule --new run-page
+--progs /^ls/ uname df
+
++rule --new run-term
+--progs htop watch screen
+
++rule --new su-run 
+--progs /^emacs /etc//
+
+################################################################################
+#-- HANDLERS -- 
+################################################################################
+
+##-- google --##################################################################
+
++handler --new "google"
+--string '$BROWSER www.google.com/search?q=\"%1\"'
+--pattern '^gg:(.+)'
+
+##-- manual --##################################################################
+
++handler --new "manual"
+--pattern '(.+)\?' 
+--string "xterm -e 'man %1'"
+
+################################################################################
+##-- ACTIONS --
+################################################################################
+
+##-- run -- ####################################################################
+
++action --new 'run'
+--desc 'Run command'
+--type 'trap-and-launch'
+--bind '\x7f'
+--bind '\x7f' 'vi-insert'
+
+action-run () 
+{ 
+    ! executable? && +handlers
+    executable? && +rules
+    return 0
+}
+
+##-- run-term -- ###############################################################
+
++action --new 'run-term'
+--desc 'Run command in terminal'
+--type 'trap-and-launch'
+--bind '\e\C-m'
+
+action-run-term () 
+{ 
+    action-run
+    +terminal
+    return 0
+}
+
++action --new 'run-page'
+--desc 'Run command in terminal and page'
+--type 'trap-and-launch'
+--bind '\e+'
+
+action-run-page () 
+{ 
+    action-run
+    +pager
+    +terminal
+    return 0
+}
+
++action --new 'run-hold'
+--desc 'Run command in terminal and hold'
+--type 'trap-and-launch'
+--bind '\eh'
+
+action-run-hold () 
+{ 
+    action-run
+    command "$(command); read -n1"
+    +terminal;
+    return 0
+}
+
+
+##-- su-run- --#################################################################
+
++action --new 'su-run'
+--desc 'Run command as root'
+--type 'trap-and-launch'
+--bind '\esu'
+
+action-su-run () 
+{ 
+    action-run
+    +user root;
+    return 0
+}
+
+##-- su-run-term --#############################################################
+
++action --new 'su-run-term'
+--desc 'Run command in terminal as root'
+--type 'trap-and-launch'
+--bind '\es\C-m'
+
+action-su-run-term () 
+{ 
+    action-run-term    
+    +user root;
+    return 0
+}
+
+##-- edit-mode-enter --###############################################################
+
++action --new 'edit-mode-enter'
+--desc 'edit-mode-enter'
+--type 'shell'
+--bind '\ee'
+--shutdown "action-edit-mode-leave"
+
+action-edit-mode-enter () 
+{ 
+    OLDPS1="$PS1";
+    PS1='<$(objects.focus): $(eval +$(objects.focus) --name)> ';
+    function ls () 
+    { 
+        objects.list
+    };
+
+    +action edit-mode-leave --bind '\ee';
+
+    xdotool keyup alt;
+    xdotool key ctrl+m;
+    return 1
+}
+
+##-- edit-mode-leave --#########################################################
+
++action --new 'edit-mode-leave'
+--desc 'edit-mode-leave'
+--type 'shell'
+
+action-edit-mode-leave () 
+{ 
+    PS1="$OLDPS1";
+    unset -f ls;
+
+    +action edit-mode-enter --bind '\ee';
+
+    xdotool keyup alt;
+    xdotool key ctrl+m;
+    return 1
+}
+
+##-- map/unmap/toggle --#########################################################
+
+# These actions use a global variable to track the window's state
+BASHRUN_WINDOW_STATE=1
+
++action --new 'map'
+--desc "map window, should work for xterm, urxvt (both set WINDOWID)"
+--type "shell"
+
+function action-map {
+    xdotool windowmap $WINDOWID
+    BASHRUN_WINDOW_STATE=1
+    return 1
+}
+
++action --new 'unmap'
+--desc "unmap window"
+--type "shell" 
+
+function action-unmap {
+    xdotool windowunmap $WINDOWID
+    BASHRUN_WINDOW_STATE=0
+    return 1
+}
+
++action --new 'toggle'
+--desc 'toggle window state'
+--type 'shell'
+
+function action-toggle {
+    if [[ BASHRUN_WINDOW_STATE -eq 1 ]]; then
+	action-unmap
+    else
+	action-map
+    fi
+    return 1
+}

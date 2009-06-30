@@ -23,13 +23,14 @@ FILES=(
     objects
     readline
     remote
+    rules
     signals
     source
     utils
 )
 
 for file in ${FILES[@]}; do
-    install -v -m 644 $file $PREFIX/share/bashrun-engine
+    install -v -m 644 src/$file $PREFIX/share/bashrun-engine
 done
 echo
 echo -e "\033[1;32mbashrun-engine development version has been installed in $PREFIX\033[0m"

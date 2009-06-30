@@ -6,20 +6,31 @@
 #
 ################################################################################
 
-source utils
-source globals
+if [[ "$TERM" == "linux" ]]; then
+    return
+fi
 
-source actions
-source bindings
-source handlers
-source rules
-source bookmarks
+path=$(which bashrun-remote) 
+prefix=${path/\/bin\/bashrun-remote/}
+share=$prefix/share/bashrun-engine
 
-source signals
-source remote
-source readline
-source command
-source engine
+source $share/utils
+source $share/globals
+
+source $share/actions
+source $share/bindings
+source $share/handlers
+source $share/rules
+source $share/bookmarks
+
+source $share/signals
+source $share/remote
+source $share/readline
+source $share/command
+source $share/engine
 
 bashrun_engine_init
-return
+
+unset share
+unset prefix
+unset path

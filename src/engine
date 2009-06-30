@@ -16,11 +16,11 @@ function bashrun_engine_init {
     
     bashrun_log "initializing..."
 
-    # append pid to shared pidfile
-    echo $$ >> $BASHRUN_PIDFILE
-
     # setup
     bashrun_prepare_directories
+
+    # append pid to shared pidfile
+    echo $$ >> $BASHRUN_PIDFILE
 
     # get current readline bindings
     readline_get_bindings

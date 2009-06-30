@@ -93,7 +93,7 @@ function class {
     local NAME="$(objects.namespace)_$name"
     NAME=$(echo $NAME | tr "[:lower:]" "[:upper:]")
 
-    cat object | \
+    cat $BASHRUN_SHARE/object | \
 	sed "s|_OBJECTS_KEYS=()|_OBJECTS_KEYS=($keys)|" | \
 	sed "s|_OBJECTS_INTERFACE_OPTIONS=''|_OBJECTS_INTERFACE_OPTIONS='$interface' |" | \
 	sed "s|_OBJECTS_HAVE_INTERFACE=0|_OBJECTS_HAVE_INTERFACE=$have_interface|" | \
