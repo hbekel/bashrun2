@@ -161,6 +161,14 @@ action-edit-mode-leave ()
 
 ##-- map/unmap/toggle --#########################################################
 
++action --new shell
+--type shell
+
+function action-shell {
+    eval "$command"
+    return 1
+}
+
 # These actions use a global variable to track the window's state
 # Since this file isn't sourced every time bashrun starts, it needs to
 # be initialized in the --init hook.
