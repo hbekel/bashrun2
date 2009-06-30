@@ -2,7 +2,7 @@
 
 ################################################################################
 
-class "action" "name type desc deps help shutdown" "bind unbind rebind"
+class "action" "name type desc deps help init shutdown" "bind unbind rebind"
 
 ################################################################################
 
@@ -429,6 +429,20 @@ function actions.dump {
     while actions.next?; do
 	action=$(action.get_name)
 	function_code "action-$action" >> $file
+	actions.next
+    done    
+}
+
+function actions.init {
+    
+    local callback=""
+
+    actions.seek_start
+    while actions.next?; do
+	callback=$(action.get_init)
+	if [[ "$callback" != "" ]]; then
+	    eval "$callback"
+	fi
 	actions.next
     done    
 }

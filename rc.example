@@ -162,11 +162,13 @@ action-edit-mode-leave ()
 ##-- map/unmap/toggle --#########################################################
 
 # These actions use a global variable to track the window's state
-BASHRUN_WINDOW_STATE=1
+# Since this file isn't sourced every time bashrun starts, it needs to
+# be initialized in the --init hook.
 
 +action --new 'map'
 --desc "map window, should work for xterm, urxvt (both set WINDOWID)"
 --type "shell"
+--init "BASHRUN_WINDOW_STATE=1"
 
 function action-map {
     xdotool windowmap $WINDOWID

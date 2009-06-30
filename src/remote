@@ -2,7 +2,11 @@
 
 ################################################################################
 
-BASHRUN_REMOTE_COMMAND=$BASHRUN_DATA_HOME/remote
+BASHRUN_REMOTE_COMMAND=$BASHRUN_DATA_HOME/remote-command
+
+[[ ! -f BASHRUN_REMOTE_COMMAND ]] && touch $BASHRUN_REMOTE_COMMAND
+
+################################################################################
 
 function bashrun_remote_run {
 

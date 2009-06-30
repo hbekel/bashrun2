@@ -12,6 +12,8 @@ BASHRUN_TIMESTAMP=$BASHRUN_CACHE_HOME/timestamp
 BASHRUN_LOGFILE=/dev/null
 BASHRUN_PIDFILE=$BASHRUN_CACHE_HOME/pids
 
+[[ ! -f $BASHRUN_PIDFILE ]] && touch $BASHRUN_PIDFILE
+
 function bashrun_engine_init {
     
     bashrun_log "initializing..."
@@ -35,6 +37,9 @@ function bashrun_engine_init {
     else    
 	objects.restore
     fi
+
+    # run init callbacks
+    actions.init
 
     # escape from trap in interactive mode
     PROMPT_COMMAND="trap DEBUG; $PROMPT_COMMAND"
