@@ -1,0 +1,86 @@
+#!/bin/bash
+
+function ping {
+    echo "ping $$" > $share/remote
+    if kill -USR1 $pid; then
+	waitpong
+	if [[ "$pong" == "1" ]]; then
+	    return 0
+	fi
+    fi
+    return 1
+}
+
+function pong {
+    pong=1
+    echo -n "pong -> "
+}
+
+function waitpong {
+	local s=0
+	until [[ "$pong" == "1" ]]; do
+	    sleep 0.1
+	    let s+=1
+	    [[ s -eq 10 ]] && break;
+	done
+}
+
+function send {
+    echo "$action $command" > $share/remote
+    kill -USR1 $pid
+    return $?
+}
+
+trap pong SIGUSR1
+
+action=$1
+command=${@:2}
+
+share=$HOME/.local/share/bashrun
+cache=$HOME/.cache/bashrun
+pong=0
+pid=0
+parent=0
+
+if [[ -f $cache/pids ]]; then
+  
+
+    if [[ -s $cache/pids ]]; then
+	echo "Available bashrun instances ($cache/pids):"
+	cat -n $cache/pids
+    fi
+
+    for pid in $(tac $cache/pids); do
+		
+	if [[ "$pid" != "" ]]; then
+	    
+	    if [[ "$PPID" == "$pid" ]]; then
+		parent=1
+		echo "$pid is the parent shell of this process, run self in background..."
+		$0 $@ &
+		exit 0
+	    fi
+			    
+	    echo -n "Sending ping $pid -> "
+
+	    if ping; then
+		echo "bashrun instance."
+		echo -n "Sending '$action $command' -> $pid -> "
+		if send; then 
+		    echo "done."
+		    exit 0
+		else
+		    echo "fail"
+		    continue
+		fi
+	    else
+		echo "$pid: does not respond or not a bashrun instance."
+		continue
+	    fi
+	fi
+    done
+    echo "No bashrun instance available ($cache/pids is empty)."
+else
+    echo "No bashrun pid file... this shouldn't happen unless $USER has never run it."
+fi
+exit 1
