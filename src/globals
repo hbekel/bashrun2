@@ -12,13 +12,13 @@ BASHRUN_BUGFIX_VERSION=0
 
 BASHRUN_DEBUG=${BASHRUN_DEBUG:-0}
 
-path=$(which bashrun) 
+path=$(which bashrun-remote) 
 BASHRUN_PREFIX=${path/\/bin\/bashrun/} && unset path
 
-BASHRUN_SHARE=$PREFIX/usr/share/bashrun
-BASHRUN_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}/bashrun
-BASHRUN_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}/bashrun
-BASHRUN_CACHE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}/bashrun
+BASHRUN_SHARE=$PREFIX/usr/share/bashrun-engine
+BASHRUN_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}/bashrun-engine
+BASHRUN_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}/bashrun-engine
+BASHRUN_CACHE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}/bashrun-engine
 
 source objects
 objects.cache_home $BASHRUN_CACHE_HOME

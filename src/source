@@ -1,0 +1,25 @@
+# -*- shell-script -*-
+
+################################################################################
+#
+# Source this to load and initialize the bashrun engine.
+#
+################################################################################
+
+source utils
+source globals
+
+source actions
+source bindings
+source handlers
+source rules
+source bookmarks
+
+source signals
+source remote
+source readline
+source command
+source engine
+
+bashrun_engine_init
+return
