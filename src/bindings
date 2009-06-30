@@ -10,7 +10,7 @@ keyname.new '\x7f' 'C-<bsp>'
 
 bind "'\C-z\x01': accept-line"                    # accept-line
 
-BASHRUN_BINDINGS_NEXT_CHAR=2                      # next char to bind
+BASHRUN_BINDINGS_NEXT_CHAR=20                      # next char to bind
 
 ################################################################################
 
