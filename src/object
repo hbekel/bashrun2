@@ -309,7 +309,7 @@ function object.list {
 
 if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 
-    function objects.interface_create {
+    function objects.ui.enable {
 	local opt=''
 	for opt in $_OBJECTS_INTERFACE_OPTIONS; do
 	    eval "function $opt {
@@ -318,7 +318,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	done
     }
     
-    function objects.interface_destroy {
+    function objects.ui.disable {
 	local opt=''
 	for opt in $_OBJECTS_INTERFACE_OPTIONS; do
 	    unset -f -- $opt
@@ -328,12 +328,14 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
     function +object {
 	
 	# remove a previous type's interface
-	local destroy_interface="${_ObJeCtS_FOCUS}s_interface_destroy"
+	local destroy_interface="${_ObJeCtS_FOCUS}s.ui.disable"
 	if [[ "$_ObJeCtS_FOCUS" != "object" ]]; then
-	    if $(type -t $destroy_interface &> /dev/null); then
-		eval "$destroy_interface"
+	    if [[ "$_ObJeCtS_FOCUS" != '' ]]; then
+		if $(type -t $destroy_interface &> /dev/null); then
+		    eval "$destroy_interface"
+		fi
 	    fi
-	    objects.interface_create
+	    objects.ui.enable
 	fi
 
 	# set global current object type
