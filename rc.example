@@ -44,7 +44,7 @@
 action-run () 
 { 
     ! executable? && +handlers
-    executable? && +rules
+    +rules
     return 0
 }
 

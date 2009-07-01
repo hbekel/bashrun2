@@ -253,17 +253,23 @@ function action.run {
     # enable the action interface
     action.api.enable
 
+    # enable action debugging
+    BASHRUN_DEBUG_ACTION=1
+
     # run the action function
     action-$action
     retval=$?
+
+    # disable action debugging
+    BASHRUN_DEBUG_ACTION=0
 
     # disable the action interface
     action.runtime_interface_destroy
 
     local res=""
-    [[ retval -eq 0 ]] && res='execute'
-    [[ retval -eq 1 ]] && res='done'
-    bashrun_debug emph -v "$action" "returned" -v "$retval" "->" -y "$res"
+    [[ retval -eq 0 ]] && res="-c launch"
+    [[ retval -eq 1 ]] && res="-y don't launch"
+    bashrun_debug -v "$action" "returned" -v "$retval" "->" $res
 
     bashrun_separator
 

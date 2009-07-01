@@ -2,6 +2,8 @@
 
 ################################################################################
 
+BASHRUN_DEBUG_ACTION=0
+
 function defined? {
     [[ ${!1-X} == ${!1-Y} ]]
 }
@@ -60,8 +62,12 @@ function bashrun_debug {
 	    col=$g
 	    ;;
     esac
-    echo -ne "$col$_func$n $d"
-    
+    if [[ BASHRUN_DEBUG_ACTION -eq 1 ]]; then
+	echo -ne "$col$_from$n $d"
+    else
+	echo -ne "$col$_func$n $d"
+    fi
+
     local str=''
     local requested=0
 
