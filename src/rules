@@ -32,7 +32,7 @@ function rules_apply {
 		BASHRUN_RULES_APPLIED=1
 
 		if actions.seek $(rule.get_name); then
-		    action.run_function
+		    action.run
 		fi
 		return 0
 	    else
@@ -48,7 +48,7 @@ function rules_apply {
 			BASHRUN_RULES_APPLIED=1
 
 			if actions.seek $(rule.get_name); then
-			    action.run_function
+			    action.run
 			fi
 			return 0
 		    fi

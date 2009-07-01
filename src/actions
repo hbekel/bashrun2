@@ -242,14 +242,14 @@ function action.uses {
     echo "$applies"
 }
 
-function action.run_function {
+function action.run {
     
     local action=$(action.get_name)
 
     local retval
 
     # enable the action interface
-    action.runtime_interface_create
+    action.api.enable
 
     # run the action function
     action-$action
@@ -266,7 +266,7 @@ function action.run_function {
     return $retval
 }
 
-function action.runtime_interface_create {
+function action.api.enable {
 
     function command {
 	if [[ "$#" == "0" ]]; then

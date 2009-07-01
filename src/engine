@@ -100,7 +100,7 @@ function bashrun_engine_action {
 	    shell)
 		# just run action here
 		if action.function?; then
-		    action.run_function
+		    action.run
 		    bashrun_separator
 		fi
 		bashrun_engine_busy 0
@@ -157,7 +157,7 @@ function bashrun_engine_launch {
 
     if actions.seek $BASHRUN_ACTION; then
 	if action.function?; then
-	    if ! action.run_function; then
+	    if ! action.run; then
 		BASHRUN_RULES_APPLIED=0
 		bashrun_engine_busy 0
 		bashrun_separator
