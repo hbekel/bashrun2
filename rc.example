@@ -122,7 +122,8 @@ action-su-run-term ()
 +action --new 'edit-mode-enter'
 --desc 'edit-mode-enter'
 --type 'shell'
---bind '\ee'
+--bind '\ep'
+--deps 'xdotool'
 --shutdown "action-edit-mode-leave"
 
 action-edit-mode-enter () 
@@ -134,7 +135,7 @@ action-edit-mode-enter ()
         objects.list
     };
 
-    +action edit-mode-leave --bind '\ee';
+    +action edit-mode-leave --bind '\ep';
 
     xdotool keyup alt;
     xdotool key ctrl+m;
@@ -145,6 +146,7 @@ action-edit-mode-enter ()
 
 +action --new 'edit-mode-leave'
 --desc 'edit-mode-leave'
+--deps 'xdotool'
 --type 'shell'
 
 action-edit-mode-leave () 
@@ -152,7 +154,7 @@ action-edit-mode-leave ()
     PS1="$OLDPS1";
     unset -f ls;
 
-    +action edit-mode-enter --bind '\ee';
+    +action edit-mode-enter --bind '\ep';
 
     xdotool keyup alt;
     xdotool key ctrl+m;
