@@ -5,7 +5,7 @@
 function bashrun_signal_usr1 {
 
     local command
-    bashrun_debug "received"
+    bashrun_separator "SIGUSR1" 12
 
     bashrun_remote_run
 }

@@ -19,8 +19,8 @@ BASHRUN_PIDFILE=$BASHRUN_CACHE_HOME/pids
 
 function bashrun_engine_init {
     
-    bashrun_debug "initializing..."
-
+    bashrun_separator "bashrun-engine $BASHRUN_VERSION"
+    
     # append pid to shared pidfile
     echo $$ >> $BASHRUN_PIDFILE
 
@@ -52,6 +52,8 @@ function bashrun_engine_init {
 
     # shutdown on exit
     trap bashrun_engine_shutdown EXIT
+    
+    bashrun_separator
 }
 
 function bashrun_engine_action {
@@ -59,6 +61,8 @@ function bashrun_engine_action {
     local action=$1       # action to perform
     local type=$2         # action type override
     local command="$3"    # command override
+
+    bashrun_separator "$action"
 
     if actions.seek $action; then
 
@@ -97,6 +101,7 @@ function bashrun_engine_action {
 		# just run action here
 		if action.function?; then
 		    action.run_function
+		    bashrun_separator
 		fi
 		bashrun_engine_busy 0
 		;;
@@ -126,13 +131,17 @@ function bashrun_engine_trap {
     
     # pass through trap builtin
     if [[ "$BASHRUN_COMMAND" =~ ^trap ]]; then
-	bashrun_debug "trap is removed"
+	bashrun_debug emph "trap is removed"
+	bashrun_separator 
 	bashrun_engine_busy 0
 	return 0
     fi
     bashrun_debug "$BASHRUN_COMMAND"
 
     bashrun_engine_launch
+
+    bashrun_separator 
+
     return 1
 }
 
@@ -151,6 +160,7 @@ function bashrun_engine_launch {
 	    if ! action.run_function; then
 		BASHRUN_RULES_APPLIED=0
 		bashrun_engine_busy 0
+		bashrun_separator
 		return 0
 	    fi
 	fi
@@ -161,7 +171,7 @@ function bashrun_engine_launch {
     if bashrun_command_word_executable?; then
 	bashrun_engine_execute
     else
-	bashrun_debug "not executable."
+	bashrun_debug fail "not executable."
     fi
 
     BASHRUN_RULES_APPLIED=0

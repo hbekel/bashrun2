@@ -65,15 +65,14 @@ function action.bind {
 	char=$(printf "%.2X" $BASHRUN_BINDINGS_NEXT_CHAR)
 
 	if [[ BASHRUN_BINDINGS_NEXT_CHAR -gt 0x7f ]]; then
-	    bashrun_debug "maximum number of internal keyseqs reached, skipping..." "fail"
+	    bashrun_debug warn "maximum number of internal keyseqs reached, skipping..."
 	    return 1
 	fi
 	
 	bind="-m $keymap -x \$'\"\C-z\\x$char\":"
 	bind="$bind tput cr; bashrun_engine_action $action'"
 
-	bashrun_debug "int: $action ($type) -> \C-z\\x$char ($keymap)"
-	# echo "bind $bind"
+	bashrun_debug -y "int" action type "-->" -v "\C-z\\x$char" "($keymap)" 
 	eval "bind $bind"	    
 	
 	#save readline binding in internal
@@ -87,7 +86,7 @@ function action.bind {
     else
 	# there's already a internal character bound, use it
 	char=$(internal.get_char)
-	bashrun_debug "redirecting: $action ($type) -> $char ($keymap)"
+	bashrun_debug -y "ref" action type "-->" -v "$char" "($keymap)" 
     fi
     
     # don't accept-line for 'launch' or 'shell' bindings
@@ -99,7 +98,7 @@ function action.bind {
     bind="-m $keymap '\"$keyseq\"':$'\"\C-z\x$char$accept\"'"
     
     # bind
-    bashrun_debug "usr: $action ($type) -> $keyname ($keymap)"
+    bashrun_debug emph -y "usr" action type "-->" -v "$keyname" "($keymap)" 
     # echo "bind $bind"
     eval "bind $bind"
 

@@ -2,29 +2,115 @@
 
 ################################################################################
 
-function bashrun_defined {
+function defined? {
     [[ ${!1-X} == ${!1-Y} ]]
 }
 
 function bashrun_debug {
+
+    # bashrun_debug [--success] "var=" var "->" g "yes!" 
+    # bashrun_debug --warn "var=" var "->" y "hmm..." 
+    # bashrun_debug --fail "var=" var "->" r "you fail!" 
+
+    [[ BASHRUN_DEBUG -eq 0 ]] && return
     
-    [[ ! BASHRUN_DEBUG -eq 1 ]] && return
+    # color
+
+    local w="\033[1;37m" # white
+    local r="\033[1;31m" # red
+    local g="\033[1;32m" # green 
+    local b="\033[1;34m" # blue
+    local c="\033[1;36m" # cyan
+    local m="\033[1;35m" # magenta
+    local y="\033[1;33m" # yellow
+    local n="\033[0m"    # none
+    local d="$b"         # default
+    local v="$w"         # variable
     
-    local msg=$1
+    local col=""
+
+    # print function name
     
     local func=${FUNCNAME[1]}
-    local from=${FUNCNAME[2]}
     func=${func//}
+    func=${func/bashrun_/}
+    
+    local from=${FUNCNAME[2]}
     from=${from//}
-    from=${from:-source}
+    from=${from:-shell}
 
-    if bashrun_defined $msg; then
-	echo "$func: $msg=${!msg}"
-	return 0
-    else
-	echo "$func: $msg"
+    case $1 in	
+	fail)
+	    col=$r
+	    shift
+	    ;;
+	warn)
+	    col=$y
+	    shift
+	    ;;
+	info)
+	    col=$g
+	    shift
+	    ;;
+	emph)
+	    col=$c
+	    shift
+	    ;;
+	*)
+	    col=$g
+	    ;;
+    esac
+    echo -ne "$col$func$n $d"
+    
+    local str=''
+    local requested=0
+
+    for str in "$@"; do
+	
+	if [[ "$str" =~ ^-(.)$ ]]; then # color
+	    c="${BASH_REMATCH[1]}"
+	    echo -ne "${!c}"
+	    requested=1
+
+	elif defined? "$str"; then # variable
+	    echo -ne "$d$str$b$v " # name
+	    echo -n  "${!str} "    #value 
+
+	else
+	    [[ requested -eq 0 ]] && echo -ne "$d" 
+	    echo -n "$str "
+	    requested=0
+	fi
+    done
+    echo -e "$n"
+}
+
+function bashrun_separator {
+
+    local y="\033[1;33m" # yellow
+    local b="\033[1;34m" # blue
+    local n="\033[0m"    # none
+    local title=$1
+    local width=${2:-$COLUMNS}
+
+    if [[ BASHRUN_DEBUG -eq 1 ]]; then
+	
+	echo -ne "$b"
+	if [[ "$title" != '' ]]; then
+	    (( width = width - ${#title} - 4 )) 
+	    echo -ne "-- $y$title$b "
+	fi
+	    
+	local i=0;
+	for (( i=1; i<=$width; i++ )); do
+	    echo -n "-"
+	done
+	
+	echo -ne "$n"
+	echo
     fi
 }
+
 
 function bashrun_prepare_directories {
 
@@ -122,12 +208,3 @@ function display_message {
     echo
 }
 
-# colors
-W="\033[1;37m"
-R="\033[1;31m"
-G="\033[1;32m"
-B="\033[1;34m"
-Z="\033[1;36m"
-M="\033[1;35m"
-Y="\033[1;33m"
-N="\033[0m"
