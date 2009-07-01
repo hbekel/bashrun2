@@ -8,11 +8,11 @@ function defined? {
     [[ ${!1-X} == ${!1-Y} ]]
 }
 
-function bashrun_debug {
+function bashrun.debug {
 
-    # bashrun_debug [--success] "var=" var "->" g "yes!" 
-    # bashrun_debug --warn "var=" var "->" y "hmm..." 
-    # bashrun_debug --fail "var=" var "->" r "you fail!" 
+    # bashrun.debug [--success] "var=" var "->" g "yes!" 
+    # bashrun.debug --warn "var=" var "->" y "hmm..." 
+    # bashrun.debug --fail "var=" var "->" r "you fail!" 
 
     [[ BASHRUN_DEBUG -eq 0 ]] && return
     
@@ -92,7 +92,7 @@ function bashrun_debug {
     echo -e "$n"
 }
 
-function bashrun_separator {
+function bashrun.separator {
 
     local y="\033[1;33m" # yellow
     local b="\033[1;34m" # blue
@@ -119,7 +119,7 @@ function bashrun_separator {
 }
 
 
-function bashrun_prepare_directories {
+function bashrun.prepare_directories {
 
     # create XDG directories
     local dir
@@ -129,13 +129,13 @@ function bashrun_prepare_directories {
 	dir=${!dir}
 	
 	if [[ ! -d $dir ]]; then
-	    bashrun_debug "$dir"
+	    bashrun.debug "$dir"
 	    install -d -m 700 $dir
 	fi
     done
 }
 
-function bashrun_prepare_logfile {
+function bashrun.prepare_logfile {
 
     # set to /dev/null if empty
     if [[ "$BASHRUN_LOGFILE" == "" ]]; then 
@@ -144,13 +144,13 @@ function bashrun_prepare_logfile {
  
     # touch unless exists
     if [[ ! -e "$BASHRUN_LOGFILE" ]]; then
-	bashrun_debug "creating logfile $BASHRUN_LOGFILE"
+	bashrun.debug "creating logfile $BASHRUN_LOGFILE"
 	touch "$BASHRUN_LOGFILE"
     fi
 
     # revert to /dev/null unless writable
     if [[ ! -w "$BASHRUN_LOGFILE" ]]; then
-	bashrun_debug "logfile $BASHRUN_LOGFILE is not writeable"
+	bashrun.debug "logfile $BASHRUN_LOGFILE is not writeable"
 	BASHRUN_LOGFILE="/dev/null"
     fi
 }

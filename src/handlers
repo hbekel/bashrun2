@@ -19,7 +19,7 @@ function handlers.apply {
     
     # applies matching handlers to BASHRUN_BASHRUN_COMMAND
 
-    bashrun_debug "trying to match handlers..."
+    bashrun.debug "trying to match handlers..."
     
     handlers.seek_start
     while handlers.next?; do
@@ -30,7 +30,7 @@ function handlers.apply {
 
 	if [[ "$BASHRUN_COMMAND" =~ $pattern ]]; then	    
 
-	    bashrun_debug "$BASHRUN_COMMAND matches $pattern"
+	    bashrun.debug "$BASHRUN_COMMAND matches $pattern"
 
 	    # check for file test prefix
 	    if [[ "$string" =~ ^([abcdefghkprstuwxOGLSN!]+): ]]; then
@@ -49,10 +49,10 @@ function handlers.apply {
 		    else
 			test="$test -$CHAR"
 			if eval "test $test $BASHRUN_COMMAND_WORD"; then
-			    bashrun_debug "test $test $BASHRUN_COMMAND_WORD -> success"
+			    bashrun.debug "test $test $BASHRUN_COMMAND_WORD -> success"
 			    success=1
 			else
-			    bashrun_debug "test $test $BASHRUN_COMMAND_WORD -> FAIL"
+			    bashrun.debug "test $test $BASHRUN_COMMAND_WORD -> FAIL"
 			    success=0
 			    break
 			fi			
@@ -60,7 +60,7 @@ function handlers.apply {
 		    fi
 		done
 		if [[ ! success -eq 1 ]]; then
-		    bashrun_debug "not handled"
+		    bashrun.debug "not handled"
 		    continue
 		fi
 	    fi
@@ -72,17 +72,17 @@ function handlers.apply {
 	    for (( i=1; i<${#BASH_REMATCH[*]}; i++ )); do
 
 		local match=${BASH_REMATCH[$i]}
-		bashrun_debug "subexpression match \%$i $match"
+		bashrun.debug "subexpression match \%$i $match"
 		string=${string//%$i/$match}
 
-		bashrun_debug "$string"
+		bashrun.debug "$string"
 		export append=0
 	    done
 	    # fail if unmatched $n's remain in handler string
 	    if [[ $string =~ (%[0-9]) ]]; then
 		local missing=${BASH_REMATCH[1]}
-		bashrun_debug "handler incomplete: no content for $missing"
-		bashrun_debug " -> not executing, informing user"
+		bashrun.debug "handler incomplete: no content for $missing"
+		bashrun.debug " -> not executing, informing user"
 		BASHRUN_COMMAND="bashrun_show_error No content for \\$missing in $pattern handler."
 		return 1
 	    fi
@@ -91,7 +91,7 @@ function handlers.apply {
 	    if [[ $string =~ \$.[a-zA-z0-9_] ]]; then
 		eval "string=\"$string\""
 	    fi
-	    bashrun_debug "$string"
+	    bashrun.debug "$string"
 
 	    if [[ append -eq 1 ]]; then
 		BASHRUN_COMMAND="$string $BASHRUN_COMMAND"
@@ -99,7 +99,7 @@ function handlers.apply {
 		BASHRUN_COMMAND="$string"
 	    fi
 	    
-	    bashrun_debug "handled"
+	    bashrun.debug "handled"
 	    return
 	fi
 	handlers.next

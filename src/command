@@ -64,32 +64,32 @@ function bashrun.command.executable? {
     local type=`type -t $word`
 
     if [[ "$type" =~ (alias|keyword|builtin) ]]; then
-	bashrun_debug "$word-> $type -> yes"
+	bashrun.debug "$word-> $type -> yes"
 	return 0
     fi
 
     if [[ "$type" == "function" ]]; then
 	if bashrun.command.bookmark?; then
-	    bashrun_debug "$word -> bookmark -> no"
+	    bashrun.debug "$word -> bookmark -> no"
 	    return 1
 	else
-	    bashrun_debug "$word -> $type -> yes"
+	    bashrun.debug "$word -> $type -> yes"
 	    return 0
 	fi
     fi
 
     if [[ "$type" == "file" ]]; then
 	if [[ `which $word 2> /dev/null` ]]; then
-	    bashrun_debug "which: `which $word` -> yes"
+	    bashrun.debug "which: `which $word` -> yes"
 	    return 0
 	fi
 	if [[ -x $word ]]; then
-	    bashrun_debug "+x $word -> yes"
+	    bashrun.debug "+x $word -> yes"
 	    return 0
 	fi
     fi
 
-    bashrun_debug "$word -> no"
+    bashrun.debug "$word -> no"
     return 1
 }
 
@@ -103,10 +103,10 @@ function bashrun.command.builtin? {
     local result=`type $word 2>&1 | head -n1`
 
     if [[ "$result" =~ builtin ]]; then
-	bashrun_debug "$word: yes"
+	bashrun.debug "$word: yes"
 	return 0
     fi
-    bashrun_debug "$word: no"
+    bashrun.debug "$word: no"
     return 1
 }
 
@@ -132,7 +132,7 @@ function bashrun.command.add_su {
     fi
     # run the su part (passwort entry) in foreground 
     BASHRUN_EXECMODE="" 
-    bashrun_debug "$BASHRUN_COMMAND"
+    bashrun.debug "$BASHRUN_COMMAND"
 }
 
 function bashrun.command.add_terminal {
@@ -142,7 +142,7 @@ function bashrun.command.add_terminal {
     bashrun.command.get_word
 
     if [[ "$BASHRUN_COMMAND_WORD" == "xterm" ]]; then
-	bashrun_debug "already in terminal"
+	bashrun.debug "already in terminal"
 	return 1
     fi
 
@@ -155,7 +155,7 @@ function bashrun.command.add_terminal {
     # insert
     BASHRUN_COMMAND=${xterm/\$1/$BASHRUN_COMMAND}
 
-    bashrun_debug "$BASHRUN_COMMAND"
+    bashrun.debug "$BASHRUN_COMMAND"
 
     return 0
 }

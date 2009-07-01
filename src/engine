@@ -19,7 +19,7 @@ BASHRUN_PIDFILE=$BASHRUN_CACHE_HOME/pids
 
 function bashrun.engine.init {
     
-    bashrun_separator "bashrun-engine $BASHRUN_VERSION"
+    bashrun.separator "bashrun-engine $BASHRUN_VERSION"
     
     # append pid to shared pidfile
     echo $$ >> $BASHRUN_PIDFILE
@@ -53,7 +53,7 @@ function bashrun.engine.init {
     # shutdown on exit
     trap bashrun.engine.shutdown EXIT
     
-    bashrun_separator
+    bashrun.separator
 }
 
 function bashrun.engine.action {
@@ -62,7 +62,7 @@ function bashrun.engine.action {
     local type=$2         # action type override
     local command="$3"    # command override
 
-    bashrun_separator "$action"
+    bashrun.separator "engine $action"
 
     if actions.seek $action; then
 
@@ -78,14 +78,14 @@ function bashrun.engine.action {
 	# type override
 	[[ $type == '' ]] && type=$(action.get_type)
 
-	bashrun_debug "$action ($type)"
+	bashrun.debug "$action ($type)"
 
 	# dispatch action according to type
 	case $type in
 	    
 	    trap-and-launch)
 	        # set the trap
-		bashrun_debug "trap is set"
+		bashrun.debug "trap is set"
 		trap bashrun.engine.trap DEBUG
 		;; 
 	    
@@ -101,16 +101,16 @@ function bashrun.engine.action {
 		# just run action here
 		if action.function?; then
 		    action.run
-		    bashrun_separator
+		    bashrun.separator
 		fi
 		bashrun.engine.busy 0
 		;;
 	    *)
-		bashrun_debug "no such action type: $type"
+		bashrun.debug "no such action type: $type"
 		;;
 	esac
     else
-	bashrun_debug "no such action: $action"
+	bashrun.debug "no such action: $action"
     fi
 }
 
@@ -131,16 +131,16 @@ function bashrun.engine.trap {
     
     # pass through trap builtin
     if [[ "$BASHRUN_COMMAND" =~ ^trap ]]; then
-	bashrun_debug emph "trap is removed"
-	bashrun_separator 
+	bashrun.debug emph "trap is removed"
+	bashrun.separator 
 	bashrun.engine.busy 0
 	return 0
     fi
-    bashrun_debug "$BASHRUN_COMMAND"
+    bashrun.debug "$BASHRUN_COMMAND"
 
     bashrun.engine.launch
 
-    bashrun_separator 
+    bashrun.separator 
 
     return 1
 }
@@ -160,18 +160,18 @@ function bashrun.engine.launch {
 	    if ! action.run; then
 		BASHRUN_RULES_APPLIED=0
 		bashrun.engine.busy 0
-		bashrun_separator
+		bashrun.separator
 		return 0
 	    fi
 	fi
     fi
 
-    bashrun_debug "$BASHRUN_COMMAND"
+    bashrun.debug "$BASHRUN_COMMAND"
     
     if bashrun.command.executable?; then
 	bashrun.engine.execute
     else
-	bashrun_debug fail "not executable."
+	bashrun.debug fail "not executable."
     fi
 
     BASHRUN_RULES_APPLIED=0
@@ -181,7 +181,7 @@ function bashrun.engine.launch {
 
 function bashrun.engine.execute {
 
-    bashrun_prepare_logfile
+    bashrun.prepare_logfile
 
     # execute command
     if [[ "$BASHRUN_EXECMODE" == "&" ]]; then
@@ -249,7 +249,7 @@ function bashrun.engine.shutdown {
     # disable extended debugging features
     shopt -u extdebug
 
-    bashrun_remote_cleanup    
+    bashrun.remote.cleanup    
 
-    bashrun_debug "exit"
+    bashrun.debug "exit"
 }    

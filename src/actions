@@ -65,14 +65,14 @@ function action.bind {
 	char=$(printf "%.2X" $BASHRUN_BINDINGS_NEXT_CHAR)
 
 	if [[ BASHRUN_BINDINGS_NEXT_CHAR -gt 0x7f ]]; then
-	    bashrun_debug warn "maximum number of internal keyseqs reached, skipping..."
+	    bashrun.debug warn "maximum number of internal keyseqs reached, skipping..."
 	    return 1
 	fi
 	
 	bind="-m $keymap -x \$'\"\C-z\\x$char\":"
 	bind="$bind tput cr; bashrun.engine.action $action'"
 
-	bashrun_debug -y "int" -v "$action" "->" -v "\C-z\\x$char" "($keymap)" 
+	bashrun.debug -y "int" -v "$action" "->" -v "\C-z\\x$char" "($keymap)" 
 	eval "bind $bind"	    
 	
 	#save readline binding in internal
@@ -86,7 +86,7 @@ function action.bind {
     else
 	# there's already a internal character bound, use it
 	char=$(internal.get_char)
-	bashrun_debug -y "ref" -v "$action" "->" -v "$char" "($keymap)" 
+	bashrun.debug -y "ref" -v "$action" "->" -v "$char" "($keymap)" 
     fi
     
     # don't accept-line for 'launch' or 'shell' bindings
@@ -98,7 +98,7 @@ function action.bind {
     bind="-m $keymap '\"$keyseq\"':$'\"\C-z\x$char$accept\"'"
     
     # bind
-    bashrun_debug emph -y "usr" -v "$action" "->" -v "$keyname" "($keymap)" 
+    bashrun.debug emph -y "usr" -v "$action" "->" -v "$keyname" "($keymap)" 
     # echo "bind $bind"
     eval "bind $bind"
 
@@ -148,7 +148,7 @@ function action.unbind {
     
     # unbind keyseq
     unbind="-m $keymap -r '$keyseq'"
-    bashrun_debug -v "$action" "from" -v "$keyseq" -v "($keymap)"
+    bashrun.debug -v "$action" "from" -v "$keyseq" -v "($keymap)"
     eval "bind $unbind"
 
     # rebind original readline binding
@@ -223,18 +223,17 @@ function action.uses {
 
     local code="$(type action-$(action.get_name))"
     local applies=""
-    local methods=""
-    methods="$methods §command §line §handlers §rules §terminal §user"
+    local methods="command line \+handlers \+rules \+terminal \+pager \+user executable? builtin? bookmark?"
 
     local method=''
     for method in $methods; do
 	if [[ "$code" =~ ${method} ]]; then
-	    if [[ "$method" == "§user" ]]; then
-		if [[ "$code" =~ §user\ +?([^\}\;]+) ]]; then 
+	    if [[ "$method" == "+user" ]]; then
+		if [[ "$code" =~ \+user\ +?([^\}\;]+) ]]; then 
 		    applies="$applies, user:${BASH_REMATCH[1]}"
 		fi
 	    else
-		applies="$applies, ${method/§/}"
+		applies="$applies, ${method/\\+/}"
 	    fi
 	fi
     done
@@ -246,7 +245,7 @@ function action.run {
     
     local action=$(action.get_name)
 
-    bashrun_separator "action-$action"
+    bashrun.separator "action-$action"
 
     local retval
 
@@ -268,10 +267,8 @@ function action.run {
 
     local res=""
     [[ retval -eq 0 ]] && res="-c launch"
-    [[ retval -eq 1 ]] && res="-y don't launch"
-    bashrun_debug -v "$action" "returned" -v "$retval" "->" $res
-
-    bashrun_separator
+    [[ retval -eq 1 ]] && res="-y abort"
+    bashrun.debug -v "$action" "returned" -v "$retval" "->" $res
 
     return $retval
 }
@@ -283,7 +280,7 @@ function action.api.enable {
 	    echo $BASHRUN_COMMAND
 	else
 	    BASHRUN_COMMAND="$@"
-	    bashrun_debug "$BASHRUN_COMMAND"
+	    bashrun.debug "$BASHRUN_COMMAND"
 	fi
     }
 
@@ -304,7 +301,7 @@ function action.api.enable {
     }
     
     function +handlers { handlers.apply; }
-    function +rules { rules_apply; }
+    function +rules { bashrun.rules.apply; }
     function +terminal { bashrun.command.add_terminal; }
     function +pager { bashrun.command.add_pager; }
     function +user { bashrun.command.add_su ${1:-root}; }
@@ -330,17 +327,22 @@ function action.pretty_print_deps {
     local dep=''
     local deps="$(action.get_deps)"
     local str=''
-    local found=$R
+
+    local r="\033[1;31m" # red
+    local g="\033[1;32m" # green 
+    local n="\033[0m"    # none
+
+    local found=$r
 
     if [[ $deps != '' ]]; then
 	
 	for dep in $deps; do
 	    if `which $dep &> /dev/null`; then
-		found=$G
+		found=$g
 	    else
-		found=$R
+		found=$r
 	    fi
-	    str=", $found$dep$N$str" 
+	    str=", $found$dep$n$str" 
 	done
 	str="${str:2}"
 	echo -ne "$str"

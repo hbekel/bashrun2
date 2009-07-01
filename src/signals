@@ -2,14 +2,14 @@
 
 ################################################################################
 
-function bashrun_signal_usr1 {
+function bashrun.signal.usr1 {
 
     local command
-    bashrun_separator "SIGUSR1" 13
+    bashrun.separator "SIGUSR1" 13
 
-    bashrun_remote_run
+    bashrun.remote.run
 }
 
-trap bashrun_signal_usr1 SIGUSR1
+trap bashrun.signal.usr1 SIGUSR1
 
 ################################################################################

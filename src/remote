@@ -8,7 +8,7 @@ BASHRUN_REMOTE_COMMAND=$BASHRUN_DATA_HOME/remote-command
 
 ################################################################################
 
-function bashrun_remote_run {
+function bashrun.remote.run {
 
     local words
     local action
@@ -35,17 +35,17 @@ function bashrun_remote_run {
 	# everything else goes into command
 	command=${words[@]:1}
 
-	bashrun_debug "$action" "$command"
+	bashrun.debug "$action" "$command"
 	
 	bashrun.engine.action "$action" "$type" "$command"
 	
     else
-	bashrun_debug warn "no command(s) pending in " -v "$BASHRUN_REMOTE_COMMAND"
+	bashrun.debug warn "no command(s) pending in " -v "$BASHRUN_REMOTE_COMMAND"
 	return 1
     fi
 }
 
-function bashrun_remote_cleanup {
+function bashrun.remote.cleanup {
 
     [[ -f $BASHRUN_REMOTE_COMMAND ]] && rm $BASHRUN_REMOTE_COMMAND
 }
