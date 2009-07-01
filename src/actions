@@ -72,7 +72,7 @@ function action.bind {
 	bind="-m $keymap -x \$'\"\C-z\\x$char\":"
 	bind="$bind tput cr; bashrun_engine_action $action'"
 
-	bashrun_debug -y "int" action type "-->" -v "\C-z\\x$char" "($keymap)" 
+	bashrun_debug -y "int" -v "$action" "->" -v "\C-z\\x$char" "($keymap)" 
 	eval "bind $bind"	    
 	
 	#save readline binding in internal
@@ -86,7 +86,7 @@ function action.bind {
     else
 	# there's already a internal character bound, use it
 	char=$(internal.get_char)
-	bashrun_debug -y "ref" action type "-->" -v "$char" "($keymap)" 
+	bashrun_debug -y "ref" -v "$action" "->" -v "$char" "($keymap)" 
     fi
     
     # don't accept-line for 'launch' or 'shell' bindings
@@ -98,7 +98,7 @@ function action.bind {
     bind="-m $keymap '\"$keyseq\"':$'\"\C-z\x$char$accept\"'"
     
     # bind
-    bashrun_debug emph -y "usr" action type "-->" -v "$keyname" "($keymap)" 
+    bashrun_debug emph -y "usr" -v "$action" "->" -v "$keyname" "($keymap)" 
     # echo "bind $bind"
     eval "bind $bind"
 
@@ -148,7 +148,7 @@ function action.unbind {
     
     # unbind keyseq
     unbind="-m $keymap -r '$keyseq'"
-    bashrun_debug "$action from $keyseq ($keymap)"
+    bashrun_debug -v "$action" "from" -v "$keyseq" -v "($keymap)"
     eval "bind $unbind"
 
     # rebind original readline binding
@@ -247,22 +247,21 @@ function action.run_function {
     local action=$(action.get_name)
 
     local retval
-    declare -i retval
 
     # enable the action interface
     action.runtime_interface_create
 
     # run the action function
-    action-$(action.get_name)
+    action-$action
     retval=$?
 
     # disable the action interface
     action.runtime_interface_destroy
 
-    local msg="action-$action returned $retval ->"
-    [[ retval -eq 0 ]] && msg="$msg execute"
-    [[ retval -eq 1 ]] && msg="$msg done"
-    bashrun_debug "$msg"
+    local res=""
+    [[ retval -eq 0 ]] && res='execute'
+    [[ retval -eq 1 ]] && res='done'
+    bashrun_debug emph -v "$action" "->" -v "$retval" "->" $res
 
     return $retval
 }

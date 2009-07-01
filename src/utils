@@ -31,13 +31,13 @@ function bashrun_debug {
 
     # print function name
     
-    local func=${FUNCNAME[1]}
-    func=${func//}
-    func=${func/bashrun_/}
+    local _func=${FUNCNAME[1]}
+    _func=${_func//}
+    _func=${_func/bashrun_/}
     
-    local from=${FUNCNAME[2]}
-    from=${from//}
-    from=${from:-shell}
+    local _from=${FUNCNAME[2]}
+    _from=${_from//}
+    _from=${_from:-shell}
 
     case $1 in	
 	fail)
@@ -60,22 +60,23 @@ function bashrun_debug {
 	    col=$g
 	    ;;
     esac
-    echo -ne "$col$func$n $d"
+    echo -ne "$col$_func$n $d"
     
     local str=''
     local requested=0
 
     for str in "$@"; do
 	
-	if [[ "$str" =~ ^-(.)$ ]]; then # color
+	if [[ "$str" =~ ^-([a-z])$ ]]; then # color
 	    c="${BASH_REMATCH[1]}"
 	    echo -ne "${!c}"
 	    requested=1
 
-	elif defined? "$str"; then # variable
-	    echo -ne "$d$str$b$v " # name
-	    echo -n  "${!str} "    #value 
-
+	elif [[ ! "$str" =~ ^[0-9] && $(defined? "$str") ]]; then # variable
+	    if defined? "$str"; then
+		echo -ne "$d$str$b$v " # name
+		echo -n  "${!str} "    #value 
+	    fi
 	else
 	    [[ requested -eq 0 ]] && echo -ne "$d" 
 	    echo -n "$str "
