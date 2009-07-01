@@ -5,7 +5,7 @@
 function bashrun_signal_usr1 {
 
     local command
-    bashrun_log "received"
+    bashrun_debug "received"
 
     bashrun_remote_run
 }

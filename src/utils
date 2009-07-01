@@ -6,7 +6,7 @@ function bashrun_defined {
     [[ ${!1-X} == ${!1-Y} ]]
 }
 
-function bashrun_log {
+function bashrun_debug {
     
     [[ ! BASHRUN_DEBUG -eq 1 ]] && return
     
@@ -36,7 +36,7 @@ function bashrun_prepare_directories {
 	dir=${!dir}
 	
 	if [[ ! -d $dir ]]; then
-	    bashrun_log "$dir"
+	    bashrun_debug "$dir"
 	    install -d -m 700 $dir
 	fi
     done
@@ -51,13 +51,13 @@ function bashrun_prepare_logfile {
  
     # touch unless exists
     if [[ ! -e "$BASHRUN_LOGFILE" ]]; then
-	bashrun_log "creating logfile $BASHRUN_LOGFILE"
+	bashrun_debug "creating logfile $BASHRUN_LOGFILE"
 	touch "$BASHRUN_LOGFILE"
     fi
 
     # revert to /dev/null unless writable
     if [[ ! -w "$BASHRUN_LOGFILE" ]]; then
-	bashrun_log "logfile $BASHRUN_LOGFILE is not writeable"
+	bashrun_debug "logfile $BASHRUN_LOGFILE is not writeable"
 	BASHRUN_LOGFILE="/dev/null"
     fi
 }

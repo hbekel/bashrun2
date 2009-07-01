@@ -19,7 +19,7 @@ BASHRUN_PIDFILE=$BASHRUN_CACHE_HOME/pids
 
 function bashrun_engine_init {
     
-    bashrun_log "initializing..."
+    bashrun_debug "initializing..."
 
     # append pid to shared pidfile
     echo $$ >> $BASHRUN_PIDFILE
@@ -74,14 +74,14 @@ function bashrun_engine_action {
 	# type override
 	[[ $type == '' ]] && type=$(action.get_type)
 
-	bashrun_log "$action ($type)"
+	bashrun_debug "$action ($type)"
 
 	# dispatch action according to type
 	case $type in
 	    
 	    trap-and-launch)
 	        # set the trap
-		bashrun_log "trap is set"
+		bashrun_debug "trap is set"
 		trap bashrun_engine_trap DEBUG
 		;; 
 	    
@@ -101,11 +101,11 @@ function bashrun_engine_action {
 		bashrun_engine_busy 0
 		;;
 	    *)
-		bashrun_log "no such action type: $type"
+		bashrun_debug "no such action type: $type"
 		;;
 	esac
     else
-	bashrun_log "no such action: $action"
+	bashrun_debug "no such action: $action"
     fi
 }
 
@@ -126,11 +126,11 @@ function bashrun_engine_trap {
     
     # pass through trap builtin
     if [[ "$BASHRUN_COMMAND" =~ ^trap ]]; then
-	bashrun_log "trap is removed"
+	bashrun_debug "trap is removed"
 	bashrun_engine_busy 0
 	return 0
     fi
-    bashrun_log "$BASHRUN_COMMAND"
+    bashrun_debug "$BASHRUN_COMMAND"
 
     bashrun_engine_launch
     return 1
@@ -156,12 +156,12 @@ function bashrun_engine_launch {
 	fi
     fi
 
-    bashrun_log "$BASHRUN_COMMAND"
+    bashrun_debug "$BASHRUN_COMMAND"
     
     if bashrun_command_word_executable?; then
 	bashrun_engine_execute
     else
-	bashrun_log "not executable."
+	bashrun_debug "not executable."
     fi
 
     BASHRUN_RULES_APPLIED=0
@@ -241,5 +241,5 @@ function bashrun_engine_shutdown {
 
     bashrun_remote_cleanup    
 
-    bashrun_log "exit"
+    bashrun_debug "exit"
 }    

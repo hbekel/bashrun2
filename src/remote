@@ -35,12 +35,12 @@ function bashrun_remote_run {
 	# everything else goes into command
 	command=${words[@]:1}
 
-	bashrun_log "$action ($type): '$command'"
+	bashrun_debug "$action ($type): '$command'"
 	
 	bashrun_engine_action "$action" "$type" "$command"
 	
     else
-	bashrun_log "no command(s) pending in $BASHRUN_REMOTE_COMMAND"
+	bashrun_debug "no command(s) pending in $BASHRUN_REMOTE_COMMAND"
 	return 1
     fi
 }

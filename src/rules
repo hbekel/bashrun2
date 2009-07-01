@@ -28,7 +28,7 @@ function rules_apply {
 	    if [[ "$word" == "$program" ]]; then
 		# literal match
 
-		bashrun_log "$word == $program -> $(rule.get_name)"
+		bashrun_debug "$word == $program -> $(rule.get_name)"
 		BASHRUN_RULES_APPLIED=1
 
 		if actions.seek $(rule.get_name); then
@@ -44,7 +44,7 @@ function rules_apply {
 		    if [[ "$command" =~ $regexp ]]; then
 			# regexp match
 		
-			bashrun_log "'$command' =~ $program -> $(rule.get_name)"
+			bashrun_debug "'$command' =~ $program -> $(rule.get_name)"
 			BASHRUN_RULES_APPLIED=1
 
 			if actions.seek $(rule.get_name); then
