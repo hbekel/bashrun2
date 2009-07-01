@@ -246,6 +246,8 @@ function action.run {
     
     local action=$(action.get_name)
 
+    bashrun_separator "action-$action"
+
     local retval
 
     # enable the action interface
@@ -261,7 +263,9 @@ function action.run {
     local res=""
     [[ retval -eq 0 ]] && res='execute'
     [[ retval -eq 1 ]] && res='done'
-    bashrun_debug emph -v "$action" "->" -v "$retval" "->" $res
+    bashrun_debug emph -v "$action" "returned" -v "$retval" "->" -y "$res"
+
+    bashrun_separator
 
     return $retval
 }
@@ -280,24 +284,24 @@ function action.api.enable {
     function line { echo $BASHRUN_COMMAND_LINE; }
 
     function executable? {
-	bashrun_command_word_executable?
+	bashrun.command.executable?
 	return $?
     }
 
     function builtin? {
-	bashrun_command_word_buitlin?
+	bashrun.command.builtin?
 	return $?
     }
 
     function bookmark? {
-	bashrun_command_word_bookmark?
+	bashrun.command.bookmark?
     }
     
     function +handlers { handlers.apply; }
     function +rules { rules_apply; }
-    function +terminal { bashrun_command_wrap_in_terminal; }
-    function +pager { bashrun_command_append_pager; }
-    function +user { bashrun_command_wrap_in_su ${1:-root}; }
+    function +terminal { bashrun.command.add_terminal; }
+    function +pager { bashrun.command.add_pager; }
+    function +user { bashrun.command.add_su ${1:-root}; }
 }
 
 function action.runtime_interface_destroy {

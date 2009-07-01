@@ -6,7 +6,7 @@ BASHRUN_COMMAND=''
 BASHRUN_COMMAND_LINE=''
 BASHRUN_COMMAND_WORD=''
 
-function bashrun_command_unquote {
+function bashrun.command.unquote {
 
     command="$BASHRUN_COMMAND"
     # unquote quoted &;|
@@ -19,7 +19,7 @@ function bashrun_command_unquote {
     BASHRUN_COMMAND=$command
 }
 
-function bashrun_command_get_line {
+function bashrun.command.get_line {
     # updates BASHRUN_COMMAND_LINE to contain the complete and
     # verbatim line entered by the user.
     
@@ -36,7 +36,7 @@ function bashrun_command_get_line {
     echo "$BASHRUN_COMMAND_LINE"
 }
 
-function bashrun_command_get_word {
+function bashrun.command.get_word {
 
     # updates BASHRUN_COMMAND_WORD to contain the first word of the
     # current command.
@@ -54,11 +54,11 @@ function bashrun_command_get_word {
     BASHRUN_COMMAND_WORD="$word"
 }
 
-function bashrun_command_word_executable? {
+function bashrun.command.executable? {
     
     # check if BASHRUN_COMMAND_WORD is executable
 
-    bashrun_command_get_word
+    bashrun.command.get_word
 
     local word="$BASHRUN_COMMAND_WORD"
     local type=`type -t $word`
@@ -69,7 +69,7 @@ function bashrun_command_word_executable? {
     fi
 
     if [[ "$type" == "function" ]]; then
-	if bashrun_command_word_bookmark?; then
+	if bashrun.command.bookmark?; then
 	    bashrun_debug "$word -> bookmark -> no"
 	    return 1
 	else
@@ -93,11 +93,11 @@ function bashrun_command_word_executable? {
     return 1
 }
 
-function bashrun_command_word_buitlin? {
+function bashrun.command.builtin? {
 
     # check if BASHRUN_COMMAND_WORD is a shell builtin command
 
-    bashrun_command_get_word
+    bashrun.command.get_word
     local word="$BASHRUN_COMMAND_WORD"
 
     local result=`type $word 2>&1 | head -n1`
@@ -110,7 +110,7 @@ function bashrun_command_word_buitlin? {
     return 1
 }
 
-function bashrun_command_word_bookmark? {
+function bashrun.command.bookmark? {
 
     local bookmark=''
     for bookmark in ${_BOOKMARKS[@]}; do
@@ -119,7 +119,7 @@ function bashrun_command_word_bookmark? {
     return 1
 }
 
-function bashrun_command_wrap_in_su {
+function bashrun.command.add_su {
 
     local user=${1:-root}
 
@@ -135,11 +135,11 @@ function bashrun_command_wrap_in_su {
     bashrun_debug "$BASHRUN_COMMAND"
 }
 
-function bashrun_command_wrap_in_terminal {
+function bashrun.command.add_terminal {
 
     local xterm=''
 
-    bashrun_command_get_word
+    bashrun.command.get_word
 
     if [[ "$BASHRUN_COMMAND_WORD" == "xterm" ]]; then
 	bashrun_debug "already in terminal"
@@ -160,6 +160,6 @@ function bashrun_command_wrap_in_terminal {
     return 0
 }
 
-function bashrun_command_append_pager {
+function bashrun.command.add_pager {
     BASHRUN_COMMAND="$BASHRUN_COMMAND | ${PAGER:-less -f}"
 }

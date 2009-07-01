@@ -18,7 +18,7 @@ function rules_apply {
     local command="$BASHRUN_COMMAND"
     local regexp=''
 
-    bashrun_command_get_word
+    bashrun.command.get_word
 
     rules.seek_start
     while rules.next?; do

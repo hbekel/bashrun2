@@ -33,7 +33,7 @@ function bashrun_debug {
     
     local _func=${FUNCNAME[1]}
     _func=${_func//}
-    _func=${_func/bashrun_/}
+    _func=${_func/bashrun./}
     
     local _from=${FUNCNAME[2]}
     _from=${_from//}
@@ -68,8 +68,8 @@ function bashrun_debug {
     for str in "$@"; do
 	
 	if [[ "$str" =~ ^-([a-z])$ ]]; then # color
-	    c="${BASH_REMATCH[1]}"
-	    echo -ne "${!c}"
+	    col="${BASH_REMATCH[1]}"
+	    echo -ne "${!col}"
 	    requested=1
 
 	elif [[ ! "$str" =~ ^[0-9] && $(defined? "$str") ]]; then # variable

@@ -117,7 +117,7 @@ function bashrun_engine_action {
 function bashrun_engine_trap {
     
     # the verbatim command line entered
-    BASHRUN_COMMAND_LINE=$(bashrun_command_get_line)
+    BASHRUN_COMMAND_LINE=$(bashrun.command.get_line)
 
     # the command about to be executed,
     # as expanded by the shell
@@ -127,7 +127,7 @@ function bashrun_engine_trap {
     BASHRUN_EXECMODE="&"
 
     # remove quotes (;|&)
-    bashrun_command_unquote
+    bashrun.command.unquote
     
     # pass through trap builtin
     if [[ "$BASHRUN_COMMAND" =~ ^trap ]]; then
@@ -168,7 +168,7 @@ function bashrun_engine_launch {
 
     bashrun_debug "$BASHRUN_COMMAND"
     
-    if bashrun_command_word_executable?; then
+    if bashrun.command.executable?; then
 	bashrun_engine_execute
     else
 	bashrun_debug fail "not executable."
