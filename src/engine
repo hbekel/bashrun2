@@ -17,7 +17,7 @@ BASHRUN_PIDFILE=$BASHRUN_CACHE_HOME/pids
 
 [[ ! -f $BASHRUN_PIDFILE ]] && touch $BASHRUN_PIDFILE
 
-function bashrun_engine_init {
+function bashrun.engine.init {
     
     bashrun_separator "bashrun-engine $BASHRUN_VERSION"
     
@@ -28,7 +28,7 @@ function bashrun_engine_init {
     readline_get_bindings
     
     # install default actions
-    bashrun_engine_default_actions
+    bashrun.engine.default_actions
     
     # source rc file or restore dumped state
     if [[ "$BASHRUN_RCFILE" -nt "$BASHRUN_TIMESTAMP" ]]; then
@@ -51,12 +51,12 @@ function bashrun_engine_init {
     BASHRUN_EXECMODE='&'
 
     # shutdown on exit
-    trap bashrun_engine_shutdown EXIT
+    trap bashrun.engine.shutdown EXIT
     
     bashrun_separator
 }
 
-function bashrun_engine_action {
+function bashrun.engine.action {
 
     local action=$1       # action to perform
     local type=$2         # action type override
@@ -67,11 +67,11 @@ function bashrun_engine_action {
     if actions.seek $action; then
 
 	# wait until engine is ready
-	while bashrun_engine_busy?; do
+	while bashrun.engine.busy?; do
 	    sleep 0.25
 	done
 
-	bashrun_engine_busy 1
+	bashrun.engine.busy 1
 
 	BASHRUN_ACTION=$action
 
@@ -86,7 +86,7 @@ function bashrun_engine_action {
 	    trap-and-launch)
 	        # set the trap
 		bashrun_debug "trap is set"
-		trap bashrun_engine_trap DEBUG
+		trap bashrun.engine.trap DEBUG
 		;; 
 	    
 	    launch)
@@ -94,7 +94,7 @@ function bashrun_engine_action {
 		[[ $command == '' ]] && command=':'
      
 		# run action directly
-		bashrun_engine_launch "$command"
+		bashrun.engine.launch "$command"
 		;;
 	    
 	    shell)
@@ -103,7 +103,7 @@ function bashrun_engine_action {
 		    action.run
 		    bashrun_separator
 		fi
-		bashrun_engine_busy 0
+		bashrun.engine.busy 0
 		;;
 	    *)
 		bashrun_debug "no such action type: $type"
@@ -114,7 +114,7 @@ function bashrun_engine_action {
     fi
 }
 
-function bashrun_engine_trap {
+function bashrun.engine.trap {
     
     # the verbatim command line entered
     BASHRUN_COMMAND_LINE=$(bashrun.command.get_line)
@@ -133,19 +133,19 @@ function bashrun_engine_trap {
     if [[ "$BASHRUN_COMMAND" =~ ^trap ]]; then
 	bashrun_debug emph "trap is removed"
 	bashrun_separator 
-	bashrun_engine_busy 0
+	bashrun.engine.busy 0
 	return 0
     fi
     bashrun_debug "$BASHRUN_COMMAND"
 
-    bashrun_engine_launch
+    bashrun.engine.launch
 
     bashrun_separator 
 
     return 1
 }
 
-function bashrun_engine_launch {
+function bashrun.engine.launch {
 
     local command=$1
 
@@ -159,7 +159,7 @@ function bashrun_engine_launch {
 	if action.function?; then
 	    if ! action.run; then
 		BASHRUN_RULES_APPLIED=0
-		bashrun_engine_busy 0
+		bashrun.engine.busy 0
 		bashrun_separator
 		return 0
 	    fi
@@ -169,17 +169,17 @@ function bashrun_engine_launch {
     bashrun_debug "$BASHRUN_COMMAND"
     
     if bashrun.command.executable?; then
-	bashrun_engine_execute
+	bashrun.engine.execute
     else
 	bashrun_debug fail "not executable."
     fi
 
     BASHRUN_RULES_APPLIED=0
-    bashrun_engine_busy 0
+    bashrun.engine.busy 0
     return 0
 }
 
-function bashrun_engine_execute {
+function bashrun.engine.execute {
 
     bashrun_prepare_logfile
 
@@ -192,16 +192,16 @@ function bashrun_engine_execute {
     fi
 }
 
-function bashrun_engine_busy {
+function bashrun.engine.busy {
     BASHRUN_ENGINE_BUSY=$1
 }
 
-function bashrun_engine_busy? {
+function bashrun.engine.busy? {
     [[ "$BASHRUN_ENGINE_BUSY" == "1" ]]
     return $?
 }
 
-function bashrun_engine_default_actions {
+function bashrun.engine.default_actions {
 
     +action --new 'pass'
     --desc 'passthrough command'
@@ -224,7 +224,7 @@ function bashrun_engine_default_actions {
     }
 }
 
-function bashrun_engine_shutdown { 
+function bashrun.engine.shutdown { 
 
     # run shutdown callbacks
     actions.shutdown

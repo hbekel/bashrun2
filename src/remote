@@ -37,7 +37,7 @@ function bashrun_remote_run {
 
 	bashrun_debug "$action" "$command"
 	
-	bashrun_engine_action "$action" "$type" "$command"
+	bashrun.engine.action "$action" "$type" "$command"
 	
     else
 	bashrun_debug warn "no command(s) pending in " -v "$BASHRUN_REMOTE_COMMAND"

@@ -70,7 +70,7 @@ function action.bind {
 	fi
 	
 	bind="-m $keymap -x \$'\"\C-z\\x$char\":"
-	bind="$bind tput cr; bashrun_engine_action $action'"
+	bind="$bind tput cr; bashrun.engine.action $action'"
 
 	bashrun_debug -y "int" -v "$action" "->" -v "\C-z\\x$char" "($keymap)" 
 	eval "bind $bind"	    

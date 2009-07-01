@@ -31,7 +31,7 @@ source $share/readline
 source $share/command
 source $share/engine
 
-bashrun_engine_init
+bashrun.engine.init
 
 unset share
 unset prefix
