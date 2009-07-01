@@ -57,7 +57,7 @@ action-run ()
 
 action-run-term () 
 { 
-    action-run
+    ! executable? && +handlers
     +terminal
     return 0
 }
@@ -69,7 +69,7 @@ action-run-term ()
 
 action-run-page () 
 { 
-    action-run
+    ! executable? && +handlers
     +pager
     +terminal
     return 0
@@ -82,8 +82,8 @@ action-run-page ()
 
 action-run-hold () 
 { 
-    action-run
-    command "$(command); read -n1"
+    ! executable? && +handlers
+    command "($(command)); read -n1"
     +terminal;
     return 0
 }
