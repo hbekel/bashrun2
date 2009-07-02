@@ -44,10 +44,13 @@ function bashrun.engine.init {
 	source $BASHRUN_RCFILE
 	touch $BASHRUN_TIMESTAMP
 
+	bashrun.debug "dumping current config state..."
+	objects.dump
+
 	bashrun.separator
     else
 	bashrun.debug warn -v "$rcfile" -y "not modified"
-	bashrun.debug warn "restoring persistent state..."
+	bashrun.debug warn "restoring cached config state..."
 	objects.restore
     fi
 
@@ -247,9 +250,6 @@ function bashrun.engine.shutdown {
 
     # run shutdown callbacks
     actions.shutdown
-
-    # dump user data
-    objects.dump
 
     # remove this pid from the pidfile
     local pid=''

@@ -156,20 +156,33 @@ function objects.modified { # value
     _OBJECTS_MODIFIED=$1
 }
 
-function objects.list { # [ids]
+function objects.interface? {
+    [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]] && return 0
+    [[ _OBJECTS_HAVE_INTERFACE -eq 0 ]] && return 1
+}
+
+function objects.list { # [-l] [ids]
 
     local saved=${_OBJECTS[$_OBJECTS_POSITION]}
+    local opt=''
 
-    if [[ $1 != '' ]]; then
+    while [[ "${1:0:1}" == "-" ]]; do
+	if [[ "$1" == "-l" ]]; then
+	    opt="$1"
+	fi
+	shift
+    done
+
+    if [[ "$1" != '' ]]; then
 	for id in $@; do
 	    if objects.seek $id; then
-		object.list $id
+		object.list $opt $id
 	    fi
 	done
     else
 	objects.seek_start
 	while objects.next?; do
-	    object.list
+	    object.list $opt
 	    objects.next
 	done
     fi
@@ -232,6 +245,10 @@ function object.new {
     (( _OBJECTS_SIZE+=1 ))
     _OBJECTS_MODIFIED=1
     objects.seek $1
+}
+
+function object.id {
+    objects.current
 }
 
 function object.get { # key -> "value"
@@ -297,11 +314,17 @@ function objects.code {
 }
     
 function object.list {
-    local key
-    for key in ${_OBJECTS_KEYS[@]}; do
-	echo "$key: $(object.get $key)"
-    done;
-    echo
+    local opt="$1"
+
+    if [[ "$opt" == '-l' ]]; then
+	local key
+	for key in ${_OBJECTS_KEYS[@]}; do
+	    echo "$key: $(object.get $key)"
+	done;
+	echo
+    else
+	echo $(object.id)
+    fi
 }
 
 ################################################################################
@@ -328,11 +351,13 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
     function +object {
 	
 	# remove a previous type's interface
+	local switched=0
 	local destroy_interface="${_ObJeCtS_FOCUS}s.ui.disable"
 	if [[ "$_ObJeCtS_FOCUS" != "object" ]]; then
 	    if [[ "$_ObJeCtS_FOCUS" != '' ]]; then
 		if $(type -t $destroy_interface &> /dev/null); then
 		    eval "$destroy_interface"
+		    switched=1
 		fi
 	    fi
 	    objects.ui.enable
@@ -341,9 +366,8 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	# set global current object type
 	_ObJeCtS_FOCUS="object"
 
-        # no arg -> list and return (setting global type is sideeffect)
+        # no arg -> return (setting focussed type is sideeffect)
 	if [[ "$#" == "0" ]]; then
-	    object.list
 	    return 0
 	fi
 

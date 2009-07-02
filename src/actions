@@ -351,6 +351,11 @@ function action.pretty_print_deps {
 
 function action.list {
 
+    if [[ "$1" != "-l" ]]; then
+	echo $(action.get_name)
+	return 0
+    fi
+
     local name=$(action.get_name)
     local desc=$(action.get_desc)
     local type=$(action.get_type)

@@ -184,6 +184,41 @@ function object.create_accessors {
     object.create_writer "$@"
 }
 
+function objects.complete_id {
+
+    local cur prev opts
+    COMPREPLY=()
+    
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    opts="$($(objects.focus)s.all)"
+    
+    if [[ ${cur} == * ]]; then
+	COMPREPLY=( $(compgen -W "${opts}" ${cur}) )
+    fi
+    return 0
+}
+
+function objects.complete_type {
+
+    local cur prev opts
+    COMPREPLY=()
+    
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    
+    local type
+    for type in $(objects.types); do
+	if ${type}s.interface?; then
+	    opts="$opts $type"
+	fi
+    done
+    if [[ ${cur} == * ]]; then
+	COMPREPLY=( $(compgen -W "${opts}" ${cur}) )
+    fi
+    return 0
+}
+
 # utility functions
 
 function function_code {
