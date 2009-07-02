@@ -8,7 +8,6 @@ function action.new {
     _action.new "$1"
     action.set_type "trap-and-launch"
     action.set_desc "$1"
-    action.set_default "0"
 
     if ! type -t action-$1 &> /dev/null; then
 	eval "

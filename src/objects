@@ -90,8 +90,7 @@ function class {
 	    fi
 	    clean_keys="$clean_keys $key"
 	done
-
-	local interface=(new code $clean_keys $methods_clean)
+	local interface=(new code $clean_keys $methods)
 	have_interface=1
 
         # prepare interface options (prefix with --)

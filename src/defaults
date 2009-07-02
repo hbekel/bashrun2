@@ -2,6 +2,10 @@
 
 ################################################################################
 
+function action.set_default {
+    _BASHRUN_ACTIONS[${_BASHRUN_ACTIONS_POSITION}+7]="$2"
+}
+
 # pass #########################################################################
 
 +action --new 'pass'
@@ -108,10 +112,10 @@ action-edit-mode-leave ()
 { 
     PS1="$OLDPS1";
     unset -f ls;
-    complete -r ls
+    complete -o filenames -F _longopt ls
 
     unset -f cd
-    complete -r cd
+    complete -o filenames -o nospace -F _cd cd
 
     +action edit-mode-enter --bind '\ee';
     actions.seek_start
@@ -160,3 +164,6 @@ function action-toggle {
     return 1
 }
 
+################################################################################
+
+unset -f action.set_default
