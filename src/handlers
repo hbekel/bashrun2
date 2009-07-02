@@ -114,13 +114,14 @@ function handler.code {
 
     name=${name//\'/\\\'}
     pattern=${pattern//\'/\\\'}
-    string=${string//\'/\\\'}
+    string=${string//\"/\\\"}
+    string=${string//\$/\\\$}
 
     print_line "handler $name" "#" "80"
     echo
     echo "+handler --new '$name'"
     echo "--pattern '$pattern'" 
-    echo "--string '$string'"
+    echo "--string \"$string\""
     echo
 }
 

@@ -2,27 +2,20 @@
 
 ################################################################################
 
-_BOOKMARKS=()
+class "bookmark" "name" ""
 
 ################################################################################
 
-function bookmark_new {
+function_clone "bookmark.new" "_bookmark.new"
 
-    _BOOKMARKS[${#_BOOKMARKS[@]}]="$1"
+function bookmark.new {
+
+    _bookmark.new $1
     eval "function $1 { :; }"
 }
 
-function bookmarks_code {
-
-    local bookmark=''
-    local i=0
-
-    print_header "BASHRUN_BOOKMARKS" "#"
-
-    for ((i=0; i<${#_BOOKMARKS[@]}; i++)); do
-	bookmark=${_BOOKMARKS[$i]}
-	bookmark=${bookmark//\'/\\\'}
-	echo "§bookmark '$bookmark'"
-    done
-    echo
+function bookmark.code {
+    local name="$(bookmark.get_name)"
+    name=${name//\'/\\\'}
+    echo "+bookmark --new '$name'"
 }

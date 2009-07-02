@@ -225,9 +225,11 @@ function bashrun.engine.busy? {
 function bashrun.engine.save {
     local f="$HOME/saverc"
 
+    bashrun.debug "saving to" -v $f
     actions.code > $f
     handlers.code >> $f
     rules.code >> $f
+    bookmarks.code >> $f
 
     objects.dump
 }
