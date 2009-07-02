@@ -341,8 +341,9 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	# set global current object type
 	_ObJeCtS_FOCUS="object"
 
-        # no arg -> return (setting global type is sideeffect)
+        # no arg -> list and return (setting global type is sideeffect)
 	if [[ "$#" == "0" ]]; then
+	    object.list
 	    return 0
 	fi
 

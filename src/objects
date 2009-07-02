@@ -53,6 +53,13 @@ function objects.focus {
     fi
 }
 
+function objects.seek_start {
+    local type=""
+    for type in $_OBJECTS_TYPES; do
+	${type}s.seek_start
+    done
+}
+
 function class {
 
     # create object from 'objects' template

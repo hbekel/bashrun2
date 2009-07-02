@@ -21,25 +21,42 @@ function bashrun.engine.init {
     
     bashrun.separator "bashrun-engine $BASHRUN_VERSION"
     
+    bashrun.debug "pid" -v "$$" '>>' -v "${BASHRUN_PIDFILE/$HOME/~}"
     # append pid to shared pidfile
     echo $$ >> $BASHRUN_PIDFILE
 
+    bashrun.debug "getting current readline bindings..."
     # get current readline bindings
     readline_get_bindings
     
+    bashrun.debug "installing default actions..."
     # install default actions
     bashrun.engine.default_actions
     
     # source rc file or restore dumped state
+    local rcfile="${BASHRUN_RCFILE/$HOME/~}"
+
     if [[ "$BASHRUN_RCFILE" -nt "$BASHRUN_TIMESTAMP" ]]; then
+
+	bashrun.debug -v "rcfile" -c "modified"
+	bashrun.separator "source $rcfile"
+
 	source $BASHRUN_RCFILE
 	touch $BASHRUN_TIMESTAMP
-    else    
+
+	bashrun.separator
+    else
+	bashrun.debug warn -v "$rcfile" -y "not modified"
+	bashrun.debug warn "restoring persistent state..."
 	objects.restore
     fi
 
     # run init callbacks
+    bashrun.debug -v "+action" -v "--init" "callbacks..."
     actions.init
+
+    # reset object positions
+    objects.seek_start
 
     # escape from trap in interactive mode
     PROMPT_COMMAND="trap DEBUG; $PROMPT_COMMAND"
@@ -53,7 +70,8 @@ function bashrun.engine.init {
     # shutdown on exit
     trap bashrun.engine.shutdown EXIT
     
-    bashrun.separator
+    bashrun.debug emph -y "done"
+    bashrun.separator 
 }
 
 function bashrun.engine.action {
@@ -78,14 +96,14 @@ function bashrun.engine.action {
 	# type override
 	[[ $type == '' ]] && type=$(action.get_type)
 
-	bashrun.debug "$action ($type)"
+	bashrun.debug -v "$action" -c "$type"
 
 	# dispatch action according to type
 	case $type in
 	    
 	    trap-and-launch)
 	        # set the trap
-		bashrun.debug "trap is set"
+		bashrun.debug -v "trap" -c "set"
 		trap bashrun.engine.trap DEBUG
 		;; 
 	    
@@ -106,11 +124,11 @@ function bashrun.engine.action {
 		bashrun.engine.busy 0
 		;;
 	    *)
-		bashrun.debug "no such action type: $type"
+		bashrun.debug fail "no such action type:" -v "$type"
 		;;
 	esac
     else
-	bashrun.debug "no such action: $action"
+	bashrun.debug fail "no such action:" -v "$action"
     fi
 }
 
@@ -131,12 +149,13 @@ function bashrun.engine.trap {
     
     # pass through trap builtin
     if [[ "$BASHRUN_COMMAND" =~ ^trap ]]; then
-	bashrun.debug emph "trap is removed"
+	bashrun.debug -v "trap" -c "removed"
 	bashrun.separator 
 	bashrun.engine.busy 0
 	return 0
     fi
-    bashrun.debug "$BASHRUN_COMMAND"
+    bashrun.debug "command:" -v "$BASHRUN_COMMAND"
+    bashrun.debug "   line:" -v "$BASHRUN_COMMAND_LINE"
 
     bashrun.engine.launch
 
