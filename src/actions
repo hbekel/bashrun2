@@ -1,6 +1,6 @@
 # -*- shell-script -*-
 
-class "action" "name:ro type desc deps help init shutdown default:ro" "bind unbind rebind"
+class "action" "name:r type desc deps help init shutdown default:r" "bind unbind rebind"
 
 function_clone "action.new" "_action.new"
 function action.new {
@@ -302,7 +302,7 @@ function action.api.enable {
     }
     
     function +handlers { handlers.apply; }
-    function +rules { bashrun.rules.apply; }
+    function +rules { rules.apply; }
     function +terminal { bashrun.command.add_terminal; }
     function +pager { bashrun.command.add_pager; }
     function +user { bashrun.command.add_su ${1:-root}; }
@@ -407,6 +407,7 @@ function action.code {
 	    for id in $(bindings.select action $name); do
 		bindings.seek --next $id 
 		echo "+action $(action.get_name) $(binding.code)"
+		echo
 	    done
 	fi
 	return 0
@@ -417,8 +418,7 @@ function action.code {
     local deps=$(action.get_deps)
     local help=$(action.get_help)
 
-    print_line "" '#' 80
-    print_line "$name" "#" "-1"
+    print_line "action $name" "#" "80"
     echo
 
     # add action 

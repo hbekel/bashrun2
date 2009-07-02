@@ -222,6 +222,16 @@ function bashrun.engine.busy? {
     return $?
 }
 
+function bashrun.engine.save {
+    local f="$HOME/saverc"
+
+    actions.code > $f
+    handlers.code >> $f
+    rules.code >> $f
+
+    objects.dump
+}
+
 function bashrun.engine.shutdown { 
 
     # run shutdown callbacks

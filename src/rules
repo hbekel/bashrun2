@@ -8,7 +8,7 @@ BASHRUN_RULES_APPLIED=0
 
 ################################################################################
 
-function bashrun.rules.apply {
+function rules.apply {
 
     [[ BASHRUN_RULES_APPLIED -eq 1 ]] && return 0
 
@@ -60,9 +60,19 @@ function bashrun.rules.apply {
     rules.seek_start
 }
 
-function bashrun.rules.applied? {
+function rules.applied? {
 
     [[ BASHRUN_RULES_APPLIED -eq 1 ]] && return 0
     [[ BASHRUN_RULES_APPLIED -eq 0 ]] && return 1
 }
 
+function rule.code {
+
+    local name=$(rule.get_name)
+    local progs=$(rule.get_progs)
+
+    name=${name//\'/\\\'}
+    progs=${progs//\'/\\\'}
+
+    echo "+rule --new '$name' --progs '$progs'" 
+}

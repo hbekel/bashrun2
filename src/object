@@ -310,12 +310,15 @@ function object.code {
 
 function objects.code {
 
+    print_header 'OBJECTS' '#'
+
     objects.seek_start
     while objects.next?; do
 	object.code
 	objects.next
     done
     objects.seek_start
+    echo
 }
     
 function object.list {

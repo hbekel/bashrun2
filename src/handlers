@@ -116,7 +116,7 @@ function handler.code {
     pattern=${pattern//\'/\\\'}
     string=${string//\'/\\\'}
 
-    print_line "$name" "#" "80"
+    print_line "handler $name" "#" "80"
     echo
     echo "+handler --new '$name'"
     echo "--pattern '$pattern'" 
@@ -124,15 +124,3 @@ function handler.code {
     echo
 }
 
-function handlers.code {
-
-    print_header 'HANDLERS' '#'
-
-    handlers.seek_start
-    while handlers.next?; do
-	handler.code
-	handlers.next
-    done
-    handlers.seek_start
-    echo
-}
