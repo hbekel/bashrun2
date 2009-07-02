@@ -25,13 +25,9 @@ function bashrun.engine.init {
     # append pid to shared pidfile
     echo $$ >> $BASHRUN_PIDFILE
 
-    bashrun.debug "getting current readline bindings..."
     # get current readline bindings
+    bashrun.debug "getting current readline bindings..."
     readline_get_bindings
-
-    bashrun.debug "installing default actions..."
-    # install default actions
-    source $BASHRUN_SHARE/defaults
         
     # source rc file or restore dumped state
     local rcfile="${BASHRUN_RCFILE/$HOME/~}"
@@ -40,6 +36,9 @@ function bashrun.engine.init {
 
 	bashrun.debug -v "rcfile" -c "modified"
 	bashrun.separator "source $rcfile"
+
+	bashrun.debug "installing default actions..."
+	source $BASHRUN_SHARE/defaults
 
 	source $BASHRUN_RCFILE
 	touch $BASHRUN_TIMESTAMP

@@ -1,18 +1,14 @@
 # -*- shell-script -*-
 
-################################################################################
-
-class "action" "name type desc deps help init shutdown" "bind unbind rebind"
-
-################################################################################
+class "action" "name:ro type desc deps help init shutdown default:ro" "bind unbind rebind"
 
 function_clone "action.new" "_action.new"
-
 function action.new {
 
     _action.new "$1"
     action.set_type "trap-and-launch"
     action.set_desc "$1"
+    action.set_default "0"
 
     if ! type -t action-$1 &> /dev/null; then
 	eval "
@@ -219,6 +215,11 @@ function action.available? {
     return $result
 }
 
+function action.default? {
+    [[ "$(action.get_default)" == "1" ]] && return 0
+    [[ "$(action.get_default)" == "0" ]] && return 1
+}
+
 function action.uses {
 
     local code="$(type action-$(action.get_name))"
@@ -395,8 +396,22 @@ function action.list {
 }
 
 function action.code {
-    
+
     local name=$(action.get_name)
+    
+    # default actions can only be bound in the rcfile
+    if action.default?; then	
+	if action.bound?; then
+	    bindings.seek_start
+	    local id=''
+	    for id in $(bindings.select action $name); do
+		bindings.seek --next $id 
+		echo "+action $(action.get_name) $(binding.code)"
+	    done
+	fi
+	return 0
+    fi
+
     local desc=$(action.get_desc)
     local type=$(action.get_type)
     local deps=$(action.get_deps)
@@ -414,7 +429,6 @@ function action.code {
     [[ "$help" != "" ]] && echo "--help '$help'"
     
     # bind action
-    local id=''
     if action.bound?; then
 	bindings.seek_start
 	for id in $(bindings.select action $name); do
