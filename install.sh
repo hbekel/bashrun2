@@ -16,6 +16,7 @@ FILES=(
     bindings
     bookmarks
     command
+    defaults
     engine
     globals
     handlers

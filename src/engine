@@ -28,11 +28,11 @@ function bashrun.engine.init {
     bashrun.debug "getting current readline bindings..."
     # get current readline bindings
     readline_get_bindings
-    
+
     bashrun.debug "installing default actions..."
     # install default actions
-    bashrun.engine.default_actions
-    
+    source $BASHRUN_SHARE/defaults
+        
     # source rc file or restore dumped state
     local rcfile="${BASHRUN_RCFILE/$HOME/~}"
 
@@ -221,29 +221,6 @@ function bashrun.engine.busy {
 function bashrun.engine.busy? {
     [[ "$BASHRUN_ENGINE_BUSY" == "1" ]]
     return $?
-}
-
-function bashrun.engine.default_actions {
-
-    +action --new 'pass'
-    --desc 'passthrough command'
-    --type 'shell'
-    --bind '\ew'
-    
-    action-pass () 
-    { 
-	:
-    }
-
-    +action --new 'ping'
-    --desc 'Pong the process that pinged.'
-    --type 'launch'
-    
-    action-ping () 
-    { 
-	kill -USR1 $(command);
-	return 1
-    }
 }
 
 function bashrun.engine.shutdown { 
