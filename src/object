@@ -485,7 +485,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 		if defined? $var; then
 		    val="${!var}"
 		    if [[ "$val" == '' ]]; then
-			echo $(object.get $key)
+			object.get_$key
 		    else
 			object.set $key "$val"			
 		    fi

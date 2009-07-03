@@ -82,14 +82,15 @@ function class {
 	methods=${3}
     fi
 
+    for key in $keys; do
+	if [[ "$key" =~ (.+?):(.+) ]]; then
+	    key=${BASH_REMATCH[1]}
+	fi
+	clean_keys="$clean_keys $key"
+    done
+
     if [[ "$methods" != 'nil' ]]; then
 
-	for key in $keys; do
-	    if [[ "$key" =~ (.+?):(.+) ]]; then
-		key=${BASH_REMATCH[1]}
-	    fi
-	    clean_keys="$clean_keys $key"
-	done
 	local interface=(new code $clean_keys $methods)
 	have_interface=1
 
@@ -112,7 +113,7 @@ function class {
     NAME=$(echo $NAME | tr "[:lower:]" "[:upper:]")
 
     cat $BASHRUN_SHARE/object | \
-	sed "s|_OBJECTS_KEYS=()|_OBJECTS_KEYS=($keys)|" | \
+	sed "s|_OBJECTS_KEYS=()|_OBJECTS_KEYS=($clean_keys)|" | \
 	sed "s|_OBJECTS_INTERFACE_OPTIONS=''|_OBJECTS_INTERFACE_OPTIONS='$interface' |" | \
 	sed "s|_OBJECTS_HAVE_INTERFACE=0|_OBJECTS_HAVE_INTERFACE=$have_interface|" | \
 	sed "s|_OBJECTS_INTERFACE_METHODS=''|_OBJECTS_INTERFACE_METHODS='$methods'|" | \
@@ -123,7 +124,7 @@ function class {
     local i=0
     local access='rw'
     for key in $keys; do
-	if [[ "$key" =~ (.+?):(.+) ]]; then
+	if [[ "$key" =~ (.+?):(.*) ]]; then
 	    key=${BASH_REMATCH[1]}
 	    access=${BASH_REMATCH[2]}
 	else
