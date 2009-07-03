@@ -224,10 +224,12 @@ function bashrun.engine.busy? {
 
 function bashrun.engine.save {
 
-    local f="$HOME/saverc"
+    local f=${1:-$HOME/saverc}
 
     bashrun.debug "saving to" -v $f
-    actions.code > $f
+
+    echo "# -*- shell-script -*-" > $f
+    actions.code >> $f
     handlers.code >> $f
     rules.code >> $f
     bookmarks.code >> $f
@@ -235,6 +237,10 @@ function bashrun.engine.save {
     objects.dump
 
     objects.seek_start
+}
+
+function +save {
+    bashrun.engine.save "$1"
 }
 
 function bashrun.engine.shutdown { 
