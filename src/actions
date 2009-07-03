@@ -256,7 +256,7 @@ function action.run {
     BASHRUN_DEBUG_ACTION=1
 
     # run the action function
-    action-$action
+    action-$action "$@"
     retval=$?
 
     # disable action debugging

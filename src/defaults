@@ -130,6 +130,7 @@ action-edit-mode-leave ()
 +action --new 'map'
 --desc "map window, should work for xterm, urxvt (both set WINDOWID)"
 --type "shell"
+--deps 'xdotool'
 --init "BASHRUN_WINDOW_STATE=1"
 --default 1
 
@@ -142,6 +143,7 @@ function action-map {
 +action --new 'unmap'
 --desc "unmap window"
 --type "shell" 
+--deps 'xdotool'
 --default 1
 
 function action-unmap {
@@ -153,6 +155,7 @@ function action-unmap {
 +action --new 'toggle'
 --desc 'toggle window state'
 --type 'shell'
+--deps 'xdotool'
 --default 1
 
 function action-toggle {
@@ -161,6 +164,17 @@ function action-toggle {
     else
 	action-map
     fi
+    return 1
+}
+
++action --new resize
+--desc 'resize window'
+--type 'shell'
+--deps 'xdotool'
+--default 1
+
+function action-resize {
+    echo -ne "\e[8;${2};${1}t";
     return 1
 }
 

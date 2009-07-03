@@ -120,7 +120,7 @@ function bashrun.engine.action {
 	    shell)
 		# just run action here
 		if action.function?; then
-		    action.run
+		    action.run $command
 		    bashrun.separator
 		fi
 		bashrun.engine.busy 0
