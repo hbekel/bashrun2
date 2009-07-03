@@ -163,7 +163,7 @@ function objects.interface? {
 
 function objects.list { # [-l] [ids]
 
-    local saved=${_OBJECTS[$_OBJECTS_POSITION]}
+    local current=$_OBJECTS_POSITION
     local opt=''
 
     while [[ "${1:0:1}" == "-" ]]; do
@@ -175,8 +175,12 @@ function objects.list { # [-l] [ids]
 
     if [[ "$1" != '' ]]; then
 	for id in $@; do
+	    if [[ "$id" == "." ]]; then
+		id=${_OBJECTS[$current]}
+	    fi
+	    
 	    if objects.seek $id; then
-		object.list $opt $id
+		object.list -l $id
 	    fi
 	done
     else
@@ -185,8 +189,8 @@ function objects.list { # [-l] [ids]
 	    object.list $opt
 	    objects.next
 	done
+    _OBJECTS_POSITION=$current
     fi
-    objects.seek $saved
 }
 
 function objects.all {
