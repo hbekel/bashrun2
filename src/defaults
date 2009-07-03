@@ -3,7 +3,7 @@
 ################################################################################
 
 function action.set_default {
-    _BASHRUN_ACTIONS[${_BASHRUN_ACTIONS_POSITION}+7]="$2"
+    _BASHRUN_ACTIONS[${_BASHRUN_ACTIONS_POSITION}+7]="$1"
 }
 
 # pass #########################################################################

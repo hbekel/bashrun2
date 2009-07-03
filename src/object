@@ -275,11 +275,6 @@ function object.set { # key value
     local index=-1
     local i=0
 
-    if ! type -t object.set_$key &> /dev/null; then
-	echo "error: attribute $key is read-only."
-	return 1
-    fi
-
     for ((i=0; i<=${#_OBJECTS_KEYS[@]}; i++)); do
 	if [[ ${_OBJECTS_KEYS[$i]} == $key ]]; then
 	    index=$i
@@ -487,7 +482,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 		    if [[ "$val" == '' ]]; then
 			object.get_$key
 		    else
-			object.set $key "$val"			
+			object.set_$key "$val"			
 		    fi
 		fi
 	    done	

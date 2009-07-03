@@ -223,6 +223,7 @@ function bashrun.engine.busy? {
 }
 
 function bashrun.engine.save {
+
     local f="$HOME/saverc"
 
     bashrun.debug "saving to" -v $f
@@ -232,6 +233,8 @@ function bashrun.engine.save {
     bookmarks.code >> $f
 
     objects.dump
+
+    objects.seek_start
 }
 
 function bashrun.engine.shutdown { 
