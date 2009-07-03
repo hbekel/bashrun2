@@ -2,7 +2,7 @@
 
 ################################################################################
 
-function action.set_default {
+function action.set_core {
     _BASHRUN_ACTIONS[${_BASHRUN_ACTIONS_POSITION}+7]="$1"
 }
 
@@ -11,7 +11,7 @@ function action.set_default {
 +action --new 'pass'
 --desc 'passthrough command'
 --type 'shell'
---default 1
+--core 1
 
 action-pass () { :; }
 
@@ -19,7 +19,7 @@ action-pass () { :; }
 
 +action --new shell
 --type shell
---default 1
+--core 1
 
 function action-shell {
     eval "$command"
@@ -30,7 +30,7 @@ function action-shell {
 +action --new 'ping'
 --desc 'Pong the process that pinged.'
 --type 'launch'
---default 1
+--core 1
 
 action-ping () 
 { 
@@ -43,7 +43,7 @@ action-ping ()
 +action --new debug
 --desc "Toggle debug mode."
 --type "shell"
---default 1
+--core 1
 
 action-debug () {
 
@@ -65,7 +65,7 @@ action-debug () {
 --bind '\ee'
 --deps 'xdotool'
 --shutdown "+action edit-mode-enter --bind '\ee'"
---default 1
+--core 1
 
 action-edit-mode-enter () 
 {     
@@ -106,7 +106,7 @@ action-edit-mode-enter ()
 --desc 'edit-mode-leave'
 --deps 'xdotool'
 --type 'shell'
---default 1
+--core 1
 
 action-edit-mode-leave () 
 { 
@@ -132,7 +132,7 @@ action-edit-mode-leave ()
 --type "shell"
 --deps 'xdotool'
 --init "BASHRUN_WINDOW_STATE=1"
---default 1
+--core 1
 
 function action-map {
     xdotool windowmap $WINDOWID
@@ -144,7 +144,7 @@ function action-map {
 --desc "unmap window"
 --type "shell" 
 --deps 'xdotool'
---default 1
+--core 1
 
 function action-unmap {
     xdotool windowunmap $WINDOWID
@@ -156,7 +156,7 @@ function action-unmap {
 --desc 'toggle window state'
 --type 'shell'
 --deps 'xdotool'
---default 1
+--core 1
 
 function action-toggle {
     if [[ BASHRUN_WINDOW_STATE -eq 1 ]]; then
@@ -171,7 +171,7 @@ function action-toggle {
 --desc 'resize window'
 --type 'shell'
 --deps 'xdotool'
---default 1
+--core 1
 
 function action-resize {
     echo -ne "\e[8;${2};${1}t";
@@ -180,4 +180,4 @@ function action-resize {
 
 ################################################################################
 
-unset -f action.set_default
+unset -f action.set_core

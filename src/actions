@@ -1,6 +1,6 @@
 # -*- shell-script -*-
 
-class "action" "name:r type desc deps help init shutdown default:r" "bind unbind rebind"
+class "action" "name:r type desc deps help init shutdown core:r" "bind unbind rebind"
 
 function_clone "action.new" "_action.new"
 function action.new {
@@ -214,9 +214,9 @@ function action.available? {
     return $result
 }
 
-function action.default? {
-    [[ "$(action.get_default)" == "1" ]] && return 0
-    [[ "$(action.get_default)" == "0" ]] && return 1
+function action.core? {
+    [[ "$(action.get_core)" == "1" ]] && return 0
+    return 1
 }
 
 function action.uses {
@@ -398,8 +398,8 @@ function action.code {
 
     local name=$(action.get_name)
     
-    # default actions can only be bound in the rcfile
-    if action.default?; then	
+    # save only bindings for core actions
+    if action.core?; then	
 	if action.bound?; then
 	    bindings.seek_start
 	    local id=''
