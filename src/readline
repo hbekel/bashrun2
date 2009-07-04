@@ -21,7 +21,6 @@ function readline_get_binding {
 	line=${BASHRUN_READLINE[$i]}
 	[[ "$line" =~ ^# ]] && continue
 
-	# echo "if [[ $line =~ ^.$keyseq.: ]]; then"
 	if [[ "$line" =~ .?${keyseq}\" ]]; then # FIXME: regexp ^ ?!
 	    echo $line
 	    return 0
@@ -33,6 +32,8 @@ function readline_rebind {
     local keyseq=$1
     local keymap=${2:-emacs}
     local readline=$(readline_get_binding $keyseq)
+    readline=${readline//\'/\\x27}
+    
     local binding="-m $keymap '$readline'"    
 
     if [[ "$readline" != '' ]]; then 
