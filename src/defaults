@@ -64,7 +64,6 @@ action-debug () {
 --type 'shell'
 --bind '\ee'
 --deps 'xdotool'
---shutdown "+action edit-mode-enter --bind '\ee'"
 --core 1
 
 action-edit-mode-enter () 
@@ -110,15 +109,15 @@ action-edit-mode-enter ()
 
 action-edit-mode-leave () 
 { 
+    +action edit-mode-enter --bind '\ee';
+    actions.seek_start
+
     PS1="$OLDPS1";
     unset -f ls;
     complete -o filenames -F _longopt ls
 
     unset -f cd
     complete -o filenames -o nospace -F _cd cd
-
-    +action edit-mode-enter --bind '\ee';
-    actions.seek_start
 
     xdotool keyup alt;
     xdotool key ctrl+m;

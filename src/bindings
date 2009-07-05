@@ -2,8 +2,8 @@
 
 ################################################################################
 
+class "internal" "action keymap char readline"
 class "binding" "keyseq keymap action is_bound readline"  
-class "internal" "action keymap char readline"                
 class "keyname" "keyseq name"                             
 
 keyname.new '\x7f' 'C-<bsp>'
@@ -38,6 +38,8 @@ function bindings.dump {
     _bindings.dump
 
     local file=$_OBJECTS_DATA_HOME/bindings.dump
+
+    echo "BASHRUN_BINDINGS_NEXT_CHAR=$BASHRUN_BINDINGS_NEXT_CHAR" >> $file
 
     bindings.seek_start
     while bindings.next?; do

@@ -79,9 +79,9 @@ function action.bind {
 	# next free char
 	let BASHRUN_BINDINGS_NEXT_CHAR+=1
     else
-	# there's already a internal character bound, use it
+	# there's already an internal character bound, use it
 	char=$(internal.get_char)
-	bashrun.debug -y "ref" -v "$action" "->" -v "$char" "($keymap)" 
+	bashrun.debug -y "ref" -v "$action" "->" -v "\C-z\\x$char" "($keymap)" 
     fi
     
     # don't accept-line for 'launch' or 'shell' bindings

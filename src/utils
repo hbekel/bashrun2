@@ -94,28 +94,28 @@ function bashrun.debug {
 
 function bashrun.separator {
 
+    [[ BASHRUN_DEBUG -eq 0 ]] && return
+
     local y="\033[1;33m" # yellow
     local b="\033[1;34m" # blue
     local n="\033[0m"    # none
     local title=$1
     local width=${2:-$COLUMNS}
 
-    if [[ BASHRUN_DEBUG -eq 1 ]]; then
-	
-	echo -ne "$b"
-	if [[ "$title" != '' ]]; then
-	    (( width = width - ${#title} - 4 )) 
-	    echo -ne "-- $y$title$b "
-	fi
-	    
-	local i=0;
-	for (( i=1; i<=$width; i++ )); do
-	    echo -n "-"
-	done
-	
-	echo -ne "$n"
-	echo
+    
+    echo -ne "$b"
+    if [[ "$title" != '' ]]; then
+	(( width = width - ${#title} - 4 )) 
+	echo -ne "-- $y$title$b "
     fi
+    
+    local i=0;
+    for (( i=1; i<=$width; i++ )); do
+	echo -n "-"
+    done
+    
+    echo -ne "$n"
+    echo
 }
 
 
