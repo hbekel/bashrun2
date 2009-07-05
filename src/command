@@ -112,10 +112,9 @@ function bashrun.command.builtin? {
 
 function bashrun.command.bookmark? {
 
-    local bookmark=''
-    for bookmark in ${_BOOKMARKS[@]}; do
-	[[ "$BASHRUN_COMMAND_WORD" == "$bookmark" ]] && return 0
-    done;
+    if bookmarks.seek "$1"; then
+	return 0
+    fi
     return 1
 }
 
