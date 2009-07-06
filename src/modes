@@ -17,6 +17,33 @@ function mode.new {
     mode.set_delay '0.001'
 }
 
+function mode.code {
+
+    local name="$(mode.get_name)"
+    local bind="$(mode.get_bind)"
+    local comp="$(mode.get_comp)"
+    local unmap="$(mode.get_unmap)"
+    local pos="$(mode.get_pos)"
+    local size="$(mode.get_size)"
+    local cycle="$(mode.get_cycle)"
+    local anim="$(mode.get_anim)"
+    local delay="$(mode.get_delay)"
+    
+    print_line "mode $name" "#" "80"
+    echo
+
+    echo "+mode --new $name"
+    [[ "$bind" != '' ]] && echo "--bind '$bind'"
+    [[ "$comp" != 'complete' ]] && echo "--comp '$comp'"
+    [[ "$unmap" != '0' ]] && echo "--unmap '$unmap'"
+    [[ "$pos" != '' ]] && echo "--pos '$pos'"
+    [[ "$size" != '80x24' ]] && echo "--size '$size'"
+    [[ "$cyle" != '' ]] && echo "--cycle '$cyle'"
+    [[ "$anim" != '' ]] && echo "--anim '$anim'"
+    [[ "$delay" != '0.001' ]] && echo "--delay '$delay'"
+    echo
+}
+
 function mode.switch {
 
     :

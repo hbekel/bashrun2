@@ -3,14 +3,15 @@
 ################################################################################
 
 class "bookmark" "name" ""
+function_clone "bookmark.new" "_bookmark.new"
+function_clone "bookmarks.dump" "_bookmarks.dump"
 
 ################################################################################
-
-function_clone "bookmark.new" "_bookmark.new"
 
 function bookmark.new {
 
     _bookmark.new $1
+    
     eval "function $1 { :; }"
 }
 
@@ -18,4 +19,17 @@ function bookmark.code {
     local name="$(bookmark.get_name)"
     name=${name//\'/\\\'}
     echo "+bookmark --new '$name'"
+}
+
+function bookmarks.dump {
+    
+    _bookmarks.dump
+
+    local file=$_OBJECTS_DATA_HOME/bookmarks.dump
+
+    bookmarks.seek_start
+    while bookmarks.next?; do
+	echo "function $(bookmark.get_name) { :; }" >> $file
+	bookmarks.next
+    done
 }

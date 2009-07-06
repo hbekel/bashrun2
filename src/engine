@@ -6,9 +6,7 @@ BASHRUN_ACTION=''
 BASHRUN_EXECMODE=''
 BASHRUN_ENGINE_BUSY=0
 
-#BASHRUN_RCFILE=$BASHRUN_CONFIG_HOME/rc
-# for development:
-BASHRUN_RCFILE=$HOME/workspace/bashrun/rc.example
+BASHRUN_RCFILE=$BASHRUN_CONFIG_HOME/rc
 
 BASHRUN_TIMESTAMP=$BASHRUN_CACHE_HOME/timestamp
 
@@ -236,15 +234,23 @@ function bashrun.engine.busy? {
 
 function bashrun.engine.save {
 
-    local f=${1:-$HOME/saverc}
+    local f=${1:-$BASHRUN_RCFILE}
 
     bashrun.debug "saving to" -v $f
 
     echo "# -*- shell-script -*-" > $f
-    actions.code >> $f
-    handlers.code >> $f
+    echo "# BASHRUN CONFIG VERSION $BASHRUN_VERSION" >> $f
+    echo >> $f
+
+    modes.code >> $f
     rules.code >> $f
+    handlers.code >> $f
     bookmarks.code >> $f
+    actions.code >> $f
+
+    if [[ "$f" == "$BASHRUN_RCFILE" ]]; then
+	touch $BASHRUN_TIMESTAMP
+    fi
 
     objects.dump
 
