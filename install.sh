@@ -29,6 +29,7 @@ FILES=(
     signals
     source
     utils
+    window
 )
 
 for file in ${FILES[@]}; do

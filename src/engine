@@ -13,23 +13,35 @@ BASHRUN_RCFILE=$HOME/workspace/bashrun/rc.example
 BASHRUN_TIMESTAMP=$BASHRUN_CACHE_HOME/timestamp
 
 BASHRUN_LOGFILE=/dev/null
-BASHRUN_PIDFILE=$BASHRUN_CACHE_HOME/pids
+BASHRUN_PIDFILE=$BASHRUN_CACHE_HOME/pid
+BASHRUN_WIDFILE=$BASHRUN_CACHE_HOME/wid
 
 [[ ! -f $BASHRUN_PIDFILE ]] && touch $BASHRUN_PIDFILE
 
 function bashrun.engine.init {
     
     bashrun.separator "bashrun-engine $BASHRUN_VERSION"
-    
-    bashrun.debug "pid" -v "$$" '>>' -v "${BASHRUN_PIDFILE/$HOME/~}"
-    # append pid to shared pidfile
-    echo $$ >> $BASHRUN_PIDFILE
+
+    # write pid and wid if this is the first instance
+
+    if [ ! -f $BASHRUN_PIDFILE ]; then
+	bashrun.debug "pid" -v "$$" '>' -v "${BASHRUN_PIDFILE/$HOME/~}"
+	echo $$ > $BASHRUN_PIDFILE
+    fi
+
+    if [ ! -f $BASHRUN_WIDFILE ]; then
+	bashrun.debug "pid" -v "$WINDOWID" '>' -v "${BASHRUN_WIDFILE/$HOME/~}"
+	echo $WINDOWID > $BASHRUN_WIDFILE
+    fi
+
+    # set wid to terminal $WINDOWID here
+    bashrun.window.id $WINDOWID
 
     # get current readline bindings
     bashrun.debug "getting current readline bindings..."
     readline_get_bindings
         
-    # source rc file or restore dumped state
+    # source rcfile if modified, else restore dumped state
     local rcfile="${BASHRUN_RCFILE/$HOME/~}"
 
     if [[ "$BASHRUN_RCFILE" -nt "$BASHRUN_TIMESTAMP" ]]; then
@@ -60,11 +72,11 @@ function bashrun.engine.init {
     # reset object positions
     objects.seek_start
 
-    # escape from trap in interactive mode
-    PROMPT_COMMAND="trap DEBUG; $PROMPT_COMMAND"
-
     # enable extended debugging features
     shopt -s extdebug
+
+    # prepare escape from trap
+    PROMPT_COMMAND="trap DEBUG; $PROMPT_COMMAND"
 
     # init exec mode
     BASHRUN_EXECMODE='&'
@@ -248,16 +260,8 @@ function bashrun.engine.shutdown {
     # run shutdown callbacks
     actions.shutdown
 
-    # remove this pid from the pidfile
-    local pid=''
-    echo -n '' > $BASHRUN_PIDFILE.tmp
-
-    for pid in $(cat $BASHRUN_PIDFILE); do
-	if [[ "$pid" != "$$" ]]; then
-	    echo $pid > $BASHRUN_PIDFILE.tmp
-	fi
-    done
-    mv $BASHRUN_PIDFILE.tmp $BASHRUN_PIDFILE
+    [ -f $BASHRUN_PIDFILE ] && rm $BASHRUN_PIDFILE
+    [ -f $BASHRUN_WIDFILE ] && rm $BASHRUN_WIDFILE
 
     # remove untrap from prompt command
     PROMPT_COMMAND=${PROMPT_COMMAND/trap DEBUG\;/}

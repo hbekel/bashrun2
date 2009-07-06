@@ -1,0 +1,157 @@
+# -*- shell-script -*-
+
+BASHRUN_WINDOW_ID=""
+BASHRUN_WINDOW_POS_X=0
+BASHRUN_WINDOW_POS_Y=0
+BASHRUN_WINDOW_WIDTH=$COLUMNS
+BASHRUN_WINDOW_HEIGHT=$LINES
+BASHRUN_WINDOW_MAPPED=1
+
+function bashrun.window? {
+
+    if [[ "$BASHRUN_WINDOW_ID" != '' ]]; then
+	return 0
+    fi
+    return 1
+}
+
+function bashrun.window.mapped? {
+    bashrun.window? || return 1
+
+    [[ BASHRUN_WINDOW_MAPPED -eq 1 ]] && return 0
+    return 1
+}
+
+function bashrun.window.terminal? {
+    bashrun.window? || return 1
+    if [[ "$TERM" =~ (xterm|rxvt) && "$BASHRUN_WINDOW_ID" == "$WINDOWID" ]]; then
+	return 0
+    fi
+    return 1
+}
+
+function bashrun.window.id {
+    
+    if [[ $# -eq 0 ]]; then
+	echo $BASHRUN_WINDOW_ID
+    else
+	BASHRUN_WINDOW_ID=$1
+    fi
+    return 0
+}
+
+function bashrun.window.pos {
+   if [[ $# -eq 0 ]]; then
+       echo $BASHRUN_WINDOW_POS_X
+       echo $BASHRUN_WINDOW_POS_Y
+   else
+       bashrun.window? || return 1
+
+       xdotool windowmove $BASHRUN_WINDOW_ID $1 $2
+       BASHRUN_WINDOW_POS_X=$1
+       BASHRUN_WINDOW_POS_Y=$2
+   fi
+   return 0
+}
+
+function bashrun.window.size {
+    
+    if [[ $# -eq 0 ]]; then
+	echo $BASHRUN_WINDOW_WIDTH $BASHRUN_WINDOW_HEIGHT
+	return 0;
+    fi
+
+    bashrun.window? || return 1
+
+    if ! bashrun.window.terminal?; then
+
+	# resize from the outside using xdotool
+
+	if [[ $# -eq 2 ]]; then
+	    xdotool windowsize $BASHRUN_WINDOW_ID $1 $2
+	    BASHRUN_WINDOW_WIDTH=$1
+	    BASHRUN_WINDOW_HEIGHT=$2
+	fi 
+	
+	if [[ $# -eq 3 && "$1" == "--hint" ]]; then
+	    xdotool windowsize --usehints $BASHRUN_WINDOW_ID $2 $3
+	    BASHRUN_WINDOW_WIDTH=$2
+	    BASHRUN_WINDOW_HEIGHT=$3
+	fi
+
+    else
+	# resize from the inside using ansi-escapes
+        # args: [up|down|left|right] || columns lines
+
+	if [[ "$1" == "--hint" ]]; then
+	    shift
+	fi
+
+	local dir=$1
+	local columns=$1
+	local lines=$2
+	local update=${3:-1}
+
+        # set new BASHRUN_WINDOW_WIDTH, BASHRUN_WINDOW_HEIGHT
+	case "$dir" in
+	    up)
+		let BASHRUN_WINDOW_HEIGHT--
+		;;
+	    down)
+		let BASHRUN_WINDOW_HEIGHT++
+		;;
+	    left)
+		let BASHRUN_WINDOW_WIDTH--
+		;;
+	    right)
+		let BASHRUN_WINDOW_WIDTH++
+		;;
+	    *)
+		BASHRUN_WINDOW_WIDTH=$columns
+		BASHRUN_WINDOW_HEIGHT=$lines
+		;;
+	esac
+	
+        # keep least 1x1
+	[[ $BASHRUN_WINDOW_HEIGHT -eq 0 ]] && BASHRUN_WINDOW_HEIGHT=1
+	[[ $BASHRUN_WINDOW_WIDTH -eq 0 ]] && BASHRUN_WINDOW_WIDTH=1
+	
+        # resize
+	echo -ne "\e[8;${BASHRUN_WINDOW_HEIGHT};${BASHRUN_WINDOW_WIDTH}t";     
+    fi
+    return 0
+}
+ 
+function bashrun.window.map {
+    bashrun.window? || return 1
+
+    if ! bashrun.window.mapped?; then
+	xdotool windowmap $BASHRUN_WINDOW_ID
+	xdotool windowmove $BASHRUN_WINDOW_ID $BASHRUN_WINDOW_POS_X $BASHRUN_WINDOW_POS_Y
+	BASHRUN_WINDOW_MAPPED=1
+	return 0
+    fi
+    return 1
+}
+
+function bashrun.window.unmap {
+    bashrun.window? || return 1
+
+    if bashrun.window.mapped?; then
+	xdotool windowunmap $BASHRUN_WINDOW_ID
+	BASHRUN_WINDOW_MAPPED=0
+	return 0
+    fi
+    return 1
+}
+
+function bashrun.window.toggle {
+    bashrun.window? || return 1
+
+    if [[ BASHRUN_WINDOW_MAPPED -eq 0 ]]; then	
+	bashrun.window.map
+    else
+	bashrun.window.unmap
+    fi
+    return 0
+}

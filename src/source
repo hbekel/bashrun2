@@ -26,10 +26,11 @@ source $share/handlers
 source $share/rules
 source $share/bookmarks
 
-source $share/signals
-source $share/remote
 source $share/readline
 source $share/command
+source $share/signals
+source $share/remote
+source $share/window
 source $share/engine
 
 bashrun.engine.init
