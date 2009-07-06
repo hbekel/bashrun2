@@ -76,6 +76,98 @@ action-edit-mode () {
     return 1
 }
 
+## action run ##################################################################
+
++action --new 'run'
+--desc 'Run command'
+--type 'trap-and-launch'
+--bind '\e\C-m'
+--core 1
+
+action-run () 
+{ 
+    ! executable? && +handlers;
+    +rules;
+    return 0
+}
+
+## action run-term #############################################################
+
++action --new 'run-term'
+--desc 'Run command in terminal'
+--type 'trap-and-launch'
+--bind '\et'
+--core 1
+
+action-run-term () 
+{ 
+    ! executable? && +handlers;
+    +terminal;
+    return 0
+}
+
+## action run-page #############################################################
+
++action --new 'run-page'
+--desc 'Run command in terminal and page'
+--type 'trap-and-launch'
+--bind '\e+'
+--core 1
+
+action-run-page () 
+{ 
+    ! executable? && +handlers;
+    +pager;
+    +terminal;
+    return 0
+}
+
+## action run-hold #############################################################
+
++action --new 'run-hold'
+--desc 'Run command in terminal and hold'
+--type 'trap-and-launch'
+--bind '\eh'
+--core 1
+
+action-run-hold () 
+{ 
+    ! executable? && +handlers;
+    command "($(command)); read -n1";
+    +terminal;
+    return 0
+}
+
+## action su-run ###############################################################
+
++action --new 'su-run'
+--desc 'Run command as root'
+--type 'trap-and-launch'
+--core 1
+
+action-su-run () 
+{ 
+    action-run;
+    +user root;
+    return 0
+}
+
+## action su-run-term ##########################################################
+
++action --new 'su-run-term'
+--desc 'Run command in terminal as root'
+--type 'trap-and-launch'
+--bind '\es\C-m'
+--core 1
+
+action-su-run-term () 
+{ 
+    action-run-term;
+    +user root;
+    return 0
+}
+
+
 # map/unmap/toggle ###############################################################
 
 +action --new 'window-map'

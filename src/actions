@@ -418,7 +418,6 @@ function action.code {
 	    for id in $(bindings.select action $name); do
 		bindings.seek --next $id 
 		echo "+action $(action.get_name) $(binding.code)"
-		echo
 	    done
 	fi
 	return 0
