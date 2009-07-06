@@ -19,6 +19,7 @@ source $share/globals
 
 bashrun.prepare_directories
 
+source $share/modes
 source $share/actions
 source $share/bindings
 source $share/handlers

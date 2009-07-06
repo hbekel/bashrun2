@@ -20,6 +20,7 @@ FILES=(
     engine
     globals
     handlers
+    modes
     object
     objects
     readline

@@ -1,0 +1,33 @@
+# -*- shell-script -*-
+
+################################################################################
+
+class "mode" "name bind comp unmap pos size cycle anim delay" ''
+
+################################################################################
+
+function_clone "mode.new" "_mode.new"
+
+function mode.new { 
+
+    _mode.new "$1"
+    mode.set_size "80x24"
+    mode.set_comp 'complete'
+    mode.set_unmap '0'
+    mode.set_delay '0.001'
+}
+
+function mode.switch {
+
+    :
+
+    # apply size and position
+    # window.size 80x24
+    # window.pos  0 0
+
+    # bind cycling through sizes (window-cycle-size)
+    
+    # set up completion
+    # ...
+    # profit?
+}

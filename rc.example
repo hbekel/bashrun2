@@ -120,3 +120,27 @@ action-su-run-term ()
     return 0
 }
 
+# MODES
+
++mode --new 'terminal' 
+--size 80x24                          # default       
+--comp 'complete'                     # default
+--bind '\et'
+
++mode --new 'launcher'                # classic bashrun, default for frontend
+--size   '40x1 40x10'                 # multiple sizes: cycleable
+--cycle  '\el'                        # cycle through sizes 
+--comp   'quiet-complete complete 8'  # comp_type, alt type, treshold 
+--bind '\C-l'                         # toggling key
+--unmap  '1'                          # unmap after non-shell actions
+
++mode --new 'kuake'                   # drop-down console
+--size  '113 24'                      # adjust to your liking
+--pos   '0 0'                         # position: if unset, let wm handle it
+--anim  '1'                           # animated?
+--delay '0.001'                       # delay
+--unmap '1'
+
+
+
+
