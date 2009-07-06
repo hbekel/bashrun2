@@ -126,38 +126,38 @@ action-edit-mode-leave ()
 
 # map/unmap/toggle ###############################################################
 
-+action --new 'map'
++action --new 'window-map'
 --desc "map window, should work for xterm, urxvt (both set WINDOWID)"
 --type "shell"
 --deps 'xdotool'
 --init "BASHRUN_WINDOW_STATE=1"
 --core 1
 
-function action-map {
+function action-window-map {
     xdotool windowmap $WINDOWID
     BASHRUN_WINDOW_STATE=1
     return 1
 }
 
-+action --new 'unmap'
++action --new 'window-unmap'
 --desc "unmap window"
 --type "shell" 
 --deps 'xdotool'
 --core 1
 
-function action-unmap {
+function action-window-unmap {
     xdotool windowunmap $WINDOWID
     BASHRUN_WINDOW_STATE=0
     return 1
 }
 
-+action --new 'toggle'
++action --new 'window-toggle'
 --desc 'toggle window state'
 --type 'shell'
 --deps 'xdotool'
 --core 1
 
-function action-toggle {
+function action-window-toggle {
     if [[ BASHRUN_WINDOW_STATE -eq 1 ]]; then
 	action-unmap
     else
@@ -166,13 +166,12 @@ function action-toggle {
     return 1
 }
 
-+action --new resize
++action --new 'window-resize'
 --desc 'resize window'
 --type 'shell'
---deps 'xdotool'
 --core 1
 
-function action-resize {
+function action-window-resize {
     echo -ne "\e[8;${2};${1}t";
     return 1
 }
@@ -180,3 +179,4 @@ function action-resize {
 ################################################################################
 
 unset -f action.set_core
+
