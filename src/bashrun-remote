@@ -13,7 +13,7 @@ function ping {
 
 function pong {
     pong=1
-    echo -n "pong -> "
+    echo -n "received pong -> "
 }
 
 function waitpong {
@@ -43,45 +43,38 @@ pong=0
 pid=0
 parent=0
 
-if [[ -f $cache/pids ]]; then
+if [[ -f $cache/pid ]]; then
   
+    pid=$(cat $cache/pid)
 
-    if [[ -s $cache/pids ]]; then
-	echo "Available bashrun instances ($cache/pids):"
-	cat -n $cache/pids
-    fi
-
-    for pid in $(tac $cache/pids); do
-		
-	if [[ "$pid" != "" ]]; then
+    if [[ "$pid" != "" ]]; then
 	    
-	    if [[ "$PPID" == "$pid" ]]; then
-		parent=1
-		echo "$pid is the parent shell of this process, run self in background..."
-		$0 $@ &
-		exit 0
-	    fi
+	if [[ "$PPID" == "$pid" ]]; then
+	    parent=1
+	    echo "$pid is the parent shell of this process, run self in background..."
+	    $0 $@ &
+	    exit 0
+	fi
 			    
-	    echo -n "Sending ping $pid -> "
+	echo -n "Sending ping $pid -> "
 
-	    if ping; then
-		echo "bashrun instance."
-		echo -n "Sending '$action $command' -> $pid -> "
-		if send; then 
-		    echo "done."
-		    exit 0
-		else
-		    echo "fail"
-		    continue
-		fi
+	if ping; then
+	    echo "bashrun instance found."
+	    echo -n "Sending '$action $command' -> $pid -> "
+	    if send; then 
+		echo "done."
+		exit 0
 	    else
-		echo "$pid: does not respond or not a bashrun instance."
+		echo "fail"
 		continue
 	    fi
+	else
+	    echo "$pid: busy or not a bashrun instance."
+	    exit 1
 	fi
-    done
-    echo "No bashrun instance available ($cache/pids is empty)."
+    fi
+    echo "No bashrun instance available ($cache/pid is empty)."
 else
-    echo "No bashrun pid file... this shouldn't happen unless $USER has never run it."
+    echo "No bashrun instance available."
 fi
 exit 1

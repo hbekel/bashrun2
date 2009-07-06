@@ -14,21 +14,18 @@ BASHRUN_LOGFILE=/dev/null
 BASHRUN_PIDFILE=$BASHRUN_CACHE_HOME/pid
 BASHRUN_WIDFILE=$BASHRUN_CACHE_HOME/wid
 
-[[ ! -f $BASHRUN_PIDFILE ]] && touch $BASHRUN_PIDFILE
-
 function bashrun.engine.init {
     
     bashrun.separator "bashrun-engine $BASHRUN_VERSION"
 
     # write pid and wid if this is the first instance
-
     if [ ! -f $BASHRUN_PIDFILE ]; then
 	bashrun.debug "pid" -v "$$" '>' -v "${BASHRUN_PIDFILE/$HOME/~}"
 	echo $$ > $BASHRUN_PIDFILE
     fi
 
     if [ ! -f $BASHRUN_WIDFILE ]; then
-	bashrun.debug "pid" -v "$WINDOWID" '>' -v "${BASHRUN_WIDFILE/$HOME/~}"
+	bashrun.debug "wid" -v "$WINDOWID" '>' -v "${BASHRUN_WIDFILE/$HOME/~}"
 	echo $WINDOWID > $BASHRUN_WIDFILE
     fi
 

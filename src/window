@@ -6,6 +6,7 @@ BASHRUN_WINDOW_POS_Y=0
 BASHRUN_WINDOW_WIDTH=$COLUMNS
 BASHRUN_WINDOW_HEIGHT=$LINES
 BASHRUN_WINDOW_MAPPED=1
+BASHRUN_WINDOW_ANIMATE=0
 
 function bashrun.window? {
 
@@ -30,20 +31,64 @@ function bashrun.window.terminal? {
     return 1
 }
 
+function bashrun.window.animate? {
+     bashrun.window? || return 1
+
+    [[ BASHRUN_WINDOW_ANIMATE -eq 1 ]] && return 0
+    return 1
+}
+
 function bashrun.window.id {
     
     if [[ $# -eq 0 ]]; then
 	echo $BASHRUN_WINDOW_ID
     else
-	BASHRUN_WINDOW_ID=$1
+	BASHRUN_WINDOW_ID=$1	    
+	bashrun.window.update
     fi
     return 0
 }
 
+function bashrun.window.update {
+
+    local saved=$IFS
+    local line=''
+
+    IFS=$'\n'
+    for line in $(xwininfo -id $BASHRUN_WINDOW_ID); do
+	if [[ "$line" =~ "Absolute upper-left X:  "([0-9]+) ]]; then
+	    BASHRUN_WINDOW_POS_X=${BASH_REMATCH[1]}
+	fi
+
+	if [[ "$line" =~ "Relative upper-left X:  "([0-9]+) ]]; then
+	    (( BASHRUN_WINDOW_POS_X-=${BASH_REMATCH[1]} ))
+	fi
+
+	if [[ "$line" =~ "Absolute upper-left Y:  "([0-9]+) ]]; then
+	    BASHRUN_WINDOW_POS_Y=${BASH_REMATCH[1]}
+	fi
+
+	if [[ "$line" =~ "Relative upper-left Y:  "([0-9]+) ]]; then
+	    (( BASHRUN_WINDOW_POS_Y-=${BASH_REMATCH[1]} ))
+	fi
+
+	if [[ "$line" =~ "-geometry "([0-9]+)x([0-9]+) ]]; then
+	    BASHRUN_WINDOW_WIDTH=${BASH_REMATCH[1]}
+	    BASHRUN_WINDOW_HEIGHT=${BASH_REMATCH[2]}
+	fi
+
+	if [[ "$line" =~ "Map State: "(.+) ]]; then
+	    [[ ${BASH_REMATCH[1]} == 'IsUnMapped' ]] && BASHRUN_WINDOW_MAPPED=0
+	    [[ ${BASH_REMATCH[1]} == 'IsViewable' ]] && BASHRUN_WINDOW_MAPPED=1
+	fi
+    done
+    IFS=$saved
+}
+
 function bashrun.window.pos {
    if [[ $# -eq 0 ]]; then
-       echo $BASHRUN_WINDOW_POS_X
-       echo $BASHRUN_WINDOW_POS_Y
+       bashrun.window.update
+       echo $BASHRUN_WINDOW_POS_X $BASHRUN_WINDOW_POS_Y
    else
        bashrun.window? || return 1
 
@@ -57,6 +102,7 @@ function bashrun.window.pos {
 function bashrun.window.size {
     
     if [[ $# -eq 0 ]]; then
+	bashrun.window.update
 	echo $BASHRUN_WINDOW_WIDTH $BASHRUN_WINDOW_HEIGHT
 	return 0;
     fi
@@ -118,6 +164,9 @@ function bashrun.window.size {
 	
         # resize
 	echo -ne "\e[8;${BASHRUN_WINDOW_HEIGHT};${BASHRUN_WINDOW_WIDTH}t";     
+
+	COLUMNS=$BASHRUN_WINDOW_WIDTH
+	LINES=$BASHRUN_WINDOW_HEIGHT
     fi
     return 0
 }
@@ -125,9 +174,14 @@ function bashrun.window.size {
 function bashrun.window.map {
     bashrun.window? || return 1
 
+    bashrun.window.update
+
     if ! bashrun.window.mapped?; then
 	xdotool windowmap $BASHRUN_WINDOW_ID
 	xdotool windowmove $BASHRUN_WINDOW_ID $BASHRUN_WINDOW_POS_X $BASHRUN_WINDOW_POS_Y
+	if [[ BASHRUN_WINDOW_ANIMATE -eq 1 ]]; then
+	    bashrun.window.expand
+	fi
 	BASHRUN_WINDOW_MAPPED=1
 	return 0
     fi
@@ -137,7 +191,12 @@ function bashrun.window.map {
 function bashrun.window.unmap {
     bashrun.window? || return 1
 
+    bashrun.window.update
+
     if bashrun.window.mapped?; then
+	if [[ BASHRUN_WINDOW_ANIMATE -eq 1 ]]; then
+	    bashrun.window.collapse
+	fi
 	xdotool windowunmap $BASHRUN_WINDOW_ID
 	BASHRUN_WINDOW_MAPPED=0
 	return 0
@@ -154,4 +213,34 @@ function bashrun.window.toggle {
 	bashrun.window.unmap
     fi
     return 0
+}
+
+function bashrun.window.animate {
+    BASHRUN_WINDOW_ANIMATE=${1:-1}
+}
+
+function bashrun.window.collapse {
+
+    local delay=${1:-0.001}
+
+    local i=0
+    for (( i=$BASHRUN_WINDOW_HEIGHT; i>1; i-- )); do
+	(( BASHRUN_WINDOW_HEIGHT-=1 ))
+	bashrun.window.size --hint $BASHRUN_WINDOW_WIDTH $BASHRUN_WINDOW_HEIGHT
+	sleep $delay
+    done
+}
+
+function bashrun.window.expand {
+
+    local max_height=${1:-24}
+    local delay=${2:-0.001}
+
+    local i=0
+    for (( i=$BASHRUN_WINDOW_HEIGHT; i<=$max_height; i++ )); do
+	(( BASHRUN_WINDOW_HEIGHT+=1 ))
+	bashrun.window.size --hint $BASHRUN_WINDOW_WIDTH $BASHRUN_WINDOW_HEIGHT
+	sleep $delay
+    done
+
 }
