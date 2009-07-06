@@ -59,83 +59,33 @@ action-debug () {
 
 # edit-mode #####################################################################
 
-+action --new 'edit-mode-enter'
---desc 'edit-mode-enter'
++action --new 'edit-mode'
+--desc 'edit-mode'
 --type 'shell'
 --bind '\ee'
 --deps 'xdotool'
+--init 'BASHRUN_EDIT_MODE=0'
 --core 1
 
-action-edit-mode-enter () 
-{     
-    local current=$(objects.focus)
-    +action edit-mode-leave --bind '\ee';
-    actions.seek_start
-    
-    OLDPS1="$PS1";
-    PS1='\[\033[1;34m\]<\[\033[1;33m\]$(objects.focus)\[\033[1;34m\]:\[\033[1;37m\] $(+$(objects.focus) --name)\[\033[1;34m\]> \[\033[0m\]';
-    
-    function ls () 
-    { 
-        $(objects.focus)s.list "$@"
-    };
-    complete -F objects.complete_id ls
-    
-    function cd ()
-    {
-	if [[ "$#" == "0" ]]; then
-	    +action
-	    return
-	fi
-	
-	if type -t +$1 &> /dev/null; then
-	    +$1
-	fi
-    }
-    complete -F objects.complete_type cd
-
-    cd $current
-
-    xdotool keyup alt;
-    xdotool key ctrl+m;
-    return 1
-}
-
-+action --new 'edit-mode-leave'
---desc 'edit-mode-leave'
---deps 'xdotool'
---type 'shell'
---core 1
-
-action-edit-mode-leave () 
-{ 
-    +action edit-mode-enter --bind '\ee';
-    actions.seek_start
-
-    PS1="$OLDPS1";
-    unset -f ls;
-    complete -o filenames -F _longopt ls
-
-    unset -f cd
-    complete -o filenames -o nospace -F _cd cd
-
-    xdotool keyup alt;
-    xdotool key ctrl+m;
+action-edit-mode () {
+    if [[ BASHRUN_EDIT_MODE -eq 0 ]]; then
+	bashrun.edit_mode 1
+    else
+	bashrun.edit_mode 0
+    fi
     return 1
 }
 
 # map/unmap/toggle ###############################################################
 
 +action --new 'window-map'
---desc "map window, should work for xterm, urxvt (both set WINDOWID)"
+--desc "map window"
 --type "shell"
 --deps 'xdotool'
---init "BASHRUN_WINDOW_STATE=1"
 --core 1
 
 function action-window-map {
-    xdotool windowmap $WINDOWID
-    BASHRUN_WINDOW_STATE=1
+    bashrun.window.map
     return 1
 }
 
@@ -146,8 +96,7 @@ function action-window-map {
 --core 1
 
 function action-window-unmap {
-    xdotool windowunmap $WINDOWID
-    BASHRUN_WINDOW_STATE=0
+    bashrun.window.unmap
     return 1
 }
 
@@ -158,11 +107,7 @@ function action-window-unmap {
 --core 1
 
 function action-window-toggle {
-    if [[ BASHRUN_WINDOW_STATE -eq 1 ]]; then
-	action-unmap
-    else
-	action-map
-    fi
+    bashrun.window.toggle
     return 1
 }
 
@@ -172,7 +117,7 @@ function action-window-toggle {
 --core 1
 
 function action-window-resize {
-    echo -ne "\e[8;${2};${1}t";
+    bashrun.window.size $1 $2
     return 1
 }
 

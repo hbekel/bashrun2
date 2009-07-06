@@ -1,6 +1,6 @@
 # -*- shell-script -*-
 
-class "action" "name:r type desc deps help init shutdown core:r" "bind unbind rebind"
+class "action" "name:r type desc deps help init reset core:r" "bind unbind rebind"
 
 function_clone "action.new" "_action.new"
 function action.new {
@@ -168,10 +168,8 @@ function action.rebind {
     # find the next unbound binding
     for id in $(bindings.select action $action); do
 	if bindings.seek $id $keymap; then
-	    if ! binding.bound?; then
-		found=1
-		break
-	    fi
+	    found=1
+	    break
 	fi
     done
     [[ found -eq 0 ]] && return 1
@@ -179,20 +177,34 @@ function action.rebind {
     # get the keyseq that it was bound to before
     keyseq=$(binding.get_keyseq)
 
+    # get the action that's bound to this keyseq and unbind it
+    for id in bindings.select keyseq $keyseq; do
+	bindings.seek $id
+	if actions.seek $(binding.get_action); then
+	    action.unbind
+	fi
+    done
+
+    # rebind action
+    actions.seek $action
     action.bind $keyseq
+
     return $?
 } 
 
 function action.bound? {
     local action=$(action.get_name)
-    local id=0
+    local saved=$(binding.get_keyseq)
 
+    local id=''
     for id in $(bindings.select is_bound 1); do
 	bindings.seek $id
 	if [[ "$(binding.get_action)" == $action ]]; then
+	    bindings.seek $saved
 	    return 0
 	fi
     done
+    bindings.seek $saved
     return 1
 }
 
@@ -416,6 +428,8 @@ function action.code {
     local type=$(action.get_type)
     local deps=$(action.get_deps)
     local help=$(action.get_help)
+    local init=$(action.get_init)
+    local reset=$(action.get_reset)
 
     print_line "action $name" "#" "80"
     echo
@@ -426,6 +440,8 @@ function action.code {
     echo "--type '$type'"
     [[ "$deps" != "" ]] && echo "--deps '$deps'"
     [[ "$help" != "" ]] && echo "--help '$help'"
+    [[ "$init" != "" ]] && echo "--init '$init'"
+    [[ "$reset" != "" ]] && echo "--reset '$reset'"
     
     # bind action
     if action.bound?; then
@@ -450,44 +466,54 @@ function actions.dump {
 
     local file=$_OBJECTS_DATA_HOME/actions.dump
     local action=''
-
     _actions.dump
+
+    local saved=$(action.get_name)
 
     actions.seek_start
     while actions.next?; do
 	action=$(action.get_name)
 	function_code "action-$action" >> $file
 	actions.next
-    done    
+    done
+    actions.seek $saved
 }
 
 function actions.init {
     
+    local action=""
     local callback=""
 
     actions.seek_start
     while actions.next?; do
+	action=$(action.get_name)
 	callback=$(action.get_init)
 	if [[ "$callback" != "" ]]; then
 	    eval "$callback"
 	fi
+	actions.seek $action
 	actions.next
     done    
+    actions.seek_start
 }
 
-function actions.shutdown {
+function actions.reset {
     
+    local action=""
     local callback=""
 
     actions.seek_start
     while actions.next?; do
-	callback=$(action.get_shutdown)
+	action=$(action.get_name)
+	callback=$(action.get_reset)
 	if [[ "$callback" != "" ]]; then
+	    echo "reset: $callback"
 	    eval "$callback"
 	fi
+	actions.seek $action
 	actions.next
     done    
+    actions.seek_start
 }
-
 
 ################################################################################

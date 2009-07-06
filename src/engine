@@ -231,23 +231,21 @@ function bashrun.engine.busy? {
 
 function bashrun.engine.save {
 
-    local f=${1:-$BASHRUN_RCFILE}
+    bashrun.debug "saving to" -v $BASHRUN_RCFILE
 
-    bashrun.debug "saving to" -v $f
+    echo "# -*- shell-script -*-" > $BASHRUN_RCFILE
+    echo "# BASHRUN CONFIG VERSION $BASHRUN_VERSION" >> $BASHRUN_RCFILE
+    echo >> $BASHRUN_RCFILE
 
-    echo "# -*- shell-script -*-" > $f
-    echo "# BASHRUN CONFIG VERSION $BASHRUN_VERSION" >> $f
-    echo >> $f
+    modes.code >> $BASHRUN_RCFILE
+    rules.code >> $BASHRUN_RCFILE
+    handlers.code >> $BASHRUN_RCFILE
+    bookmarks.code >> $BASHRUN_RCFILE
 
-    modes.code >> $f
-    rules.code >> $f
-    handlers.code >> $f
-    bookmarks.code >> $f
-    actions.code >> $f
+    actions.reset
+    actions.code >> $BASHRUN_RCFILE
 
-    if [[ "$f" == "$BASHRUN_RCFILE" ]]; then
-	touch $BASHRUN_TIMESTAMP
-    fi
+    touch $BASHRUN_TIMESTAMP
 
     objects.dump
 
@@ -259,9 +257,6 @@ function +save {
 }
 
 function bashrun.engine.shutdown { 
-
-    # run shutdown callbacks
-    actions.shutdown
 
     [ -f $BASHRUN_PIDFILE ] && rm $BASHRUN_PIDFILE
     [ -f $BASHRUN_WIDFILE ] && rm $BASHRUN_WIDFILE
