@@ -62,7 +62,6 @@ action-debug () {
 +action --new 'edit-mode'
 --desc 'edit-mode'
 --type 'shell'
---bind '\ee'
 --deps 'xdotool'
 --init 'BASHRUN_EDIT_MODE=0'
 --core 1
@@ -81,7 +80,6 @@ action-edit-mode () {
 +action --new 'run'
 --desc 'Run command'
 --type 'trap-and-launch'
---bind '\e\C-m'
 --core 1
 
 action-run () 
@@ -96,7 +94,6 @@ action-run ()
 +action --new 'run-term'
 --desc 'Run command in terminal'
 --type 'trap-and-launch'
---bind '\et'
 --core 1
 
 action-run-term () 
@@ -111,7 +108,6 @@ action-run-term ()
 +action --new 'run-page'
 --desc 'Run command in terminal and page'
 --type 'trap-and-launch'
---bind '\e+'
 --core 1
 
 action-run-page () 
@@ -127,7 +123,6 @@ action-run-page ()
 +action --new 'run-hold'
 --desc 'Run command in terminal and hold'
 --type 'trap-and-launch'
---bind '\eh'
 --core 1
 
 action-run-hold () 
@@ -157,7 +152,6 @@ action-su-run ()
 +action --new 'su-run-term'
 --desc 'Run command in terminal as root'
 --type 'trap-and-launch'
---bind '\es\C-m'
 --core 1
 
 action-su-run-term () 
