@@ -258,8 +258,18 @@ function +save {
 
 function bashrun.engine.shutdown { 
 
-    [ -f $BASHRUN_PIDFILE ] && rm $BASHRUN_PIDFILE
-    [ -f $BASHRUN_WIDFILE ] && rm $BASHRUN_WIDFILE
+    # remove pid and wid if ours
+    if [ -f $BASHRUN_PIDFILE ]; then 
+	if [[ "$$" == "$(cat $BASHRUN_PIDFILE)" ]]; then
+	    rm $BASHRUN_PIDFILE
+	fi
+    fi
+
+    if [ -f $BASHRUN_WIDFILE ]; then
+	if [[ "$BASHRUN_WINDOW_ID" == "$(cat $BASHRUN_WIDFILE)" ]]; then
+	    rm $BASHRUN_WIDFILE
+	fi
+    fi
 
     # remove untrap from prompt command
     PROMPT_COMMAND=${PROMPT_COMMAND/trap DEBUG\;/}
