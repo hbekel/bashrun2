@@ -151,8 +151,7 @@ function bashrun.edit_mode {
 	BASHRUN_EDIT_MODE=1
 	actions.seek_start
 
-	xdotool keyup alt;
-	xdotool key ctrl+m;
+	xdotool key --clearmodifiers ctrl+m;
 	return 1
     else
 	
@@ -165,8 +164,8 @@ function bashrun.edit_mode {
 	
 	BASHRUN_EDIT_MODE=0
 	
-	xdotool keyup alt;
-	xdotool key ctrl+m;
+	xdotool key --clearmodifiers ctrl+m;
+	# RELEASE: wait for xdotool upgrade
     fi
 }
 
