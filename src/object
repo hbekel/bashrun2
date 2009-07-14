@@ -251,6 +251,23 @@ function object.new {
     objects.seek $1
 }
 
+function object.delete {
+
+    local start=$_OBJECTS_POSITION
+    local width=$_OBJECTS_WIDTH
+
+    for((i=$start; i<=$start+$width-1; i++)); do
+	unset _OBJECTS[$i]
+    done
+
+    local objects="$(printf '%q ' "${_OBJECTS[@]}")"
+    eval "_OBJECTS=($objects)"
+
+    _OBJECTS_POSITION=0
+    (( _OBJECTS_SIZE-=1 ))
+    _OBJECTS_MODIFIED=1
+}
+
 function object.id {
     objects.current
 }
