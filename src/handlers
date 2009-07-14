@@ -65,41 +65,42 @@ function handlers.apply {
 		fi
 	    fi
 
-	    # rewrite handler if subpatterns matched
-	    local i=0
+	    if [[ "$BASHRUN_COMMAND" =~ /%[0-9]/ ]]; then
 
-	    [[ "$BASHRUN_COMMAND" =~ $pattern ]]
-	    for (( i=1; i<${#BASH_REMATCH[*]}; i++ )); do
+	        # rewrite handler if subpatterns match
+		[[ "$BASHRUN_COMMAND" =~ $pattern ]]
 
-		local match=${BASH_REMATCH[$i]}
-		bashrun.debug "subexpression match \%$i $match"
-		string=${string//%$i/$match}
-
-		bashrun.debug "$string"
-		export append=0
-	    done
-	    # fail if unmatched $n's remain in handler string
-	    if [[ $string =~ (%[0-9]) ]]; then
-		local missing=${BASH_REMATCH[1]}
-		bashrun.debug "handler incomplete: no content for $missing"
-		bashrun.debug " -> not executing, informing user"
-		BASHRUN_COMMAND="bashrun_show_error No content for \\$missing in $pattern handler."
-		return 1
+		local i=0
+		for (( i=1; i<${#BASH_REMATCH[*]}; i++ )); do
+		    
+		    local match=${BASH_REMATCH[$i]}
+		    bashrun.debug "subexpression match \%$i $match"
+		    string=${string//%$i/$match}
+		    
+		    bashrun.debug "$string"
+		    export append=0
+		done
+	        # fail if unmatched $n's remain in handler string
+		if [[ $string =~ (%[0-9]) ]]; then
+		    local missing=${BASH_REMATCH[1]}
+		    bashrun.debug "handler incomplete: no content for $missing"
+		    bashrun.debug " -> not executing, informing user"
+		    BASHRUN_COMMAND="bashrun_show_error No content for \\$missing in $pattern handler."
+		    return 1
+		fi
 	    fi
 
 	    # eval if this contains vars (e.g. $PAGER, $BROWSER)
 	    if [[ $string =~ \$.[a-zA-z0-9_] ]]; then
 		eval "string=\"$string\""
 	    fi
-	    bashrun.debug "$string"
 
 	    if [[ append -eq 1 ]]; then
 		BASHRUN_COMMAND="$string $BASHRUN_COMMAND"
 	    else
 		BASHRUN_COMMAND="$string"
 	    fi
-	    
-	    bashrun.debug "handled"
+	    bashrun.debug "$string"
 	    return
 	fi
 	handlers.next

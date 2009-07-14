@@ -12,7 +12,9 @@ function bookmark.new {
 
     _bookmark.new $1
     
-    eval "function $1 { :; }"
+    eval "function $1 { 
+        bashrun.engine.action run launch \"$1\"
+    }"
 }
 
 function bookmark.code {
