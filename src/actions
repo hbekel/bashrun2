@@ -295,7 +295,10 @@ function action.api.enable {
 	    bashrun.debug "$BASHRUN_COMMAND"
 	fi
     }
-
+    function word { 
+	bashrun.command.get_word; 
+	echo "$BASHRUN_COMMAND_WORD";
+    }
     function line { echo $BASHRUN_COMMAND_LINE; }
 
     function executable? {
@@ -323,6 +326,7 @@ function action.runtime_interface_destroy {
 
         unset -f \
 	    command \
+	    word \
 	    line \
 	    executable? \
 	    builtin? \
