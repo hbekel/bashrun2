@@ -17,8 +17,8 @@ action-pass () { :; }
 
 # shell ########################################################################
 
-+action --new shell
---type shell
++action --new 'shell'
+--type 'shell'
 --core 1
 
 function action-shell {
@@ -91,12 +91,12 @@ action-run ()
 
 ## action run-term #############################################################
 
-+action --new 'run-term'
++action --new 'term-run'
 --desc 'Run command in terminal'
 --type 'trap-and-launch'
 --core 1
 
-action-run-term () 
+action-term-run () 
 { 
     ! executable? && +handlers;
     +terminal;
@@ -105,12 +105,12 @@ action-run-term ()
 
 ## action run-page #############################################################
 
-+action --new 'run-page'
++action --new 'term-page'
 --desc 'Run command in terminal and page'
 --type 'trap-and-launch'
 --core 1
 
-action-run-page () 
+action-term-page () 
 { 
     ! executable? && +handlers;
     +pager;
@@ -120,12 +120,12 @@ action-run-page ()
 
 ## action run-hold #############################################################
 
-+action --new 'run-hold'
++action --new 'term-hold'
 --desc 'Run command in terminal and hold'
 --type 'trap-and-launch'
 --core 1
 
-action-run-hold () 
+action-term-hold () 
 { 
     ! executable? && +handlers;
     command "($(command)); read -n1";
@@ -147,20 +147,117 @@ action-su-run ()
     return 0
 }
 
-## action su-run-term ##########################################################
+## action su-term-run ##########################################################
 
-+action --new 'su-run-term'
++action --new 'su-term-run'
 --desc 'Run command in terminal as root'
 --type 'trap-and-launch'
 --core 1
 
-action-su-run-term () 
+action-su-term-run () 
 { 
-    action-run-term;
+    action-term-run;
     +user root;
     return 0
 }
 
+## action su-term-page #########################################################
+
++action --new 'su-term-page'
+--desc 'Run command in terminal as root and page'
+--type 'trap-and-launch'
+--core 1
+
+action-su-term-page () 
+{ 
+    action-term-page;
+    +user root;
+    return 0
+}
+
+## action su-term-page #########################################################
+
++action --new 'su-term-hold'
+--desc 'Run command in terminal as root and hold'
+--type 'trap-and-launch'
+--core 1
+
+action-su-term-hold () 
+{ 
+    action-term-hold;
+    +user root;
+    return 0
+}
+
+## show-manual, -info, -help  ###################################################
+
++action --new 'show-manual'
+--desc 'Show manual page for command'
+--type 'trap-and-launch'
+--core 1
+
+action-show-manual () {
+    command "man $(word)"
+    +terminal
+}
+
++action --new 'show-info'
+--desc 'Show info page for command'
+--type 'trap-and-launch'
+--core 1
+   
+function action-show-info {
+    command "info $(word)"
+    +terminal
+}
+
++action --new 'show-help'
+--desc 'Show help for shell builtin'
+--type 'trap-and-launch'
+--core 1
+    
+function action-show-help {
+    if builtin?; then
+	command "help $(word)"
+	+pager
+    else
+	debug "$(word): not a builtin, showing manual"
+	action-show-manual
+	return 0
+    fi	    
+    +terminal
+}
+
+# browse/google/dict #############################################################
+
++action --new 'browse'
+--desc 'Open in $BROWSER'
+--type 'trap-and-launch'
+--core 1
+
+function action-browse {
+    command "$BROWSER '$(command)'"
+}
+
++action --new 'google-search'
+--desc 'Search www.google.com'
+--type 'trap-and-launch'
+--core 1
+
+function action-google-search {
+    command "$BROWSER 'http://www.google.com/search?q=$(line)'"
+}
+
++action --new 'dict-lookup'
+--desc 'Lookup in dictionary'
+--type 'trap-and-launch'
+--deps 'dict'
+--core 1
+
+function action-dict-lookup {
+    command "dict $(line)"
+    +rules
+}
 
 # map/unmap/toggle ###############################################################
 
