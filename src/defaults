@@ -138,6 +138,7 @@ action-term-hold ()
 +action --new 'su-run'
 --desc 'Run command as root'
 --type 'trap-and-launch'
+--deps 'su'
 --core 1
 
 action-su-run () 
@@ -152,6 +153,7 @@ action-su-run ()
 +action --new 'su-term-run'
 --desc 'Run command in terminal as root'
 --type 'trap-and-launch'
+--deps 'su'
 --core 1
 
 action-su-term-run () 
@@ -166,6 +168,7 @@ action-su-term-run ()
 +action --new 'su-term-page'
 --desc 'Run command in terminal as root and page'
 --type 'trap-and-launch'
+--deps 'su'
 --core 1
 
 action-su-term-page () 
@@ -180,6 +183,7 @@ action-su-term-page ()
 +action --new 'su-term-hold'
 --desc 'Run command in terminal as root and hold'
 --type 'trap-and-launch'
+--deps 'su'
 --core 1
 
 action-su-term-hold () 
@@ -194,6 +198,7 @@ action-su-term-hold ()
 +action --new 'show-manual'
 --desc 'Show manual page for command'
 --type 'trap-and-launch'
+--deps 'man'
 --core 1
 
 action-show-manual () {
@@ -204,6 +209,7 @@ action-show-manual () {
 +action --new 'show-info'
 --desc 'Show info page for command'
 --type 'trap-and-launch'
+--deps 'info'
 --core 1
    
 function action-show-info {
@@ -257,6 +263,17 @@ function action-google-search {
 function action-dict-lookup {
     command "dict $(line)"
     +rules
+}
+
++action --new 'bashrun-manual'
+--desc 'Show bashrun manual'
+--type 'launch'
+--deps 'man'
+--core 1
+
+function action-bashrun-manual {
+    command "man bashrun"
+    action-term-run
 }
 
 # map/unmap/toggle ###############################################################

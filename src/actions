@@ -437,6 +437,7 @@ function action.code {
     local init=$(action.get_init)
     local reset=$(action.get_reset)
 
+    echo
     print_line "action $name" "#" "80"
     echo
 
@@ -457,13 +458,12 @@ function action.code {
 	    binding.code
 	done
     fi
-    echo
 
     # function
     if action.function?; then
+	echo
 	function_code "action-$name"
     fi
-    echo
 }
 
 function_clone "actions.dump" "_actions.dump"
