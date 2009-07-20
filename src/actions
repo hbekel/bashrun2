@@ -78,6 +78,9 @@ function action.bind {
 	
 	# next free char
 	let BASHRUN_BINDINGS_NEXT_CHAR+=1
+	until [[ ! "$BASHRUN_BINDINGS_BLACKLIST" =~ \ $BASHRUN_BINDINGS_NEXT_CHAR\  ]]; do
+	    let BASHRUN_BINDINGS_NEXT_CHAR+=1
+	done
     else
 	# there's already an internal character bound, use it
 	char=$(internal.get_char)
