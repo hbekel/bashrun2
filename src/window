@@ -213,8 +213,6 @@ function bashrun.window.map {
 
     if ! bashrun.window.mapped?; then
 
-	echo "window.map: unmapped: $BASHRUN_WINDOW_POS_X $BASHRUN_WINDOW_POS_Y"
-
 	xdotool windowmap $BASHRUN_WINDOW_ID
 	bashrun.window.restore_position
 

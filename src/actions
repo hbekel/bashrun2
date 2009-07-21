@@ -30,7 +30,7 @@ function action.bind {
     local keyname=${3:-$(ks2kn $keyseq)}
 
     local bind=''
-    local accept='\C-z\x01'
+    local accept='\C-x00'
     local char=''
 
     # if "pass", bind keyseq directly to accept-line (readline) and return
