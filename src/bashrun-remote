@@ -11,7 +11,6 @@ WIDFILE=$CACHE/wid
 
 if [ -f $WIDFILE ]; then
     bashrun.window.id $(cat $WIDFILE)
-    bashrun.window.restore
     bashrun.window.toggle
     echo "bashrun window $BASHRUN_WINDOW_ID"
 else

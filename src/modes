@@ -6,8 +6,6 @@ class "mode" "name bind comp unmap pos size current cycle anim delay" 'switch'
 
 ################################################################################
 
-BASHRUN_MODEFILE=$BASHRUN_CACHE_HOME/mode
-
 function_clone "mode.new" "_mode.new"
 
 function mode.new { 
@@ -57,15 +55,6 @@ function mode.unmap? {
     return $?
 }
 
-function mode.publish {
-    local pos="$(mode.get_pos)"
-    if [[ "$pos" == '' ]]; then
-	bashrun.window.update
-	pos="$(bashrun.window.pos)"
-    fi
-    echo "$pos $(mode.get_anim)" > $BASHRUN_MODEFILE
-}
-
 function mode.switch {
     
     bashrun.debug "switching to mode" -v "$(mode.get_name)"
@@ -86,8 +75,6 @@ function mode.switch {
 	bashrun.window.animate 0
     fi
     clear
-
-    mode.publish
 
     # set up completion
     # ...

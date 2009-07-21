@@ -1,12 +1,13 @@
 # -*- shell-script -*-
 
 BASHRUN_WINDOW_ID=""
-BASHRUN_WINDOW_POS_X=nil
-BASHRUN_WINDOW_POS_Y=nil
+BASHRUN_WINDOW_POS_X=0
+BASHRUN_WINDOW_POS_Y=0
 BASHRUN_WINDOW_WIDTH=$COLUMNS
 BASHRUN_WINDOW_HEIGHT=$LINES
 BASHRUN_WINDOW_MAPPED=1
 BASHRUN_WINDOW_ANIMATE=0
+BASHRUN_WINDOW_POSFILE=${XDG_CACHE_HOME:-$HOME/.cache}/bashrun-engine/pos
 
 function bashrun.window? {
 
@@ -215,7 +216,8 @@ function bashrun.window.map {
 	echo "window.map: unmapped: $BASHRUN_WINDOW_POS_X $BASHRUN_WINDOW_POS_Y"
 
 	xdotool windowmap $BASHRUN_WINDOW_ID
-	xdotool windowmove $BASHRUN_WINDOW_ID $BASHRUN_WINDOW_POS_X $BASHRUN_WINDOW_POS_Y
+	bashrun.window.restore_position
+
 	xdotool set_desktop_for_window $BASHRUN_WINDOW_ID $(xdotool get_desktop)
 	xdotool windowactivate $BASHRUN_WINDOW_ID
 	xdotool windowfocus $BASHRUN_WINDOW_ID	
@@ -236,6 +238,8 @@ function bashrun.window.unmap {
     bashrun.window.update
 
     if bashrun.window.mapped?; then
+	bashrun.window.save_position
+
 	if [[ BASHRUN_WINDOW_ANIMATE -eq 1 ]]; then
 	    bashrun.window.collapse
 	fi
@@ -281,4 +285,14 @@ function bashrun.window.expand {
 	bashrun.window.size --hint $BASHRUN_WINDOW_WIDTH $BASHRUN_WINDOW_HEIGHT
 	sleep $delay
     done
+}
+
+function bashrun.window.save_position {
+    echo "$(bashrun.window.pos)" > $BASHRUN_WINDOW_POSFILE
+}
+
+function bashrun.window.restore_position {
+    if [ -f $BASHRUN_WINDOW_POSFILE ]; then
+	bashrun.window.pos "$(cat $BASHRUN_WINDOW_POSFILE)"
+    fi
 }

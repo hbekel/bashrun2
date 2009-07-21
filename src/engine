@@ -273,6 +273,11 @@ function bashrun.engine.shutdown {
 	fi
     fi
 
+    # remove window position file
+    if [ -f $BASHRUN_WINDOW_POSFILE ]; then
+	rm $BASHRUN_WINDOW_POSFILE
+    fi
+
     # remove untrap from prompt command
     PROMPT_COMMAND=${PROMPT_COMMAND/trap DEBUG\;/}
 
