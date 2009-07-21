@@ -36,9 +36,9 @@ function bashrun.remote.run {
 	command=${words[@]:1}
 
 	bashrun.debug "$action" "$type" "$command"
-	
+
 	bashrun.engine.action "$action" "$type" "$command"
-	
+
     else
 	bashrun.debug warn "no command(s) pending in " -v "$BASHRUN_REMOTE_COMMAND"
 	return 1

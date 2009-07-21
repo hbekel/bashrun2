@@ -56,7 +56,7 @@ function bashrun.window.update {
 
     bashrun.window.terminal? && return 0
 
-    local saved=$IFS
+    local saved="$IFS"
     local line=''
 
     IFS=$'\n'
@@ -87,7 +87,7 @@ function bashrun.window.update {
 	    [[ ${BASH_REMATCH[1]} == 'IsViewable' ]] && BASHRUN_WINDOW_MAPPED=1
 	fi
     done
-    IFS=$saved
+    IFS="$saved"
 }
 
 function bashrun.window.pos {
@@ -209,6 +209,8 @@ function bashrun.window.map {
 	xdotool set_desktop_for_window $BASHRUN_WINDOW_ID $(xdotool get_desktop)
 	xdotool windowactivate $BASHRUN_WINDOW_ID
 	xdotool windowfocus $BASHRUN_WINDOW_ID	
+	xdotool key --clearmodifiers ctrl+x
+	xdotool type --clearmodifiers 01
 
 	if [[ BASHRUN_WINDOW_ANIMATE -eq 1 ]]; then
 	    bashrun.window.expand

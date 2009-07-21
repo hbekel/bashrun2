@@ -352,6 +352,7 @@ function action-cycle-size {
     tput civis
     clear
     tput cnorm
+    return 1
 }
 
 +action --new 'cycle-mode'
@@ -366,6 +367,7 @@ function action-cycle-mode {
 	modes.seek_start
     fi
     mode.switch
+    return 1
 }
 
 ################################################################################
