@@ -28,8 +28,6 @@ source $share/bookmarks
 
 source $share/readline
 source $share/command
-source $share/signals
-source $share/remote
 source $share/window
 source $share/engine
 

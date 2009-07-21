@@ -25,18 +25,6 @@ function action-shell {
     eval "$command"
     return 1
 }
-# ping #########################################################################
-
-+action --new 'ping'
---desc 'Pong the process that pinged.'
---type 'launch'
---core 1
-
-action-ping () 
-{ 
-    kill -USR1 $(command);
-    return 1
-}
 
 # debug ################################################################################
 

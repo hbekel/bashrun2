@@ -24,9 +24,7 @@ FILES=(
     object
     objects
     readline
-    remote
     rules
-    signals
     source
     utils
     window
