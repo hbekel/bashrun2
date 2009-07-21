@@ -4,13 +4,15 @@ PREFIX=`which bashrun-remote 2> /dev/null`
 PREFIX=${PREFIX/\/bin\/bashrun-remote/}
 
 SHARE="$PREFIX/share/bashrun-engine"
-source $SHARE/window
+. $SHARE/globals
+. $SHARE/window
 
-CACHE="${XDG_CACHE_HOME:-$HOME/.config}/bashrun-engine"
-WIDFILE=$CACHE/wid
+echo $BASHRUN_VERSION
 
-if [ -f $WIDFILE ]; then
-    bashrun.window.id $(cat $WIDFILE)
+if [ -f "$BASHRUN_WIDFILE" ]; then
+    echo setting window id from $BASHRUN_WIDFILE...
+    bashrun.window.id "$(cat $BASHRUN_WIDFILE)"
+    echo toggle...
     bashrun.window.toggle
     echo "bashrun window $BASHRUN_WINDOW_ID"
 else

@@ -19,9 +19,8 @@ BASHRUN_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}/bashrun-engine
 BASHRUN_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}/bashrun-engine
 BASHRUN_CACHE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}/bashrun-engine
 
-source $BASHRUN_SHARE/objects
-objects.cache_home $BASHRUN_CACHE_HOME
-objects.data_home $BASHRUN_CACHE_HOME
-objects.namespace "bashrun"
+BASHRUN_PIDFILE=$BASHRUN_CACHE_HOME/pid
+BASHRUN_WIDFILE=$BASHRUN_CACHE_HOME/wid
+BASHRUN_MODEFILE=$BASHRUN_CACHE_HOME/mode
 
 ################################################################################

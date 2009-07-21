@@ -15,6 +15,7 @@ function mode.new {
     mode.set_current "1"
     mode.set_comp 'complete'
     mode.set_unmap '0'
+    mode.set_anim '0'
     mode.set_delay '0.001'
 }
 
@@ -75,6 +76,8 @@ function mode.switch {
 	bashrun.window.animate 0
     fi
     clear
+
+    echo "$(mode.get_anim)" > $BASHRUN_MODEFILE
 
     # set up completion
     # ...

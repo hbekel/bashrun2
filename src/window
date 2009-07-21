@@ -90,12 +90,12 @@ function bashrun.window.update {
     done
     IFS="$saved"
 
-    if [[ BASHRUN_WINDOW_MAPPED -eq 1 ]]; then
-	BASHRUN_WINDOW_POS_X=$x
-	BASHRUN_WINDOW_POS_Y=$y
-	BASHRUN_WINDOW_WIDTH=$w
-	BASHRUN_WINDOW_HEIGHT=$h
-    fi
+    BASHRUN_WINDOW_POS_X=$x
+    BASHRUN_WINDOW_POS_Y=$y
+    BASHRUN_WINDOW_WIDTH=$w
+    BASHRUN_WINDOW_HEIGHT=$h
+
+    [ -f $BASHRUN_MODEFILE ] && BASHRUN_WINDOW_ANIMATE="$(cat $BASHRUN_MODEFILE)"
 }
 
 function bashrun.window.pos {
@@ -278,7 +278,7 @@ function bashrun.window.expand {
     local delay=${2:-0.001}
 
     local i=0
-    for (( i=$BASHRUN_WINDOW_HEIGHT; i<=$max_height; i++ )); do
+    for (( i=1; i<=max_height-1; i++ )); do
 	(( BASHRUN_WINDOW_HEIGHT+=1 ))
 	bashrun.window.size --hint $BASHRUN_WINDOW_WIDTH $BASHRUN_WINDOW_HEIGHT
 	sleep $delay
