@@ -203,8 +203,13 @@ function bashrun.window.map {
     bashrun.window.update
 
     if ! bashrun.window.mapped?; then
+
 	xdotool windowmap $BASHRUN_WINDOW_ID
 	xdotool windowmove $BASHRUN_WINDOW_ID $BASHRUN_WINDOW_POS_X $BASHRUN_WINDOW_POS_Y
+	xdotool set_desktop_for_window $BASHRUN_WINDOW_ID $(xdotool get_desktop)
+	xdotool windowactivate $BASHRUN_WINDOW_ID
+	xdotool windowfocus $BASHRUN_WINDOW_ID	
+
 	if [[ BASHRUN_WINDOW_ANIMATE -eq 1 ]]; then
 	    bashrun.window.expand
 	fi
