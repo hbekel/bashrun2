@@ -321,6 +321,53 @@ function action-window-resize {
     return 1
 }
 
++action --new 'window-move'
+--desc 'move window'
+--type 'shell'
+--core 1
+
+function action-window-move {
+    bashrun.window.pos $1 $2
+    return 1
+}
+
++action --new 'cycle-size'
+--desc 'cycle through the window sizes of the current mode'
+--type 'shell'
+--core 1
+
+function action-cycle-size {
+
+    if mode.multisize?; then
+	
+	local size="$(mode.get_size)"
+	local current="$(mode.get_current)"
+	((current+=1))
+	if [[ "$(echo "$size" | cut -d ' ' -f $current)" == '' ]]; then
+	    current=1
+	fi
+	bashrun.window.size "$(echo "$size" | cut -d ' ' -f $current)"
+	mode.set_current $current	
+    fi
+    tput civis
+    clear
+    tput cnorm
+}
+
++action --new 'cycle-mode'
+--desc 'cycle through modes'
+--type shell
+--core 1
+
+function action-cycle-mode {
+
+    modes.next
+    if [[ "$(mode.get_name)" == '' ]]; then
+	modes.seek_start
+    fi
+    mode.switch
+}
+
 ################################################################################
 
 unset -f action.set_core

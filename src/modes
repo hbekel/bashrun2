@@ -2,7 +2,7 @@
 
 ################################################################################
 
-class "mode" "name bind comp unmap pos size cycle anim delay" ''
+class "mode" "name bind comp unmap pos size current cycle anim delay" 'switch'
 
 ################################################################################
 
@@ -12,6 +12,7 @@ function mode.new {
 
     _mode.new "$1"
     mode.set_size "80x24"
+    mode.set_current "1"
     mode.set_comp 'complete'
     mode.set_unmap '0'
     mode.set_delay '0.001'
@@ -44,17 +45,40 @@ function mode.code {
     echo
 }
 
+function mode.multisize? {
+    [[ "$(mode.get_size)" =~ (([0-9]+)x([0-9]+)\ ?){2,} ]]
+    return $?
+}
+
+function mode.unmap? {
+    [[ "$(mode.get_unmap)" == "1" ]]
+    return $?
+}
+
 function mode.switch {
-
-    :
-
-    # apply size and position
-    # window.size 80x24
-    # window.pos  0 0
-
-    # bind cycling through sizes (window-cycle-size)
     
+    bashrun.debug "switching to mode" -v "$(mode.get_name)"
+    
+    # apply size and position
+    if [[ "$(mode.get_size)" != '' ]]; then
+	bashrun.window.size "$(echo "$(mode.get_size)" | cut -d ' ' -f 1)"
+    fi
+    
+    if [[ "$(mode.get_pos)" ]]; then
+	bashrun.window.pos $(mode.get_pos)
+    fi
+
+    # enable animation
+    if [[ "$(mode.get_anim)" == "1" ]]; then
+	bashrun.window.animate 1
+    else
+	bashrun.window.animate 0
+    fi
+
+    clear
+
     # set up completion
     # ...
     # profit?
 }
+

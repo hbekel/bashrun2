@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function ping {
-    echo "ping $$" > $share/remote-command
+    echo "ping:shell $$" > $share/remote-command
     if kill -USR1 $pid; then
 	waitpong
 	if [[ "$pong" == "1" ]]; then

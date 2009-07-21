@@ -35,7 +35,7 @@ function bashrun.remote.run {
 	# everything else goes into command
 	command=${words[@]:1}
 
-	bashrun.debug "$action" "$command"
+	bashrun.debug "$action" "$type" "$command"
 	
 	bashrun.engine.action "$action" "$type" "$command"
 	

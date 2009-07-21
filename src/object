@@ -543,7 +543,6 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 
     complete -o default -F objects.complete +object
     
-
     # experimental configuration interface using dialog
 
     function objects.configure {

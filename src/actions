@@ -259,6 +259,11 @@ function action.uses {
 function action.run {
     
     local action=$(action.get_name)
+    local command="$1"
+
+    if [[ "$command" != '' ]]; then
+	BASHRUN_COMMAND="$command"
+    fi
 
     bashrun.separator "action-$action"
 

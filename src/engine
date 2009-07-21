@@ -89,7 +89,7 @@ function bashrun.engine.action {
     local type=$2         # action type override
     local command="$3"    # command override
 
-    bashrun.separator "engine $action"
+    bashrun.separator "engine $action $command"
 
     if actions.seek $action; then
 
@@ -189,6 +189,7 @@ function bashrun.engine.launch {
 		BASHRUN_RULES_APPLIED=0
 		bashrun.engine.busy 0
 		bashrun.separator
+		mode.unmap? && bashrun.window.unmap
 		return 0
 	    fi
 	fi
@@ -204,6 +205,7 @@ function bashrun.engine.launch {
 
     BASHRUN_RULES_APPLIED=0
     bashrun.engine.busy 0
+    mode.unmap? && bashrun.window.unmap
     return 0
 }
 
