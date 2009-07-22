@@ -4,13 +4,20 @@ PREFIX=`which bashrun-remote 2> /dev/null`
 PREFIX=${PREFIX/\/bin\/bashrun-remote/}
 
 SHARE="$PREFIX/share/bashrun-engine"
-. $SHARE/globals
-. $SHARE/window
+source $SHARE/globals
+source $SHARE/window
+
+modes.list -l
 
 if [ -f "$BASHRUN_WIDFILE" ]; then
     bashrun.window.id "$(cat $BASHRUN_WIDFILE | head -1)"
     bashrun.window.toggle
 else
+    source $SHARE/modes
+
+    echo "sourcing $BASHRUN_RCFILE"
+    source $BASHRUN_RCFILE &> /dev/null
+
     BASHRUN=1 urxvt &
 fi
 

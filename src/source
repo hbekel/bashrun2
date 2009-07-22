@@ -17,11 +17,6 @@ share=$prefix/share/bashrun-engine
 source $share/utils
 source $share/globals
 
-source $BASHRUN_SHARE/objects
-objects.cache_home $BASHRUN_CACHE_HOME
-objects.data_home $BASHRUN_CACHE_HOME
-objects.namespace "bashrun"
-
 bashrun.prepare_directories
 
 source $share/modes
