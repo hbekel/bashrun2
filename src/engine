@@ -234,7 +234,12 @@ function bashrun.engine.save {
     echo "# BASHRUN CONFIG VERSION $BASHRUN_VERSION" >> $BASHRUN_RCFILE
     echo >> $BASHRUN_RCFILE
 
+    # save modes, reset the current mode first (i.e. call mode-$name-enter)
+    local current="$(mode.get_name)"
+    mode.reset
     modes.code >> $BASHRUN_RCFILE
+
+
     rules.code >> $BASHRUN_RCFILE
     handlers.code >> $BASHRUN_RCFILE
     bookmarks.code >> $BASHRUN_RCFILE
@@ -247,6 +252,10 @@ function bashrun.engine.save {
     objects.dump
 
     objects.seek_start
+
+    # reenable current mode
+    modes.seek "$current"
+    mode.switch 
 }
 
 function +save {

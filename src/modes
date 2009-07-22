@@ -8,6 +8,8 @@ class "mode" "name bind comp unmap pos size current anim delay" 'switch'
 
 function_clone "mode.new" "_mode.new"
 
+BASHRUN_MODE_PREVIOUS=''
+
 function mode.new { 
 
     _mode.new "$1"
@@ -42,6 +44,16 @@ function mode.code {
     [[ "$anim" != '' ]] && echo "--anim '$anim'"
     [[ "$delay" != '0.001' ]] && echo "--delay '$delay'"
     echo
+
+    if [[ "$(type -t mode-$name-enter)" == "function" ]]; then
+	function_code "mode-$name-enter"
+	echo
+    fi
+
+    if [[ "$(type -t mode-$name-leave)" == "function" ]]; then
+	function_code "mode-$name-leave"
+	echo
+    fi      
 }
 
 function mode.multisize? {
@@ -55,9 +67,22 @@ function mode.unmap? {
 }
 
 function mode.switch {
+
+    local current="$(mode.get_name)"
+    local previous="$BASHRUN_MODE_PREVIOUS"
     
-    bashrun.debug "switching to mode" -v "$(mode.get_name)"
-    
+    bashrun.debug "switching from" -v "$previous" "to" -v "$current"
+
+    if [[ "$previous" != '' ]]; then
+	if [[ "$(type -t mode-$previous-leave)" == "function" ]]; then
+	    mode-$previous-leave
+	fi
+    fi
+
+    if [[ "$(type -t mode-$current-enter)" == "function" ]]; then
+	mode-$current-enter
+    fi
+
     # apply size and position
     if [[ "$(mode.get_size)" != '' ]]; then
 	bashrun.window.size "$(echo "$(mode.get_size)" | cut -d ' ' -f 1)"
@@ -80,5 +105,14 @@ function mode.switch {
     # set up completion
     # ...
     # profit?
+
+    BASHRUN_MODE_PREVIOUS="$current"
 }
 
+function mode.reset {
+    
+    local name="$(mode.get_name)"
+    if [[ "$(type -t mode-$name-leave)" == "function" ]]; then
+	mode-$name-leave
+    fi
+}

@@ -132,9 +132,11 @@ function action.unbind {
         # find the next bound binding
 	for id in $(bindings.select action $action); do
 	    if bindings.seek $id $keymap; then
-		if binding.bound?; then
-		    found=1
-		    break
+		if [[ "$id" == "$keyseq" ]]; then
+		    if binding.bound?; then		    
+			found=1
+			break
+		    fi
 		fi
 	    fi
 	done
@@ -146,13 +148,14 @@ function action.unbind {
     
     # unbind keyseq
     unbind="-m $keymap -r '$keyseq'"
-    bashrun.debug -v "$action" "from" -v "$keyseq" -v "($keymap)"
+    bashrun.debug "unbind" -v "$action" "from" -v "$keyseq" -v "($keymap)"
     eval "bind $unbind"
 
     # rebind original readline binding
     readline_rebind "$keyseq" "$keymap"
 
     # clear binding
+    bindings.seek "$keyseq"
     binding.set_is_bound 0
     binding.set_readline ''
 
@@ -406,8 +409,10 @@ function action.list {
 	bindings.seek_start
 	for id in $(bindings.select action $name); do
 	    bindings.seek --next $id 
-	    echo -ne '\t'
-	    echo "$(ks2kn $(binding.get_keyseq)) ($(binding.get_keymap)-mode)"
+	    if binding.bound?; then
+		echo -ne '\t'
+		echo "$(ks2kn $(binding.get_keyseq)) ($(binding.get_keymap)-mode)"
+	    fi
 	done
 	echo
     fi
@@ -429,7 +434,9 @@ function action.code {
 	    local id=''
 	    for id in $(bindings.select action $name); do
 		bindings.seek --next $id 
-		echo "+action $(action.get_name) $(binding.code)"
+		if binding.bound?; then
+		    echo "+action $(action.get_name) $(binding.code)"
+		fi
 	    done
 	fi
 	return 0
