@@ -7,15 +7,10 @@ SHARE="$PREFIX/share/bashrun-engine"
 . $SHARE/globals
 . $SHARE/window
 
-echo $BASHRUN_VERSION
-
 if [ -f "$BASHRUN_WIDFILE" ]; then
-    echo setting window id from $BASHRUN_WIDFILE...
-    bashrun.window.id "$(cat $BASHRUN_WIDFILE)"
-    echo toggle...
+    bashrun.window.id "$(cat $BASHRUN_WIDFILE | head -1)"
     bashrun.window.toggle
-    echo "bashrun window $BASHRUN_WINDOW_ID"
 else
-    echo "need to launch it"
+    BASHRUN=1 urxvt &
 fi
 

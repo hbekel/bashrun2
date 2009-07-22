@@ -7,25 +7,19 @@ BASHRUN_EXECMODE=''
 BASHRUN_ENGINE_BUSY=0
 
 BASHRUN_RCFILE=$BASHRUN_CONFIG_HOME/rc
-
 BASHRUN_TIMESTAMP=$BASHRUN_CACHE_HOME/timestamp
-
 BASHRUN_LOGFILE=/dev/null
 
 function bashrun.engine.init {
     
     bashrun.separator "bashrun-engine $BASHRUN_VERSION"
 
-    # write pid and wid if this is the first instance
-    if [ ! -f $BASHRUN_PIDFILE ]; then
-	bashrun.debug "pid" -v "$$" '>' -v "${BASHRUN_PIDFILE/$HOME/~}"
-	echo $$ > $BASHRUN_PIDFILE
-    fi
-
+    # add window id to widfile
     if [ ! -f $BASHRUN_WIDFILE ]; then
-	bashrun.debug "wid" -v "$WINDOWID" '>' -v "${BASHRUN_WIDFILE/$HOME/~}"
-	echo $WINDOWID > $BASHRUN_WIDFILE
+	touch $BASHRUN_WIDFILE
     fi
+    bashrun.debug "wid" -v "$WINDOWID" '>>' -v "${BASHRUN_WIDFILE/$HOME/~}"
+    echo $WINDOWID >> $BASHRUN_WIDFILE
 
     # set wid to terminal $WINDOWID here
     bashrun.window.id $WINDOWID
@@ -64,6 +58,9 @@ function bashrun.engine.init {
 
     # reset object positions
     objects.seek_start
+
+    # switch to initial mode
+    mode.switch
 
     # enable extended debugging features
     shopt -s extdebug
@@ -258,17 +255,18 @@ function +save {
 
 function bashrun.engine.shutdown { 
 
-    # remove pid and wid if ours
-    if [ -f $BASHRUN_PIDFILE ]; then 
-	if [[ "$$" == "$(cat $BASHRUN_PIDFILE)" ]]; then
-	    rm $BASHRUN_PIDFILE
-	fi
-    fi
+    # remove this wid from the widfile
+    local wid=''
+    echo -n '' > $BASHRUN_WIDFILE.tmp
 
-    if [ -f $BASHRUN_WIDFILE ]; then
-	if [[ "$BASHRUN_WINDOW_ID" == "$(cat $BASHRUN_WIDFILE)" ]]; then
-	    rm $BASHRUN_WIDFILE
+    for wid in $(cat $BASHRUN_WIDFILE); do
+	if [[ "$wid" != "$WINDOWID" ]]; then
+	    echo $wid >> $BASHRUN_WIDFILE.tmp
 	fi
+    done
+    mv $BASHRUN_WIDFILE.tmp $BASHRUN_WIDFILE
+    if [[ "$(cat $BASHRUN_WIDFILE)" == '' ]]; then
+	rm $BASHRUN_WIDFILE
     fi
 
     # remove window position file

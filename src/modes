@@ -2,7 +2,7 @@
 
 ################################################################################
 
-class "mode" "name bind comp unmap pos size current cycle anim delay" 'switch'
+class "mode" "name bind comp unmap pos size current anim delay" 'switch'
 
 ################################################################################
 
@@ -27,7 +27,6 @@ function mode.code {
     local unmap="$(mode.get_unmap)"
     local pos="$(mode.get_pos)"
     local size="$(mode.get_size)"
-    local cycle="$(mode.get_cycle)"
     local anim="$(mode.get_anim)"
     local delay="$(mode.get_delay)"
     
@@ -40,7 +39,6 @@ function mode.code {
     [[ "$unmap" != '0' ]] && echo "--unmap '$unmap'"
     [[ "$pos" != '' ]] && echo "--pos '$pos'"
     [[ "$size" != '80x24' ]] && echo "--size '$size'"
-    [[ "$cyle" != '' ]] && echo "--cycle '$cyle'"
     [[ "$anim" != '' ]] && echo "--anim '$anim'"
     [[ "$delay" != '0.001' ]] && echo "--delay '$delay'"
     echo
@@ -75,7 +73,7 @@ function mode.switch {
     else
 	bashrun.window.animate 0
     fi
-    clear
+    tput cr; tput dl1
 
     echo "$(mode.get_anim)" > $BASHRUN_MODEFILE
 
