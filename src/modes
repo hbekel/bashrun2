@@ -41,7 +41,7 @@ function mode.code {
     [[ "$unmap" != '0' ]] && echo "--unmap '$unmap'"
     [[ "$pos" != '' ]] && echo "--pos '$pos'"
     [[ "$size" != '80x24' ]] && echo "--size '$size'"
-    [[ "$anim" != '' ]] && echo "--anim '$anim'"
+    [[ "$anim" != '0' ]] && echo "--anim '$anim'"
     [[ "$delay" != '0.001' ]] && echo "--delay '$delay'"
     echo
 
