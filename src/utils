@@ -205,6 +205,11 @@ function bashrun.prepare_logfile {
     fi
 }
 
+function function? {
+    [[ "$(type -t $1 2> /dev/null)" == "function" ]]
+    return $?
+}
+
 function ks2kn {
     local keyseq=$1
 

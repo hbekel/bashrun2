@@ -2,7 +2,7 @@
 
 ################################################################################
 
-class "mode" "name bind comp unmap pos size current anim delay" 'switch'
+class "mode" "name comp unmap pos size current anim" 'switch'
 
 ################################################################################
 
@@ -18,13 +18,11 @@ function mode.new {
     mode.set_comp 'complete'
     mode.set_unmap '0'
     mode.set_anim '0'
-    mode.set_delay '0.001'
 }
 
 function mode.code {
 
     local name="$(mode.get_name)"
-    local bind="$(mode.get_bind)"
     local comp="$(mode.get_comp)"
     local unmap="$(mode.get_unmap)"
     local pos="$(mode.get_pos)"
@@ -36,21 +34,19 @@ function mode.code {
     echo
 
     echo "+mode --new $name"
-    [[ "$bind" != '' ]] && echo "--bind '$bind'"
     [[ "$comp" != 'complete' ]] && echo "--comp '$comp'"
     [[ "$unmap" != '0' ]] && echo "--unmap '$unmap'"
     [[ "$pos" != '' ]] && echo "--pos '$pos'"
     [[ "$size" != '80x24' ]] && echo "--size '$size'"
     [[ "$anim" != '0' ]] && echo "--anim '$anim'"
-    [[ "$delay" != '0.001' ]] && echo "--delay '$delay'"
     echo
 
-    if [[ "$(type -t mode-$name-enter)" == "function" ]]; then
+    if function? "mode-$name-enter"; then
 	function_code "mode-$name-enter"
 	echo
     fi
 
-    if [[ "$(type -t mode-$name-leave)" == "function" ]]; then
+    if function? "mode-$name-leave"; then
 	function_code "mode-$name-leave"
 	echo
     fi      
@@ -74,12 +70,12 @@ function mode.switch {
     bashrun.debug "switching from" -v "$previous" "to" -v "$current"
 
     if [[ "$previous" != '' ]]; then
-	if [[ "$(type -t mode-$previous-leave)" == "function" ]]; then
+	if function? "mode-$previous-leave"; then
 	    mode-$previous-leave
 	fi
     fi
 
-    if [[ "$(type -t mode-$current-enter)" == "function" ]]; then
+    if function?  "mode-$current-enter"; then
 	mode-$current-enter
     fi
 
@@ -115,4 +111,34 @@ function mode.reset {
     if [[ "$(type -t mode-$name-leave)" == "function" ]]; then
 	mode-$name-leave
     fi
+}
+
+function_clone "modes.dump" "_modes.dump"
+
+function modes.dump {
+
+    local file=$_OBJECTS_DATA_HOME/modes.dump
+    local mode=''
+    local func=''
+
+    _modes.dump
+    local current=$(action.get_name)
+
+    modes.seek_start
+    while modes.next?; do
+	mode=$(mode.get_name)
+
+	func="mode-$mode-enter"
+	if function? "$func"; then
+	    function_code "$func" >> $file
+	fi
+
+	func="mode-$mode-leave"
+	if function? "$func"; then
+	    function_code "$func" >> $file
+	fi
+	modes.next
+    done
+    modes.seek $current
+
 }
