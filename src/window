@@ -96,7 +96,8 @@ function bashrun.window.update {
     BASHRUN_WINDOW_WIDTH=$w
     BASHRUN_WINDOW_HEIGHT=$h
 
-    [ -f $BASHRUN_MODEFILE ] && BASHRUN_WINDOW_ANIMATE="$(cat $BASHRUN_MODEFILE)"
+    [ -f $BASHRUN_MODEFILE ] && modes.seek "$(cat $BASHRUN_MODEFILE)"
+    BASHRUN_WINDOW_ANIMATE="$(mode.get_anim)"
 }
 
 function bashrun.window.pos {
@@ -291,7 +292,7 @@ function bashrun.window.save_position {
 }
 
 function bashrun.window.restore_position {
-    if [ -f $BASHRUN_WINDOW_POSFILE ]; then
+    if [[ -f $BASHRUN_WINDOW_POSFILE && "$(mode.get_pos)" != '' ]]; then
 	bashrun.window.pos "$(cat $BASHRUN_WINDOW_POSFILE)"
     fi
 }

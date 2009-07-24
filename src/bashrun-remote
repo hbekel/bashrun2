@@ -5,19 +5,20 @@ PREFIX=${PREFIX/\/bin\/bashrun-remote/}
 
 SHARE="$PREFIX/share/bashrun-engine"
 source $SHARE/globals
-source $SHARE/window
 
-modes.list -l
+source $BASHRUN_SHARE/window
+source $BASHRUN_SHARE/modes
+
+if [[ $BASHRUN_RCFILE -nt $BASHRUN_CACHE_HOME/modes.dump ]]; then
+    source $BASHRUN_RCFILE &> /dev/null  # FIXME: stop after modes?  
+else
+    source $BASHRUN_CACHE_HOME/modes.dump
+fi
 
 if [ -f "$BASHRUN_WIDFILE" ]; then
     bashrun.window.id "$(cat $BASHRUN_WIDFILE | head -1)"
     bashrun.window.toggle
 else
-    source $SHARE/modes
-
-    echo "sourcing $BASHRUN_RCFILE"
-    source $BASHRUN_RCFILE &> /dev/null
-
-    BASHRUN=1 urxvt &
+    BASHRUN=1 urxvt -name bashrun -title bashrun &
 fi
 

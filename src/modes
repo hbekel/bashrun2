@@ -96,13 +96,14 @@ function mode.switch {
     fi
     tput cr; tput dl1
 
-    echo "$(mode.get_anim)" > $BASHRUN_MODEFILE
+    echo "$(mode.get_name)" > $BASHRUN_MODEFILE
 
     # set up completion
     # ...
     # profit?
 
     BASHRUN_MODE_PREVIOUS="$current"
+    xdotool windowname $BASHRUN_WINDOW_ID "bashrun-$current"
 }
 
 function mode.reset {
