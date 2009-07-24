@@ -8,8 +8,6 @@ BASHRUN_WINDOW_HEIGHT=$LINES
 BASHRUN_WINDOW_MAPPED=1
 BASHRUN_WINDOW_ANIMATE=0
 
-BASHRUN_WINDOW_POSFILE=${XDG_CACHE_HOME:-$HOME/.cache}/bashrun-engine/pos
-
 function bashrun.window? {
 
     if [[ "$BASHRUN_WINDOW_ID" != '' ]]; then
@@ -215,12 +213,19 @@ function bashrun.window.map {
 
     if ! bashrun.window.mapped?; then
 
+	# map the window
 	xdotool windowmap $BASHRUN_WINDOW_ID
-	bashrun.window.restore_position
 
+	# apply position if set in this mode
+	if [[ "$(mode.get_pos)" != '' ]]; then
+	    bashrun.window.pos "$(mode.get_pos)"
+	fi
+
+	# move to the current desktop and focus
 	xdotool set_desktop_for_window $BASHRUN_WINDOW_ID $(xdotool get_desktop)
 	xdotool windowactivate $BASHRUN_WINDOW_ID
 	xdotool windowfocus $BASHRUN_WINDOW_ID	
+
 	xdotool key --clearmodifiers ctrl+x
 	xdotool type --clearmodifiers 01
 
@@ -238,7 +243,6 @@ function bashrun.window.unmap {
     bashrun.window.update
 
     if bashrun.window.mapped?; then
-	bashrun.window.save_position
 
 	if [[ BASHRUN_WINDOW_ANIMATE -eq 1 ]]; then
 	    bashrun.window.collapse
@@ -285,14 +289,4 @@ function bashrun.window.expand {
 	bashrun.window.size --hint $BASHRUN_WINDOW_WIDTH $BASHRUN_WINDOW_HEIGHT
 	sleep $delay
     done
-}
-
-function bashrun.window.save_position {
-    echo "$(bashrun.window.pos)" > $BASHRUN_WINDOW_POSFILE
-}
-
-function bashrun.window.restore_position {
-    if [[ -f $BASHRUN_WINDOW_POSFILE && "$(mode.get_pos)" != '' ]]; then
-	bashrun.window.pos "$(cat $BASHRUN_WINDOW_POSFILE)"
-    fi
 }

@@ -104,6 +104,8 @@ function mode.switch {
 
     BASHRUN_MODE_PREVIOUS="$current"
     xdotool windowname $BASHRUN_WINDOW_ID "bashrun-$current"
+    xdotool windowclass $BASHRUN_WINDOW_ID "bashrun-$current" "URxvt"
+    # FIXME: use exising WM_CLASS class property
 }
 
 function mode.reset {
