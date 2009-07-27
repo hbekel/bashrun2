@@ -128,6 +128,8 @@ function bashrun.window.update {
 
 function bashrun.window.geometry {
 
+    bashrun.debug "Setting geometry" -v  "$1" 
+
     geometry.parse "$1"
     if geometry.size?; then
 	bashrun.window.size $(geometry.width) $(geometry.height)

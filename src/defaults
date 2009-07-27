@@ -315,15 +315,15 @@ function action-window-move {
 
 function action-cycle-size {
 
-    if mode.multisize?; then
+    if mode.multigeom?; then
 	
-	local size="$(mode.get_size)"
+	local geom="$(mode.get_geom)"
 	local current="$(mode.get_current)"
 	((current+=1))
-	if [[ "$(echo "$size" | cut -d ' ' -f $current)" == '' ]]; then
+	if [[ "$(echo "$geom" | cut -d ' ' -f $current)" == '' ]]; then
 	    current=1
 	fi
-	bashrun.window.size "$(echo "$size" | cut -d ' ' -f $current)"
+	bashrun.window.geometry "$(echo "$geom" | cut -d ' ' -f $current)"
 	mode.set_current $current	
     fi
     clear

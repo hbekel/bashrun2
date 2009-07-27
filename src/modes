@@ -2,7 +2,7 @@
 
 ################################################################################
 
-class "mode" "name comp unmap pos size current anim" 'switch'
+class "mode" "name comp unmap geom anim current" 'switch'
 
 ################################################################################
 
@@ -13,7 +13,7 @@ BASHRUN_MODE_PREVIOUS=''
 function mode.new { 
 
     _mode.new "$1"
-    mode.set_size "80x24"
+    mode.set_geom "80x24"
     mode.set_current "1"
     mode.set_comp 'complete'
     mode.set_unmap '0'
@@ -25,10 +25,8 @@ function mode.code {
     local name="$(mode.get_name)"
     local comp="$(mode.get_comp)"
     local unmap="$(mode.get_unmap)"
-    local pos="$(mode.get_pos)"
-    local size="$(mode.get_size)"
+    local geom="$(mode.get_geom)"
     local anim="$(mode.get_anim)"
-    local delay="$(mode.get_delay)"
     
     print_line "mode $name" "#" "80"
     echo
@@ -36,8 +34,7 @@ function mode.code {
     echo "+mode --new $name"
     [[ "$comp" != 'complete' ]] && echo "--comp '$comp'"
     [[ "$unmap" != '0' ]] && echo "--unmap '$unmap'"
-    [[ "$pos" != '' ]] && echo "--pos '$pos'"
-    [[ "$size" != '80x24' ]] && echo "--size '$size'"
+    [[ "$geom" != '80x24' ]] && echo "--geom '$geom'"
     [[ "$anim" != '0' ]] && echo "--anim '$anim'"
     echo
 
@@ -52,8 +49,8 @@ function mode.code {
     fi      
 }
 
-function mode.multisize? {
-    [[ "$(mode.get_size)" =~ (([0-9]+)x([0-9]+)\ ?){2,} ]]
+function mode.multigeom? {
+    [[ "$(mode.get_geom)" =~ \  ]]
     return $?
 }
 
@@ -69,6 +66,8 @@ function mode.switch {
     
     bashrun.debug "switching from" -v "$previous" "to" -v "$current"
 
+    echo "$current" > $BASHRUN_MODEFILE
+
     if [[ "$previous" != '' ]]; then
 	if function? "mode-$previous-leave"; then
 	    mode-$previous-leave
@@ -79,15 +78,9 @@ function mode.switch {
 	mode-$current-enter
     fi
 
-    # apply size and position
-    if [[ "$(mode.get_size)" != '' ]]; then
-	bashrun.window.size "$(echo "$(mode.get_size)" | cut -d ' ' -f 1)"
-    fi
+    # apply geometry
+    bashrun.window.geometry "$(echo "$(mode.get_geom)" | cut -d ' ' -f 1)" 
     
-    if [[ "$(mode.get_pos)" ]]; then
-	bashrun.window.pos $(mode.get_pos)
-    fi
-
     # enable animation
     if [[ "$(mode.get_anim)" == "1" ]]; then
 	bashrun.window.animate 1
@@ -95,8 +88,6 @@ function mode.switch {
 	bashrun.window.animate 0
     fi
     tput cr; tput dl1
-
-    echo "$(mode.get_name)" > $BASHRUN_MODEFILE
 
     # set up completion
     # ...
@@ -124,9 +115,9 @@ function modes.dump {
     local file=$_OBJECTS_DATA_HOME/modes.dump
     local mode=''
     local func=''
+    local current=$(mode.get_name)
 
     _modes.dump
-    local current=$(action.get_name)
 
     modes.seek_start
     while modes.next?; do
