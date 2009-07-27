@@ -93,6 +93,7 @@ function bashrun.engine.action {
 	done
 
 	bashrun.engine.busy 1
+	BASHRUN_RULES_APPLIED=0
 
 	BASHRUN_ACTION=$action
 
@@ -149,7 +150,7 @@ function bashrun.engine.trap {
 
     # remove quotes (;|&)
     bashrun.command.unquote
-    
+
     # pass through trap builtin
     if [[ "$BASHRUN_COMMAND" =~ ^trap ]]; then
 	bashrun.debug -v "trap" -c "removed"

@@ -10,6 +10,8 @@ BASHRUN_RULES_APPLIED=0
 
 function rules.apply {
 
+    bashrun.command.get_word
+
     [[ BASHRUN_RULES_APPLIED -eq 1 ]] && return 0
 
     local action=$(actions.current)
@@ -17,8 +19,6 @@ function rules.apply {
     local word="$BASHRUN_COMMAND_WORD"
     local command="$BASHRUN_COMMAND"
     local regexp=''
-
-    bashrun.command.get_word
 
     rules.seek_start
     while rules.next?; do
