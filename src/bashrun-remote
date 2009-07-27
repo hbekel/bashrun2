@@ -6,6 +6,7 @@ PREFIX=${PREFIX/\/bin\/bashrun-remote/}
 SHARE="$PREFIX/share/bashrun-engine"
 source $SHARE/globals
 
+source $BASHRUN_SHARE/geometry
 source $BASHRUN_SHARE/window
 source $BASHRUN_SHARE/modes
 
