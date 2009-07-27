@@ -256,47 +256,39 @@ function bashrun.window.map {
     bashrun.window? || return 1
     bashrun.window.update
 
-    if ! bashrun.window.mapped?; then
-
-	# map the window
-	xdotool windowmap $BASHRUN_WINDOW_ID
-
-	# apply position if set in this mode
-	if [[ "$(mode.get_pos)" != '' ]]; then
-	    bashrun.window.pos "$(mode.get_pos)"
-	fi
-
-	# move to the current desktop and focus
-	xdotool set_desktop_for_window $BASHRUN_WINDOW_ID $(xdotool get_desktop)
-	xdotool windowactivate $BASHRUN_WINDOW_ID
-	xdotool windowfocus $BASHRUN_WINDOW_ID	
-
-	xdotool key --clearmodifiers ctrl+x
-	xdotool type --clearmodifiers 01
-
-	if [[ BASHRUN_WINDOW_ANIMATE -eq 1 ]]; then
-	    bashrun.window.expand
-	fi
-	BASHRUN_WINDOW_MAPPED=1
-	return 0
+    # map the window
+    xdotool windowmap $BASHRUN_WINDOW_ID
+    
+    # apply position if set in this mode
+    if [[ "$(mode.get_geom)" != '' ]]; then
+	bashrun.window.geometry "$(mode.get_geom)"
     fi
-    return 1
+    
+    # move to the current desktop and focus
+    xdotool set_desktop_for_window $BASHRUN_WINDOW_ID $(xdotool get_desktop)
+    xdotool windowactivate $BASHRUN_WINDOW_ID
+    xdotool windowfocus $BASHRUN_WINDOW_ID	
+    
+    xdotool key --clearmodifiers ctrl+x
+    xdotool type --clearmodifiers 01
+    
+    if [[ BASHRUN_WINDOW_ANIMATE -eq 1 ]]; then
+	bashrun.window.expand
+    fi
+    BASHRUN_WINDOW_MAPPED=1
+    return 0
 }
 
 function bashrun.window.unmap {
     bashrun.window? || return 1
     bashrun.window.update
 
-    if bashrun.window.mapped?; then
-
-	if [[ BASHRUN_WINDOW_ANIMATE -eq 1 ]]; then
-	    bashrun.window.collapse
-	fi
-	xdotool windowunmap $BASHRUN_WINDOW_ID
-	BASHRUN_WINDOW_MAPPED=0
-	return 0
+    if [[ BASHRUN_WINDOW_ANIMATE -eq 1 ]]; then
+	bashrun.window.collapse
     fi
-    return 1
+    xdotool windowunmap $BASHRUN_WINDOW_ID
+    BASHRUN_WINDOW_MAPPED=0
+    return 0
 }
 
 function bashrun.window.toggle {
@@ -306,7 +298,11 @@ function bashrun.window.toggle {
     if [[ BASHRUN_WINDOW_MAPPED -eq 0 ]]; then	
 	bashrun.window.map
     else
-	bashrun.window.unmap
+	if [[ "$(xdotool getwindowfocus)" != $BASHRUN_WINDOW_ID ]]; then
+	    bashrun.window.map
+	else
+	    bashrun.window.unmap
+	fi
     fi
     return 0
 }
