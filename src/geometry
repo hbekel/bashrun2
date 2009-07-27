@@ -1,0 +1,129 @@
+#!/bin/bash
+
+declare GEOMETRY_WIDTH=0 GEOMETRY_HEIGHT=0 \
+    GEOMETRY_XOFF=0 GEOMETRY_YOFF=0 \
+    GEOMETRY_HAS_SIZE=0 GEOMETRY_HAS_POSITION=0 \
+
+[[ "$(xdpyinfo | grep sizes:)" =~ ([0-9]+)x([0-9]+) ]]
+
+declare -i DISPLAY_WIDTH=${BASH_REMATCH[1]}
+declare -i DISPLAY_HEIGHT=${BASH_REMATCH[2]}
+
+function geometry.parse {
+
+    GEOMETRY_HAS_SIZE=0
+    GEOMETRY_HAS_POSITION=0
+
+    if [[ "$1" =~ ^(([0-9]+)x([0-9]+))?(([+-][0-9]+)([+-][0-9]+))?$ ]]; then
+
+	if [ "${BASH_REMATCH[1]}" != '' ]; then
+	    
+	    if echo "${BASH_REMATCH[1]}" | grep x > /dev/null; then
+		GEOMETRY_HAS_SIZE=1
+		GEOMETRY_WIDTH=${BASH_REMATCH[2]}
+		GEOMETRY_HEIGHT=${BASH_REMATCH[3]}
+	    else
+		GEOMETRY_HAS_POSITION=1
+		GEOMETRY_XOFF=${BASH_REMATCH[5]}
+		GEOMETRY_YOFF=${BASH_REMATCH[6]}
+	    fi
+	else
+	    GEOMETRY_HAS_SIZE=0
+	    GEOMETRY_HAS_POSITION=0
+	fi
+
+	if [ "${BASH_REMATCH[4]}" != '' ]; then
+	    GEOMETRY_HAS_POSITION=1
+	    GEOMETRY_XOFF=${BASH_REMATCH[5]}
+	    GEOMETRY_YOFF=${BASH_REMATCH[6]}
+	fi
+
+    else
+	echo "error: format: [<width>x<height>][[+-]<xoffset>[+-]<yoffset>]"
+	return 1
+    fi
+    return 0
+}
+
+function geometry.size? {
+    [[ GEOMETRY_HAS_SIZE -eq 1 ]]
+    return $?
+}
+
+function geometry.position? {
+    [[ GEOMETRY_HAS_POSITION -eq 1 ]]
+    return $?
+}
+
+function geometry.width { 
+
+    if geometry.size?; then
+	echo $GEOMETRY_WIDTH
+    fi
+}
+
+function geometry.height {
+    if geometry.size?; then
+	echo $GEOMETRY_HEIGHT
+    fi
+}
+
+function geometry.x {
+    geometry.calc_point $GEOMETRY_XOFF $DISPLAY_WIDTH $1
+}
+
+function geometry.y {
+    geometry.calc_point $GEOMETRY_YOFF $DISPLAY_HEIGHT $1
+}
+
+function geometry.calc_point {
+
+    local spec=$1
+    local display=$2
+    local size=$3
+
+    if [[ "$spec" =~ ^(\+|-) ]]; then
+	
+	local sign=${BASH_REMATCH[1]}
+	local value=${1/$sign/}
+	
+	if [[ "$sign" == "+" ]]; then
+	    echo $value
+	    
+	elif [[ "$sign" == "-" ]]; then
+	    echo "$(( display - value - size ))"
+	fi	
+    fi
+}
+
+function geometry {
+    geometry.size? && echo -n "${GEOMETRY_WIDTH}x${GEOMETRY_HEIGHT}"
+    geometry.position? && echo -n "${GEOMETRY_XOFF}${GEOMETRY_YOFF}"
+    [[ geometry.size? || geometry.position? ]] && echo
+}
+
+if false; then
+
+    geometry.parse 200x200
+    ? geometry.size?
+    ? geometry.position?
+    geometry.width
+    geometry.height
+    echo "geometry: $(geometry)"
+    
+    geometry.parse +100-100
+    ? geometry.size?
+    ? geometry.position?
+    geometry.x
+    geometry.y
+    echo "geometry: $(geometry)"
+    
+    geometry.parse 320x240+120+150
+    ? geometry.size?
+    ? geometry.position?
+    geometry.x
+    geometry.y
+    geometry.width
+    geometry.height
+    echo "geometry: $(geometry)"
+fi

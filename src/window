@@ -5,8 +5,13 @@ BASHRUN_WINDOW_POS_X=0
 BASHRUN_WINDOW_POS_Y=0
 BASHRUN_WINDOW_WIDTH=$COLUMNS
 BASHRUN_WINDOW_HEIGHT=$LINES
+BASHRUN_WINDOW_PIXEL_WIDTH=$COLUMNS
+BASHRUN_WINDOW_PIXEL_HEIGHT=$LINES
 BASHRUN_WINDOW_MAPPED=1
 BASHRUN_WINDOW_ANIMATE=0
+BASHRUN_WINDOW_HINT=0
+BASHRUN_WINDOW_HINT_X=0
+BASHRUN_WINDOW_HINT_Y=0
 
 function bashrun.window? {
 
@@ -41,6 +46,11 @@ function bashrun.window.animate {
     BASHRUN_WINDOW_ANIMATE=${1:-1}
 }
 
+function bashrun.window.hint? {
+    [[ BASHRUN_WINDOW_HINT -eq 1 ]]
+    return $?
+}
+
 function bashrun.window.id {
     
     if [[ $# -eq 0 ]]; then
@@ -56,25 +66,31 @@ function bashrun.window.update {
 
     local saved="$IFS"
     local line=''
-    local x y w h
+    local x y w h pw ph
 
     IFS=$'\n'
-    for line in $(xwininfo -id $BASHRUN_WINDOW_ID); do
+    for line in $(xwininfo -all -id $BASHRUN_WINDOW_ID); do
 
-	if [[ "$line" =~ "Absolute upper-left X:  "([0-9]+) ]]; then
-	    x=${BASH_REMATCH[1]}
+	if [[ "$line" =~ "Width: "([0-9]+) ]]; then
+	    (( pw+=${BASH_REMATCH[1]} ))
+	fi
+
+	if [[ "$line" =~ "Height: "([0-9]+) ]]; then
+	    (( ph+=${BASH_REMATCH[1]} ))
 	fi
 
 	if [[ "$line" =~ "Relative upper-left X:  "([0-9]+) ]]; then
-	    (( x-=${BASH_REMATCH[1]} ))
+	    (( x -= ${BASH_REMATCH[1]} ))
+	    (( pw = ${BASH_REMATCH[1]} * 2 )) # assume uniform border width
 	fi
 
 	if [[ "$line" =~ "Absolute upper-left Y:  "([0-9]+) ]]; then
-	    y=${BASH_REMATCH[1]}
+	    (( y = ${BASH_REMATCH[1]} ))
 	fi
 
 	if [[ "$line" =~ "Relative upper-left Y:  "([0-9]+) ]]; then
-	    (( y-=${BASH_REMATCH[1]} ))
+	    (( y -= ${BASH_REMATCH[1]} ))
+	    (( ph = ${BASH_REMATCH[1]} * 2 )) # assume uniform border width
 	fi
 
 	if [[ "$line" =~ "-geometry "([0-9]+)x([0-9]+) ]]; then
@@ -86,6 +102,16 @@ function bashrun.window.update {
 	    [[ ${BASH_REMATCH[1]} == 'IsUnMapped' ]] && BASHRUN_WINDOW_MAPPED=0
 	    [[ ${BASH_REMATCH[1]} == 'IsViewable' ]] && BASHRUN_WINDOW_MAPPED=1
 	fi
+
+	if [[ "$line" =~ ([xy])\ resize\ increment:\ ([0-9]+) ]]; then
+	    BASHRUN_WINDOW_HINT=1
+	    if [[ "${BASH_REMATCH[1]}" == "x" ]]; then
+		BASHRUN_WINDOW_HINT_X="${BASH_REMATCH[2]}"
+		
+	    elif [[ "${BASH_REMATCH[1]}" == "y" ]]; then
+		BASHRUN_WINDOW_HINT_Y="${BASH_REMATCH[2]}"
+	    fi
+	fi
     done
     IFS="$saved"
 
@@ -93,9 +119,26 @@ function bashrun.window.update {
     BASHRUN_WINDOW_POS_Y=$y
     BASHRUN_WINDOW_WIDTH=$w
     BASHRUN_WINDOW_HEIGHT=$h
+    BASHRUN_WINDOW_PIXEL_WIDTH=$pw
+    BASHRUN_WINDOW_PIXEL_HEIGHT=$ph
 
     [ -f $BASHRUN_MODEFILE ] && modes.seek "$(cat $BASHRUN_MODEFILE)"
     BASHRUN_WINDOW_ANIMATE="$(mode.get_anim)"
+}
+
+function bashrun.window.geometry {
+
+    geometry.parse "$1"
+    if geometry.size?; then
+	bashrun.window.size $(geometry.width) $(geometry.height)
+    fi
+    bashrun.window.update
+
+    if geometry.position?; then
+	bashrun.window.pos $(geometry.x $BASHRUN_WINDOW_PIXEL_WIDTH) \
+	    $(geometry.y $BASHRUN_WINDOW_PIXEL_HEIGHT)	
+    fi
+    bashrun.window.update
 }
 
 function bashrun.window.pos {

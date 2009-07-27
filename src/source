@@ -19,6 +19,11 @@ source $share/globals
 
 bashrun.prepare_directories
 
+source $share/geometry
+source $share/window
+source $share/command
+source $share/readline
+
 source $share/modes
 source $share/actions
 source $share/bindings
@@ -26,9 +31,6 @@ source $share/handlers
 source $share/rules
 source $share/bookmarks
 
-source $share/readline
-source $share/command
-source $share/window
 source $share/engine
 
 bashrun.engine.init

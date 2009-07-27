@@ -18,6 +18,7 @@ FILES=(
     command
     defaults
     engine
+    geometry
     globals
     handlers
     modes
