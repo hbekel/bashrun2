@@ -2,7 +2,7 @@
 
 ################################################################################
 
-class "mode" "name comp unmap geom anim current" 'switch'
+class "mode" "name comp unmap geom anim ps1 ps2 current" 'switch'
 
 ################################################################################
 
@@ -18,6 +18,8 @@ function mode.new {
     mode.set_comp 'complete'
     mode.set_unmap '0'
     mode.set_anim '0'
+    mode.set_ps1 "$PS1"
+    mode.set_ps2 "$PS2"
 }
 
 function mode.multigeom? {
@@ -60,9 +62,8 @@ function mode.switch {
     fi
     tput cr; tput dl1
 
-    # set up completion
-    # ...
-    # profit?
+    PS1="$(mode.get_ps1)"
+    PS2="$(mode.get_ps2)"
 
     BASHRUN_MODE_PREVIOUS="$current"
 
