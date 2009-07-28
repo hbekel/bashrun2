@@ -9,7 +9,7 @@ function action.new {
     action.set_type "trap-and-launch"
     action.set_desc "$1"
 
-    if ! type -t action-$1 &> /dev/null; then
+    if ! function? "action-$1"; then
 	eval "
 	action-$1 ()
 	{ 
@@ -22,12 +22,12 @@ function action.new {
 
 function action.bind {
 
-    local action=$(action.get_name)
-    local type=$(action.get_type)
+    local action="$(action.get_name)"
+    local type="$(action.get_type)"
 
-    local keyseq=$1
-    local keymap=${2:-emacs}
-    local keyname=${3:-$(ks2kn $keyseq)}
+    local keyseq="$1"
+    local keymap="${2:-emacs}"
+    local keyname="${3:-$(ks2kn $keyseq)}"
 
     local bind=''
     local accept='\C-x00'
@@ -38,9 +38,9 @@ function action.bind {
 	bind="-m $keymap '\"$keyseq\": accept-line'"
 	eval "bind $bind"
 	# create or set binding
-	if bindings.seek $keyseq $keymap; then
-	    binding.set_action $action
-	    binding.set_keymap $keymap	    
+	if bindings.seek "$keyseq" "$keymap"; then
+	    binding.set_action "$action"
+	    binding.set_keymap "$keymap"   
 	    binding.set_is_bound 1 
 	    binding.set_readline "$bind"
 	else
@@ -49,10 +49,10 @@ function action.bind {
 	return 0
     fi
 
-    if ! internals.seek $action $keymap; then
-	internal.new $action $keymap "new"
+    if ! internals.seek "$action" "$keymap"; then
+	internal.new "$action" "$keymap" "new"
     fi
-    internals.seek $action $keymap
+    internals.seek "$action" "$keymap"
 
     if [[ "$(internal.get_char)" == "new" ]]; then
 	
@@ -74,7 +74,7 @@ function action.bind {
 	internal.set_readline "$bind"
 
 	# save char in internal	
-	internal.set_char $char
+	internal.set_char "$char"
 	
 	# next free char
 	let BASHRUN_BINDINGS_NEXT_CHAR+=1
@@ -83,7 +83,7 @@ function action.bind {
 	done
     else
 	# there's already an internal character bound, use it
-	char=$(internal.get_char)
+	char="$(internal.get_char)"
 	bashrun.debug -y "ref" -v "$action" "->" -v "\C-z\\x$char" "($keymap)" 
     fi
     
@@ -101,29 +101,29 @@ function action.bind {
     eval "bind $bind"
 
     # create or set binding
-    if bindings.seek $keyseq $keymap; then
-	binding.set_action $action
-	binding.set_keymap $keymap
+    if bindings.seek "$keyseq" "$keymap"; then
+	binding.set_action "$action"
+	binding.set_keymap "$keymap"
 	binding.set_is_bound 1 
 	binding.set_readline "$bind" 
     else
-	binding.new $keyseq $keymap $action 1 "$bind"
+	binding.new "$keyseq" "$keymap" "$action" 1 "$bind"
     fi    
     
     # create or set keyname
-    if keynames.seek $keyseq; then
-	keyname.set_name $keyname
+    if keynames.seek "$keyseq"; then
+	keyname.set_name "$keyname"
     else
-	keyname.new $keyseq $keyname
+	keyname.new "$keyseq" "$keyname"
     fi
     return 0
 }
 
 function action.unbind {
     
-    local action=$(action.get_name)
-    local keymap=${1:-emacs}
-    local keyseq=$2
+    local action="$(action.get_name)"
+    local keymap="${1:-emacs}"
+    local keyseq="$2"
     local unbind=''
     local found=0
     local id=''
@@ -131,7 +131,7 @@ function action.unbind {
     if [[ "$keyseq" == '' ]]; then
         # find the next bound binding
 	for id in $(bindings.select action $action); do
-	    if bindings.seek $id $keymap; then
+	    if bindings.seek "$id" "$keymap"; then
 		if [[ "$id" == "$keyseq" ]]; then
 		    if binding.bound?; then		    
 			found=1
@@ -143,7 +143,7 @@ function action.unbind {
 	[[ found -eq 0 ]] && return 1
 	
         # get the keyseq that it's bound to
-	keyseq=$(binding.get_keyseq)
+	keyseq="$(binding.get_keyseq)"
     fi
     
     # unbind keyseq
@@ -164,16 +164,15 @@ function action.unbind {
 
 function action.rebind {
 
-    local action=$(action.get_name)
-
-    local keymap=${1:-emacs}
+    local action="$(action.get_name)"
+    local keymap="${1:-emacs}"
     local keyseq=''
     local found=0
     local id=''
 
     # find the next unbound binding
     for id in $(bindings.select action $action); do
-	if bindings.seek $id $keymap; then
+	if bindings.seek "$id" "$keymap"; then
 	    found=1
 	    break
 	fi
@@ -181,41 +180,41 @@ function action.rebind {
     [[ found -eq 0 ]] && return 1
 
     # get the keyseq that it was bound to before
-    keyseq=$(binding.get_keyseq)
+    keyseq="$(binding.get_keyseq)"
 
     # get the action that's bound to this keyseq and unbind it
-    for id in bindings.select keyseq $keyseq; do
-	bindings.seek $id
-	if actions.seek $(binding.get_action); then
+    for id in bindings.select keyseq "$keyseq"; do
+	bindings.seek "$id"
+	if actions.seek "$(binding.get_action)"; then
 	    action.unbind
 	fi
     done
 
     # rebind action
-    actions.seek $action
-    action.bind $keyseq
+    actions.seek "$action"
+    action.bind "$keyseq"
 
     return $?
 } 
 
 function action.bound? {
-    local action=$(action.get_name)
-    local saved=$(binding.get_keyseq)
+    local action="$(action.get_name)"
+    local saved="$(binding.get_keyseq)"
 
     local id=''
     for id in $(bindings.select is_bound 1); do
-	bindings.seek $id
-	if [[ "$(binding.get_action)" == $action ]]; then
-	    bindings.seek $saved
+	bindings.seek "$id"
+	if [[ "$(binding.get_action)" == "$action" ]]; then
+	    bindings.seek "$saved"
 	    return 0
 	fi
     done
-    bindings.seek $saved
+    bindings.seek "$saved"
     return 1
 }
 
 function action.function? {
-    type -t action-$(action.get_name) &> /dev/null
+    function? "action-$(action.get_name)"
     return $?
 }
 
@@ -229,12 +228,12 @@ function action.available? {
 	    result=1
 	fi
     done
-    return $result
+    return "$result"
 }
 
 function action.core? {
-    [[ "$(action.get_core)" == "1" ]] && return 0
-    return 1
+    [[ "$(action.get_core)" == "1" ]]
+    return $?
 }
 
 function action.uses {
@@ -261,7 +260,7 @@ function action.uses {
 
 function action.run {
     
-    local action=$(action.get_name)
+    local action="$(action.get_name)"
     local command="$1"
 
     if [[ "$command" != '' ]]; then
@@ -300,7 +299,7 @@ function action.api.enable {
 
     function command {
 	if [[ "$#" == "0" ]]; then
-	    echo $BASHRUN_COMMAND
+	    echo "$BASHRUN_COMMAND"
 	else
 	    BASHRUN_COMMAND="$@"
 	    bashrun.debug "$BASHRUN_COMMAND"
@@ -310,7 +309,7 @@ function action.api.enable {
 	bashrun.command.get_word; 
 	echo "$BASHRUN_COMMAND_WORD";
     }
-    function line { echo $BASHRUN_COMMAND_LINE; }
+    function line { echo "$BASHRUN_COMMAND_LINE"; }
 
     function executable? {
 	bashrun.command.executable?
@@ -359,15 +358,15 @@ function action.pretty_print_deps {
     local g="\033[1;32m" # green 
     local n="\033[0m"    # none
 
-    local found=$r
+    local found="$r"
 
-    if [[ $deps != '' ]]; then
+    if [[ "$deps" != '' ]]; then
 	
 	for dep in $deps; do
 	    if `which $dep &> /dev/null`; then
-		found=$g
+		found="$g"
 	    else
-		found=$r
+		found="$r"
 	    fi
 	    str=", $found$dep$n$str" 
 	done
@@ -379,23 +378,23 @@ function action.pretty_print_deps {
 function action.list {
 
     if [[ "$1" != "-l" ]]; then
-	echo $(action.get_name)
+	echo "$(action.get_name)"
 	return 0
     fi
 
-    local name=$(action.get_name)
-    local desc=$(action.get_desc)
-    local type=$(action.get_type)
-    local deps=$(action.get_deps)
-    local help=$(action.get_help)
-    local uses=$(action.uses)
+    local name="$(action.get_name)"
+    local desc="$(action.get_desc)"
+    local type="$(action.get_type)"
+    local deps="$(action.get_deps)"
+    local help="$(action.get_help)"
+    local uses="$(action.uses)"
     
     # print header
     print_header "$name -> $desc" "-"
 
     echo "type: $type"
 
-    if [[ $deps != '' ]]; then
+    if [[ "$deps" != '' ]]; then
 	echo -e "deps: $(action.pretty_print_deps)"
     fi
 
@@ -407,8 +406,8 @@ function action.list {
     local id=''
     if action.bound?; then
 	bindings.seek_start
-	for id in $(bindings.select action $name); do
-	    bindings.seek --next $id 
+	for id in $(bindings.select action "$name"); do
+	    bindings.seek --next "$id "
 	    if binding.bound?; then
 		echo -ne '\t'
 		echo "$(ks2kn $(binding.get_keyseq)) ($(binding.get_keymap)-mode)"
@@ -425,29 +424,29 @@ function action.list {
 
 function action.code {
 
-    local name=$(action.get_name)
+    local name="$(action.get_name)"
     
     # save only bindings for core actions
     if action.core?; then	
 	if action.bound?; then
 	    bindings.seek_start
 	    local id=''
-	    for id in $(bindings.select action $name); do
-		bindings.seek --next $id 
+	    for id in $(bindings.select action "$name"); do
+		bindings.seek --next "$id "
 		if binding.bound?; then
-		    echo "+action $(action.get_name) $(binding.code)"
+		    echo "+action '$(action.get_name)' $(binding.code)"
 		fi
 	    done
 	fi
 	return 0
     fi
 
-    local desc=$(action.get_desc)
-    local type=$(action.get_type)
-    local deps=$(action.get_deps)
-    local help=$(action.get_help)
-    local init=$(action.get_init)
-    local reset=$(action.get_reset)
+    local desc="$(action.get_desc)"
+    local type="$(action.get_type)"
+    local deps="$(action.get_deps)"
+    local help="$(action.get_help)"
+    local init="$(action.get_init)"
+    local reset="$(action.get_reset)"
 
     echo
     print_line "action $name" "#" "80"
@@ -465,8 +464,8 @@ function action.code {
     # bind action
     if action.bound?; then
 	bindings.seek_start
-	for id in $(bindings.select action $name); do
-	    bindings.seek --next $id 
+	for id in $(bindings.select action "$name"); do
+	    bindings.seek --next "$id "
 	    binding.code
 	done
     fi
@@ -482,19 +481,19 @@ function_clone "actions.dump" "_actions.dump"
 
 function actions.dump {
 
-    local file=$_OBJECTS_DATA_HOME/actions.dump
+    local file="$_OBJECTS_DATA_HOME/actions.dump"
     local action=''
     _actions.dump
 
-    local saved=$(action.get_name)
+    local saved="$(action.get_name)"
 
     actions.seek_start
     while actions.next?; do
-	action=$(action.get_name)
-	function_code "action-$action" >> $file
+	action="$(action.get_name)"
+	function_code "action-$action" >> "$file"
 	actions.next
     done
-    actions.seek $saved
+    actions.seek "$saved"
 }
 
 function actions.init {
@@ -504,12 +503,12 @@ function actions.init {
 
     actions.seek_start
     while actions.next?; do
-	action=$(action.get_name)
-	callback=$(action.get_init)
+	action="$(action.get_name)"
+	callback="$(action.get_init)"
 	if [[ "$callback" != "" ]]; then
 	    eval "$callback"
 	fi
-	actions.seek $action
+	actions.seek "$action"
 	actions.next
     done    
     actions.seek_start
@@ -522,13 +521,13 @@ function actions.reset {
 
     actions.seek_start
     while actions.next?; do
-	action=$(action.get_name)
-	callback=$(action.get_reset)
+	action="$(action.get_name)"
+	callback="$(action.get_reset)"
 	if [[ "$callback" != "" ]]; then
 	    echo "reset: $callback"
 	    eval "$callback"
 	fi
-	actions.seek $action
+	actions.seek "$action"
 	actions.next
     done    
     actions.seek_start
