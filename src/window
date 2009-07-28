@@ -122,7 +122,7 @@ function bashrun.window.update {
     BASHRUN_WINDOW_PIXEL_WIDTH=$pw
     BASHRUN_WINDOW_PIXEL_HEIGHT=$ph
 
-    [ -f $BASHRUN_MODEFILE ] && modes.seek "$(cat $BASHRUN_MODEFILE)"
+    [ -f "$BASHRUN_MODEFILE" ] && modes.seek "$(<$BASHRUN_MODEFILE)"
     BASHRUN_WINDOW_ANIMATE="$(mode.get_anim)"
 }
 

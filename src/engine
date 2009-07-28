@@ -268,19 +268,14 @@ function bashrun.engine.shutdown {
     local wid=''
     echo -n '' > $BASHRUN_WIDFILE.tmp
 
-    for wid in $(cat $BASHRUN_WIDFILE); do
+    for wid in $(<$BASHRUN_WIDFILE); do
 	if [[ "$wid" != "$WINDOWID" ]]; then
 	    echo $wid >> $BASHRUN_WIDFILE.tmp
 	fi
     done
     mv $BASHRUN_WIDFILE.tmp $BASHRUN_WIDFILE
-    if [[ "$(cat $BASHRUN_WIDFILE)" == '' ]]; then
+    if [[ "$(<$BASHRUN_WIDFILE)" == '' ]]; then
 	rm $BASHRUN_WIDFILE
-    fi
-
-    # remove window position file
-    if [ -f $BASHRUN_WINDOW_POSFILE ]; then
-	rm $BASHRUN_WINDOW_POSFILE
     fi
 
     # remove untrap from prompt command
