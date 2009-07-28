@@ -324,9 +324,10 @@ function bashrun.window.collapse {
 
 function bashrun.window.expand {
 
-    echo $(geometry.height)
     local max_height="$(geometry.height)"
     local delay=${2:-0.001}
+
+    [[ BASHRUN_WINDOW_HEIGHT -ge max_height ]] && return 1
 
     local i=0
     for (( i=1; i<=max_height-1; i++ )); do
