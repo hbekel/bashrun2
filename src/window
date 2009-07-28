@@ -250,6 +250,7 @@ function bashrun.window.size {
 	COLUMNS=$BASHRUN_WINDOW_WIDTH
 	LINES=$BASHRUN_WINDOW_HEIGHT
     fi
+    completion.set $(mode.get_comp)
     return 0
 }
  

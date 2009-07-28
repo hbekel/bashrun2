@@ -16,6 +16,7 @@ FILES=(
     bindings
     bookmarks
     command
+    completion
     defaults
     engine
     geometry

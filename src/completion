@@ -1,0 +1,70 @@
+# -*- shell-script -*-
+
+################################################################################
+
+BASHRUN_COMPLETION=''
+
+function completion.set {
+
+    local ctype="$1"
+    local atype="$2"
+    local threshold="${3:-0}"
+
+    if [[ $# -eq 3 && $threshold -gt 0 ]]; then
+	completion.apply_threshold "$ctype" "$atype" "$threshold"
+	return $?
+    fi
+
+    if [[ "$BASHRUN_COMPLETION" == "$ctype" ]]; then
+	return 0
+    fi
+
+    # reset readline settings to defaults
+    bind 'set page-completions on'
+    bind 'set print-completions-horizontally off'
+    bind 'set completion-query-items 100'
+
+    # set completion type
+    case "$ctype" in
+	"complete")
+	    bind '"\t":complete'
+	    ;;
+	menu-complete)
+	    bind '"\t":menu-complete'
+	    ;;
+	quiet-complete)
+	    bind '"\t":complete'
+	    bind 'set page-completions off'
+	    bind 'set print-completions-horizontally on'
+	    bind 'set completion-query-items -1'
+	    ;;
+	*)
+	    bashrun.debug --fail "unknown completion type:" -v "$ctype"
+	    ;;
+    esac
+    BASHRUN_COMPLETION="$ctype"
+    bashrun.debug -v "$ctype"
+}
+
+function completion.apply_threshold {
+
+    local ctype="$1"
+    local atype="$2"
+    local threshold="$3"
+
+    declare -i t=$threshold
+    bashrun.debug -v $t -ge -v $BASHRUN_WINDOW_HEIGHT "?"
+
+    if [[ $BASHRUN_WINDOW_HEIGHT -ge $t ]]; then
+	completion.set "$atype"
+    else
+	completion.set "$ctype"
+    fi
+
+    if [[ BASHRUN_WINDOW_HEIGHT -gt 1 ]]; then
+	bind 'set horizontal-scroll-mode off'
+    else
+	bind 'set horizontal-scroll-mode on'
+    fi
+}
+

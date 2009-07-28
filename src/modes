@@ -20,35 +20,6 @@ function mode.new {
     mode.set_anim '0'
 }
 
-function mode.code {
-
-    local name="$(mode.get_name)"
-    local comp="$(mode.get_comp)"
-    local unmap="$(mode.get_unmap)"
-    local geom="$(mode.get_geom)"
-    local anim="$(mode.get_anim)"
-    
-    print_line "mode $name" "#" "80"
-    echo
-
-    echo "+mode --new $name"
-    [[ "$comp" != 'complete' ]] && echo "--comp '$comp'"
-    [[ "$unmap" != '0' ]] && echo "--unmap '$unmap'"
-    [[ "$geom" != '80x24' ]] && echo "--geom '$geom'"
-    [[ "$anim" != '0' ]] && echo "--anim '$anim'"
-    echo
-
-    if function? "mode-$name-enter"; then
-	function_code "mode-$name-enter"
-	echo
-    fi
-
-    if function? "mode-$name-leave"; then
-	function_code "mode-$name-leave"
-	echo
-    fi      
-}
-
 function mode.multigeom? {
     [[ "$(mode.get_geom)" =~ \  ]]
     return $?
@@ -108,6 +79,35 @@ function mode.reset {
     fi
 }
 
+function mode.code {
+
+    local name="$(mode.get_name)"
+    local comp="$(mode.get_comp)"
+    local unmap="$(mode.get_unmap)"
+    local geom="$(mode.get_geom)"
+    local anim="$(mode.get_anim)"
+    
+    print_line "mode $name" "#" "80"
+    echo
+
+    echo "+mode --new $name"
+    [[ "$comp" != 'complete' ]] && echo "--comp '$comp'"
+    [[ "$unmap" != '0' ]] && echo "--unmap '$unmap'"
+    [[ "$geom" != '80x24' ]] && echo "--geom '$geom'"
+    [[ "$anim" != '0' ]] && echo "--anim '$anim'"
+    echo
+
+    if function? "mode-$name-enter"; then
+	function_code "mode-$name-enter"
+	echo
+    fi
+
+    if function? "mode-$name-leave"; then
+	function_code "mode-$name-leave"
+	echo
+    fi      
+}
+
 function_clone "modes.dump" "_modes.dump"
 
 function modes.dump {
@@ -135,5 +135,4 @@ function modes.dump {
 	modes.next
     done
     modes.seek $current
-
 }

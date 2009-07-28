@@ -23,6 +23,7 @@ source $share/geometry
 source $share/window
 source $share/command
 source $share/readline
+source $share/completion
 
 source $share/modes
 source $share/actions
