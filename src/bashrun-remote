@@ -1,14 +1,16 @@
 #!/bin/bash
 
-PREFIX=`which bashrun-remote 2> /dev/null`
-PREFIX=${PREFIX/\/bin\/bashrun-remote/}
+BASHRUN_PREFIX=`which bashrun-remote 2> /dev/null`
+BASHRUN_PREFIX=${PREFIX/\/bin\/bashrun-remote/}
+BASHRUN_SHARE="$BASHRUN_PREFIX/share/bashrun-engine"
 
-SHARE="$PREFIX/share/bashrun-engine"
-source $SHARE/globals
+. $BASHRUN_SHARE/globals
+. $BASHRUN_SHARE/geometry
+. $BASHRUN_SHARE/window
+. $BASHRUN_SHARE/modes
 
-source $BASHRUN_SHARE/geometry
-source $BASHRUN_SHARE/window
-source $BASHRUN_SHARE/modes
+# dummy function to avoid setting the completion outside of bashrun
+function completion.set { :; }
 
 if [[ $BASHRUN_RCFILE -nt $BASHRUN_CACHE_HOME/modes.dump ]]; then
     source $BASHRUN_RCFILE &> /dev/null  # FIXME: stop after modes?  
