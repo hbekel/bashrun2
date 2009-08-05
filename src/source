@@ -19,6 +19,7 @@ source $share/globals
 
 bashrun.prepare_directories
 
+source $share/registry
 source $share/geometry
 source $share/window
 source $share/command

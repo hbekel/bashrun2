@@ -26,6 +26,7 @@ FILES=(
     object
     objects
     readline
+    registry
     rules
     source
     utils

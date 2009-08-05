@@ -8,7 +8,7 @@ class "mode" "name comp unmap geom anim ps1 ps2 current" 'switch'
 
 function_clone "mode.new" "_mode.new"
 
-BASHRUN_MODE_PREVIOUS=''
+BASHRUN_MODE='none'
 
 function mode.new { 
 
@@ -35,11 +35,9 @@ function mode.unmap? {
 function mode.switch {
 
     local current="$(mode.get_name)"
-    local previous="$BASHRUN_MODE_PREVIOUS"
+    local previous="$BASHRUN_MODE"
     
     bashrun.debug "switching from" -v "$previous" "to" -v "$current"
-
-    echo "$current" > $BASHRUN_MODEFILE
 
     if [[ "$previous" != '' ]]; then
 	if function? "mode-$previous-leave"; then
@@ -65,7 +63,9 @@ function mode.switch {
     PS1="$(mode.get_ps1)"
     PS2="$(mode.get_ps2)"
 
-    BASHRUN_MODE_PREVIOUS="$current"
+    BASHRUN_MODE="$current"
+
+    bashrun.registry.set_mode "$previous" "$current"
 
     xdotool windowproperty $BASHRUN_WINDOW_ID \
 	--name "bashrun-$current" \

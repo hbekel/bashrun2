@@ -13,12 +13,8 @@ function bashrun.engine.init {
     
     bashrun.separator "bashrun-engine $BASHRUN_VERSION"
 
-    # add window id to widfile
-    if [ ! -f $BASHRUN_WIDFILE ]; then
-	touch $BASHRUN_WIDFILE
-    fi
-    bashrun.debug "wid" -v "$WINDOWID" '>>' -v "${BASHRUN_WIDFILE/$HOME/~}"
-    echo $WINDOWID >> $BASHRUN_WIDFILE
+    # add this instance to registry
+    bashrun.registry.add
 
     # set wid to terminal $WINDOWID here
     bashrun.window.id $WINDOWID
@@ -264,19 +260,8 @@ function +save {
 
 function bashrun.engine.shutdown { 
 
-    # remove this wid from the widfile
-    local wid=''
-    echo -n '' > $BASHRUN_WIDFILE.tmp
-
-    for wid in $(<$BASHRUN_WIDFILE); do
-	if [[ "$wid" != "$WINDOWID" ]]; then
-	    echo $wid >> $BASHRUN_WIDFILE.tmp
-	fi
-    done
-    mv $BASHRUN_WIDFILE.tmp $BASHRUN_WIDFILE
-    if [[ "$(<$BASHRUN_WIDFILE)" == '' ]]; then
-	rm $BASHRUN_WIDFILE
-    fi
+    # remove this instance from registry
+    bashrun.registry.remove
 
     # remove untrap from prompt command
     PROMPT_COMMAND=${PROMPT_COMMAND/trap DEBUG\;/}

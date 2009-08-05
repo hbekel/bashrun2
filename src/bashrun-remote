@@ -6,6 +6,7 @@ BASHRUN_SHARE="$BASHRUN_PREFIX/share/bashrun-engine"
 
 . $BASHRUN_SHARE/globals
 . $BASHRUN_SHARE/geometry
+. $BASHRUN_SHARE/registry
 . $BASHRUN_SHARE/window
 . $BASHRUN_SHARE/modes
 
@@ -18,8 +19,8 @@ else
     source $BASHRUN_CACHE_HOME/modes.dump
 fi
 
-if [ -f "$BASHRUN_WIDFILE" ]; then
-    bashrun.window.id "$(cat $BASHRUN_WIDFILE | head -1)"
+if [ -f "$BASHRUN_REGISTRY" ]; then
+    bashrun.window.id "$(cat $BASHRUN_REGISTRY | head -1 | cut -d ':' -f 1)"
     bashrun.window.toggle
 else
     BASHRUN=1 urxvt -name bashrun -title bashrun &

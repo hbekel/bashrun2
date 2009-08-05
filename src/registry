@@ -1,0 +1,51 @@
+# -*- shell-script -*-
+
+################################################################################
+
+function bashrun.registry.add {
+    
+    # add window id to widfile
+    if [ ! -f $BASHRUN_REGISTRY ]; then
+	touch $BASHRUN_REGISTRY
+    fi
+    local entry="$WINDOWID:$BASHRUN_MODE"
+    bashrun.debug "wid" -v "$entry" '>>' -v "${BASHRUN_REGISTRY/$HOME/~}"
+    echo "$entry" >> $BASHRUN_REGISTRY
+
+    # set wid to terminal $WINDOWID here
+    bashrun.window.id $WINDOWID
+}
+
+function bashrun.registry.remove {
+
+    local info=''
+    echo -n '' > $BASHRUN_REGISTRY.tmp
+
+    for info in $(<$BASHRUN_REGISTRY); do
+	if [[ ! "$info" =~ "$WINDOWID" ]]; then
+	    echo $info >> $BASHRUN_REGISTRY.tmp
+	fi
+    done
+    mv $BASHRUN_REGISTRY.tmp $BASHRUN_REGISTRY
+    if [[ "$(<$BASHRUN_REGISTRY)" == '' ]]; then
+	rm $BASHRUN_REGISTRY
+    fi
+}
+
+function bashrun.registry.set_mode {
+    
+    local prev="$1"
+    local mode="$2"
+
+    local info=''
+    echo -n '' > $BASHRUN_REGISTRY.tmp
+
+    for info in $(<$BASHRUN_REGISTRY); do
+	if [[ ! "$info" =~ "$WINDOWID" ]]; then
+	    echo $info >> $BASHRUN_REGISTRY.tmp
+	else
+	    echo ${info/$prev/$mode} >> $BASHRUN_REGISTRY.tmp
+	fi
+    done
+    mv $BASHRUN_REGISTRY.tmp $BASHRUN_REGISTRY
+}
