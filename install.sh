@@ -19,6 +19,7 @@ FILES=(
     completion
     defaults
     engine
+    frontend
     geometry
     globals
     handlers

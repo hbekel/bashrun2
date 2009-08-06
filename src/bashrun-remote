@@ -1,23 +1,9 @@
 #!/bin/bash
-
-BASHRUN_PREFIX=`which bashrun-remote 2> /dev/null`
-BASHRUN_PREFIX=${BASHRUN_PREFIX/\/bin\/bashrun-remote/}
+BASHRUN_PREFIX=`which bashrun 2> /dev/null`
+BASHRUN_PREFIX=${BASHRUN_PREFIX/\/bin\/bashrun/}
 BASHRUN_SHARE="$BASHRUN_PREFIX/share/bashrun-engine"
 
-. $BASHRUN_SHARE/globals
-. $BASHRUN_SHARE/geometry
-. $BASHRUN_SHARE/registry
-. $BASHRUN_SHARE/window
-. $BASHRUN_SHARE/modes
-
-# dummy function to avoid setting the completion outside of bashrun
-function completion.set { :; }
-
-if [[ $BASHRUN_RCFILE -nt $BASHRUN_CACHE_HOME/modes.dump ]]; then
-    source $BASHRUN_RCFILE &> /dev/null
-else
-    source $BASHRUN_CACHE_HOME/modes.dump
-fi
+. $BASHRUN_SHARE/frontend
 
 if [ -f "$BASHRUN_REGISTRY" ]; then
     
@@ -28,8 +14,8 @@ if [ -f "$BASHRUN_REGISTRY" ]; then
     
     bashrun.window.id "$wid"
     modes.seek "$mode"
-    bashrun.window.toggle
 
+    bashrun.window.toggle
 else
     BASHRUN=1 urxvt -name bashrun -title bashrun &
 fi

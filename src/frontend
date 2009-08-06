@@ -1,0 +1,54 @@
+# -*- shell-script -*-
+
+############################################################
+
+. $BASHRUN_SHARE/globals
+. $BASHRUN_SHARE/geometry
+. $BASHRUN_SHARE/registry
+. $BASHRUN_SHARE/window
+. $BASHRUN_SHARE/modes
+
+# source modes from rcfile or cache
+if [[ $BASHRUN_RCFILE -nt $BASHRUN_CACHE_HOME/modes.dump ]]; then
+    source $BASHRUN_RCFILE &> /dev/null
+else
+    source $BASHRUN_CACHE_HOME/modes.dump
+fi
+
+# dummy function to avoid setting the completion outside of bashrun
+function completion.set { :; }
+
+############################################################
+
+function version {
+    echo "bashrun $BASHRUN_VERSION Copyright (C) 2009 Henning Bekel <h.bekel@googlemail.com>"
+}
+
+function usage {
+
+    version
+    echo "
+Usage: bashrun [option]
+
+   Options:
+     -v, --version : show version information
+     -h, --help    : show this message
+     -d, --debug   : start bashrun in debug mode
+
+     Available if xdotool(1) is installed:
+       --show    : show bashrun window and focus it
+       --hide    : hide the bashrun window
+       --toggle  : toggle window visibility
+       --exit    : exit bashrun
+       --restart : restart bashrun
+       --su cmd  : run command as root,
+                   prompts for password in bashrun
+       --wid     : print window id
+       --wait    : wait until window is unmapped
+       --debug   : toggle debug mode
+
+       Press F1 in bashrun to list the current keybindings.
+
+For more information, see bashrun(1) or visit http://bashrun.sourceforge.net
+"
+}
