@@ -26,12 +26,14 @@ function action.bind {
     local type="$(action.get_type)"
 
     local keyseq="$1"
-    local keymap="${2:-emacs}"
+    local keymap="${2:-$BASHRUN_KEYMAP}"
     local keyname="${3:-$(ks2kn $keyseq)}"
 
     local bind=''
     local accept='\C-x00'
     local char=''
+
+    BASHRUN_KEYMAP="$keymap"
 
     # if "pass", bind keyseq directly to accept-line (readline) and return
     if [[ "$action" == "pass" ]]; then
@@ -122,11 +124,13 @@ function action.bind {
 function action.unbind {
     
     local action="$(action.get_name)"
-    local keymap="${1:-emacs}"
-    local keyseq="$2"
+    local keyseq="$1"
+    local keymap="${2:-$BASHRUN_KEYMAP}"
     local unbind=''
     local found=0
     local id=''
+
+    BASHRUN_KEYMAP="$keymap"
 
     if [[ "$keyseq" == '' ]]; then
         # find the next bound binding
@@ -165,10 +169,12 @@ function action.unbind {
 function action.rebind {
 
     local action="$(action.get_name)"
-    local keymap="${1:-emacs}"
+    local keymap="${1:-$BASHRUN_KEYMAP}"
     local keyseq=''
     local found=0
     local id=''
+
+    BASHRUN_KEYMAP="$keymap"
 
     # find the next unbound binding
     for id in $(bindings.select action $action); do

@@ -64,7 +64,6 @@ function mode.switch {
     PS2="$(mode.get_ps2)"
 
     BASHRUN_MODE="$current"
-
     bashrun.registry.set_mode "$previous" "$current"
 
     xdotool windowproperty $BASHRUN_WINDOW_ID \
