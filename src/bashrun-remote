@@ -14,14 +14,22 @@ BASHRUN_SHARE="$BASHRUN_PREFIX/share/bashrun-engine"
 function completion.set { :; }
 
 if [[ $BASHRUN_RCFILE -nt $BASHRUN_CACHE_HOME/modes.dump ]]; then
-    source $BASHRUN_RCFILE &> /dev/null  # FIXME: stop after modes?  
+    source $BASHRUN_RCFILE &> /dev/null
 else
     source $BASHRUN_CACHE_HOME/modes.dump
 fi
 
 if [ -f "$BASHRUN_REGISTRY" ]; then
-    bashrun.window.id "$(cat $BASHRUN_REGISTRY | head -1 | cut -d ':' -f 1)"
+    
+    [[ "$(cat $BASHRUN_REGISTRY | head -1)" =~ ([0-9]+):(.+) ]]
+    
+    wid="${BASH_REMATCH[1]}"
+    mode="${BASH_REMATCH[2]}"
+    
+    bashrun.window.id "$wid"
+    modes.seek "$mode"
     bashrun.window.toggle
+
 else
     BASHRUN=1 urxvt -name bashrun -title bashrun &
 fi

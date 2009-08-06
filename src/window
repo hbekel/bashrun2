@@ -322,20 +322,16 @@ function bashrun.window.toggle {
 
 function bashrun.window.collapse {
 
-    local delay=${1:-0.001}
-
     local i=0
     for (( i=$BASHRUN_WINDOW_HEIGHT; i>1; i-- )); do
 	(( BASHRUN_WINDOW_HEIGHT-=1 ))
 	bashrun.window.size --hint $BASHRUN_WINDOW_WIDTH $BASHRUN_WINDOW_HEIGHT
-	sleep $delay
     done
 }
 
 function bashrun.window.expand {
 
     local max_height="$(geometry.height)"
-    local delay=${2:-0.001}
 
     [[ BASHRUN_WINDOW_HEIGHT -ge max_height ]] && return 1
 
@@ -343,6 +339,5 @@ function bashrun.window.expand {
     for (( i=1; i<=max_height-1; i++ )); do
 	(( BASHRUN_WINDOW_HEIGHT+=1 ))
 	bashrun.window.size --hint $BASHRUN_WINDOW_WIDTH $BASHRUN_WINDOW_HEIGHT
-	sleep $delay
     done
 }
