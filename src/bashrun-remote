@@ -7,11 +7,13 @@ BASHRUN_SHARE="$BASHRUN_PREFIX/share/bashrun-engine"
 
 if [ -f "$BASHRUN_REGISTRY" ]; then
     
+    # get window id and current mode of the oldest instance
     [[ "$(cat $BASHRUN_REGISTRY | head -1)" =~ ([0-9]+):(.+) ]]
     
     wid="${BASH_REMATCH[1]}"
     mode="${BASH_REMATCH[2]}"
     
+    # set window id and mode
     bashrun.window.id "$wid"
     modes.seek "$mode"
 
@@ -19,4 +21,5 @@ if [ -f "$BASHRUN_REGISTRY" ]; then
 else
     BASHRUN=1 urxvt -name bashrun -title bashrun &
 fi
+
 

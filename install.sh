@@ -30,6 +30,7 @@ FILES=(
     registry
     rules
     source
+    terminals
     utils
     window
 )

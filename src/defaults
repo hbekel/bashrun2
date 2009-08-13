@@ -76,7 +76,7 @@ action-run ()
 action-term-run () 
 { 
     ! executable? && +handlers;
-    +terminal;
+    +term;
     return 0
 }
 
@@ -91,7 +91,7 @@ action-term-page ()
 { 
     ! executable? && +handlers;
     +pager;
-    +terminal;
+    +term;
     return 0
 }
 
@@ -106,7 +106,7 @@ action-term-hold ()
 { 
     ! executable? && +handlers;
     command "($(command)); read -n1";
-    +terminal;
+    +term;
     return 0
 }
 
@@ -180,7 +180,7 @@ action-su-term-hold ()
 
 action-show-manual () {
     command "man $(word)"
-    +terminal
+    +term
 }
 
 +action --new 'show-info'
@@ -191,7 +191,7 @@ action-show-manual () {
    
 function action-show-info {
     command "info $(word)"
-    +terminal
+    +term
 }
 
 +action --new 'show-help'
@@ -208,7 +208,7 @@ function action-show-help {
 	action-show-manual
 	return 0
     fi	    
-    +terminal
+    +term
 }
 
 # browse/google/dict #############################################################

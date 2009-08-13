@@ -22,6 +22,7 @@ bashrun.prepare_directories
 source $share/registry
 source $share/geometry
 source $share/window
+source $share/terminals
 source $share/command
 source $share/readline
 source $share/completion
