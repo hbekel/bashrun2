@@ -86,7 +86,9 @@ function mode.code {
     local unmap="$(mode.get_unmap)"
     local geom="$(mode.get_geom)"
     local anim="$(mode.get_anim)"
-    
+    local ps1="$(mode.get_ps1)"
+    local ps2="$(mode.get_ps2)"
+
     print_line "mode $name" "#" "80"
     echo
 
@@ -95,6 +97,8 @@ function mode.code {
     [[ "$unmap" != '0' ]] && echo "--unmap '$unmap'"
     [[ "$geom" != '80x24' ]] && echo "--geom '$geom'"
     [[ "$anim" != '0' ]] && echo "--anim '$anim'"
+    [[ "$ps1" != '' ]] && echo "--ps1 '$ps1'"
+    [[ "$ps2" != '' ]] && echo "--ps2 '$ps2'"
     echo
 
     if function? "mode-$name-enter"; then

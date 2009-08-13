@@ -1,9 +1,6 @@
 # -*- shell-script -*-
 
 ################################################################################
-#
-# Set up a "hash of hashes" and allow access to objects OOP-Style
-#
 
 # "class variables" ############################################################
 
@@ -497,7 +494,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	    for ((i=0; i<${#_OBJECTS_KEYS[@]}; i++)); do
 		key=${_OBJECTS_KEYS[$i]}
 		var="_OBJECTS_INTERFACE_OPTION_$key"
-		
+
 		if defined? $var; then
 		    val="${!var}"
 		    if [[ "$val" == '' ]]; then

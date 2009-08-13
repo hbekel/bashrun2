@@ -136,23 +136,21 @@ function bashrun.command.add_su {
 
 function bashrun.command.add_terminal {
 
-    local xterm=''
-
     bashrun.command.get_word
 
-    if [[ "$BASHRUN_COMMAND_WORD" == "xterm" ]]; then
+    if [[ "$BASHRUN_COMMAND_WORD" =~ (xterm|?rxvt?) ]]; then
 	bashrun.debug "already in terminal"
 	return 1
     fi
 
-    # COMMAND goes into xterm -e "" -> escape double quotes
+    if [[ "$(terminal.get_name)" == "bashrun" ]]; then
+	terminals.seek 'default'
+    fi
+
+    # COMMAND goes into "" -> escape double quotes
     BASHRUN_COMMAND=${BASHRUN_COMMAND//\"/\\\"}
 
-    # command template
-    xterm="xterm -e \"\$1\""
-    
-    # insert
-    BASHRUN_COMMAND=${xterm/\$1/$BASHRUN_COMMAND}
+    BASHRUN_COMMAND="$(terminal.get_command) \"$BASHRUN_COMMAND\""
 
     bashrun.debug "$BASHRUN_COMMAND"
 
@@ -161,4 +159,5 @@ function bashrun.command.add_terminal {
 
 function bashrun.command.add_pager {
     BASHRUN_COMMAND="$BASHRUN_COMMAND | ${PAGER:-less -f}"
+    bashrun.debug "$BASHRUN_COMMAND"
 }
