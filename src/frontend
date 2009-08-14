@@ -1,3 +1,4 @@
+
 # -*- shell-script -*-
 
 ############################################################
@@ -6,14 +7,16 @@
 . $BASHRUN_SHARE/geometry
 . $BASHRUN_SHARE/registry
 . $BASHRUN_SHARE/window
+. $BASHRUN_SHARE/terminals
 . $BASHRUN_SHARE/modes
 
+# FIXME: this needs to decide on both modes and terminals:
 # source modes from rcfile or cache
-if [[ $BASHRUN_RCFILE -nt $BASHRUN_CACHE_HOME/modes.dump ]]; then
+#if [[ $BASHRUN_RCFILE -nt $BASHRUN_CACHE_HOME/modes.dump ]]; then
     source $BASHRUN_RCFILE &> /dev/null
-else
-    source $BASHRUN_CACHE_HOME/modes.dump
-fi
+#else
+#    source $BASHRUN_CACHE_HOME/modes.dump
+#fi
 
 # dummy function to avoid setting the completion outside of bashrun
 function completion.set { :; }

@@ -5,7 +5,7 @@ BASHRUN_SHARE="$BASHRUN_PREFIX/share/bashrun-engine"
 
 . $BASHRUN_SHARE/frontend
 
-if [ -f "$BASHRUN_REGISTRY" ]; then
+if [ -f "$BASHRUN_REGISTRY" ]; then    
     
     # get window id and current mode of the oldest instance
     [[ "$(cat $BASHRUN_REGISTRY | head -1)" =~ ([0-9]+):(.+) ]]
@@ -19,7 +19,6 @@ if [ -f "$BASHRUN_REGISTRY" ]; then
 
     bashrun.window.toggle
 else
-    BASHRUN=1 urxvt -name bashrun -title bashrun &
+    terminals.seek "bashrun"
+    BASHRUN=1 $(terminal.get_command) &
 fi
-
-
