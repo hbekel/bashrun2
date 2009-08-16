@@ -66,9 +66,9 @@ function mode.switch {
     BASHRUN_MODE="$current"
     bashrun.registry.set_mode "$previous" "$current"
 
-    xdotool windowproperty $BASHRUN_WINDOW_ID \
+    xdotool set_window $BASHRUN_WINDOW_ID \
 	--name "bashrun-$current" \
-	--class "bashrun-$current"
+	--classname "bashrun-$current"
 }
 
 function mode.reset {
