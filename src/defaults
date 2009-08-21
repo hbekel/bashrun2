@@ -15,7 +15,30 @@ function action.set_core {
 
 action-pass () { :; }
 
-# debug ################################################################################
+# abort #######################################################################
+
++action --new 'abort'
+--desc 'unmap window'
+--type 'shell'
+--core 1
+
+action-abort () {
+    bashrun.window.unmap
+}
+
+# quit #########################################################################
+
++action --new 'quit'
+--desc 'exit shell'
+--type 'shell'
+--core 1
+
+action-quit () {
+    shopt +s checkjobs
+    exit
+}
+
+# debug ########################################################################
 
 +action --new debug
 --desc "Toggle debug mode."
