@@ -6,3 +6,8 @@ class "terminal" "name command" ""
 
 ################################################################################
 
+function terminal.code {
+    echo "+terminal --new '$(terminal.get_name)'"
+    echo "--command '$(terminal.get_command)'"
+    echo
+}

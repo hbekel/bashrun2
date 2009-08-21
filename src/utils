@@ -255,6 +255,11 @@ function print_line {
 function print_header {
     
     local title="$1"
+
+    # remove the namespace prefix
+    local prefix="$(echo $_OBJECTS_NAMESPACE | tr "[:lower:]" "[:upper:]")"
+    title=${title/${prefix}_/}
+
     local char=${2:-#}
     print_line '' "$char"
     print_line "$title" "$char" '-1'
