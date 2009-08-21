@@ -8,7 +8,7 @@ class "mode" "name comp unmap geom anim ps1 ps2 current" 'switch'
 
 function_clone "mode.new" "_mode.new"
 
-BASHRUN_MODE='none'
+BASHRUN_MODE="${BASHRUN_MODE:-launcher}"
 
 function mode.new { 
 
@@ -39,7 +39,7 @@ function mode.switch {
     
     bashrun.debug "switching from" -v "$previous" "to" -v "$current"
 
-    if [[ "$previous" != '' ]]; then
+    if [[ "$previous" != '' && "$previous" != "$current" ]]; then
 	if function? "mode-$previous-leave"; then
 	    mode-$previous-leave
 	fi

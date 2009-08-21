@@ -55,6 +55,7 @@ function bashrun.engine.init {
     objects.seek_start
 
     # switch to initial mode
+    modes.seek "$BASHRUN_MODE"
     mode.switch
 
     # enable extended debugging features

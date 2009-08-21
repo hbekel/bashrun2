@@ -10,13 +10,14 @@
 . $BASHRUN_SHARE/terminals
 . $BASHRUN_SHARE/modes
 
-# FIXME: this needs to decide on both modes and terminals:
-# source modes from rcfile or cache
-#if [[ $BASHRUN_RCFILE -nt $BASHRUN_CACHE_HOME/modes.dump ]]; then
+# source modes and terminals from rcfile or cache
+if [[ $BASHRUN_RCFILE -nt $BASHRUN_CACHE_HOME/modes.dump || 
+      $BASHRUN_RCFILE -nt $BASHRUN_CACHE_HOME/terminals.dump ]]; then
     source $BASHRUN_RCFILE &> /dev/null
-#else
-#    source $BASHRUN_CACHE_HOME/modes.dump
-#fi
+else
+    source $BASHRUN_CACHE_HOME/modes.dump
+    source $BASHRUN_CACHE_HOME/terminals.dump
+fi
 
 # dummy function to avoid setting the completion outside of bashrun
 function completion.set { :; }
