@@ -238,13 +238,12 @@ function bashrun.engine.save {
     echo "BASHRUN_CONFIG_VERSION=$BASHRUN_VERSION" >> $BASHRUN_RCFILE
     echo >> $BASHRUN_RCFILE
 
-    terminals.code >> $BASHRUN_RCFILE
-
     # save modes, reset the current mode first (i.e. call mode-$name-enter)
     local current="$(mode.get_name)"
     mode.reset
     modes.code >> $BASHRUN_RCFILE
 
+    terminals.code >> $BASHRUN_RCFILE
     rules.code >> $BASHRUN_RCFILE
     handlers.code >> $BASHRUN_RCFILE
     bookmarks.code >> $BASHRUN_RCFILE
