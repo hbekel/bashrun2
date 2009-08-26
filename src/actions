@@ -50,6 +50,23 @@ function action.bind {
 	return 0
     fi
 
+    # bind -x C-g directly
+    # this way C-g will still abort from readline searches and the like
+    if [[ "$keyseq" == "\C-g" ]]; then
+	bind="-m $keymap -x '\"$keyseq\": action-abort'"
+	eval "bind $bind"
+	# create or set binding
+	if bindings.seek "$keyseq" "$keymap"; then
+	    binding.set_action "$action"
+	    binding.set_keymap "$keymap"   
+	    binding.set_is_bound 1 
+	    binding.set_readline "$bind"
+	else
+	    binding.new "$keyseq" "$keymap" "$action" "1" "$bind"
+	fi    
+	return 0
+    fi
+
     if ! internals.seek "$action" "$keymap"; then
 	internal.new "$action" "$keymap" "new"
     fi
