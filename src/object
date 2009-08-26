@@ -218,7 +218,7 @@ function objects.dump {
     _OBJECTS_INTERFACE_OPTIONS_FOUND=()
 
     _OBJECTS=($objects)
-    " > $_ObJeCtS_DATA_HOME/objects.dump
+    " > $_ObJeCtS_DATA_HOME/${1:-objects.dump}
 
 }
 

@@ -504,9 +504,9 @@ function_clone "actions.dump" "_actions.dump"
 
 function actions.dump {
 
-    local file="$_OBJECTS_DATA_HOME/actions.dump"
+    local file="$_OBJECTS_DATA_HOME/${1:-actions.dump}"
     local action=''
-    _actions.dump
+    _actions.dump $1
 
     local saved="$(action.get_name)"
 

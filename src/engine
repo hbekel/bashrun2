@@ -32,7 +32,14 @@ function bashrun.engine.init {
 	bashrun.separator "source $rcfile"
 
 	bashrun.debug "installing default actions..."
-	source $BASHRUN_SHARE/defaults
+	
+	# default actions are cached once
+	if [ ! -f $BASHRUN_CACHE_HOME/defaults.dump ]; then
+	    source $BASHRUN_SHARE/defaults
+	    actions.dump defaults.dump
+	else
+	    source $BASHRUN_CACHE_HOME/defaults.dump
+	fi
 
 	source $BASHRUN_RCFILE
 	touch $BASHRUN_TIMESTAMP
