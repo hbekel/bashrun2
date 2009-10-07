@@ -84,9 +84,33 @@ function rule.code {
 
     local name=$(rule.get_name)
     local progs=$(rule.get_progs)
+    local program=''
 
     name=${name//\'/\\\'}
     progs=${progs//\'/\\\'}
 
-    echo "+rule --new '$name' --progs '$progs'" 
+    local array=($progs)
+    local length=${#array[@]}
+
+    echo "+rule --new '$name'"
+    echo -n "  --progs   '"
+
+    if [[ length -eq 1 ]]; then
+	echo "$progs'"
+	echo
+	return 0
+    fi
+
+    local i=0;
+    for program in ${array[@]}; do
+	if [[ i -eq 0 ]]; then
+	    echo "$program"
+	elif [[ i -gt 0 && i -lt length-1 ]]; then
+	    echo "             $program"
+	else
+	    echo "             $program'"
+	fi
+	((i+=1))
+    done
+    echo
 }

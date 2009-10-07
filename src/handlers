@@ -121,8 +121,8 @@ function handler.code {
     print_line "handler $name" "#" "80"
     echo
     echo "+handler --new '$name'"
-    echo "--pattern '$pattern'" 
-    echo "--string \"$string\""
+    echo "  --pattern '$pattern'" 
+    echo "  --string  \"$string\""
     echo
 }
 

@@ -477,19 +477,19 @@ function action.code {
 
     # add action 
     echo "+action --new '$name'"
-    echo "--desc '$desc'"
-    echo "--type '$type'"
-    [[ "$deps" != "" ]] && echo "--deps '$deps'"
-    [[ "$help" != "" ]] && echo "--help '$help'"
-    [[ "$init" != "" ]] && echo "--init '$init'"
-    [[ "$reset" != "" ]] && echo "--reset '$reset'"
+    echo "  --desc '$desc'"
+    echo "  --type '$type'"
+    [[ "$deps" != "" ]] && echo "  --deps '$deps'"
+    [[ "$help" != "" ]] && echo "  --help '$help'"
+    [[ "$init" != "" ]] && echo "  --init '$init'"
+    [[ "$reset" != "" ]] && echo "  --reset '$reset'"
     
     # bind action
     if action.bound?; then
 	bindings.seek_start
 	for id in $(bindings.select action "$name"); do
 	    bindings.seek --next "$id "
-	    binding.code
+	    binding.code 1
 	done
     fi
 

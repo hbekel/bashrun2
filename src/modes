@@ -93,12 +93,12 @@ function mode.code {
     echo
 
     echo "+mode --new $name"
-    [[ "$comp" != 'complete' ]] && echo "--comp '$comp'"
-    [[ "$unmap" != '0' ]] && echo "--unmap '$unmap'"
-    [[ "$geom" != '80x24' ]] && echo "--geom '$geom'"
-    [[ "$anim" != '0' ]] && echo "--anim '$anim'"
-    [[ "$ps1" != '' ]] && echo "--ps1 '$ps1'"
-    [[ "$ps2" != '' ]] && echo "--ps2 '$ps2'"
+    [[ "$geom" != '80x24' ]] && echo "  --geom  '$geom'"
+    [[ "$comp" != 'complete' ]] && echo "  --comp  '$comp'"
+    [[ "$unmap" != '0' ]] && echo "  --unmap '$unmap'"
+    [[ "$anim" != '0' ]] && echo "  --anim  '$anim'"
+    [[ "$ps1" != '' ]] && echo "  --ps1   '$ps1'"
+    [[ "$ps2" != '' ]] && echo "  --ps2   '$ps2'"
     echo
 
     if function? "mode-$name-enter"; then
