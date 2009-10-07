@@ -102,28 +102,3 @@ function geometry {
     [[ geometry.size? || geometry.position? ]] && echo
 }
 
-if false; then
-
-    geometry.parse 200x200
-    ? geometry.size?
-    ? geometry.position?
-    geometry.width
-    geometry.height
-    echo "geometry: $(geometry)"
-    
-    geometry.parse +100-100
-    ? geometry.size?
-    ? geometry.position?
-    geometry.x
-    geometry.y
-    echo "geometry: $(geometry)"
-    
-    geometry.parse 320x240+120+150
-    ? geometry.size?
-    ? geometry.position?
-    geometry.x
-    geometry.y
-    geometry.width
-    geometry.height
-    echo "geometry: $(geometry)"
-fi

@@ -61,7 +61,7 @@ This will echo:
 
 +action --new 'run'
 --desc 'Run command'
---type 'trap-and-launch'
+--type 'trap'
 --bind '\x7f'
 --bind '\x7f' 'vi-insert'
 
@@ -123,12 +123,12 @@ way around it if you're interested.
 
        Set a short description that can be displayed to the user
 
---type 'trap-and-launch'
+--type 'trap'
 
        Sets the action type. These are probably going to change and be
        simplified, but for now there are
 
-       "trap-and-launch" (default)
+       "trap" (default)
 
            This uses a debug trap to successively process the commands
            on the commandline and then launch them in the

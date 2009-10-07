@@ -32,7 +32,7 @@ function bashrun.engine.init {
 	bashrun.separator "source $rcfile"
 
 	bashrun.debug "installing default actions..."
-	
+
 	# default actions are cached once
 	if [ ! -f $BASHRUN_CACHE_HOME/defaults.dump ]; then
 	    source $BASHRUN_SHARE/defaults
@@ -109,7 +109,7 @@ function bashrun.engine.action {
 	# dispatch action according to type
 	case $type in
 	    
-	    trap-and-launch)
+	    trap)
 	        # set the trap
 		bashrun.debug -v "trap" -c "set"
 		trap bashrun.engine.trap DEBUG

@@ -6,7 +6,7 @@ function_clone "action.new" "_action.new"
 function action.new {
 
     _action.new "$1"
-    action.set_type "trap-and-launch"
+    action.set_type "trap"
     action.set_desc "$1"
 
     if ! function? "action-$1"; then
@@ -106,7 +106,7 @@ function action.bind {
     fi
     
     # don't accept-line for 'launch' or 'shell' bindings
-    if [[ "$type" != 'trap-and-launch' ]]; then
+    if [[ "$type" != 'trap' ]]; then
 	accept=''
     fi
 

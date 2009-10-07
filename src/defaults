@@ -79,7 +79,7 @@ action-edit-mode () {
 
 +action --new 'run'
 --desc 'Run command'
---type 'trap-and-launch'
+--type 'trap'
 --core 1
 
 action-run () 
@@ -93,7 +93,7 @@ action-run ()
 
 +action --new 'term-run'
 --desc 'Run command in terminal'
---type 'trap-and-launch'
+--type 'trap'
 --core 1
 
 action-term-run () 
@@ -107,7 +107,7 @@ action-term-run ()
 
 +action --new 'term-page'
 --desc 'Run command in terminal and page'
---type 'trap-and-launch'
+--type 'trap'
 --core 1
 
 action-term-page () 
@@ -122,7 +122,7 @@ action-term-page ()
 
 +action --new 'term-hold'
 --desc 'Run command in terminal and hold'
---type 'trap-and-launch'
+--type 'trap'
 --core 1
 
 action-term-hold () 
@@ -137,7 +137,7 @@ action-term-hold ()
 
 +action --new 'su-run'
 --desc 'Run command as root'
---type 'trap-and-launch'
+--type 'trap'
 --deps 'su'
 --core 1
 
@@ -152,7 +152,7 @@ action-su-run ()
 
 +action --new 'su-term-run'
 --desc 'Run command in terminal as root'
---type 'trap-and-launch'
+--type 'trap'
 --deps 'su'
 --core 1
 
@@ -167,7 +167,7 @@ action-su-term-run ()
 
 +action --new 'su-term-page'
 --desc 'Run command in terminal as root and page'
---type 'trap-and-launch'
+--type 'trap'
 --deps 'su'
 --core 1
 
@@ -182,7 +182,7 @@ action-su-term-page ()
 
 +action --new 'su-term-hold'
 --desc 'Run command in terminal as root and hold'
---type 'trap-and-launch'
+--type 'trap'
 --deps 'su'
 --core 1
 
@@ -197,7 +197,7 @@ action-su-term-hold ()
 
 +action --new 'show-manual'
 --desc 'Show manual page for command'
---type 'trap-and-launch'
+--type 'trap'
 --deps 'man'
 --core 1
 
@@ -208,7 +208,7 @@ action-show-manual () {
 
 +action --new 'show-info'
 --desc 'Show info page for command'
---type 'trap-and-launch'
+--type 'trap'
 --deps 'info'
 --core 1
    
@@ -219,7 +219,7 @@ function action-show-info {
 
 +action --new 'show-help'
 --desc 'Show help for shell builtin'
---type 'trap-and-launch'
+--type 'trap'
 --core 1
     
 function action-show-help {
@@ -238,7 +238,7 @@ function action-show-help {
 
 +action --new 'browse'
 --desc 'Open in $BROWSER'
---type 'trap-and-launch'
+--type 'trap'
 --core 1
 
 function action-browse {
@@ -247,7 +247,7 @@ function action-browse {
 
 +action --new 'google-search'
 --desc 'Search www.google.com'
---type 'trap-and-launch'
+--type 'trap'
 --core 1
 
 function action-google-search {
@@ -256,7 +256,7 @@ function action-google-search {
 
 +action --new 'dict-lookup'
 --desc 'Lookup in dictionary'
---type 'trap-and-launch'
+--type 'trap'
 --deps 'dict'
 --core 1
 
