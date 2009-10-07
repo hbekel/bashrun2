@@ -3,6 +3,7 @@
 
 ############################################################
 
+. $BASHRUN_SHARE/utils
 . $BASHRUN_SHARE/globals
 . $BASHRUN_SHARE/geometry
 . $BASHRUN_SHARE/registry
@@ -11,12 +12,18 @@
 . $BASHRUN_SHARE/modes
 
 # source modes and terminals from rcfile or cache
-if [[ $BASHRUN_RCFILE -nt $BASHRUN_CACHE_HOME/modes.dump || 
-      $BASHRUN_RCFILE -nt $BASHRUN_CACHE_HOME/terminals.dump ]]; then
-    source $BASHRUN_RCFILE &> /dev/null
+if [[ -e $BASHRUN_CACHE_HOME/modes.dump && 
+	-e $BASHRUN_CACHE_HOME/terminals.dump ]]; then 
+
+    if [[ $BASHRUN_CACHE_HOME/modes.dump -nt $BASHRUN_RCFILE && 
+	  $BASHRUN_CACHE_HOME/terminals.dump -nt $BASHRUN_RCFILE ]]; then
+	source $BASHRUN_CACHE_HOME/modes.dump
+	source $BASHRUN_CACHE_HOME/terminals.dump
+    else
+	source $BASHRUN_RCFILE &> /dev/null
+    fi
 else
-    source $BASHRUN_CACHE_HOME/modes.dump
-    source $BASHRUN_CACHE_HOME/terminals.dump
+    source $BASHRUN_RCFILE &> /dev/null
 fi
 
 # dummy function to avoid setting the completion outside of bashrun
