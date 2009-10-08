@@ -306,9 +306,6 @@ function action.run {
     # disable action debugging
     BASHRUN_DEBUG_ACTION=0
 
-    # disable the action interface
-    action.api.disable
-
     local res=""
     [[ retval -eq 0 ]] && res="-c launch"
     [[ retval -eq 1 ]] && res="-y abort"

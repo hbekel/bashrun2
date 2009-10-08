@@ -129,7 +129,7 @@ function bashrun.engine.action {
 		    action.run $command
 		    bashrun.separator
 		fi
-		bashrun.engine.busy 0
+		bashrun.engine.reset 0
 		;;
 	    *)
 		bashrun.debug fail "no such action type:" -v "$type"
@@ -158,8 +158,7 @@ function bashrun.engine.trap {
     # pass through trap builtin
     if [[ "$BASHRUN_COMMAND" =~ ^trap ]]; then
 	bashrun.debug -v "trap" -c "removed"
-	bashrun.separator 
-	bashrun.engine.busy 0	
+	bashrun.engine.reset 0
 	return 0
     fi
     bashrun.debug "command:" -v "$BASHRUN_COMMAND"
@@ -185,11 +184,7 @@ function bashrun.engine.launch {
     if actions.seek $BASHRUN_ACTION; then
 	if action.function?; then
 	    if ! action.run; then
-		BASHRUN_RULES_APPLIED=0
-		bashrun.engine.busy 0
-		terminals.seek default
-		bashrun.separator
-		mode.unmap? && bashrun.window.unmap
+		bashrun.engine.reset
 		return 0
 	    fi
 	fi
@@ -203,10 +198,7 @@ function bashrun.engine.launch {
 	bashrun.debug fail "not executable."
     fi
 
-    BASHRUN_RULES_APPLIED=0
-    bashrun.engine.busy 0
-    terminals.seek default
-    mode.unmap? && bashrun.window.unmap
+    bashrun.engine.reset
     return 0
 }
 
@@ -221,6 +213,27 @@ function bashrun.engine.execute {
 	# this can only be a su command (so far)
 	/bin/bash -c "$BASHRUN_COMMAND"
     fi
+}
+
+function bashrun.engine.reset {
+
+    local unmap="${1:-1}"
+
+    bashrun.engine.busy 0
+
+    # reset rules
+    BASHRUN_RULES_APPLIED=0
+
+    # reset terminal
+    terminals.seek default
+    
+    # disable action api here to allow nested actions
+    action.api.disable 
+
+    # unmap the window if necessary
+    [[ unmap -eq 1 ]] && mode.unmap? && bashrun.window.unmap
+
+    bashrun.separator
 }
 
 function bashrun.engine.busy {
