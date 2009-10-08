@@ -21,7 +21,7 @@ if [ -f "$BASHRUN_REGISTRY" ]; then
 else
     # startup mode defaults to launcher
     mode="${1:-launcher}"
-    
+
     # get the bashrun terminal
     terminals.seek "bashrun"
 

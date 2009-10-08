@@ -124,7 +124,7 @@ function bashrun.window.update {
 
     local saved="$(mode.get_name)"
     if [ -f $BASHRUN_REGISTRY ]; then
-	local mode="$(cat $BASHRUN_REGISTRY | head -1 | cut -d ':' -f 2)"
+	local mode="$(bashrun.registry.get_mode $BASHRUN_WINDOW_ID)"
 	if [[ "$mode" != "none" ]]; then
 	    modes.seek "$mode"
 	    BASHRUN_WINDOW_ANIMATE="$(mode.get_anim)"
@@ -266,8 +266,10 @@ function bashrun.window.map {
     bashrun.window? || return 1
     bashrun.window.update
     
+    modes.seek $(bashrun.registry.get_mode $BASHRUN_WINDOW_ID)
+
     # parse geometry for this mode 
-    geometry.parse "$(mode.get_geom)"
+    geometry.parse "$(echo $(mode.get_geom) | cut -d ' ' -f 1)"
 
     # map the window
     xdotool windowmap $BASHRUN_WINDOW_ID
@@ -282,12 +284,17 @@ function bashrun.window.map {
     xdotool windowactivate $BASHRUN_WINDOW_ID
     xdotool windowfocus $BASHRUN_WINDOW_ID	
     
+    # redraw-current-line
     xdotool key --clearmodifiers ctrl+x
     xdotool type --clearmodifiers 01
+
+    # call user supplied onmap handler
+    local onmap="$(mode.get_onmap)"
+    [[ -n "$onmap" ]] && $onmap
     
     if [[ BASHRUN_WINDOW_ANIMATE -eq 1 ]]; then
 	bashrun.window.expand
-    fi
+    fi    
     BASHRUN_WINDOW_MAPPED=1
     return 0
 }
@@ -296,10 +303,17 @@ function bashrun.window.unmap {
     bashrun.window? || return 1
     bashrun.window.update
 
+    modes.seek $(bashrun.registry.get_mode $BASHRUN_WINDOW_ID)
+
     if [[ BASHRUN_WINDOW_ANIMATE -eq 1 ]]; then
 	bashrun.window.collapse
     fi
     xdotool windowunmap $BASHRUN_WINDOW_ID
+
+    # call user supplied onunmap handler
+    local onunmap="$(mode.get_onunmap)"
+    [[ -n "$onunmap" ]] && $onunmap
+    
     BASHRUN_WINDOW_MAPPED=0
     return 0
 }
@@ -341,3 +355,4 @@ function bashrun.window.expand {
 	bashrun.window.size --hint $BASHRUN_WINDOW_WIDTH $BASHRUN_WINDOW_HEIGHT
     done
 }
+
