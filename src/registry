@@ -8,7 +8,7 @@ function bashrun.registry.add {
     if [ ! -f $BASHRUN_REGISTRY ]; then
 	touch $BASHRUN_REGISTRY
     fi
-    local entry="$WINDOWID:$BASHRUN_MODE"
+    local entry="$WINDOWID:$BASHRUN_MODE:$$"
     bashrun.debug "wid" -v "$entry" '>>' -v "${BASHRUN_REGISTRY/$HOME/~}"
     echo "$entry" >> $BASHRUN_REGISTRY
 
@@ -48,4 +48,33 @@ function bashrun.registry.set_mode {
 	fi
     done
     mv $BASHRUN_REGISTRY.tmp $BASHRUN_REGISTRY
+}
+
+function bashrun.registry.get_mode {
+    
+    local wid="$1"
+    local info=""
+
+    for info in $(<$BASHRUN_REGISTRY); do
+	if [[ "$info" =~ "$wid" ]]; then
+	    echo "$info" | cut -d ':' -f 2
+	    return 0
+	fi
+    done
+    echo "none"
+    return 1
+}
+
+function bashrun.registry.get_pid {
+
+    local wid="$1"
+    local info=""
+
+    for info in $(<$BASHRUN_REGISTRY); do
+	if [[ "$info" =~ "$wid" ]]; then
+	    echo $info | cut -d ':' -f 3
+	    return 0
+	fi
+    done
+    return 1 
 }
