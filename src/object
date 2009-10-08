@@ -400,7 +400,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 
 	while [[ "$1" != '' ]]; do
 	    
-	    if [[ "$1" =~ ^-- ]]; then
+	    if [[ "${1:0:2}" == "--" ]]; then
 		current="${1:2}"
 		eval "_OBJECTS_INTERFACE_OPTION_$current=''"
 		_OBJECTS_INTERFACE_OPTIONS_FOUND[${#_OBJECTS_INTERFACE_OPTIONS_FOUND[@]}]="$current"		
@@ -483,7 +483,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 		    if $(type -t object.$method &> /dev/null); then
 			args="${!var}"
 			args=${args//\\/\\\\}
-			eval "object.$method ${args}"
+			eval "object.$method $args"
 		    else
 			echo "method object.$method not implemented."
 		    fi

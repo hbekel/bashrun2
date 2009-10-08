@@ -35,7 +35,11 @@ source $share/bookmarks
 
 source $share/engine
 
-bashrun.engine.init
+if [[ BASHRUN_DEBUG -eq 1 ]]; then
+    time bashrun.engine.init
+else
+    bashrun.engine.init
+fi
 
 unset share
 unset prefix

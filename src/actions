@@ -69,8 +69,8 @@ function action.bind {
 
     if ! internals.seek "$action" "$keymap"; then
 	internal.new "$action" "$keymap" "new"
+	internals.seek "$action" "$keymap"
     fi
-    internals.seek "$action" "$keymap"
 
     if [[ "$(internal.get_char)" == "new" ]]; then
 	
@@ -86,7 +86,7 @@ function action.bind {
 	bind="$bind tput cr; bashrun.engine.action $action'"
 
 	bashrun.debug -y "int" -v "$action" "->" -v "\C-z\\x$char" "($keymap)" 
-	eval "bind $bind"	    
+	eval "bind $bind"
 	
 	#save readline binding in internal
 	internal.set_readline "$bind"
@@ -95,9 +95,9 @@ function action.bind {
 	internal.set_char "$char"
 	
 	# next free char
-	let BASHRUN_BINDINGS_NEXT_CHAR+=1
+	((BASHRUN_BINDINGS_NEXT_CHAR+=1))
 	until [[ ! "$BASHRUN_BINDINGS_BLACKLIST" =~ \ $BASHRUN_BINDINGS_NEXT_CHAR\  ]]; do
-	    let BASHRUN_BINDINGS_NEXT_CHAR+=1
+	    ((BASHRUN_BINDINGS_NEXT_CHAR+=1))
 	done
     else
 	# there's already an internal character bound, use it
