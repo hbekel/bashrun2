@@ -6,6 +6,7 @@
 #
 ################################################################################
 
+# don't source bashrun from console
 if [[ "$TERM" == "linux" ]]; then
     return
 fi
@@ -16,8 +17,6 @@ share=$prefix/share/bashrun-engine
 
 source $share/utils
 source $share/globals
-
-bashrun.prepare_directories
 
 source $share/registry
 source $share/geometry
