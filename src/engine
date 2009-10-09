@@ -18,7 +18,7 @@ function bashrun.engine.init {
 
     # set wid to terminal $WINDOWID here
     bashrun.window.id $WINDOWID
-
+    
     # get current readline bindings
     bashrun.debug "getting current readline bindings..."
     readline_get_bindings
@@ -78,6 +78,11 @@ function bashrun.engine.init {
     trap bashrun.engine.shutdown EXIT
     
     bashrun.debug emph -y "done"
+
+    # map the window initially (might not get focus with some wm
+    # settings, e.g. openbox skip-taskbar)
+    bashrun.window.map 0
+
     bashrun.separator 
 }
 
