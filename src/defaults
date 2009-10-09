@@ -23,7 +23,7 @@ action-pass () { :; }
 --core 1
 
 action-abort () {
-    bashrun.window.unmap
+    [[ "$(mode.get_unmap)" -eq 1 ]] && bashrun.window.unmap
 }
 
 # quit #########################################################################
