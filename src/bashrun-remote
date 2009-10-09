@@ -5,22 +5,17 @@ BASHRUN_SHARE="$BASHRUN_PREFIX/share/bashrun-engine"
 
 . $BASHRUN_SHARE/frontend
 
-if [ -f "$BASHRUN_REGISTRY" ]; then    
+mode="${1:-launcher}"
+wid="$(bashrun.registry.find $mode)"
+
+if [[ "$wid" != "none" ]]; then    
     
-    # get window id and current mode of the oldest instance
-    [[ "$(cat $BASHRUN_REGISTRY | head -1)" =~ ([0-9]+):(.+) ]]
-    
-    wid="${BASH_REMATCH[1]}"
-    mode="${BASH_REMATCH[2]}"
-    
-    # set window id and mode
     bashrun.window.id "$wid"
     modes.seek "$mode"
 
     bashrun.window.toggle
 else
     # startup mode defaults to launcher
-    mode="${1:-launcher}"
 
     # get the bashrun terminal
     terminals.seek "bashrun"

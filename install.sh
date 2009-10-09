@@ -23,6 +23,7 @@ FILES=(
     geometry
     globals
     handlers
+    instance
     modes
     object
     objects

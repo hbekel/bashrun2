@@ -1,0 +1,25 @@
+# -*- shell-script -*-
+
+################################################################################
+
+function bashrun.instance.exists? () {
+    local wid="$1"
+    xwininfo -id $wid &>/dev/null
+    return $?
+}
+
+function bashrun.instance.idle? () {
+
+    local pid="$1"
+
+    if [[ BASHRUN -eq 1 ]]; then
+	echo "error: instance.idle() called from within bashrun ($$)!"
+	return 1
+    fi
+    return 0
+}
+
+function bashrun.instance.busy? () {
+    !bashrun.instance.idle? $1
+    return $?
+}
