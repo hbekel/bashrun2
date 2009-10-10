@@ -165,7 +165,6 @@ function bashrun.edit_mode {
 	BASHRUN_EDIT_MODE=0
 	
 	xdotool key --clearmodifiers ctrl+m;
-	# RELEASE: wait for xdotool upgrade
     fi
 }
 

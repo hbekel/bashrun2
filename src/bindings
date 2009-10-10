@@ -7,7 +7,6 @@ class "binding" "keyseq keymap action is_bound readline"
 class "keyname" "keyseq name"                             
 
 bind '"\C-x00": accept-line'
-bind '"\C-x01": redraw-current-line'
 
 BASHRUN_BINDINGS_NEXT_CHAR=20                     # next char to bind
 BASHRUN_BINDINGS_BLACKLIST=" 34 39 127 "                         

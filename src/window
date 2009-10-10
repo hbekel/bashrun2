@@ -263,8 +263,6 @@ function bashrun.window.size {
  
 function bashrun.window.map {
 
-    local redraw=${1:-1}
-
     bashrun.window? || return 1
     bashrun.window.update
     
@@ -286,12 +284,6 @@ function bashrun.window.map {
     xdotool windowactivate $BASHRUN_WINDOW_ID
     xdotool windowfocus $BASHRUN_WINDOW_ID	
     
-    # redraw-current-line
-    if [[ redraw -eq 1 ]]; then
-	xdotool key --clearmodifiers ctrl+x
-	xdotool type --clearmodifiers 01
-    fi
-
     # call user supplied onmap handler
     local onmap="$(mode.get_onmap)"
     [[ -n "$onmap" ]] && $onmap
