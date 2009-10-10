@@ -359,4 +359,3 @@ function bashrun.window.expand {
 	bashrun.window.size --hint $BASHRUN_WINDOW_WIDTH $BASHRUN_WINDOW_HEIGHT
     done
 }
-

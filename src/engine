@@ -18,7 +18,7 @@ function bashrun.engine.init {
 
     # set wid to terminal $WINDOWID here
     bashrun.window.id $WINDOWID
-    
+
     # get current readline bindings
     bashrun.debug "getting current readline bindings..."
     readline_get_bindings
@@ -74,14 +74,13 @@ function bashrun.engine.init {
     # init exec mode
     BASHRUN_EXECMODE='&'
 
+    # react to pings
+    trap bashrun.engine.pong SIGUSR1
+
     # shutdown on exit
     trap bashrun.engine.shutdown EXIT
     
     bashrun.debug emph -y "done"
-
-    # map the window initially (might not get focus with some wm
-    # settings, e.g. openbox skip-taskbar)
-    bashrun.window.map 0
 
     bashrun.separator 
 }
@@ -248,6 +247,13 @@ function bashrun.engine.busy {
 function bashrun.engine.busy? {
     [[ "$BASHRUN_ENGINE_BUSY" == "1" ]]
     return $?
+}
+
+function bashrun.engine.pong {
+
+    # called on receiving a SIGUSR1
+    # write our pid as response
+    echo "$$" > $BASHRUN_PINGPONG
 }
 
 function bashrun.engine.save {

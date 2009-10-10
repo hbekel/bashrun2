@@ -18,11 +18,13 @@ function bashrun.registry.add {
 
 function bashrun.registry.remove {
 
+    local wid="${1:-$WINDOWID}"
     local info=''
+
     echo -n '' > $BASHRUN_REGISTRY.tmp
 
     for info in $(<$BASHRUN_REGISTRY); do
-	if [[ ! "$info" =~ "$WINDOWID" ]]; then
+	if [[ ! "$info" =~ "$wid" ]]; then
 	    echo $info >> $BASHRUN_REGISTRY.tmp
 	fi
     done
@@ -52,6 +54,9 @@ function bashrun.registry.find {
 		    echo "$wid"
 		    return 0
 		fi
+	    else
+		# this is a stale entry
+		bashrun.registry.remove "$wid"
 	    fi
 	fi
     done 

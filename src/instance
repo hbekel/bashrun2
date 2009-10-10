@@ -11,12 +11,24 @@ function bashrun.instance.exists? () {
 function bashrun.instance.idle? () {
 
     local pid="$1"
+    local tries=5
 
-    if [[ BASHRUN -eq 1 ]]; then
-	echo "error: instance.idle() called from within bashrun ($$)!"
-	return 1
+    if [[ "$pid" == "$$" ]]; then	
+	return 0
+    else
+      # ping bashrun process with our pid
+      echo "$$" > $BASHRUN_PINGPONG
+      kill -USR1 $pid
     fi
-    return 0
+
+    until [[ tries -eq 0 ]]; do
+	if [[ "$(<$BASHRUN_PINGPONG)" == "$pid" ]]; then
+	    return 0	    
+	fi
+	((tries-=1))
+	sleep 0.1
+    done
+    return 1
 }
 
 function bashrun.instance.busy? () {
