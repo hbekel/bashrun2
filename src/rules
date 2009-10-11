@@ -15,15 +15,19 @@ function rules.apply {
     [[ BASHRUN_RULES_APPLIED -eq 1 ]] && return 0
 
     local action=$(actions.current)
-    local program=''
+    local program=''    
     local word="$BASHRUN_COMMAND_WORD"
     local command="$BASHRUN_COMMAND"
     local regexp=''
+    local progs=''
 
     rules.seek_start
     while rules.next?; do
 
-	for program in $(rule.get_progs); do
+	# eval any environment vars in progs
+	progs=$(eval "echo \"$(rule.get_progs)\"")
+
+	for program in $progs; do
 
 	    terminals.seek "default"
 	    
