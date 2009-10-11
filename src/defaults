@@ -110,7 +110,11 @@ action-term-page ()
 action-term-hold () 
 { 
     ! executable? && +handlers;
-    command "($(command)); read -n1";
+    if [[ "$(command)" =~ ^\(.+?\)$ ]]; then
+	command "$(command); read -n1";
+    else
+	command "($(command)); read -n1";
+    fi
     +term;
     return 0
 }
