@@ -118,56 +118,6 @@ function bashrun.separator {
     echo
 }
 
-function bashrun.edit_mode {     
-    
-    local state=${1:-1}
-
-    objects.focus "action"
-
-    if [[ state -eq 1 ]]; then
-
-	OLDPS1="$PS1";
-	PS1='\[\033[1;34m\]<\[\033[1;33m\]$(objects.focus)\[\033[1;34m\]:\[\033[1;37m\] $(+$(objects.focus) --name)\[\033[1;34m\]> \[\033[0m\]';
-	
-	function ls () 
-	{ 
-            $(objects.focus)s.list "$@"
-	};
-	complete -F objects.complete_id ls
-	
-	function cd ()
-	{
-	    if [[ "$#" == "0" ]]; then
-		+action
-		return
-	    fi
-	    
-	    if type -t +$1 &> /dev/null; then
-		+$1
-	    fi
-	}
-	complete -F objects.complete_type cd
-
-	BASHRUN_EDIT_MODE=1
-	actions.seek_start
-
-	xdotool key --clearmodifiers ctrl+m;
-	return 1
-    else
-	
-	PS1="$OLDPS1";
-	unset -f ls;
-	complete -o filenames -F _longopt ls
-	
-	unset -f cd
-	complete -o filenames -o nospace -F _cd cd
-	
-	BASHRUN_EDIT_MODE=0
-	
-	xdotool key --clearmodifiers ctrl+m;
-    fi
-}
-
 function bashrun.prepare_directories {
 
     # create XDG directories

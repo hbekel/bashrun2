@@ -57,24 +57,6 @@ action-debug () {
     return 1
 }
 
-# edit-mode #####################################################################
-
-+action --new 'edit-mode'
---desc 'edit-mode'
---type 'shell'
---deps 'xdotool'
---init 'BASHRUN_EDIT_MODE=0'
---core 1
-
-action-edit-mode () {
-    if [[ BASHRUN_EDIT_MODE -eq 0 ]]; then
-	bashrun.edit_mode 1
-    else
-	bashrun.edit_mode 0
-    fi
-    return 1
-}
-
 ## action run ##################################################################
 
 +action --new 'run'

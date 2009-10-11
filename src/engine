@@ -279,10 +279,6 @@ function bashrun.engine.save {
     mode.switch 
 }
 
-function +save {
-    bashrun.engine.save "$1"
-}
-
 function bashrun.engine.shutdown { 
 
     # remove this instance from registry
