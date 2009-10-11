@@ -9,7 +9,7 @@ function bashrun.registry.add {
 	touch $BASHRUN_REGISTRY
     fi
     local entry="$WINDOWID:$$:$BASHRUN_MODE"
-    bashrun.debug "wid" -v "$entry" '>>' -v "${BASHRUN_REGISTRY/$HOME/~}"
+    bashrun.debug "entry" -v "$entry" '>>' -v "${BASHRUN_REGISTRY/$HOME/~}"
     echo "$entry" >> $BASHRUN_REGISTRY
 
     # set wid to terminal $WINDOWID here

@@ -18,6 +18,10 @@ share=$prefix/share/bashrun-engine
 source $share/utils
 source $share/globals
 
+# setup pingpong (this needs to happen as early as possible)
+function bashrun.pong { echo "$$" > $BASHRUN_PINGPONG; }
+trap bashrun.pong SIGUSR1
+
 source $share/instance
 source $share/registry
 source $share/geometry

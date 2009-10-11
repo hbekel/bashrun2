@@ -13,7 +13,7 @@ function bashrun.engine.init {
     
     bashrun.separator "bashrun-engine $BASHRUN_VERSION"
 
-    # add this instance to registry
+    # register this instance
     bashrun.registry.add
 
     # set wid to terminal $WINDOWID here
@@ -73,9 +73,6 @@ function bashrun.engine.init {
 
     # init exec mode
     BASHRUN_EXECMODE='&'
-
-    # react to pings
-    trap bashrun.engine.pong SIGUSR1
 
     # shutdown on exit
     trap bashrun.engine.shutdown EXIT
@@ -247,13 +244,6 @@ function bashrun.engine.busy {
 function bashrun.engine.busy? {
     [[ "$BASHRUN_ENGINE_BUSY" == "1" ]]
     return $?
-}
-
-function bashrun.engine.pong {
-
-    # called on receiving a SIGUSR1
-    # write our pid as response
-    echo "$$" > $BASHRUN_PINGPONG
 }
 
 function bashrun.engine.save {
