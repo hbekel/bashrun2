@@ -36,6 +36,8 @@ function bashrun.registry.remove {
 
 function bashrun.registry.find {
     
+    # find the youngest existing idle instance in the requested mode
+
     local mode="${1:-any}"
     local info="" wid="" pid=""
 
@@ -44,7 +46,7 @@ function bashrun.registry.find {
 	return 1
     fi
 
-    for info in $(<$BASHRUN_REGISTRY); do
+    for info in $(tac $BASHRUN_REGISTRY); do
 	if [[ "$info" =~ $mode || "$mode" == "any" ]]; then
 	    [[ "$info" =~ (.+?):(.+?):(.+) ]];
 	    wid=${BASH_REMATCH[1]}	    

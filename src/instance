@@ -11,7 +11,7 @@ function bashrun.instance.exists? () {
 function bashrun.instance.idle? () {
 
     local pid="$1"
-    local tries=5
+    local tries=0
 
     if [[ "$pid" == "$$" ]]; then	
 	return 0
@@ -21,12 +21,11 @@ function bashrun.instance.idle? () {
       kill -USR1 $pid
     fi
 
-    until [[ tries -eq 0 ]]; do
+    until [[ tries -eq 5 ]]; do
 	if [[ "$(<$BASHRUN_PINGPONG)" == "$pid" ]]; then
 	    return 0	    
 	fi
-	((tries-=1))
-	sleep 0.1
+	((tries+=1))
     done
     return 1
 }
