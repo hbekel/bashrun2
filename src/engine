@@ -65,11 +65,9 @@ function bashrun.engine.init {
     modes.seek "$BASHRUN_MODE"
     mode.switch
 
-    # enable extended debugging features
-    shopt -s extdebug
-
-    # prepare escape from trap
-    PROMPT_COMMAND="trap DEBUG; $PROMPT_COMMAND"
+    # enable extdebug and prepare escape from trap
+    # (bashdb bugs out if extdebug is set directly from a startup file)
+    PROMPT_COMMAND="shopt -s extdebug; trap DEBUG; $PROMPT_COMMAND"
 
     # init exec mode
     BASHRUN_EXECMODE='&'
