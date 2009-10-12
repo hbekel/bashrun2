@@ -125,6 +125,12 @@ function bashrun.command.add_su {
     # COMMAND goes into su -c '' -> escape single quotes
     BASHRUN_COMMAND=${BASHRUN_COMMAND//\'/\\\'}
 
+    # prompt for username
+    if [[ "$user" == "?" ]]; then
+	echo -ne 'Username: '
+	read user
+    fi
+
     # run the command itself in the background
     if [[ ! "$BASHRUN_COMMAND" =~ \&\ *$ ]]; then
 	BASHRUN_COMMAND="su $user -c '$BASHRUN_COMMAND &> /dev/null &'"
