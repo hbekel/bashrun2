@@ -39,7 +39,9 @@ function mode.switch {
     local current="$(mode.get_name)"
     local previous="$BASHRUN_MODE"
     
-    bashrun.debug "switching from" -v "$previous" "to" -v "$current"
+    if [[ "$previous" != "$current" ]]; then
+	bashrun.debug "switching from" -v "$previous" "to" -v "$current"
+    fi
 
     if [[ "$previous" != '' && "$previous" != "$current" ]]; then
 	if function? "mode-$previous-leave"; then
