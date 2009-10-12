@@ -485,7 +485,7 @@ function action.code {
     if action.bound?; then
 	bindings.seek_start
 	for id in $(bindings.select action "$name"); do
-	    bindings.seek --next "$id "
+	    bindings.seek --next "$id"
 	    binding.code 1
 	done
     fi
