@@ -34,14 +34,22 @@ function rules.apply {
 	    if [[ "$program" =~ (.+?):(.+?) ]]; then
 		program="${BASH_REMATCH[1]}"
 		term="${BASH_REMATCH[2]}"
+
+		# use explicitly given terminal
 		if ! terminals.seek "$term"; then
-		    bashrun.debug "warning: no such terminal: $term"
+		    bashrun.debug warn "no such terminal: $term, using default"
 		    terminals.seek "default"
 		fi
 	    fi
 
 	    if [[ "$word" == "$program" ]]; then
 		# literal match
+
+		# use a terminal named after program or fallback to default
+		if ! terminals.seek "$program"; then
+		    bashrun.debug info "no such terminal: $program, using default"
+		    terminals.seek "default"
+		fi
 
 		bashrun.debug "$word == $program -> $(rule.get_name)"
 		BASHRUN_RULES_APPLIED=1
