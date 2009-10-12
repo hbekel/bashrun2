@@ -43,6 +43,17 @@ function bashrun.engine.init {
     # init exec mode
     BASHRUN_EXECMODE='&'
 
+    # install command_not_found_handle for bash4 -> action "run" (implies handlers)    
+    if [[ "${BASH_VERSINFO[0]}" == "4" ]]; then
+	if [[ BASHRUN_HANDLE_UNKNOWN -eq 1 ]]; then
+	    function command_not_found_handle {
+		if [[ BASHRUN_HANDLE_UNKNOWN -eq 1 ]]; then
+		    bashrun.engine.action run launch "$*"
+		fi
+	    }
+	fi
+    fi
+
     # shutdown on exit
     trap bashrun.engine.shutdown EXIT
     
