@@ -45,7 +45,7 @@ function bashrun.engine.init {
 
     # install command_not_found_handle for bash4 -> action "run" (implies handlers)    
     if [[ "${BASH_VERSINFO[0]}" == "4" ]]; then
-	if [[ BASHRUN_HANDLE_UNKNOWN -eq 1 ]]; then
+    	if [[ BASHRUN_HANDLE_UNKNOWN -eq 1 ]]; then
 	    function command_not_found_handle {
 		if [[ BASHRUN_HANDLE_UNKNOWN -eq 1 ]]; then
 		    bashrun.engine.action run launch "$*"

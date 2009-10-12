@@ -11,7 +11,7 @@ configure-defaults () {
 # pass #########################################################################
 
     +action --new 'pass'
-    --desc 'passthrough command'
+    --desc 'Passthrough command'
     --type 'shell'
     --core 1
 
@@ -20,7 +20,7 @@ configure-defaults () {
 # abort #######################################################################
 
     +action --new 'abort'
-    --desc 'unmap window'
+    --desc 'Abort (unmap window)'
     --type 'shell'
     --core 1
     
@@ -31,7 +31,7 @@ configure-defaults () {
 # quit #########################################################################
     
     +action --new 'quit'
-    --desc 'exit shell'
+    --desc 'Exit bashrun'
     --type 'shell'
     --core 1
     
@@ -43,7 +43,7 @@ configure-defaults () {
 # debug ########################################################################
     
     +action --new debug
-    --desc "Toggle debug mode."
+    --desc "Toggle debug mode"
     --type "shell"
     --core 1
     
@@ -227,7 +227,7 @@ configure-defaults () {
 # browse/google/dict #############################################################
     
     +action --new 'browse'
-    --desc 'Open in $BROWSER'
+    --desc "Open page in $BROWSER"
     --type 'trap'
     --core 1
     
@@ -236,7 +236,7 @@ configure-defaults () {
     }
     
     +action --new 'google-search'
-    --desc 'Search www.google.com'
+    --desc 'Search google'
     --type 'trap'
     --core 1
     
@@ -265,11 +265,23 @@ configure-defaults () {
 	command "man bashrun"
 	action-term-run
     }
+
+    +action --new 'bashrun-bindings'
+    --desc 'Show current keybindings'
+    --type 'launch'
+    --core 1
+    
+    function action-bashrun-bindings {
+	print_bindings > $BASHRUN_CACHE_HOME/keybindings
+	command "less $BASHRUN_CACHE_HOME/keybindings"
+	action-term-run
+    }
+
     
 # map/unmap/toggle ###############################################################
     
     +action --new 'window-map'
-    --desc "map window"
+    --desc "Map window"
     --type "shell"
     --deps 'xdotool'
     --core 1
@@ -280,7 +292,7 @@ configure-defaults () {
     }
     
     +action --new 'window-unmap'
-    --desc "unmap window"
+    --desc "Unmap window"
     --type "shell" 
     --deps 'xdotool'
     --core 1
@@ -291,7 +303,7 @@ configure-defaults () {
     }
     
     +action --new 'window-toggle'
-    --desc 'toggle window state'
+    --desc 'Toggle window state'
     --type 'shell'
     --deps 'xdotool'
     --core 1
@@ -302,7 +314,7 @@ configure-defaults () {
     }
     
     +action --new 'window-resize'
-    --desc 'resize window'
+    --desc 'Resize window'
     --type 'shell'
     --core 1
     
@@ -312,7 +324,7 @@ configure-defaults () {
     }
     
     +action --new 'window-move'
-    --desc 'move window'
+    --desc 'Move window'
     --type 'shell'
     --core 1
     
@@ -322,7 +334,7 @@ configure-defaults () {
     }
     
     +action --new 'cycle-size'
-    --desc 'cycle through the window sizes of the current mode'
+    --desc 'Cycle through window sizes of current mode'
     --type 'shell'
     --core 1
     
@@ -344,7 +356,7 @@ configure-defaults () {
     }
     
     +action --new 'cycle-mode'
-    --desc 'cycle through modes'
+    --desc 'Cycle through available modes'
     --type shell
     --core 1
     
