@@ -83,6 +83,7 @@ configure-defaults () {
     action-term-run () 
     { 
 	! executable? && +handlers;
+	+rules;
 	+term;
 	return 0
     }
@@ -96,8 +97,9 @@ configure-defaults () {
     
     action-term-page () 
     { 
-	! executable? && +handlers;
+	! executable? && +handlers;	
 	+pager;
+	+rules;
 	+term;
 	return 0
     }

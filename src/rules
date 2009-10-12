@@ -37,7 +37,7 @@ function rules.apply {
 
 		# use explicitly given terminal
 		if ! terminals.seek "$term"; then
-		    bashrun.debug warn "no such terminal: $term, using default"
+		    bashrun.debug warn "no such terminal:" -v "$term" "(using default)"
 		    terminals.seek "default"
 		fi
 	    fi
@@ -46,12 +46,14 @@ function rules.apply {
 		# literal match
 
 		# use a terminal named after program or fallback to default
-		if ! terminals.seek "$program"; then
-		    bashrun.debug info "no such terminal: $program, using default"
-		    terminals.seek "default"
+		if [[ "$(terminal.get_name)" == "default" ]]; then
+		    if ! terminals.seek "$program"; then
+			bashrun.debug info "no such terminal:" -v "$program" "(using default)"
+			terminals.seek "default"
+		    fi
 		fi
 
-		bashrun.debug "$word == $program -> $(rule.get_name)"
+		bashrun.debug -v "$word" "==" -v "$program" "->" -y "$(rule.get_name)"
 		BASHRUN_RULES_APPLIED=1
 
 		if actions.seek $(rule.get_name); then
@@ -67,7 +69,7 @@ function rules.apply {
 		    if [[ "$command" =~ $regexp ]]; then
 			# regexp match
 		
-			bashrun.debug "'$command' =~ $program -> $(rule.get_name)"
+			bashrun.debug -v "'$command'" "=~" -v "$program" "->" -y "$(rule.get_name)"
 			BASHRUN_RULES_APPLIED=1
 
 			if actions.seek $(rule.get_name); then
