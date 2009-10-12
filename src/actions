@@ -444,23 +444,6 @@ function action.list {
 function action.code {
 
     local name="$(action.get_name)"
-    
-    # save only bindings for core actions
-    if action.core?; then	
-	if action.bound?; then
-	    bindings.seek_start
-	    local id=''
-	    for id in $(bindings.select action "$name"); do
-		if bindings.seek --next "$id"; then
-		    if binding.bound?; then
-			echo "+action '$(action.get_name)' $(binding.code)"
-		    fi
-		fi
-	    done
-	fi
-	return 0
-    fi
-
     local desc="$(action.get_desc)"
     local type="$(action.get_type)"
     local deps="$(action.get_deps)"
@@ -564,6 +547,32 @@ function actions.reset {
 	actions.next
     done    
     actions.seek_start
+}
+
+## shortcut functions to action.bind ##
+
+function +bind () {
+
+    local action="$1"
+    local keyseq="$2"
+    local keyname="${3:-$(ks2kn $keyseq)}"
+
+    if actions.seek "$action"; then
+	action.bind "$keyseq" "$BASHRUN_KEYMAP" "$keyname"
+    else
+	bashrun.debug fail "no such action:" -v $action
+	return 1
+    fi
+}
+
+function +keymap () {
+    local keymap="$1"
+    if [[ ! "$keymap" =~ (emacs|vi-insert|vi-command) ]]; then
+	bashrun.debug fail "must be one of 'emacs', 'vi-insert' or 'vi-command'"
+	bashrun.debug warn "keymap remains set to" -v $BASHRUN_KEYMAP
+	return 1
+    fi
+    BASHRUN_KEYMAP="$keymap"
 }
 
 ################################################################################

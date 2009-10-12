@@ -40,7 +40,7 @@ function objects.namespace {
 }
 
 function objects.types {    
-    echo "$_OBJECTS_TYPES"
+    echo " $_OBJECTS_TYPES "
 }
 
 function objects.focus {

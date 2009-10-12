@@ -2,6 +2,8 @@
 
 ################################################################################
 
+BASHRUN_ACTIONS_RECONFIGURED=0
+
 function bashrun.configure {
 
     local rcfile="${BASHRUN_RCFILE/$HOME/~}"
@@ -35,15 +37,25 @@ function bashrun.configure {
 
 	[[ "$type" == "defaults" ]] && continue;
 
-	bashrun.configure.type $type		
+	local len=${#type}
+	if [[ "$(objects.types)" =~ "${type:0:$len-1} " ]]; then
+	    bashrun.configure.type $type
+	else
+	    if [[ "$type" == "keys" ]]; then
+		bashrun.configure.keys
+	    else
+		bashrun.debug warn -v $type ": unknown object type, skipping configure-$type()"
+	    fi
+	fi
     done
 }
 
 function bashrun.configure.type {
     
     local type="$1"
-    local dump="$BASHRUN_CACHE_HOME/$type.dump"
-    local dumprc="$BASHRUN_CACHE_HOME/$type.rc"
+    local dump="${2:-$BASHRUN_CACHE_HOME/$type.dump}"
+    local dumprc="${3:-$BASHRUN_CACHE_HOME/$type.rc}"
+
     local config="configure-$type"
 
     # if a dump exists
@@ -77,4 +89,43 @@ function bashrun.reconfigure.type {
     
     # cache the configure function that created the dump
     function_code configure-$type > $dumprc
+
+    # remember wether actions have been reconfigured
+    if [[ "$type" == "actions" ]]; then
+	BASHRUN_ACTIONS_RECONFIGURED=1
+    fi
+}
+
+function bashrun.configure.keys {
+
+    local dumprc="$BASHRUN_CACHE_HOME/keys.rc"
+
+    # dumps already exists by now (created by action.dump)
+
+    # if no dumprc exists, configure-keys() has not been used before...
+    if [[ ! -f "$dumprc" ]]; then
+	touch "$dumprc"
+    fi
+
+    # if the configure-keys function has changed or the actions have been
+    # reconfigured before (and in that case don't include these bindings yet)...
+
+    if [[ "$(<$dumprc)" != "$(function_code configure-keys)" ||
+		BASHRUN_ACTIONS_RECONFIGURED -eq 1 ]]; then
+
+	bashrun.debug "reconfiguring" -v "keys"
+
+	# run configure function
+	configure-keys
+
+	# dump actions (et al) again
+	actions.dump
+
+        # cache the configure function that created the dump
+	function_code configure-keys > $dumprc
+
+	BASHRUN_ACTIONS_RECONFIGURED=0
+    else
+	bashrun.debug "restoring" -v "keys"
+    fi
 }

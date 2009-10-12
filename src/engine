@@ -215,39 +215,6 @@ function bashrun.engine.busy? {
     return $?
 }
 
-function bashrun.engine.save {
-
-    bashrun.debug "saving to" -v $BASHRUN_RCFILE
-
-    echo "# -*- shell-script -*-" > $BASHRUN_RCFILE
-    echo "BASHRUN_CONFIG_VERSION=$BASHRUN_VERSION" >> $BASHRUN_RCFILE
-    echo >> $BASHRUN_RCFILE
-
-    # save modes, reset the current mode first (i.e. call mode-$name-enter)
-    local current="$(mode.get_name)"
-    mode.reset
-    modes.code >> $BASHRUN_RCFILE
-
-    terminals.code >> $BASHRUN_RCFILE
-    rules.code >> $BASHRUN_RCFILE
-    handlers.code >> $BASHRUN_RCFILE
-    bookmarks.code >> $BASHRUN_RCFILE
-
-    # save actions, reset all actions first (i.e. call 'reset' callbacks)
-    actions.reset
-    actions.code >> $BASHRUN_RCFILE
-
-    touch $BASHRUN_TIMESTAMP
-
-    objects.dump
-
-    objects.seek_start
-
-    # reenable current mode
-    modes.seek "$current"
-    mode.switch 
-}
-
 function bashrun.engine.shutdown { 
 
     # remove this instance from registry
