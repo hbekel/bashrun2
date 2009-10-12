@@ -5,27 +5,18 @@
 
 . $BASHRUN_SHARE/utils
 . $BASHRUN_SHARE/globals
+. $BASHRUN_SHARE/config
 . $BASHRUN_SHARE/geometry
 . $BASHRUN_SHARE/instance
 . $BASHRUN_SHARE/registry
 . $BASHRUN_SHARE/window
 . $BASHRUN_SHARE/terminals
 . $BASHRUN_SHARE/modes
+. $BASHRUN_RCFILE
 
-# source modes and terminals from rcfile or cache
-if [[ -e $BASHRUN_CACHE_HOME/modes.dump && 
-	-e $BASHRUN_CACHE_HOME/terminals.dump ]]; then 
-
-    if [[ $BASHRUN_CACHE_HOME/modes.dump -nt $BASHRUN_RCFILE && 
-	  $BASHRUN_CACHE_HOME/terminals.dump -nt $BASHRUN_RCFILE ]]; then
-	source $BASHRUN_CACHE_HOME/modes.dump
-	source $BASHRUN_CACHE_HOME/terminals.dump
-    else
-	source $BASHRUN_RCFILE &> /dev/null
-    fi
-else
-    source $BASHRUN_RCFILE &> /dev/null
-fi
+# load modes and terminals 
+bashrun.configure.type "modes"
+bashrun.configure.type "terminals"
 
 # dummy function to avoid setting the completion outside of bashrun
 function completion.set { :; }

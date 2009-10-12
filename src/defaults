@@ -2,359 +2,361 @@
 
 ################################################################################
 
-function action.set_core {
-    _BASHRUN_ACTIONS[${_BASHRUN_ACTIONS_POSITION}+7]="$1"
-}
+configure-defaults () {
+
+    function action.set_core {
+	_BASHRUN_ACTIONS[${_BASHRUN_ACTIONS_POSITION}+7]="$1"
+    }
 
 # pass #########################################################################
 
-+action --new 'pass'
---desc 'passthrough command'
---type 'shell'
---core 1
+    +action --new 'pass'
+    --desc 'passthrough command'
+    --type 'shell'
+    --core 1
 
-action-pass () { :; }
+    action-pass () { :; }
 
 # abort #######################################################################
 
-+action --new 'abort'
---desc 'unmap window'
---type 'shell'
---core 1
-
-action-abort () {
-    [[ "$(mode.get_unmap)" -eq 1 ]] && bashrun.window.unmap
-}
-
-# quit #########################################################################
-
-+action --new 'quit'
---desc 'exit shell'
---type 'shell'
---core 1
-
-action-quit () {
-    shopt +s checkjobs
-    exit
-}
-
-# debug ########################################################################
-
-+action --new debug
---desc "Toggle debug mode."
---type "shell"
---core 1
-
-action-debug () {
-
-    if [[ BASHRUN_DEBUG -eq 0 ]]; then
-	BASHRUN_DEBUG=1
-	bashrun.debug "debug mode" -g "enabled"
-    else
-	bashrun.debug "debug mode" -r "disabled"
-	BASHRUN_DEBUG=0
-    fi
-    return 1
-}
-
-## action run ##################################################################
-
-+action --new 'run'
---desc 'Run command'
---type 'trap'
---core 1
-
-action-run () 
-{ 
-    ! executable? && +handlers;
-    +rules;
-    return 0
-}
-
-## action run-term #############################################################
-
-+action --new 'term-run'
---desc 'Run command in terminal'
---type 'trap'
---core 1
-
-action-term-run () 
-{ 
-    ! executable? && +handlers;
-    +term;
-    return 0
-}
-
-## action run-page #############################################################
-
-+action --new 'term-page'
---desc 'Run command in terminal and page'
---type 'trap'
---core 1
-
-action-term-page () 
-{ 
-    ! executable? && +handlers;
-    +pager;
-    +term;
-    return 0
-}
-
-## action run-hold #############################################################
-
-+action --new 'term-hold'
---desc 'Run command in terminal and hold'
---type 'trap'
---core 1
-
-action-term-hold () 
-{ 
-    ! executable? && +handlers;
-    if [[ "$(command)" =~ ^\(.+?\)$ ]]; then
-	command "$(command); read -n1";
-    else
-	command "($(command)); read -n1";
-    fi
-    +term;
-    return 0
-}
-
-## action su-run ###############################################################
-
-+action --new 'su-run'
---desc 'Run command as root'
---type 'trap'
---deps 'su'
---core 1
-
-action-su-run () 
-{ 
-    action-run;
-    +user root;
-    return 0
-}
-
-## action su-term-run ##########################################################
-
-+action --new 'su-term-run'
---desc 'Run command in terminal as root'
---type 'trap'
---deps 'su'
---core 1
-
-action-su-term-run () 
-{ 
-    action-term-run;
-    +user root;
-    return 0
-}
-
-## action su-term-page #########################################################
-
-+action --new 'su-term-page'
---desc 'Run command in terminal as root and page'
---type 'trap'
---deps 'su'
---core 1
-
-action-su-term-page () 
-{ 
-    action-term-page;
-    +user root;
-    return 0
-}
-
-## action su-term-page #########################################################
-
-+action --new 'su-term-hold'
---desc 'Run command in terminal as root and hold'
---type 'trap'
---deps 'su'
---core 1
-
-action-su-term-hold () 
-{ 
-    action-term-hold;
-    +user root;
-    return 0
-}
-
-## show-manual, -info, -help  ###################################################
-
-+action --new 'show-manual'
---desc 'Show manual page for command'
---type 'trap'
---deps 'man'
---core 1
-
-action-show-manual () {
-    command "man $(word)"
-    +term
-}
-
-+action --new 'show-info'
---desc 'Show info page for command'
---type 'trap'
---deps 'info'
---core 1
-   
-function action-show-info {
-    command "info $(word)"
-    +term
-}
-
-+action --new 'show-help'
---desc 'Show help for shell builtin'
---type 'trap'
---core 1
+    +action --new 'abort'
+    --desc 'unmap window'
+    --type 'shell'
+    --core 1
     
-function action-show-help {
-    if builtin?; then
-	command "help $(word)"
-	+pager
-    else
-	debug "$(word): not a builtin, showing manual"
-	action-show-manual
-	return 0
-    fi	    
-    +term
-}
-
-# browse/google/dict #############################################################
-
-+action --new 'browse'
---desc 'Open in $BROWSER'
---type 'trap'
---core 1
-
-function action-browse {
-    command "$BROWSER '$(command)'"
-}
-
-+action --new 'google-search'
---desc 'Search www.google.com'
---type 'trap'
---core 1
-
-function action-google-search {
-    command "$BROWSER 'http://www.google.com/search?q=$(line)'"
-}
-
-+action --new 'dict-lookup'
---desc 'Lookup in dictionary'
---type 'trap'
---deps 'dict'
---core 1
-
-function action-dict-lookup {
-    command "dict $(line)"
-    +rules
-}
-
-+action --new 'bashrun-manual'
---desc 'Show bashrun manual'
---type 'launch'
---deps 'man'
---core 1
-
-function action-bashrun-manual {
-    command "man bashrun"
-    action-term-run
-}
-
-# map/unmap/toggle ###############################################################
-
-+action --new 'window-map'
---desc "map window"
---type "shell"
---deps 'xdotool'
---core 1
-
-function action-window-map {
-    bashrun.window.map
-    return 1
-}
-
-+action --new 'window-unmap'
---desc "unmap window"
---type "shell" 
---deps 'xdotool'
---core 1
-
-function action-window-unmap {
-    bashrun.window.unmap
-    return 1
-}
-
-+action --new 'window-toggle'
---desc 'toggle window state'
---type 'shell'
---deps 'xdotool'
---core 1
-
-function action-window-toggle {
-    bashrun.window.toggle
-    return 1
-}
-
-+action --new 'window-resize'
---desc 'resize window'
---type 'shell'
---core 1
-
-function action-window-resize {
-    bashrun.window.size $1 $2
-    return 1
-}
-
-+action --new 'window-move'
---desc 'move window'
---type 'shell'
---core 1
-
-function action-window-move {
-    bashrun.window.pos $1 $2
-    return 1
-}
-
-+action --new 'cycle-size'
---desc 'cycle through the window sizes of the current mode'
---type 'shell'
---core 1
-
-function action-cycle-size {
-
-    if mode.multigeom?; then
+    action-abort () {
+	[[ "$(mode.get_unmap)" -eq 1 ]] && bashrun.window.unmap
+    }
+    
+# quit #########################################################################
+    
+    +action --new 'quit'
+    --desc 'exit shell'
+    --type 'shell'
+    --core 1
+    
+    action-quit () {
+	shopt +s checkjobs
+	exit
+    }
+    
+# debug ########################################################################
+    
+    +action --new debug
+    --desc "Toggle debug mode."
+    --type "shell"
+    --core 1
+    
+    action-debug () {
 	
-	local geom="$(mode.get_geom)"
-	local current="$(mode.get_current)"
-	((current+=1))
-	if [[ "$(echo "$geom" | cut -d ' ' -f $current)" == '' ]]; then
-	    current=1
+	if [[ BASHRUN_DEBUG -eq 0 ]]; then
+	    BASHRUN_DEBUG=1
+	    bashrun.debug "debug mode" -g "enabled"
+	else
+	    bashrun.debug "debug mode" -r "disabled"
+	    BASHRUN_DEBUG=0
 	fi
-	bashrun.window.geometry "$(echo "$geom" | cut -d ' ' -f $current)"
-	mode.set_current $current	
-    fi
-    clear
-    return 1
+	return 1
+    }
+    
+## action run ##################################################################
+    
+    +action --new 'run'
+    --desc 'Run command'
+    --type 'trap'
+    --core 1
+    
+    action-run () 
+    { 
+	! executable? && +handlers;
+	+rules;
+	return 0
+    }
+    
+## action run-term #############################################################
+    
+    +action --new 'term-run'
+    --desc 'Run command in terminal'
+    --type 'trap'
+    --core 1
+    
+    action-term-run () 
+    { 
+	! executable? && +handlers;
+	+term;
+	return 0
+    }
+    
+## action run-page #############################################################
+    
+    +action --new 'term-page'
+    --desc 'Run command in terminal and page'
+    --type 'trap'
+    --core 1
+    
+    action-term-page () 
+    { 
+	! executable? && +handlers;
+	+pager;
+	+term;
+	return 0
+    }
+    
+## action run-hold #############################################################
+    
+    +action --new 'term-hold'
+    --desc 'Run command in terminal and hold'
+    --type 'trap'
+    --core 1
+    
+    action-term-hold () 
+    { 
+	! executable? && +handlers;
+	if [[ "$(command)" =~ ^\(.+?\)$ ]]; then
+	    command "$(command); read -n1";
+	else
+	    command "($(command)); read -n1";
+	fi
+	+term;
+	return 0
+    }
+    
+## action su-run ###############################################################
+    
+    +action --new 'su-run'
+    --desc 'Run command as root'
+    --type 'trap'
+    --deps 'su'
+    --core 1
+    
+    action-su-run () 
+    { 
+	action-run;
+	+user root;
+	return 0
+    }
+    
+## action su-term-run ##########################################################
+    
+    +action --new 'su-term-run'
+    --desc 'Run command in terminal as root'
+    --type 'trap'
+    --deps 'su'
+    --core 1
+    
+    action-su-term-run () 
+    { 
+	action-term-run;
+	+user root;
+	return 0
+    }
+    
+## action su-term-page #########################################################
+    
+    +action --new 'su-term-page'
+    --desc 'Run command in terminal as root and page'
+    --type 'trap'
+    --deps 'su'
+    --core 1
+    
+    action-su-term-page () 
+    { 
+	action-term-page;
+	+user root;
+	return 0
+    }
+    
+## action su-term-page #########################################################
+    
+    +action --new 'su-term-hold'
+    --desc 'Run command in terminal as root and hold'
+    --type 'trap'
+    --deps 'su'
+    --core 1
+    
+    action-su-term-hold () 
+    { 
+	action-term-hold;
+	+user root;
+	return 0
+    }
+    
+## show-manual, -info, -help  ###################################################
+    
+    +action --new 'show-manual'
+    --desc 'Show manual page for command'
+    --type 'trap'
+    --deps 'man'
+    --core 1
+    
+    action-show-manual () {
+	command "man $(word)"
+	+term
+    }
+    
+    +action --new 'show-info'
+    --desc 'Show info page for command'
+    --type 'trap'
+    --deps 'info'
+    --core 1
+    
+    function action-show-info {
+	command "info $(word)"
+	+term
+    }
+    
+    +action --new 'show-help'
+    --desc 'Show help for shell builtin'
+    --type 'trap'
+    --core 1
+    
+    function action-show-help {
+	if builtin?; then
+	    command "help $(word)"
+	    +pager
+	else
+	    debug "$(word): not a builtin, showing manual"
+	    action-show-manual
+	    return 0
+	fi	    
+	+term
+    }
+    
+# browse/google/dict #############################################################
+    
+    +action --new 'browse'
+    --desc 'Open in $BROWSER'
+    --type 'trap'
+    --core 1
+    
+    function action-browse {
+	command "$BROWSER '$(command)'"
+    }
+    
+    +action --new 'google-search'
+    --desc 'Search www.google.com'
+    --type 'trap'
+    --core 1
+    
+    function action-google-search {
+	command "$BROWSER 'http://www.google.com/search?q=$(line)'"
+    }
+    
+    +action --new 'dict-lookup'
+    --desc 'Lookup in dictionary'
+    --type 'trap'
+    --deps 'dict'
+    --core 1
+    
+    function action-dict-lookup {
+	command "dict $(line)"
+	+rules
+    }
+    
+    +action --new 'bashrun-manual'
+    --desc 'Show bashrun manual'
+    --type 'launch'
+    --deps 'man'
+    --core 1
+    
+    function action-bashrun-manual {
+	command "man bashrun"
+	action-term-run
+    }
+    
+# map/unmap/toggle ###############################################################
+    
+    +action --new 'window-map'
+    --desc "map window"
+    --type "shell"
+    --deps 'xdotool'
+    --core 1
+    
+    function action-window-map {
+	bashrun.window.map
+	return 1
+    }
+    
+    +action --new 'window-unmap'
+    --desc "unmap window"
+    --type "shell" 
+    --deps 'xdotool'
+    --core 1
+    
+    function action-window-unmap {
+	bashrun.window.unmap
+	return 1
+    }
+    
+    +action --new 'window-toggle'
+    --desc 'toggle window state'
+    --type 'shell'
+    --deps 'xdotool'
+    --core 1
+    
+    function action-window-toggle {
+	bashrun.window.toggle
+	return 1
+    }
+    
+    +action --new 'window-resize'
+    --desc 'resize window'
+    --type 'shell'
+    --core 1
+    
+    function action-window-resize {
+	bashrun.window.size $1 $2
+	return 1
+    }
+    
+    +action --new 'window-move'
+    --desc 'move window'
+    --type 'shell'
+    --core 1
+    
+    function action-window-move {
+	bashrun.window.pos $1 $2
+	return 1
+    }
+    
+    +action --new 'cycle-size'
+    --desc 'cycle through the window sizes of the current mode'
+    --type 'shell'
+    --core 1
+    
+    function action-cycle-size {
+	
+	if mode.multigeom?; then
+	    
+	    local geom="$(mode.get_geom)"
+	    local current="$(mode.get_current)"
+	    ((current+=1))
+	    if [[ "$(echo "$geom" | cut -d ' ' -f $current)" == '' ]]; then
+		current=1
+	    fi
+	    bashrun.window.geometry "$(echo "$geom" | cut -d ' ' -f $current)"
+	    mode.set_current $current	
+	fi
+	clear
+	return 1
+    }
+    
+    +action --new 'cycle-mode'
+    --desc 'cycle through modes'
+    --type shell
+    --core 1
+    
+    function action-cycle-mode {
+	
+	modes.next
+	if [[ "$(mode.get_name)" == '' ]]; then
+	    modes.seek_start
+	fi
+	mode.switch
+	return 1
+    }   
+
+    unset -f action.set_core
 }
-
-+action --new 'cycle-mode'
---desc 'cycle through modes'
---type shell
---core 1
-
-function action-cycle-mode {
-
-    modes.next
-    if [[ "$(mode.get_name)" == '' ]]; then
-	modes.seek_start
-    fi
-    mode.switch
-    return 1
-}
-
 ################################################################################
-
-unset -f action.set_core
 

@@ -17,6 +17,7 @@ FILES=(
     bookmarks
     command
     completion
+    config
     defaults
     engine
     frontend

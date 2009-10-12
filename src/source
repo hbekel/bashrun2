@@ -22,6 +22,7 @@ source $share/globals
 function bashrun.pong { echo "$$" > $BASHRUN_PINGPONG; }
 trap bashrun.pong SIGUSR1
 
+source $share/config
 source $share/instance
 source $share/registry
 source $share/geometry

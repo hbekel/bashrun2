@@ -30,9 +30,7 @@ else
     # get command and insert properties and geometry from requested mode
     command="$(terminal.get_command)"
     command=${command//%m/$mode}
-    command=${command//%g/$(mode.get_geom | cut -d ' ' -f 1)}
-    
-    echo "BASHRUN=1 BASHRUN_MODE=\"$mode\" $command &"
+    command=${command//%g/$(mode.get_geom | cut -d ' ' -f 1)}        
 
     BASHRUN=1 BASHRUN_MODE="$mode" $command &
 fi

@@ -6,8 +6,7 @@ BASHRUN_ACTION=''
 BASHRUN_EXECMODE=''
 BASHRUN_ENGINE_BUSY=0
 
-BASHRUN_TIMESTAMP=$BASHRUN_CACHE_HOME/timestamp
-BASHRUN_LOGFILE=/dev/null
+BASHRUN_LOGFILE=${BASHRUN_LOGFILE:-/dev/null}
 
 function bashrun.engine.init {
     
@@ -16,43 +15,15 @@ function bashrun.engine.init {
     # register this instance
     bashrun.registry.add
 
-    # set wid to terminal $WINDOWID here
+    # set wid to terminal $WINDOWID
     bashrun.window.id $WINDOWID
 
     # get current readline bindings
     bashrun.debug "getting current readline bindings..."
     readline_get_bindings
         
-    # source rcfile if modified, else restore dumped state
-    local rcfile="${BASHRUN_RCFILE/$HOME/~}"
-
-    if [[ "$BASHRUN_RCFILE" -nt "$BASHRUN_TIMESTAMP" ]]; then
-
-	bashrun.debug -v "rcfile" -c "modified"
-	bashrun.separator "source $rcfile"
-
-	bashrun.debug "installing default actions..."
-
-	# default actions are cached once
-	if [ ! -f $BASHRUN_CACHE_HOME/defaults.dump ]; then
-	    source $BASHRUN_SHARE/defaults
-	    actions.dump defaults.dump
-	else
-	    source $BASHRUN_CACHE_HOME/defaults.dump
-	fi
-
-	source $BASHRUN_RCFILE
-	touch $BASHRUN_TIMESTAMP
-
-	bashrun.debug "dumping current config state..."
-	objects.dump
-
-	bashrun.separator
-    else
-	bashrun.debug warn -v "$rcfile" -y "not modified"
-	bashrun.debug warn "restoring cached config state..."
-	objects.restore
-    fi
+    # load/restore configuration
+    bashrun.configure
 
     # run init callbacks
     bashrun.debug -v "+action" -v "--init" "callbacks..."
@@ -61,13 +32,13 @@ function bashrun.engine.init {
     # reset object positions
     objects.seek_start
 
-    # switch to initial mode
+    # switch to initial mode passed from env
     modes.seek "$BASHRUN_MODE"
     mode.switch
 
     # enable extdebug and prepare escape from trap
     # (bashdb bugs out if extdebug is set directly from a startup file)
-    PROMPT_COMMAND="shopt -s extdebug; trap DEBUG; $PROMPT_COMMAND"
+    PROMPT_COMMAND="trap DEBUG; shopt -s extdebug;$PROMPT_COMMAND"
 
     # init exec mode
     BASHRUN_EXECMODE='&'

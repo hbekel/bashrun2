@@ -426,7 +426,7 @@ function action.list {
     if action.bound?; then
 	bindings.seek_start
 	for id in $(bindings.select action "$name"); do
-	    bindings.seek --next "$id "
+	    bindings.seek --next "$id"
 	    if binding.bound?; then
 		echo -ne '\t'
 		echo "$(ks2kn $(binding.get_keyseq)) ($(binding.get_keymap)-mode)"
@@ -513,7 +513,20 @@ function actions.dump {
 	function_code "action-$action" >> "$file"
 	actions.next
     done
-    actions.seek "$saved"
+    internals.dump
+    bindings.dump
+    keynames.dump
+    actions.seek "$saved"    
+}
+
+function_clone "actions.restore" "_actions.restore"
+
+function actions.restore {
+
+    _actions.restore
+    internals.restore
+    keynames.restore
+    bindings.restore
 }
 
 function actions.init {

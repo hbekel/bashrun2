@@ -1,0 +1,80 @@
+# -*- shell-script -*-
+
+################################################################################
+
+function bashrun.configure {
+
+    local rcfile="${BASHRUN_RCFILE/$HOME/~}"
+
+    source $BASHRUN_SHARE/defaults
+    source $BASHRUN_RCFILE
+
+    local line=""
+    local type=""
+
+    bashrun.separator "source $rcfile"
+
+    # core actions need to be sourced first and only need to be cached
+    # once since they're considered immutable
+    bashrun.debug "installing" -v "core actions"
+
+    if [ ! -f $BASHRUN_CACHE_HOME/defaults.dump ]; then
+	configure-defaults
+	actions.dump "defaults.dump"
+    else
+	source $BASHRUN_CACHE_HOME/defaults.dump
+    fi
+
+    # loop through defined configure-* functions
+
+    for line in $(set | grep ^configure-); do
+	[[ "$line" == "()" ]] && continue
+
+	[[ "$line" =~ ^configure-(.+) ]]
+	type="${BASH_REMATCH[1]}"
+
+	[[ "$type" == "defaults" ]] && continue;
+
+	bashrun.configure.type $type		
+    done
+}
+
+function bashrun.configure.type {
+    
+    local type="$1"
+    local dump="$BASHRUN_CACHE_HOME/$type.dump"
+    local dumprc="$BASHRUN_CACHE_HOME/$type.rc"
+    local config="configure-$type"
+
+    # if a dump exists
+    if [[ -f "$dump" ]]; then
+
+	# if the configure function has changed
+	if [[ "$(<$dumprc)" != "$(function_code $config)" ]]; then
+
+	    # reconfigure this type
+	    bashrun.reconfigure.type "$type", "$config", "$dumprc"
+	else
+	    # restore type
+	    bashrun.debug "restoring" -v "$type"
+	    $type.restore
+	fi
+    else
+	# reconfigure this type
+	bashrun.reconfigure.type "$type", "$config", "$dumprc"
+    fi
+}
+
+function bashrun.reconfigure.type {
+
+    bashrun.debug -v "$type"
+
+    # run configure function
+    $config
+    
+    # dump configuration results
+    $type.dump
+    
+    # cache the configure function that created the dump
+    function_code configure-$type > $dumprc
+}
