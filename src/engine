@@ -281,14 +281,5 @@ function bashrun.engine.shutdown {
 
     # remove this instance from registry
     bashrun.registry.remove
-
-    # remove untrap from prompt command
-    PROMPT_COMMAND=${PROMPT_COMMAND/trap DEBUG\;/}
-
-    # disable extended debugging features
-    shopt -u extdebug
-
-    bashrun.remote.cleanup    
-
     bashrun.debug "exit"
 }    
