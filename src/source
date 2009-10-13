@@ -6,28 +6,33 @@
 #
 ################################################################################
 
-# don't source bashrun from console
+# never source bashrun in console
 if [[ "$TERM" == "linux" ]]; then
     return
 fi
 
+# bootstrap install locations
 path=$(which bashrun-remote) 
 prefix=${path/\/bin\/bashrun-remote/}
 share=$prefix/share/bashrun-engine
 
 source $share/utils
 source $share/globals
+source $share/registry
 
 # setup pingpong (this needs to happen as early as possible)
 function bashrun.pong { echo "$$" > $BASHRUN_PINGPONG; }
 trap bashrun.pong SIGUSR1
 
+# register this instance (also needed asap)
+bashrun.registry.add
+
+# setup progress bar
 source $share/progress
 progress.new "Initializing... [objects]"
 
 source $share/config
 source $share/instance
-source $share/registry
 source $share/geometry
 source $share/window
 source $share/terminals

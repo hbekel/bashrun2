@@ -11,9 +11,14 @@ function bashrun.registry.add {
     local entry="$WINDOWID:$$:$BASHRUN_MODE"
     bashrun.debug "entry" -v "$entry" '>>' -v "${BASHRUN_REGISTRY/$HOME/~}"
     echo "$entry" >> $BASHRUN_REGISTRY
+}
 
-    # set wid to terminal $WINDOWID here
-    bashrun.window.id $WINDOWID
+function bashrun.registry.length {
+    if [ -f $BASHRUN_REGISTRY ]; then
+	cat $BASHRUN_REGISTRY | wc -l 
+    else
+	echo 0
+    fi
 }
 
 function bashrun.registry.remove {
@@ -36,7 +41,7 @@ function bashrun.registry.remove {
 
 function bashrun.registry.find {
     
-    # find the youngest existing idle instance in the requested mode
+    # find the latest existing idle instance in the requested mode
 
     local mode="${1:-any}"
     local info="" wid="" pid=""
@@ -64,6 +69,14 @@ function bashrun.registry.find {
     done 
     echo "none"
     return 1
+}
+
+function bashrun.registry.get_last_wid {
+    if [[ -f $BASHRUN_REGISTRY ]]; then
+	tac $BASHRUN_REGISTRY | head -n1 | cut -d: -f1
+    else
+	echo "none"
+    fi
 }
 
 function bashrun.registry.set_mode {

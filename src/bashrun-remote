@@ -1,4 +1,5 @@
 #!/bin/bash
+
 BASHRUN_PREFIX=`which bashrun 2> /dev/null`
 BASHRUN_PREFIX=${BASHRUN_PREFIX/\/bin\/bashrun/}
 BASHRUN_SHARE="$BASHRUN_PREFIX/share/bashrun-engine"
@@ -7,30 +8,38 @@ BASHRUN_SHARE="$BASHRUN_PREFIX/share/bashrun-engine"
 
 mode="${1:-launcher}"
 wid="$(bashrun.registry.find $mode)"
+num="$(bashrun.registry.length)"
 
 if [[ "$wid" != "none" ]]; then    
     
     bashrun.window.id "$wid"
     modes.seek "$mode"
-
     bashrun.window.toggle
-else
-    # startup mode defaults to launcher
 
+else
     # get the bashrun terminal
     terminals.seek "bashrun"
 
     # get requested mode
     if ! modes.seek "$mode"; then
 	echo "$0: warning: no such mode '$mode', using 'launcher'" 
+
+        # startup mode defaults to launcher
 	mode="launcher"
 	modes.seek $mode
     fi
 
     # get command and insert properties and geometry from requested mode
+    geometry=$(mode.get_geom | cut -d ' ' -f 1)
     command="$(terminal.get_command)"
-    command=${command//%m/$mode}
-    command=${command//%g/$(mode.get_geom | cut -d ' ' -f 1)}        
 
-    BASHRUN=1 BASHRUN_MODE="$mode" $command &
+    command=${command//%m/$mode}
+    command=${command//%g/$geometry}        
+
+    # launch terminal
+    BASHRUN=1 BASHRUN_MODE="$mode" $command &    
+
+    wid="$(get_wid $num)"
+
+    echo "$wid launched and ready."
 fi

@@ -14,9 +14,6 @@ function bashrun.engine.init {
 
     progress.update +10 "Initializing... [window]"
 
-    # register this instance
-    bashrun.registry.add
-
     # set wid to terminal $WINDOWID
     bashrun.window.id $WINDOWID
 

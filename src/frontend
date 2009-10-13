@@ -18,9 +18,6 @@
 bashrun.configure.type "modes"
 bashrun.configure.type "terminals"
 
-# dummy function to avoid setting the completion outside of bashrun
-function completion.set { :; }
-
 ############################################################
 
 function version {
@@ -54,4 +51,16 @@ Usage: bashrun [option]
 
 For more information, see bashrun(1) or visit http://bashrun.sourceforge.net
 "
+}
+
+function get_wid {
+    
+    expected=$1
+    ((expected+=1))
+
+    # wait for instance to register
+    until [[ "$(bashrun.registry.length)" -eq expected ]]; do
+	sleep 0.2
+    done
+    bashrun.registry.get_last_wid
 }
