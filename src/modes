@@ -18,8 +18,8 @@ function mode.new {
     mode.set_comp 'complete'
     mode.set_unmap '0'
     mode.set_anim '0'
-    mode.set_ps1 "$PS1"
-    mode.set_ps2 "$PS2"
+    mode.set_ps1 ""
+    mode.set_ps2 ""
     mode.set_onmap ""
     mode.set_onunmap ""
 }
@@ -63,9 +63,12 @@ function mode.switch {
 	bashrun.window.animate 0
     fi
     tput cr; tput dl1
+    
+    local ps1="$(mode.get_ps1)"
+    local ps2="$(mode.get_ps2)"
 
-    PS1="$(mode.get_ps1)"
-    PS2="$(mode.get_ps2)"
+    [[ -n "$ps1" ]] && PS1="$ps1"
+    [[ -n "$ps2" ]] && PS2="$ps2"
 
     BASHRUN_MODE="$current"
     bashrun.registry.set_mode "$previous" "$current"
