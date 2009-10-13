@@ -350,8 +350,9 @@ configure-defaults () {
 	    fi
 	    bashrun.window.geometry "$(echo "$geom" | cut -d ' ' -f $current)"
 	    mode.set_current $current	
+	else
+	    clear
 	fi
-	clear
 	return 1
     }
     

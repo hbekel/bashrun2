@@ -10,8 +10,8 @@ progress.new () {
     PROGRESS_TASK="${1:-Progress}"
     PROGRESS_PERCENT=${2:-0}
 
-    tput civis
-    progress.update
+    [[ BASHRUN_DEBUG -eq 0 ]] && tput civis
+    progress.update "$PROGRESS_PERCENT"
 }
 
 progress.update () {
@@ -68,8 +68,8 @@ progress.reset () {
 progress.destroy () {
 
     echo -ne '\e[0m'
-    tput reset
-
+    [[ BASHRUN_DEBUG -eq 0 ]] && tput reset
+   
     unset PROGRESS_PERCENT PROGRESS_TASK PROGRESS_LINE
     unset -f \
 	progress.new \
