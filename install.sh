@@ -28,6 +28,7 @@ FILES=(
     modes
     object
     objects
+    progress
     readline
     registry
     rules

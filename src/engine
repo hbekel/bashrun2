@@ -12,6 +12,8 @@ function bashrun.engine.init {
     
     bashrun.separator "bashrun-engine $BASHRUN_VERSION"
 
+    progress.update +10 "Initializing... [window]"
+
     # register this instance
     bashrun.registry.add
 
@@ -21,6 +23,8 @@ function bashrun.engine.init {
     # get current readline bindings
     bashrun.debug "getting current readline bindings..."
     readline_get_bindings
+
+    progress.update +5
         
     # load/restore configuration
     bashrun.configure
@@ -31,6 +35,8 @@ function bashrun.engine.init {
 
     # reset object positions
     objects.seek_start
+
+    progress.update +5 "Initializing... [engine]"
 
     # switch to initial mode passed from env
     modes.seek "$BASHRUN_MODE"
@@ -60,6 +66,8 @@ function bashrun.engine.init {
     bashrun.debug emph -y "done"
 
     bashrun.separator 
+    
+    progress.destroy
 }
 
 function bashrun.engine.action {

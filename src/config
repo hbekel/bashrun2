@@ -20,6 +20,7 @@ function bashrun.configure {
     # once since they're considered immutable
     bashrun.debug "installing" -v "core actions"
 
+    progress.update +10 "Initializing... [core]"
     if [ ! -f $BASHRUN_CACHE_HOME/defaults.dump ]; then
 	configure-defaults
 	actions.dump "defaults.dump"
@@ -36,6 +37,8 @@ function bashrun.configure {
 	type="${BASH_REMATCH[1]}"
 
 	[[ "$type" == "defaults" ]] && continue;
+
+	progress.update +10 "Initializing... [$type]"
 
 	local len=${#type}
 	if [[ "$(objects.types)" =~ "${type:0:$len-1} " ]]; then

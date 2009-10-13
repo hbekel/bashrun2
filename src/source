@@ -22,6 +22,9 @@ source $share/globals
 function bashrun.pong { echo "$$" > $BASHRUN_PINGPONG; }
 trap bashrun.pong SIGUSR1
 
+source $share/progress
+progress.new "Initializing... [objects]"
+
 source $share/config
 source $share/instance
 source $share/registry

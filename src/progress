@@ -1,0 +1,81 @@
+# -*- shell-script -*-
+
+################################################################################
+
+PROGRESS_PERCENT=0
+PROGRESS_TASK="Busy"
+PROGRESS_LINE=""
+
+progress.new () {
+    PROGRESS_TASK="${1:-Progress}"
+    PROGRESS_PERCENT=${2:-0}
+
+    tput civis
+    progress.update
+}
+
+progress.update () {
+
+    local value="$1"
+    if [[ "${value:0:1}" == "+" ]]; then
+	((PROGRESS_PERCENT+=${value:1}))
+    else
+	PROGRESS_PERCENT="$value"
+    fi
+
+    if [[ $# -eq 2 ]]; then
+	PROGRESS_TASK="$2"
+    fi
+    progress.update_line
+    progress.draw
+}
+
+progress.update_line () {
+
+    PROGRESS_LINE="$PROGRESS_TASK"
+    for ((i=0; i<$COLUMNS-${#PROGRESS_TASK}-${#PROGRESS_PERCENT}-4; i++)); do
+	PROGRESS_LINE="$PROGRESS_LINE "
+    done
+    PROGRESS_LINE="$PROGRESS_LINE [$PROGRESS_PERCENT%]"
+}
+
+progress.draw () {
+
+    [[ BASHRUN_DEBUG -eq 1 ]] && return
+
+    local l="$(echo "scale=2; $COLUMNS * (${PROGRESS_PERCENT}.0 / 100.0)" | bc -q | cut -d. -f1)"
+    local i=0
+    local char=""
+    echo -ne '\e[0G'
+    echo -ne '\e[1m'
+    for ((i=0; i<${#PROGRESS_LINE}; i++)); do
+	if [[ i -lt l ]]; then	    
+	    echo -ne '\e[33m'
+	    echo -ne '\e[44m'
+	else
+	    echo -ne '\e[34m'
+	    echo -ne '\e[40m'
+	fi
+	echo -n "${PROGRESS_LINE:$i:1}"
+    done
+}
+    
+progress.reset () {
+    PROGRESS_PERCENT=0
+    PROGRESS_TASK="Busy"
+}
+
+progress.destroy () {
+
+    echo -ne '\e[0m'
+    tput reset
+
+    unset PROGRESS_PERCENT PROGRESS_TASK PROGRESS_LINE
+    unset -f \
+	progress.new \
+	progress.update \
+	progress.update_line \
+	progress.draw \
+	progress.reset \
+	progress.destroy
+}
