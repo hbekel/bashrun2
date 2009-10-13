@@ -1,6 +1,6 @@
 # -*- shell-script -*-
 
-class "action" "name:r type desc deps help init reset core:r" "bind unbind rebind"
+class "action" "name:r type desc deps help init reset core:r" ""
 
 function_clone "action.new" "_action.new"
 function action.new {
@@ -496,20 +496,7 @@ function actions.dump {
 	function_code "action-$action" >> "$file"
 	actions.next
     done
-    internals.dump
-    bindings.dump
-    keynames.dump
     actions.seek "$saved"    
-}
-
-function_clone "actions.restore" "_actions.restore"
-
-function actions.restore {
-
-    _actions.restore
-    internals.restore
-    keynames.restore
-    bindings.restore
 }
 
 function actions.init {
@@ -564,6 +551,32 @@ function +bind () {
 	return 1
     fi
 }
+
+function +unbind () {
+
+    local action="$1"
+    local keyseq="$2"
+
+    if actions.seek "$action"; then
+	action.unbind "$keyseq" "$BASHRUN_KEYMAP"
+    else
+	bashrun.debug fail "no such action:" -v $action
+	return 1
+    fi
+}
+
+function +rebind () {
+
+    local action="$1"
+
+    if actions.seek "$action"; then
+	action.rebind "$BASHRUN_KEYMAP"
+    else
+	bashrun.debug fail "no such action:" -v $action
+	return 1
+    fi
+}
+
 
 function +keymap () {
     local keymap="$1"

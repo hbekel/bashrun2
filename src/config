@@ -2,8 +2,6 @@
 
 ################################################################################
 
-BASHRUN_ACTIONS_RECONFIGURED=0
-
 function bashrun.configure {
 
     local rcfile="${BASHRUN_RCFILE/$HOME/~}"
@@ -92,11 +90,6 @@ function bashrun.reconfigure.type {
     
     # cache the configure function that created the dump
     function_code configure-$type > $dumprc
-
-    # remember wether actions have been reconfigured
-    if [[ "$type" == "actions" ]]; then
-	BASHRUN_ACTIONS_RECONFIGURED=1
-    fi
 }
 
 function bashrun.configure.keys {
@@ -113,22 +106,25 @@ function bashrun.configure.keys {
     # if the configure-keys function has changed or the actions have been
     # reconfigured before (and in that case don't include these bindings yet)...
 
-    if [[ "$(<$dumprc)" != "$(function_code configure-keys)" ||
-		BASHRUN_ACTIONS_RECONFIGURED -eq 1 ]]; then
+    if [[ "$(<$dumprc)" != "$(function_code configure-keys)" ]]; then	
 
 	bashrun.debug "reconfiguring" -v "keys"
 
 	# run configure function
 	configure-keys
 
-	# dump actions (et al) again
-	actions.dump
+	# dump bindings (et al) again
+	internals.dump
+	bindings.dump
+	keynames.dump
 
         # cache the configure function that created the dump
 	function_code configure-keys > $dumprc
-
-	BASHRUN_ACTIONS_RECONFIGURED=0
     else
 	bashrun.debug "restoring" -v "keys"
+
+	internals.restore
+	keynames.restore
+	bindings.restore
     fi
 }
