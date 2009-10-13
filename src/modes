@@ -2,7 +2,7 @@
 
 ################################################################################
 
-class "mode" "name comp unmap geom anim ps1 ps2 onmap onunmap current" 'switch'
+class "mode" "name comp unmap geom anim ps1 ps2 onmap onunmap feedback current" 'switch'
 
 ################################################################################
 
@@ -22,6 +22,7 @@ function mode.new {
     mode.set_ps2 ""
     mode.set_onmap ""
     mode.set_onunmap ""
+    mode.set_feedback "0"
 }
 
 function mode.multigeom? {
@@ -97,6 +98,7 @@ function mode.code {
     local ps2="$(mode.get_ps2)"
     local onmap="$(mode.get_onmap)"
     local onunmap="$(mode.get_onunmap)"
+    local feedback="$(mode.get_feedback)"
 
     print_line "mode $name" "#" "80"
     echo
@@ -110,6 +112,7 @@ function mode.code {
     [[ "$ps2" != '' ]] && echo "  --ps2   '$ps2'"
     [[ "$onmap" != '' ]] && echo "  --onmap   '$onmap'"
     [[ "$onunmap" != '' ]] && echo "  --onunmap   '$onunmap'"
+    [[ "$feedback" != '0' ]] && echo "  --feedback   '$feedback'"
     echo
 
     if function? "mode-$name-enter"; then

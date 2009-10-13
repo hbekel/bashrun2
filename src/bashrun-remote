@@ -29,6 +29,9 @@ else
 	modes.seek $mode
     fi
 
+    # find out wether this mode has feedback enabled
+    feedback="$(mode.get_feedback)"
+
     # get command and insert properties and geometry from requested mode
     geometry=$(mode.get_geom | cut -d ' ' -f 1)
     command="$(terminal.get_command)"
@@ -37,7 +40,7 @@ else
     command=${command//%g/$geometry}        
 
     # launch terminal
-    BASHRUN=1 BASHRUN_MODE="$mode" $command &    
+    BASHRUN_FEEDBACK="$feedback" BASHRUN=1 BASHRUN_MODE="$mode" $command &    
 
     wid="$(get_wid $num)"
 
