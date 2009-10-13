@@ -5,7 +5,7 @@
 function bashrun.registry.add {
     
     # add window id to widfile
-    if [ ! -f $BASHRUN_REGISTRY ]; then
+    if [[ ! -f $BASHRUN_REGISTRY ]]; then
 	touch $BASHRUN_REGISTRY
     fi
     local entry="$WINDOWID:$$:$BASHRUN_MODE"
@@ -14,7 +14,7 @@ function bashrun.registry.add {
 }
 
 function bashrun.registry.length {
-    if [ -f $BASHRUN_REGISTRY ]; then
+    if [[ -f $BASHRUN_REGISTRY ]]; then
 	cat $BASHRUN_REGISTRY | wc -l 
     else
 	echo 0

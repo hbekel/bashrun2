@@ -6,7 +6,7 @@ if [[ "$1" =~ ^--prefix=.+ ]]; then
     PREFIX=${PREFIX:-/usr/local}
 fi
 
-if [ ! -f $PREFIX/bin/bashrun-remote ]; then
+if [[ ! -f $PREFIX/bin/bashrun-remote ]]; then
 
     echo "bashrun-engine does not seem to be installed in $PREFIX. If you have
 previously installed bashrun-engine under a prefix other than $PREFIX,

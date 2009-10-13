@@ -123,7 +123,7 @@ function bashrun.window.update {
     BASHRUN_WINDOW_PIXEL_HEIGHT=$ph
 
     local saved="$(mode.get_name)"
-    if [ -f $BASHRUN_REGISTRY ]; then
+    if [[ -f $BASHRUN_REGISTRY ]]; then
 	local mode="$(bashrun.registry.get_mode $BASHRUN_WINDOW_ID)"
 	if [[ "$mode" != "none" ]]; then
 	    modes.seek "$mode"

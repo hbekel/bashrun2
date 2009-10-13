@@ -19,7 +19,7 @@ function bashrun.configure {
     bashrun.debug "installing" -v "core actions"
 
     progress.update +10 "Initializing... [core]"
-    if [ ! -f $BASHRUN_CACHE_HOME/defaults.dump ]; then
+    if [[ ! -f $BASHRUN_CACHE_HOME/defaults.dump ]]; then
 	configure-defaults
 	actions.dump "defaults.dump"
     else

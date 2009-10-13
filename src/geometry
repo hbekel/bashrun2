@@ -16,7 +16,7 @@ function geometry.parse {
 
     if [[ "$1" =~ ^(([0-9]+)x([0-9]+))?(([+-][0-9]+)([+-][0-9]+))?$ ]]; then
 
-	if [ "${BASH_REMATCH[1]}" != '' ]; then
+	if [[ "${BASH_REMATCH[1]}" != '' ]]; then
 	    
 	    if echo "${BASH_REMATCH[1]}" | grep x &> /dev/null; then
 		GEOMETRY_HAS_SIZE=1
@@ -32,7 +32,7 @@ function geometry.parse {
 	    GEOMETRY_HAS_POSITION=0
 	fi
 
-	if [ "${BASH_REMATCH[4]}" != '' ]; then
+	if [[ "${BASH_REMATCH[4]}" != '' ]]; then
 	    GEOMETRY_HAS_POSITION=1
 	    GEOMETRY_XOFF=${BASH_REMATCH[5]}
 	    GEOMETRY_YOFF=${BASH_REMATCH[6]}
