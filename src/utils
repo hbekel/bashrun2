@@ -239,6 +239,7 @@ function print_bindings {
     if [[ -n "$bindings" ]]; then
 	echo -e "${c}emacs:${n}\n"
 	for id in $bindings; do
+	    bindings.seek "$id"
 	    if [[ "$(binding.get_is_bound)" == "1" ]]; then
 		print_binding "$id"
 	    fi
@@ -250,6 +251,7 @@ function print_bindings {
     if [[ -n "$bindings" ]]; then
 	echo -e "${c}vi-insert:${n}\n"
 	for id in $bindings; do
+	    bindings.seek "$id"
 	    if [[ "$(binding.get_is_bound)" == "1" ]]; then
 		print_binding "$id"
 	    fi
@@ -261,6 +263,7 @@ function print_bindings {
     if [[ -n "$bindings" ]]; then
 	echo -e "${c}vi-command:${n}\n"
 	for id in $bindings; do
+	    bindings.seek "$id"
 	    if [[ "$(binding.get_is_bound)" == "1" ]]; then
 		print_binding "$id"
 	    fi
@@ -273,7 +276,6 @@ function print_binding {
     
     local id="$1"
     
-    bindings.seek $id
     name="$(binding.get_action)"
     
     actions.seek "$name"
