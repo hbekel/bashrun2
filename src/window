@@ -135,20 +135,20 @@ function bashrun.window.update {
 
 function bashrun.window.geometry {
 
-    bashrun.debug "Setting geometry" -v  "$1" 
-
+    bashrun.window.update
     if [[ "$(geometry)" != "$1" ]]; then
 	geometry.parse "$1"
-    fi
+	bashrun.debug "Setting geometry" -v  "$1" 
 
-    if geometry.size?; then
-	bashrun.window.size --hint $(geometry.width) $(geometry.height)
-    fi
-    bashrun.window.update
+	if geometry.size?; then
+	    bashrun.window.size --hint $(geometry.width) $(geometry.height)
+	fi
 
-    if geometry.position?; then
-	bashrun.window.pos $(geometry.x $BASHRUN_WINDOW_PIXEL_WIDTH) \
-	    $(geometry.y $BASHRUN_WINDOW_PIXEL_HEIGHT)	
+
+	if geometry.position?; then
+	    bashrun.window.pos $(geometry.x $BASHRUN_WINDOW_PIXEL_WIDTH) \
+		$(geometry.y $BASHRUN_WINDOW_PIXEL_HEIGHT)	
+	fi
     fi
 }
 
