@@ -211,7 +211,7 @@ function bashrun.window.size {
     fi 
         
     # apply completion threshold if necessary
-    completion.set $(mode.get_comp)
+    bashrun.window.terminal? && completion.set $(mode.get_comp)
     return 0
 }
  
