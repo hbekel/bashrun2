@@ -176,6 +176,7 @@ function bashrun.window.pos {
 
 function bashrun.window.size {
     
+    # get window size
     if [[ $# -eq 0 ]]; then
 	bashrun.window.update
 	echo $BASHRUN_WINDOW_WIDTH $BASHRUN_WINDOW_HEIGHT
@@ -184,79 +185,32 @@ function bashrun.window.size {
 
     bashrun.window? || return 1
 
-    if ! bashrun.window.terminal?; then
+    # resize from the outside using xdotool (using xterms/urxvt's
+    # escape sequences is unreliable, causing random freezes)
 
-	# resize from the outside using xdotool
-
-	if [[ $# -eq 1 ]]; then
-	    if [[ "$width" =~ ([0-9]+)x([0-9]+) ]]; then
-		local w=${BASH_REMATCH[1]}
-		local h=${BASH_REMATCH[2]}
-		xdotool windowsize $BASHRUN_WINDOW_ID $w $h
-		BASHRUN_WINDOW_WIDTH=$w
-		BASHRUN_WINDOW_HEIGHT=$h
-	    fi
-	fi
-
-	if [[ $# -eq 2 ]]; then
-	    xdotool windowsize $BASHRUN_WINDOW_ID $1 $2
-	    BASHRUN_WINDOW_WIDTH=$1
-	    BASHRUN_WINDOW_HEIGHT=$2
-	fi 
-	
-	if [[ $# -eq 3 && "$1" == "--hint" ]]; then
-	    xdotool windowsize --usehints $BASHRUN_WINDOW_ID $2 $3
-	    BASHRUN_WINDOW_WIDTH=$2
-	    BASHRUN_WINDOW_HEIGHT=$3
-	fi
-
-    else
-	# resize from the inside using ansi-escapes
-        # args: [up|down|left|right] || columns lines || "<columns>x<lines>"
-
-	if [[ "$1" == "--hint" ]]; then
-	    shift
-	fi
-
-	local dir=$1
-	local columns=$1
-	local lines=$2
-	local update=${3:-1}
-
-        # set new BASHRUN_WINDOW_WIDTH, BASHRUN_WINDOW_HEIGHT
-	case "$dir" in
-	    up)
-		let BASHRUN_WINDOW_HEIGHT--
-		;;
-	    down)
-		let BASHRUN_WINDOW_HEIGHT++
-		;;
-	    left)
-		let BASHRUN_WINDOW_WIDTH--
-		;;
-	    right)
-		let BASHRUN_WINDOW_WIDTH++
-		;;
-	    *)
-		if [[ "$columns" =~ ([0-9]+)x([0-9]+) ]]; then
-		    columns=${BASH_REMATCH[1]}
-		    lines=${BASH_REMATCH[2]}
-		fi
-		BASHRUN_WINDOW_WIDTH=$columns
-		BASHRUN_WINDOW_HEIGHT=$lines
-		;;
-	esac
-	
-        # keep least 1x1
-	[[ $BASHRUN_WINDOW_HEIGHT -eq 0 ]] && BASHRUN_WINDOW_HEIGHT=1
-	[[ $BASHRUN_WINDOW_WIDTH -eq 0 ]] && BASHRUN_WINDOW_WIDTH=1
-	
-        # resize
-	echo -ne "\e[8;${BASHRUN_WINDOW_HEIGHT};${BASHRUN_WINDOW_WIDTH}t";     
-
-	COLUMNS=$BASHRUN_WINDOW_WIDTH
-	LINES=$BASHRUN_WINDOW_HEIGHT
+    local hint=""
+    if [[ "$1" == "--hint" ]]; then
+	hint="--usehints"
+	shift
     fi
+
+    if [[ $# -eq 1 ]]; then
+	if [[ "$width" =~ ([0-9]+)x([0-9]+) ]]; then
+	    local w=${BASH_REMATCH[1]}
+	    local h=${BASH_REMATCH[2]}
+	    xdotool windowsize $hint $BASHRUN_WINDOW_ID $w $h
+	    BASHRUN_WINDOW_WIDTH=$w
+	    BASHRUN_WINDOW_HEIGHT=$h
+	fi
+    fi
+
+    if [[ $# -eq 2 ]]; then
+	xdotool windowsize $hint $BASHRUN_WINDOW_ID $1 $2
+	BASHRUN_WINDOW_WIDTH=$1
+	BASHRUN_WINDOW_HEIGHT=$2
+    fi 
+        
+    # apply completion threshold if necessary
     completion.set $(mode.get_comp)
     return 0
 }
@@ -335,7 +289,9 @@ function bashrun.window.collapse {
     local i=0
     for (( i=$BASHRUN_WINDOW_HEIGHT; i>1; i-- )); do
 	(( BASHRUN_WINDOW_HEIGHT-=1 ))
-	bashrun.window.size --hint $BASHRUN_WINDOW_WIDTH $BASHRUN_WINDOW_HEIGHT
+	xdotool windowsize --usehints $BASHRUN_WINDOW_ID \
+	    $BASHRUN_WINDOW_WIDTH \
+	    $BASHRUN_WINDOW_HEIGHT
     done
 }
 
@@ -348,6 +304,8 @@ function bashrun.window.expand {
     local i=0
     for (( i=1; i<=max_height-1; i++ )); do
 	(( BASHRUN_WINDOW_HEIGHT+=1 ))
-	bashrun.window.size --hint $BASHRUN_WINDOW_WIDTH $BASHRUN_WINDOW_HEIGHT
+	xdotool windowsize --usehints $BASHRUN_WINDOW_ID \
+	    $BASHRUN_WINDOW_WIDTH \
+	    $BASHRUN_WINDOW_HEIGHT
     done
 }
