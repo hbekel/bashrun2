@@ -30,6 +30,15 @@ function mode.multigeom? {
     return $?
 }
 
+function mode.get_default_geometry {
+
+    if [[ "$(mode.get_geom)" =~ ([^\ ]+)\ [^\ ]+ ]]; then
+	echo "${BASH_REMATCH[1]}"
+    else
+	mode.get_geom
+    fi
+}   
+
 function mode.unmap? {
     [[ "$(mode.get_unmap)" == "1" ]]
     return $?
@@ -55,7 +64,7 @@ function mode.switch {
     fi
 
     # apply geometry
-    bashrun.window.geometry "$(echo "$(mode.get_geom)" | cut -d ' ' -f 1)" 
+    bashrun.window.geometry "$(mode.get_default_geometry)" 
     
     # enable animation
     if [[ "$(mode.get_anim)" == "1" ]]; then

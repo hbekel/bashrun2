@@ -223,7 +223,7 @@ function bashrun.window.map {
     modes.seek $(bashrun.registry.get_mode $BASHRUN_WINDOW_ID)
 
     # parse geometry for this mode 
-    geometry.parse "$(echo $(mode.get_geom) | cut -d ' ' -f 1)"
+    geometry.parse "$(mode.get_default_geometry)"
 
     # map the window
     xdotool windowmap $BASHRUN_WINDOW_ID

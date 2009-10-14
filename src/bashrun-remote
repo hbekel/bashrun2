@@ -36,7 +36,7 @@ else
     animation="$(mode.get_anim)"
 
     # get command and insert properties and geometry from requested mode
-    geometry=$(mode.get_geom | cut -d ' ' -f 1)
+    geometry=$(mode.get_default_geometry)
     geometry.parse $geometry
 
     if [[ animation -eq 1 ]]; then
