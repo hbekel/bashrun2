@@ -56,15 +56,24 @@ function geometry.position? {
 }
 
 function geometry.width { 
-
-    if geometry.size?; then
-	echo $GEOMETRY_WIDTH
+    if [[ $# -eq 0 ]]; then
+	if geometry.size?; then
+	    echo $GEOMETRY_WIDTH
+	fi
+    else
+	GEOMETRY_WIDTH="$1"
+	GEOMETRY_HAS_SIZE=1
     fi
 }
 
 function geometry.height {
-    if geometry.size?; then
-	echo $GEOMETRY_HEIGHT
+    if [[ $# -eq 0 ]]; then
+	if geometry.size?; then
+	    echo $GEOMETRY_HEIGHT
+	fi
+    else
+	GEOMETRY_HEIGHT="$1"
+	GEOMETRY_HAS_SIZE=1
     fi
 }
 

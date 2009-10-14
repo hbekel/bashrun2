@@ -29,11 +29,22 @@ else
 	modes.seek $mode
     fi
 
-    # find out wether this mode has feedback enabled
+    # find out whether this mode has feedback enabled
     feedback="$(mode.get_feedback)"
+
+    # find out whether it's animated
+    animation="$(mode.get_anim)"
 
     # get command and insert properties and geometry from requested mode
     geometry=$(mode.get_geom | cut -d ' ' -f 1)
+    geometry.parse $geometry
+
+    if [[ animation -eq 1 ]]; then
+	# start with a one line terminal
+	geometry.height 1
+	geometry="$(geometry)"
+    fi
+
     command="$(terminal.get_command)"
 
     command=${command//%m/$mode}
@@ -43,6 +54,8 @@ else
     BASHRUN_FEEDBACK="$feedback" BASHRUN=1 BASHRUN_MODE="$mode" $command &    
 
     wid="$(get_wid $num)"
+    bashrun.window.id "$wid"
 
-    echo "$wid launched and ready."
+    # map the window to make it expand if animated
+    bashrun.window.map
 fi
