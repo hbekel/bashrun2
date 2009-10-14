@@ -26,6 +26,8 @@ function bashrun.engine.init {
     # load/restore configuration
     bashrun.configure
 
+    handlers.install_completion
+
     # run init callbacks
     bashrun.debug -v "+action" -v "--init" "callbacks..."
     actions.init
