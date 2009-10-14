@@ -458,9 +458,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 
 	    # seek object
 	    if ! objects.seek $id; then
-		echo "warning: no such object: $id"
-		echo "         use '+object --new $id' to create it"
-		continue
+		object.new "$id"
 	    fi
 
 	    local i=0

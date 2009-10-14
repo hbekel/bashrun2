@@ -10,7 +10,7 @@ configure-defaults () {
 
 # pass #########################################################################
 
-    +action --new 'pass'
+    +action 'pass'
     --desc 'Passthrough command'
     --type 'shell'
     --core 1
@@ -19,7 +19,7 @@ configure-defaults () {
 
 # abort #######################################################################
 
-    +action --new 'abort'
+    +action 'abort'
     --desc 'Abort (unmap window)'
     --type 'shell'
     --core 1
@@ -30,7 +30,7 @@ configure-defaults () {
     
 # quit #########################################################################
     
-    +action --new 'quit'
+    +action 'quit'
     --desc 'Exit bashrun'
     --type 'shell'
     --core 1
@@ -42,7 +42,7 @@ configure-defaults () {
     
 # debug ########################################################################
     
-    +action --new debug
+    +action debug
     --desc "Toggle debug mode"
     --type "shell"
     --core 1
@@ -61,7 +61,7 @@ configure-defaults () {
     
 ## action run ##################################################################
     
-    +action --new 'run'
+    +action 'run'
     --desc 'Run command'
     --type 'trap'
     --core 1
@@ -75,7 +75,7 @@ configure-defaults () {
     
 ## action run-term #############################################################
     
-    +action --new 'term-run'
+    +action 'term-run'
     --desc 'Run command in terminal'
     --type 'trap'
     --core 1
@@ -90,7 +90,7 @@ configure-defaults () {
     
 ## action run-page #############################################################
     
-    +action --new 'term-page'
+    +action 'term-page'
     --desc 'Run command in terminal and page'
     --type 'trap'
     --core 1
@@ -106,7 +106,7 @@ configure-defaults () {
     
 ## action run-hold #############################################################
     
-    +action --new 'term-hold'
+    +action 'term-hold'
     --desc 'Run command in terminal and hold'
     --type 'trap'
     --core 1
@@ -125,7 +125,7 @@ configure-defaults () {
     
 ## action su-run ###############################################################
     
-    +action --new 'su-run'
+    +action 'su-run'
     --desc 'Run command as root'
     --type 'trap'
     --deps 'su'
@@ -140,7 +140,7 @@ configure-defaults () {
     
 ## action su-term-run ##########################################################
     
-    +action --new 'su-term-run'
+    +action 'su-term-run'
     --desc 'Run command in terminal as root'
     --type 'trap'
     --deps 'su'
@@ -155,7 +155,7 @@ configure-defaults () {
     
 ## action su-term-page #########################################################
     
-    +action --new 'su-term-page'
+    +action 'su-term-page'
     --desc 'Run command in terminal as root and page'
     --type 'trap'
     --deps 'su'
@@ -170,7 +170,7 @@ configure-defaults () {
     
 ## action su-term-page #########################################################
     
-    +action --new 'su-term-hold'
+    +action 'su-term-hold'
     --desc 'Run command in terminal as root and hold'
     --type 'trap'
     --deps 'su'
@@ -185,7 +185,7 @@ configure-defaults () {
     
 ## show-manual, -info, -help  ###################################################
     
-    +action --new 'show-manual'
+    +action 'show-manual'
     --desc 'Show manual page for command'
     --type 'trap'
     --deps 'man'
@@ -196,7 +196,7 @@ configure-defaults () {
 	+term
     }
     
-    +action --new 'show-info'
+    +action 'show-info'
     --desc 'Show info page for command'
     --type 'trap'
     --deps 'info'
@@ -207,7 +207,7 @@ configure-defaults () {
 	+term
     }
     
-    +action --new 'show-help'
+    +action 'show-help'
     --desc 'Show help for shell builtin'
     --type 'trap'
     --core 1
@@ -224,9 +224,9 @@ configure-defaults () {
 	+term
     }
     
-# browse/google/dict #############################################################
+# browse/google/dict ###########################################################
     
-    +action --new 'browse'
+    +action 'browse'
     --desc 'Open page in $BROWSER'
     --type 'trap'
     --core 1
@@ -235,7 +235,7 @@ configure-defaults () {
 	command "$BROWSER '$(command)'"
     }
     
-    +action --new 'google-search'
+    +action 'google-search'
     --desc 'Search google using $BROWSER'
     --type 'trap'
     --core 1
@@ -244,7 +244,7 @@ configure-defaults () {
 	command "$BROWSER 'http://www.google.com/search?q=$(line)'"
     }
     
-    +action --new 'dict-lookup'
+    +action 'dict-lookup'
     --desc 'Lookup in dictionary'
     --type 'trap'
     --deps 'dict'
@@ -253,9 +253,10 @@ configure-defaults () {
     function action-dict-lookup {
 	command "dict $(line)"
 	+rules
+	+term
     }
     
-    +action --new 'bashrun-manual'
+    +action 'bashrun-manual'
     --desc 'Show bashrun manual'
     --type 'launch'
     --deps 'man'
@@ -266,7 +267,7 @@ configure-defaults () {
 	action-term-run
     }
 
-    +action --new 'bashrun-bindings'
+    +action 'bashrun-bindings'
     --desc 'Show current keybindings'
     --type 'launch'
     --core 1
@@ -285,63 +286,7 @@ configure-defaults () {
 	action-term-run
     }
 
-    
-# map/unmap/toggle ###############################################################
-    
-    +action --new 'window-map'
-    --desc "Map window"
-    --type "shell"
-    --deps 'xdotool'
-    --core 1
-    
-    function action-window-map {
-	bashrun.window.map
-	return 1
-    }
-    
-    +action --new 'window-unmap'
-    --desc "Unmap window"
-    --type "shell" 
-    --deps 'xdotool'
-    --core 1
-    
-    function action-window-unmap {
-	bashrun.window.unmap
-	return 1
-    }
-    
-    +action --new 'window-toggle'
-    --desc 'Toggle window state'
-    --type 'shell'
-    --deps 'xdotool'
-    --core 1
-    
-    function action-window-toggle {
-	bashrun.window.toggle
-	return 1
-    }
-    
-    +action --new 'window-resize'
-    --desc 'Resize window'
-    --type 'shell'
-    --core 1
-    
-    function action-window-resize {
-	bashrun.window.size $1 $2
-	return 1
-    }
-    
-    +action --new 'window-move'
-    --desc 'Move window'
-    --type 'shell'
-    --core 1
-    
-    function action-window-move {
-	bashrun.window.pos $1 $2
-	return 1
-    }
-    
-    +action --new 'cycle-size'
+    +action 'cycle-size'
     --desc 'Cycle through window sizes of current mode'
     --type 'shell'
     --core 1
@@ -367,7 +312,7 @@ configure-defaults () {
 	return 1
     }
     
-    +action --new 'cycle-mode'
+    +action 'cycle-mode'
     --desc 'Cycle through available modes'
     --type shell
     --core 1
