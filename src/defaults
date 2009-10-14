@@ -345,14 +345,17 @@ configure-defaults () {
 	    local geom="$(mode.get_geom)"
 	    local current="$(mode.get_current)"
 	    ((current+=1))
-	    if [[ "$(echo "$geom" | cut -d ' ' -f $current)" == '' ]]; then
+
+	    local next="$(echo "$geom" | cut -d ' ' -f $current)"
+	    if [[ "$next" == '' ]]; then
 		current=1
 	    fi
-	    bashrun.window.geometry "$(echo "$geom" | cut -d ' ' -f $current)"
+	    next="$(echo "$geom" | cut -d ' ' -f $current)"
+
+	    bashrun.window.geometry "$next"
 	    mode.set_current $current	
-	else
-	    clear
 	fi
+	tput reset
 	return 1
     }
     
