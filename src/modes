@@ -59,12 +59,12 @@ function mode.switch {
 	fi
     fi
 
+    # apply geometry
+    bashrun.window.geometry "$(mode.get_default_geometry)" 
+
     if function?  "mode-$current-enter"; then
 	mode-$current-enter
     fi
-
-    # apply geometry
-    bashrun.window.geometry "$(mode.get_default_geometry)" 
     
     # enable animation
     if [[ "$(mode.get_anim)" == "1" ]]; then
