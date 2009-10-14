@@ -227,7 +227,7 @@ configure-defaults () {
 # browse/google/dict #############################################################
     
     +action --new 'browse'
-    --desc "Open page in $BROWSER"
+    --desc 'Open page in $BROWSER'
     --type 'trap'
     --core 1
     
@@ -236,7 +236,7 @@ configure-defaults () {
     }
     
     +action --new 'google-search'
-    --desc 'Search google'
+    --desc 'Search google using $BROWSER'
     --type 'trap'
     --core 1
     
