@@ -5,7 +5,7 @@
 configure-defaults () {
 
     function action.set_core {
-	_BASHRUN_ACTIONS[${_BASHRUN_ACTIONS_POSITION}+7]="$1"
+	_BASHRUN_ACTIONS[${_BASHRUN_ACTIONS_POSITION}+8]="$1"
     }
 
 # pass #########################################################################
@@ -272,8 +272,16 @@ configure-defaults () {
     --core 1
     
     function action-bashrun-bindings {
-	print_bindings > $BASHRUN_CACHE_HOME/keybindings
-	command "less $BASHRUN_CACHE_HOME/keybindings"
+
+	local tmpfile=$BASHRUN_CACHE_HOME/keybindings
+	if [[ ! -f "$tmpfile" ]]; then
+	    print_bindings > $tmpfile
+
+	elif bindings.modified?; then
+	    print_bindings > $tmpfile
+	    bindings.modified 0
+	fi
+	command "less $tmpfile"
 	action-term-run
     }
 
