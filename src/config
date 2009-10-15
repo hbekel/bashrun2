@@ -97,7 +97,7 @@ function bashrun.reconfigure.type {
 
 function bashrun.configure.keys {
 
-    local dumprc="$BASHRUN_CACHE_HOME/keys.rc"
+    local dumprc="$BASHRUN_CACHE_HOME/§keys.rc"
 
     # dumps already exists by now (created by §action.dump)
 

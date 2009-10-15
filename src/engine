@@ -18,7 +18,7 @@ function bashrun.engine.init {
     bashrun.window.id $WINDOWID
 
     # get current readline bindings
-    bashrun.debug "getting current readline §bindings..."
+    bashrun.debug "getting current readline bindings..."
     readline_get_bindings
 
     progress.update +5

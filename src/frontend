@@ -15,8 +15,8 @@
 . $BASHRUN_RCFILE
 
 # load modes and terminals 
-bashrun.configure.type "modes"
-bashrun.configure.type "terminals"
+bashrun.configure.type "§modes"
+bashrun.configure.type "§terminals"
 
 ############################################################
 
@@ -47,7 +47,7 @@ Usage: bashrun [option]
        --wait    : wait until window is unmapped
        --debug   : toggle debug mode
 
-       Press F1 in bashrun to list the current key§bindings.
+       Press F1 in bashrun to list the current keybindings.
 
 For more information, see bashrun(1) or visit http://bashrun.sourceforge.net
 "
