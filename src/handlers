@@ -160,7 +160,7 @@ function §handler.code {
     echo "+handler '$name'"
     echo "  --pattern '$pattern'" 
     echo "  --string  \"$string\""
-    echo "  --complete \"$complete\""
+    [[ -n "$complete" ]] && echo "  --complete \"$complete\""
     echo
 
     if function? +handler-$name-complete; then

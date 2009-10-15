@@ -10,6 +10,8 @@ BASHRUN_LOGFILE=${BASHRUN_LOGFILE:-/dev/null}
 
 function bashrun.engine.init {
     
+    bashrun.engine.busy
+
     bashrun.separator "bashrun-engine $BASHRUN_VERSION"
 
     progress.update +10 "Initializing... [window]"
@@ -48,6 +50,16 @@ function bashrun.engine.init {
     # init exec mode
     BASHRUN_EXECMODE='&'
 
+    # install command_not_found_handle for bash>=4 -> handle
+    
+    if [[ "${BASH_VERSINFO[0]}" == "4" ]]; then
+	function command_not_found_handle {
+	    if [[ BASHRUN_ALWAYS_HANDLE_UNKNOWN -eq 1 ]]; then
+		bashrun.engine.idle && bashrun.engine.action run launch "$*"
+	    fi
+	}
+    fi
+
     # shutdown on exit
     trap bashrun.engine.shutdown EXIT
     
@@ -56,6 +68,8 @@ function bashrun.engine.init {
     bashrun.separator 
     
     progress.destroy
+
+    bashrun.engine.idle
 }
 
 function bashrun.engine.action {
@@ -73,7 +87,7 @@ function bashrun.engine.action {
 	    sleep 0.25
 	done
 
-	bashrun.engine.busy 1
+	bashrun.engine.busy
 	BASHRUN_RULES_APPLIED=0
 
 	BASHRUN_ACTION=$action
@@ -196,7 +210,7 @@ function bashrun.engine.reset {
 
     local unmap="${1:-1}"
 
-    bashrun.engine.busy 0
+    bashrun.engine.idle
 
     # reset rules
     BASHRUN_RULES_APPLIED=0
@@ -214,12 +228,19 @@ function bashrun.engine.reset {
 }
 
 function bashrun.engine.busy {
-    BASHRUN_ENGINE_BUSY=$1
+    BASHRUN_ENGINE_BUSY=1
 }
 
 function bashrun.engine.busy? {
     [[ "$BASHRUN_ENGINE_BUSY" == "1" ]]
-    return $?
+}
+
+function bashrun.engine.idle {
+    BASHRUN_ENGINE_BUSY=0
+}
+
+function bashrun.engine.idle? {
+    [[ "$BASHRUN_ENGINE_BUSY" == "0" ]]
 }
 
 function bashrun.engine.shutdown { 
