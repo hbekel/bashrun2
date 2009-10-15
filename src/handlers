@@ -9,44 +9,42 @@ class "§handler" "name pattern string complete" ""
 function §handlers.install_completion {
 
     local name=""
-    local complete=()
     local prefix=""
-    local compgen=""
-    local compfunc=""
+    local func=""
 
     §handlers.seek_start
     while §handlers.next?; do
 	name="$(§handler.get_name)"
-	complete=($(§handler.get_complete))
-	if [[ ${#complete[@]} -gt 0 ]]; then
-	    prefix="${complete[0]}"
-	    compgen="${complete[@]:1}"
-	    bashrun.debug -v "$(§handler.get_name)" \
-		"prefix:" -v "$prefix" "compgen:" -v "$compgen"	    
-
-	    compfunc='function _bashrun___NAME__ {
-
-		local cur prev
-		COMPREPLY=()
-		cur="${COMP_WORDS[COMP_CWORD]}"
-		prev="${COMP_WORDS[COMP_CWORD-1]}"
-		
-		if [[ ${cur} == * ]]; then		
-		    COMPREPLY=($(compgen -W "$(__COMPGEN__)" ${cur}))
-		fi
-		return 0
-	    }'
-	    compfunc=${compfunc//__NAME__/$name}
-	    compfunc=${compfunc//__COMPGEN__/$compgen}
-
-	    echo "$compfunc" > /tmp/compfunc
-	    source /tmp/compfunc
+	prefix=($(§handler.get_complete))
+	if [[ -n prefix ]]; then
+	    if function? +handler-$name-complete; then
 	    
-	    eval "function $prefix { 
-                   bashrun.engine.action run launch \"$prefix \$@\" 
-            }"
-	    complete -F "_bashrun_$name" "$prefix"
-	fi	
+		func='function _bashrun___NAME__ {
+
+        		local cur prev
+	        	COMPREPLY=()
+	        	cur="${COMP_WORDS[COMP_CWORD]}"
+		        prev="${COMP_WORDS[COMP_CWORD-1]}"
+		
+		        if [[ ${cur} == * ]]; then		
+		           COMPREPLY=($(compgen -W "$(__COMPGEN__)" ${cur}))
+		        fi
+		        return 0
+	         }'
+		
+		func=${func//__NAME__/$name}
+		func=${func//__COMPGEN__/+handler-$name-complete}
+
+		echo "$func" > /tmp/compfunc
+		source /tmp/compfunc
+	    
+		eval "function $prefix { 
+                        bashrun.engine.action run launch \"$prefix \$@\" 
+                      }"
+		
+		complete -F "_bashrun_$name" "$prefix"
+	    fi	
+	fi
 	§handlers.next
     done
 }
@@ -164,5 +162,32 @@ function §handler.code {
     echo "  --string  \"$string\""
     echo "  --complete \"$complete\""
     echo
+
+    if function? +handler-$name-complete; then
+	function_code +handler-$name-complete
+	echo
+    fi
 }
+
+function_clone "§handlers.dump" "_§handlers.dump"
+
+function §handlers.dump {
+
+    local file="$_OBJECTS_DATA_HOME/${1:-§handlers.dump}"
+    local name=''
+    _§handlers.dump $1
+
+    local saved="$(§handler.get_name)"
+
+    §handlers.seek_start
+    while §handlers.next?; do
+	name="$(§handler.get_name)"
+	if function? +handler-$name-complete; then
+	    function_code "+handler-$name-complete" >> "$file"
+	fi
+	§handlers.next
+    done
+    §handlers.seek "$saved"    
+}
+
 
