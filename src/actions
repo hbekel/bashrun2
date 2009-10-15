@@ -485,7 +485,7 @@ function §action.code {
     echo
 
     # add action 
-    echo "+action --new '$name'"
+    echo "+action '$name'"
     echo "  --desc '$desc'"
     echo "  --type '$type'"
     [[ "$deps" != "" ]] && echo "  --deps '$deps'"

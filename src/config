@@ -109,7 +109,7 @@ function bashrun.configure.keys {
 
     if [[ "$(<$dumprc)" != "$(function_code configure-keys)" ]]; then	
 
-	bashrun.debug "reconfiguring" -v "keys"
+	bashrun.debug "reconfiguring" -v "§keys"
 
 	# run configure function
 	configure-keys
@@ -122,7 +122,7 @@ function bashrun.configure.keys {
         # cache the configure function that created the dump
 	function_code configure-keys > $dumprc
     else
-	bashrun.debug "restoring" -v "keys"
+	bashrun.debug "restoring" -v "§keys"
 
 	§internals.restore
 	§keynames.restore

@@ -106,7 +106,7 @@ function §rule.code {
     local array=($progs)
     local length=${#array[@]}
 
-    echo "+rule --new '$name'"
+    echo "+rule '$name'"
     echo -n "  --progs   '"
 
     if [[ length -eq 1 ]]; then

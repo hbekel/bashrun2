@@ -150,6 +150,7 @@ function §handler.code {
     local name=$(§handler.get_name)
     local pattern=$(§handler.get_pattern)
     local string=$(§handler.get_string)
+    local complete=$(§handler.get_complete)
 
     name=${name//\'/\\\'}
     pattern=${pattern//\'/\\\'}
@@ -158,9 +159,10 @@ function §handler.code {
 
     print_line "handler $name" "#" "80"
     echo
-    echo "+handler --new '$name'"
+    echo "+handler '$name'"
     echo "  --pattern '$pattern'" 
     echo "  --string  \"$string\""
+    echo "  --complete \"$complete\""
     echo
 }
 

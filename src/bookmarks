@@ -20,7 +20,7 @@ function §bookmark.new {
 function §bookmark.code {
     local name="$(§bookmark.get_name)"
     name=${name//\'/\\\'}
-    echo "+bookmark --new '$name'"
+    echo "+bookmark '$name'"
 }
 
 function §bookmarks.dump {

@@ -112,7 +112,7 @@ function §mode.code {
     print_line "mode $name" "#" "80"
     echo
 
-    echo "+mode --new $name"
+    echo "+mode '$name'"
     [[ "$geom" != '80x24' ]] && echo "  --geom  '$geom'"
     [[ "$comp" != 'complete' ]] && echo "  --comp  '$comp'"
     [[ "$unmap" != '0' ]] && echo "  --unmap '$unmap'"
