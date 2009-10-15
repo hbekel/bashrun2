@@ -162,8 +162,8 @@ function function? {
 function ks2kn {
     local keyseq=$1
 
-    if keynames.seek "$keyseq"; then
-	echo $(keyname.get_name)
+    if §keynames.seek "$keyseq"; then
+	echo $(§keyname.get_name)
 	return 0
     fi
 
@@ -260,7 +260,7 @@ function print_bindings {
 function bound_and_sorted {
     
     local keymap="${1:-emacs}"
-    local ids="$(bindings.select keymap "$keymap")"
+    local ids="$(§bindings.select keymap "$keymap")"
 
     local sorted=""
     local action=""
@@ -272,9 +272,9 @@ function bound_and_sorted {
     for action in $order; do
 	if [[ "$action" != '|' ]]; then
 	    for id in $ids; do
-		bindings.seek "$id"
-		if [[ "$(binding.get_action)" == "$action" &&
-			    "$(binding.get_is_bound)" == "1" ]]; then
+		§bindings.seek "$id"
+		if [[ "$(§binding.get_action)" == "$action" &&
+			    "$(§binding.get_is_bound)" == "1" ]]; then
 		    sorted="$sorted $id"
 		    found=1
 		fi
@@ -289,9 +289,9 @@ function bound_and_sorted {
     local first=1
 
     for id in $ids; do
-	bindings.seek "$id"
-	actions.seek "$(binding.get_action)"
-	if [[ "$(action.get_core)" != "1" && "$(binding.get_is_bound)" == "1" ]]; then	    
+	§bindings.seek "$id"
+	§actions.seek "$(§binding.get_action)"
+	if [[ "$(§action.get_core)" != "1" && "$(§binding.get_is_bound)" == "1" ]]; then	    
 	    found=1
 	    if [[ "$first" == "1" ]]; then
 		sorted="$sorted | $id"
@@ -313,18 +313,18 @@ function print_binding {
     local keyname=""
     local keyseq=""
 
-    bindings.seek "$id"
+    §bindings.seek "$id"
 
-    name="$(binding.get_action)"
+    name="$(§binding.get_action)"
     
-    actions.seek "$name"
-    desc="$(action.get_desc)"
+    §actions.seek "$name"
+    desc="$(§action.get_desc)"
     
-    deps="$(action.pretty_print_deps)"
-    keyseq="$(binding.get_keyseq)"
+    deps="$(§action.pretty_print_deps)"
+    keyseq="$(§binding.get_keyseq)"
     
-    if keynames.seek "$keyseq"; then
-	keyname="$(keyname.get_name)"
+    if §keynames.seek "$keyseq"; then
+	keyname="$(§keyname.get_name)"
     else
 	keyname="$(ks2kn $keyseq)"
     fi

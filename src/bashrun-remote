@@ -13,30 +13,30 @@ num="$(bashrun.registry.length)"
 if [[ "$wid" != "none" ]]; then    
     
     bashrun.window.id "$wid"
-    modes.seek "$mode"
+    §modes.seek "$mode"
     bashrun.window.toggle
 
 else
     # get the bashrun terminal
-    terminals.seek "bashrun"
+    §terminals.seek "bashrun"
 
     # get requested mode
-    if ! modes.seek "$mode"; then
+    if ! §modes.seek "$mode"; then
 	echo "$0: warning: no such mode '$mode', using 'launcher'" 
 
         # startup mode defaults to launcher
 	mode="launcher"
-	modes.seek $mode
+	§modes.seek $mode
     fi
 
     # find out whether this mode has feedback enabled
-    feedback="$(mode.get_feedback)"
+    feedback="$(§mode.get_feedback)"
 
     # find out whether it's animated
-    animation="$(mode.get_anim)"
+    animation="$(§mode.get_anim)"
 
     # get command and insert properties and geometry from requested mode
-    geometry=$(mode.get_default_geometry)
+    geometry=$(§mode.get_default_geometry)
     geometry.parse $geometry
 
     if [[ animation -eq 1 ]]; then
@@ -45,7 +45,7 @@ else
 	geometry="$(geometry)"
     fi
 
-    command="$(terminal.get_command)"
+    command="$(§terminal.get_command)"
 
     command=${command//%m/$mode}
     command=${command//%g/$geometry}        

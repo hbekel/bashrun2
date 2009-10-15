@@ -2,36 +2,36 @@
 
 ################################################################################
 
-class "bookmark" "name" ""
-function_clone "bookmark.new" "_bookmark.new"
-function_clone "bookmarks.dump" "_bookmarks.dump"
+class "§bookmark" "name" ""
+function_clone "§bookmark.new" "_§bookmark.new"
+function_clone "§bookmarks.dump" "_§bookmarks.dump"
 
 ################################################################################
 
-function bookmark.new {
+function §bookmark.new {
 
-    _bookmark.new $1
+    _§bookmark.new $1
     
     eval "function $1 { 
         bashrun.engine.action run launch \"$1\"
     }"
 }
 
-function bookmark.code {
-    local name="$(bookmark.get_name)"
+function §bookmark.code {
+    local name="$(§bookmark.get_name)"
     name=${name//\'/\\\'}
     echo "+bookmark --new '$name'"
 }
 
-function bookmarks.dump {
+function §bookmarks.dump {
     
-    _bookmarks.dump
+    _§bookmarks.dump
 
-    local file=$_OBJECTS_DATA_HOME/bookmarks.dump
+    local file=$_OBJECTS_DATA_HOME/§bookmarks.dump
 
-    bookmarks.seek_start
-    while bookmarks.next?; do
-	echo "function $(bookmark.get_name) { :; }" >> $file
-	bookmarks.next
+    §bookmarks.seek_start
+    while §bookmarks.next?; do
+	echo "function $(§bookmark.get_name) { :; }" >> $file
+	§bookmarks.next
     done
 }

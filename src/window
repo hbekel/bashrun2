@@ -122,13 +122,13 @@ function bashrun.window.update {
     BASHRUN_WINDOW_PIXEL_WIDTH=$pw
     BASHRUN_WINDOW_PIXEL_HEIGHT=$ph
 
-    local saved="$(mode.get_name)"
+    local saved="$(§mode.get_name)"
     if [[ -f $BASHRUN_REGISTRY ]]; then
 	local mode="$(bashrun.registry.get_mode $BASHRUN_WINDOW_ID)"
 	if [[ "$mode" != "none" ]]; then
-	    modes.seek "$mode"
-	    BASHRUN_WINDOW_ANIMATE="$(mode.get_anim)"
-	    modes.seek "$saved"
+	    §modes.seek "$mode"
+	    BASHRUN_WINDOW_ANIMATE="$(§mode.get_anim)"
+	    §modes.seek "$saved"
 	fi
     fi
 }
@@ -211,7 +211,7 @@ function bashrun.window.size {
     fi 
         
     # apply completion threshold if necessary
-    bashrun.window.terminal? && completion.set $(mode.get_comp)
+    bashrun.window.terminal? && completion.set $(§mode.get_comp)
     return 0
 }
  
@@ -220,10 +220,10 @@ function bashrun.window.map {
     bashrun.window? || return 1
     bashrun.window.update
     
-    modes.seek $(bashrun.registry.get_mode $BASHRUN_WINDOW_ID)
+    §modes.seek $(bashrun.registry.get_mode $BASHRUN_WINDOW_ID)
 
     # parse geometry for this mode 
-    geometry.parse "$(mode.get_default_geometry)"
+    geometry.parse "$(§mode.get_default_geometry)"
 
     # map the window
     xdotool windowmap $BASHRUN_WINDOW_ID
@@ -239,7 +239,7 @@ function bashrun.window.map {
     xdotool windowfocus $BASHRUN_WINDOW_ID	
     
     # call user supplied onmap handler
-    local onmap="$(mode.get_onmap)"
+    local onmap="$(§mode.get_onmap)"
     [[ -n "$onmap" ]] && $onmap
     
     if [[ BASHRUN_WINDOW_ANIMATE -eq 1 ]]; then
@@ -253,7 +253,7 @@ function bashrun.window.unmap {
     bashrun.window? || return 1
     bashrun.window.update
 
-    modes.seek $(bashrun.registry.get_mode $BASHRUN_WINDOW_ID)
+    §modes.seek $(bashrun.registry.get_mode $BASHRUN_WINDOW_ID)
 
     if [[ BASHRUN_WINDOW_ANIMATE -eq 1 ]]; then
 	bashrun.window.collapse
@@ -261,7 +261,7 @@ function bashrun.window.unmap {
     xdotool windowunmap $BASHRUN_WINDOW_ID
 
     # call user supplied onunmap handler
-    local onunmap="$(mode.get_onunmap)"
+    local onunmap="$(§mode.get_onunmap)"
     [[ -n "$onunmap" ]] && $onunmap
     
     BASHRUN_WINDOW_MAPPED=0

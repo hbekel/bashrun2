@@ -47,7 +47,7 @@ Usage: bashrun [option]
        --wait    : wait until window is unmapped
        --debug   : toggle debug mode
 
-       Press F1 in bashrun to list the current keybindings.
+       Press F1 in bashrun to list the current key§bindings.
 
 For more information, see bashrun(1) or visit http://bashrun.sourceforge.net
 "

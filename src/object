@@ -202,7 +202,7 @@ function objects.all {
 
 function objects.dump {
     
-    local objects="$(printf "%q " "${_OBJECTS[@]}")"
+    local data="$(printf "%q " "${_OBJECTS[@]}")"
 
     echo "
     _OBJECTS_KEYS=(${_OBJECTS_KEYS[@]})
@@ -217,7 +217,7 @@ function objects.dump {
     _OBJECTS_INTERFACE_OPTIONS='${_OBJECTS_INTERFACE_OPTIONS}'
     _OBJECTS_INTERFACE_OPTIONS_FOUND=()
 
-    _OBJECTS=($objects)
+    _OBJECTS=($data)
     " > $_ObJeCtS_DATA_HOME/${1:-objects.dump}
 
 }

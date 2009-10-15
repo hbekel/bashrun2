@@ -2,11 +2,11 @@
 
 ################################################################################
 
-class "handler" "name pattern string complete" ""
+class "§handler" "name pattern string complete" ""
 
 ################################################################################
 
-function handlers.install_completion {
+function §handlers.install_completion {
 
     local name=""
     local complete=()
@@ -14,14 +14,14 @@ function handlers.install_completion {
     local compgen=""
     local compfunc=""
 
-    handlers.seek_start
-    while handlers.next?; do
-	name="$(handler.get_name)"
-	complete=($(handler.get_complete))
+    §handlers.seek_start
+    while §handlers.next?; do
+	name="$(§handler.get_name)"
+	complete=($(§handler.get_complete))
 	if [[ ${#complete[@]} -gt 0 ]]; then
 	    prefix="${complete[0]}"
 	    compgen="${complete[@]:1}"
-	    bashrun.debug -v "$(handler.get_name)" \
+	    bashrun.debug -v "$(§handler.get_name)" \
 		"prefix:" -v "$prefix" "compgen:" -v "$compgen"	    
 
 	    compfunc='function _bashrun___NAME__ {
@@ -47,23 +47,23 @@ function handlers.install_completion {
             }"
 	    complete -F "_bashrun_$name" "$prefix"
 	fi	
-	handlers.next
+	§handlers.next
     done
 }
 
-function handlers.apply {
+function §handlers.apply {
     
     # applies matching handlers to BASHRUN_BASHRUN_COMMAND
 
-    bashrun.debug "trying to match handlers..."
+    bashrun.debug "trying to match §handlers..."
     
-    handlers.seek_start
-    while handlers.next?; do
+    §handlers.seek_start
+    while §handlers.next?; do
 	
 	local append=1
-	local name=$(handler.get_name)
-	local pattern=$(handler.get_pattern)
-	local string=$(handler.get_string)
+	local name=$(§handler.get_name)
+	local pattern=$(§handler.get_pattern)
+	local string=$(§handler.get_string)
 
 	if [[ "$BASHRUN_COMMAND" =~ $pattern ]]; then	    
 
@@ -98,7 +98,7 @@ function handlers.apply {
 		done
 		if [[ ! success -eq 1 ]]; then
 		    bashrun.debug "not handled"
-		    handlers.next
+		    §handlers.next
 		    continue
 		fi
 	    fi
@@ -123,7 +123,7 @@ function handlers.apply {
 		    local missing=${BASH_REMATCH[1]}
 		    bashrun.debug "handler incomplete: no content for $missing"
 		    bashrun.debug " -> not executing, informing user"
-		    BASHRUN_COMMAND="bashrun_show_error No content for \\$missing in $pattern handler."
+		    BASHRUN_COMMAND="bashrun_show_error No content for \\$missing in $pattern §handler."
 		    return 1
 		fi
 	    fi
@@ -141,15 +141,15 @@ function handlers.apply {
 	    bashrun.debug "$string"
 	    return
 	fi
-	handlers.next
+	§handlers.next
     done
 }
 
-function handler.code {
+function §handler.code {
 
-    local name=$(handler.get_name)
-    local pattern=$(handler.get_pattern)
-    local string=$(handler.get_string)
+    local name=$(§handler.get_name)
+    local pattern=$(§handler.get_pattern)
+    local string=$(§handler.get_string)
 
     name=${name//\'/\\\'}
     pattern=${pattern//\'/\\\'}

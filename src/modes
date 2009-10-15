@@ -2,51 +2,51 @@
 
 ################################################################################
 
-class "mode" "name comp unmap geom anim ps1 ps2 onmap onunmap feedback current" 'switch'
+class "§mode" "name comp unmap geom anim ps1 ps2 onmap onunmap feedback current" 'switch'
 
 ################################################################################
 
-function_clone "mode.new" "_mode.new"
+function_clone "§mode.new" "_§mode.new"
 
 BASHRUN_MODE="${BASHRUN_MODE:-launcher}"
 
-function mode.new { 
+function §mode.new { 
 
-    _mode.new "$1"
-    mode.set_geom "80x24"
-    mode.set_current "1"
-    mode.set_comp 'complete'
-    mode.set_unmap '0'
-    mode.set_anim '0'
-    mode.set_ps1 ""
-    mode.set_ps2 ""
-    mode.set_onmap ""
-    mode.set_onunmap ""
-    mode.set_feedback "0"
+    _§mode.new "$1"
+    §mode.set_geom "80x24"
+    §mode.set_current "1"
+    §mode.set_comp 'complete'
+    §mode.set_unmap '0'
+    §mode.set_anim '0'
+    §mode.set_ps1 ""
+    §mode.set_ps2 ""
+    §mode.set_onmap ""
+    §mode.set_onunmap ""
+    §mode.set_feedback "0"
 }
 
-function mode.multigeom? {
-    [[ "$(mode.get_geom)" =~ \  ]]
+function §mode.multigeom? {
+    [[ "$(§mode.get_geom)" =~ \  ]]
     return $?
 }
 
-function mode.get_default_geometry {
+function §mode.get_default_geometry {
 
-    if [[ "$(mode.get_geom)" =~ ([^\ ]+)\ [^\ ]+ ]]; then
+    if [[ "$(§mode.get_geom)" =~ ([^\ ]+)\ [^\ ]+ ]]; then
 	echo "${BASH_REMATCH[1]}"
     else
-	mode.get_geom
+	§mode.get_geom
     fi
 }   
 
-function mode.unmap? {
-    [[ "$(mode.get_unmap)" == "1" ]]
+function §mode.unmap? {
+    [[ "$(§mode.get_unmap)" == "1" ]]
     return $?
 }
 
-function mode.switch {
+function §mode.switch {
 
-    local current="$(mode.get_name)"
+    local current="$(§mode.get_name)"
     local previous="$BASHRUN_MODE"
     
     if [[ "$previous" != "$current" ]]; then
@@ -60,22 +60,22 @@ function mode.switch {
     fi
 
     # apply geometry
-    bashrun.window.geometry "$(mode.get_default_geometry)" 
+    bashrun.window.geometry "$(§mode.get_default_geometry)" 
 
     if function?  "mode-$current-enter"; then
 	mode-$current-enter
     fi
     
     # enable animation
-    if [[ "$(mode.get_anim)" == "1" ]]; then
+    if [[ "$(§mode.get_anim)" == "1" ]]; then
 	bashrun.window.animate 1
     else
 	bashrun.window.animate 0
     fi
     tput cr; tput dl1
     
-    local ps1="$(mode.get_ps1)"
-    local ps2="$(mode.get_ps2)"
+    local ps1="$(§mode.get_ps1)"
+    local ps2="$(§mode.get_ps2)"
 
     [[ -n "$ps1" ]] && PS1="$ps1"
     [[ -n "$ps2" ]] && PS2="$ps2"
@@ -88,26 +88,26 @@ function mode.switch {
 	--classname "bashrun-$current"
 }
 
-function mode.reset {
+function §mode.reset {
     
-    local name="$(mode.get_name)"
+    local name="$(§mode.get_name)"
     if [[ "$(type -t mode-$name-leave)" == "function" ]]; then
 	mode-$name-leave
     fi
 }
 
-function mode.code {
+function §mode.code {
 
-    local name="$(mode.get_name)"
-    local comp="$(mode.get_comp)"
-    local unmap="$(mode.get_unmap)"
-    local geom="$(mode.get_geom)"
-    local anim="$(mode.get_anim)"
-    local ps1="$(mode.get_ps1)"
-    local ps2="$(mode.get_ps2)"
-    local onmap="$(mode.get_onmap)"
-    local onunmap="$(mode.get_onunmap)"
-    local feedback="$(mode.get_feedback)"
+    local name="$(§mode.get_name)"
+    local comp="$(§mode.get_comp)"
+    local unmap="$(§mode.get_unmap)"
+    local geom="$(§mode.get_geom)"
+    local anim="$(§mode.get_anim)"
+    local ps1="$(§mode.get_ps1)"
+    local ps2="$(§mode.get_ps2)"
+    local onmap="$(§mode.get_onmap)"
+    local onunmap="$(§mode.get_onunmap)"
+    local feedback="$(§mode.get_feedback)"
 
     print_line "mode $name" "#" "80"
     echo
@@ -135,20 +135,20 @@ function mode.code {
     fi      
 }
 
-function_clone "modes.dump" "_modes.dump"
+function_clone "§modes.dump" "_§modes.dump"
 
-function modes.dump {
+function §modes.dump {
 
-    local file=$_OBJECTS_DATA_HOME/modes.dump
+    local file=$_OBJECTS_DATA_HOME/§modes.dump
     local mode=''
     local func=''
-    local current=$(mode.get_name)
+    local current=$(§mode.get_name)
 
-    _modes.dump
+    _§modes.dump
 
-    modes.seek_start
-    while modes.next?; do
-	mode=$(mode.get_name)
+    §modes.seek_start
+    while §modes.next?; do
+	mode=$(§mode.get_name)
 
 	func="mode-$mode-enter"
 	if function? "$func"; then
@@ -159,7 +159,7 @@ function modes.dump {
 	if function? "$func"; then
 	    function_code "$func" >> $file
 	fi
-	modes.next
+	§modes.next
     done
-    modes.seek $current
+    §modes.seek $current
 }

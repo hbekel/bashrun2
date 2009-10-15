@@ -19,11 +19,11 @@ function bashrun.configure {
     bashrun.debug "installing" -v "core actions"
 
     progress.update +10 "Initializing... [core]"
-    if [[ ! -f $BASHRUN_CACHE_HOME/defaults.dump ]]; then
+    if [[ ! -f $BASHRUN_CACHE_HOME/§defaults.dump ]]; then
 	configure-defaults
-	actions.dump "defaults.dump"
+	§actions.dump "§defaults.dump"
     else
-	source $BASHRUN_CACHE_HOME/defaults.dump
+	source $BASHRUN_CACHE_HOME/§defaults.dump
     fi
 
     # loop through defined configure-* functions
@@ -32,20 +32,20 @@ function bashrun.configure {
 	[[ "$line" == "()" ]] && continue
 
 	[[ "$line" =~ ^configure-(.+) ]]
-	type="${BASH_REMATCH[1]}"
+	type="§${BASH_REMATCH[1]}"
 
-	[[ "$type" == "defaults" ]] && continue;
+	[[ "$type" == "§defaults" ]] && continue;
 
-	progress.update +10 "Initializing... [$type]"
+	progress.update +10 "Initializing... [${type//§/}]"
 
 	local len=${#type}
 	if [[ "$(objects.types)" =~ "${type:0:$len-1} " ]]; then
 	    bashrun.configure.type $type
 	else
-	    if [[ "$type" == "keys" ]]; then
+	    if [[ "$type" == "§keys" ]]; then
 		bashrun.configure.keys
 	    else
-		bashrun.debug warn -v $type ": unknown object type, skipping configure-$type()"
+		bashrun.debug warn -v $type ": unknown object type, skipping configure-${type//§/}()"
 	    fi
 	fi
     done
@@ -58,6 +58,7 @@ function bashrun.configure.type {
     local dumprc="${3:-$BASHRUN_CACHE_HOME/$type.rc}"
 
     local config="configure-$type"
+    config=${config//§/}
 
     # if a dump exists
     if [[ -f "$dump" ]]; then
@@ -89,14 +90,14 @@ function bashrun.reconfigure.type {
     $type.dump
     
     # cache the configure function that created the dump
-    function_code configure-$type > $dumprc
+    function_code configure-${type//§/} > $dumprc
 }
 
 function bashrun.configure.keys {
 
     local dumprc="$BASHRUN_CACHE_HOME/keys.rc"
 
-    # dumps already exists by now (created by action.dump)
+    # dumps already exists by now (created by §action.dump)
 
     # if no dumprc exists, configure-keys() has not been used before...
     if [[ ! -f "$dumprc" ]]; then
@@ -114,17 +115,17 @@ function bashrun.configure.keys {
 	configure-keys
 
 	# dump bindings (et al) again
-	internals.dump
-	bindings.dump
-	keynames.dump
+	§internals.dump
+	§bindings.dump
+	§keynames.dump
 
         # cache the configure function that created the dump
 	function_code configure-keys > $dumprc
     else
 	bashrun.debug "restoring" -v "keys"
 
-	internals.restore
-	keynames.restore
-	bindings.restore
+	§internals.restore
+	§keynames.restore
+	§bindings.restore
     fi
 }

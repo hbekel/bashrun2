@@ -2,9 +2,9 @@
 
 ################################################################################
 
-class "internal" "action keymap char readline"
-class "binding" "keyseq keymap action is_bound readline"  
-class "keyname" "keyseq name"                             
+class "§internal" "action keymap char readline"
+class "§binding" "keyseq keymap action is_bound readline"  
+class "§keyname" "keyseq name"                             
 
 bind '"\C-x00": accept-line'
 
@@ -14,18 +14,18 @@ BASHRUN_KEYMAP='emacs' # FIXME: init with initial editing mode
 
 ################################################################################
 
-function binding.bound? {
-    [[ "$(binding.get_is_bound)" == '1' ]] && return 0
+function §binding.bound? {
+    [[ "$(§binding.get_is_bound)" == '1' ]] && return 0
     return 1
 }
 
-function binding.code {
+function §binding.code {
     
     local indent="${1:-0}"
 
-    local keyseq=$(binding.get_keyseq)
-    local keymap=$(binding.get_keymap)
-    local action=$(binding.get_action)
+    local keyseq=$(§binding.get_keyseq)
+    local keymap=$(§binding.get_keymap)
+    local action=$(§binding.get_action)
 
     local args="'$keyseq'"
     [[ "$keymap" != 'emacs' ]] && args="$args '$keymap'"
@@ -36,43 +36,43 @@ function binding.code {
     echo "--bind $args"
 }
 
-function_clone "bindings.dump" "_bindings.dump"
+function_clone "§bindings.dump" "_§bindings.dump"
 
-function bindings.dump {
+function §bindings.dump {
 
-    _bindings.dump
+    _§bindings.dump
 
-    local file=$_OBJECTS_DATA_HOME/bindings.dump
+    local file=$_OBJECTS_DATA_HOME/§bindings.dump
 
     echo "BASHRUN_BINDINGS_NEXT_CHAR=$BASHRUN_BINDINGS_NEXT_CHAR" >> $file
 
-    local saved=$(binding.get_keyseq)
+    local saved=$(§binding.get_keyseq)
 
-    bindings.seek_start
-    while bindings.next?; do
-	if binding.bound?; then
-	    echo "bind $(binding.get_readline)" >> $file
+    §bindings.seek_start
+    while §bindings.next?; do
+	if §binding.bound?; then
+	    echo "bind $(§binding.get_readline)" >> $file
 	fi
-	bindings.next
+	§bindings.next
     done
-    bindings.seek $saved
+    §bindings.seek $saved
 }
 
-function_clone "internals.dump" "_internals.dump"
+function_clone "§internals.dump" "_§internals.dump"
 
-function internals.dump {
+function §internals.dump {
 
-    _internals.dump
+    _§internals.dump
 
-    local file=$_OBJECTS_DATA_HOME/internals.dump
-    local saved=$(internal.get_action)
+    local file=$_OBJECTS_DATA_HOME/§internals.dump
+    local saved=$(§internal.get_action)
 
-    internals.seek_start
-    while internals.next?; do
-	echo "bind $(internal.get_readline)" >> $file
-	internals.next
+    §internals.seek_start
+    while §internals.next?; do
+	echo "bind $(§internal.get_readline)" >> $file
+	§internals.next
     done    
-    internals.seek $saved
+    §internals.seek $saved
 }
 
 

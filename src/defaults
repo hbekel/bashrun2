@@ -4,7 +4,7 @@
 
 configure-defaults () {
 
-    function action.set_core {
+    function §action.set_core {
 	_BASHRUN_ACTIONS[${_BASHRUN_ACTIONS_POSITION}+8]="$1"
     }
 
@@ -25,7 +25,7 @@ configure-defaults () {
     --core 1
     
     action-abort () {
-	[[ "$(mode.get_unmap)" -eq 1 ]] && bashrun.window.unmap
+	[[ "$(§mode.get_unmap)" -eq 1 ]] && bashrun.window.unmap
     }
     
 # quit #########################################################################
@@ -278,9 +278,9 @@ configure-defaults () {
 	if [[ ! -f "$tmpfile" ]]; then
 	    print_bindings > $tmpfile
 
-	elif bindings.modified?; then
+	elif §bindings.modified?; then
 	    print_bindings > $tmpfile
-	    bindings.modified 0
+	    §bindings.modified 0
 	fi
 	command "less $tmpfile"
 	action-term-run
@@ -293,10 +293,10 @@ configure-defaults () {
     
     function action-cycle-size {
 	
-	if mode.multigeom?; then
+	if §mode.multigeom?; then
 	    
-	    local geom="$(mode.get_geom)"
-	    local current="$(mode.get_current)"
+	    local geom="$(§mode.get_geom)"
+	    local current="$(§mode.get_current)"
 	    ((current+=1))
 
 	    local next="$(echo "$geom" | cut -d ' ' -f $current)"
@@ -306,7 +306,7 @@ configure-defaults () {
 	    next="$(echo "$geom" | cut -d ' ' -f $current)"
 
 	    bashrun.window.geometry "$next"
-	    mode.set_current $current	
+	    §mode.set_current $current	
 	fi
 	tput reset
 	return 1
@@ -319,15 +319,15 @@ configure-defaults () {
     
     function action-cycle-mode {
 	
-	modes.next
-	if [[ "$(mode.get_name)" == '' ]]; then
-	    modes.seek_start
+	§modes.next
+	if [[ "$(§mode.get_name)" == '' ]]; then
+	    §modes.seek_start
 	fi
-	mode.switch
+	§mode.switch
 	return 1
     }   
 
-    unset -f action.set_core
+    unset -f §action.set_core
 }
 ################################################################################
 

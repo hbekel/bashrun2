@@ -18,7 +18,7 @@ function bashrun.engine.init {
     bashrun.window.id $WINDOWID
 
     # get current readline bindings
-    bashrun.debug "getting current readline bindings..."
+    bashrun.debug "getting current readline §bindings..."
     readline_get_bindings
 
     progress.update +5
@@ -26,11 +26,11 @@ function bashrun.engine.init {
     # load/restore configuration
     bashrun.configure
 
-    handlers.install_completion
+    §handlers.install_completion
 
     # run init callbacks
     bashrun.debug -v "+action" -v "--init" "callbacks..."
-    actions.init
+    §actions.init
 
     # reset object positions
     objects.seek_start
@@ -38,8 +38,8 @@ function bashrun.engine.init {
     progress.update +5 "Initializing... [engine]"
 
     # switch to initial mode passed from env
-    modes.seek "$BASHRUN_MODE"
-    mode.switch
+    §modes.seek "$BASHRUN_MODE"
+    §mode.switch
 
     # enable extdebug and prepare escape from trap
     # (bashdb bugs out if extdebug is set directly from a startup file)
@@ -66,7 +66,7 @@ function bashrun.engine.action {
 
     bashrun.separator "engine $action $command"
 
-    if actions.seek $action; then
+    if §actions.seek $action; then
 
 	# wait until engine is ready
 	while bashrun.engine.busy?; do
@@ -79,7 +79,7 @@ function bashrun.engine.action {
 	BASHRUN_ACTION=$action
 
 	# type override
-	[[ $type == '' ]] && type=$(action.get_type)
+	[[ $type == '' ]] && type=$(§action.get_type)
 
 	bashrun.debug -v "$action" -c "$type"
 
@@ -102,8 +102,8 @@ function bashrun.engine.action {
 	    
 	    shell)
 		# just run action here
-		if action.function?; then
-		    action.run $command
+		if §action.function?; then
+		    §action.run $command
 		    bashrun.separator
 		fi
 		bashrun.engine.reset 0
@@ -158,9 +158,9 @@ function bashrun.engine.launch {
 	BASHRUN_COMMAND_LINE="$command"
     fi
 
-    if actions.seek $BASHRUN_ACTION; then
-	if action.function?; then
-	    if ! action.run; then
+    if §actions.seek $BASHRUN_ACTION; then
+	if §action.function?; then
+	    if ! §action.run; then
 		bashrun.engine.reset
 		return 0
 	    fi
@@ -202,13 +202,13 @@ function bashrun.engine.reset {
     BASHRUN_RULES_APPLIED=0
 
     # reset terminal
-    terminals.seek default
+    §terminals.seek default
     
     # disable action api here to allow nested actions
-    action.api.disable 
+    §action.api.disable 
 
     # unmap the window if necessary
-    [[ unmap -eq 1 ]] && mode.unmap? && bashrun.window.unmap
+    [[ unmap -eq 1 ]] && §mode.unmap? && bashrun.window.unmap
 
     bashrun.separator
 }

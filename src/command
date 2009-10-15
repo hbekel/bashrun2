@@ -113,7 +113,7 @@ function bashrun.command.builtin? {
 
 function bashrun.command.bookmark? {
 
-    if bookmarks.seek "$1"; then
+    if §bookmarks.seek "$1"; then
 	return 0
     fi
     return 1
@@ -150,14 +150,14 @@ function bashrun.command.add_terminal {
 	return 1
     fi
 
-    if [[ "$(terminal.get_name)" == "bashrun" ]]; then
-	terminals.seek 'default'
+    if [[ "$(§terminal.get_name)" == "bashrun" ]]; then
+	§terminals.seek 'default'
     fi
 
     # COMMAND goes into "" -> escape double quotes
     BASHRUN_COMMAND=${BASHRUN_COMMAND//\"/\\\"}
 
-    BASHRUN_COMMAND="$(terminal.get_command) \"$BASHRUN_COMMAND\""
+    BASHRUN_COMMAND="$(§terminal.get_command) \"$BASHRUN_COMMAND\""
 
     bashrun.debug "$BASHRUN_COMMAND"
 
