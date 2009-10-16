@@ -70,12 +70,12 @@ function bashrun.command.executable? {
     fi
 
     if [[ "$type" == "function" ]]; then
-	if bashrun.command.bookmark?; then
-	    bashrun.debug "$word -> bookmark -> no"
-	    return 1
-	else
-	    bashrun.debug "$word -> $type -> yes"
+	if function.exported? $word; then
+	    bashrun.debug "$word -> exported $type -> no"
 	    return 0
+	else	    
+	    bashrun.debug "$word -> $type -> no"
+	    return 1
 	fi
     fi
 

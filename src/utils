@@ -167,6 +167,10 @@ function function? {
     return $?
 }
 
+function.exported? () {
+    [[ "$(declare -pf | grep foo)" =~ "declare -fx $1" ]]
+}	
+
 function ks2kn {
     local keyseq=$1
 

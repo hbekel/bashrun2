@@ -290,7 +290,7 @@ configure-defaults () {
 	    §mode.set_current $current	
 	fi
 	tput reset
-	return 1
+	return 2
     }
     
     +action 'cycle-mode'
@@ -305,7 +305,7 @@ configure-defaults () {
 	    §modes.seek_start
 	fi
 	§mode.switch
-	return 1
+	return 2
     }   
 
     unset -f §action.set_core

@@ -142,6 +142,7 @@ function bashrun.engine.trap {
 function bashrun.engine.launch {
 
     local command="$1"
+    local status=0
 
     # command override
     if [[ "$command" != '' ]]; then
@@ -149,22 +150,21 @@ function bashrun.engine.launch {
 	BASHRUN_COMMAND="$command"
 	BASHRUN_COMMAND_LINE="$command"
     fi
-
+    
     if §actions.seek "$BASHRUN_ACTION"; then
 	if §action.function?; then
-	    if ! §action.run; then
-		bashrun.engine.reset
+	    §action.run
+	    status=$?
+	    if [[ status -ne 0 ]]; then
+		[[ status -eq 1 ]] && bashrun.engine.reset 
+		[[ status -eq 2 ]] && bashrun.engine.reset 0
 		return 0
-	    fi		   
+	    fi
 	fi
     fi
     bashrun.debug "$BASHRUN_COMMAND"
     
-    if bashrun.command.executable?; then
-	bashrun.engine.execute
-    else
-	bashrun.debug fail "not executable."
-    fi
+    bashrun.engine.execute
     bashrun.engine.reset
     return 0
 }
@@ -184,6 +184,8 @@ function bashrun.engine.execute {
 
 function bashrun.engine.reset {
 
+    local unmap=${1:-1}
+
     # reset rules
     BASHRUN_RULES_APPLIED=0
 
@@ -193,8 +195,8 @@ function bashrun.engine.reset {
     # disable action api here to allow nested actions
     §action.api.disable 
 
-    # unmap the window if necessary
-    §mode.unmap? && bashrun.window.unmap
+    # unmap the window if requested/necessary
+    [[ unmap -eq 1 ]] && §mode.unmap? && bashrun.window.unmap
 
     bashrun.engine.idle
 
