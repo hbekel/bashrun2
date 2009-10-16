@@ -126,15 +126,13 @@ function bashrun.engine.trap {
     # pass through trap builtin
     if [[ "$BASHRUN_COMMAND" =~ ^trap ]]; then
 	bashrun.debug -v "trap" -c "removed"
-	bashrun.engine.reset 
+	bashrun.engine.busy? && bashrun.engine.reset 
 	return 0
     fi
     bashrun.debug "command:" -v "$BASHRUN_COMMAND"
     bashrun.debug "   line:" -v "$BASHRUN_COMMAND_LINE"
 
     bashrun.engine.launch
-
-    bashrun.separator 
 
     return 1
 }
