@@ -8,6 +8,14 @@ function defined? {
     [[ ${!1-X} == ${!1-Y} ]]
 }
 
+function bash3 {
+    [[ ${BASH_VERSINFO[0]} -eq 3 ]]
+}
+
+function bash4 {
+    [[ ${BASH_VERSINFO[0]} -eq 4 ]]
+}
+
 function bashrun.debug {
 
     # bashrun.debug [--success] "var=" var "->" g "yes!" 

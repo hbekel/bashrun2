@@ -13,7 +13,7 @@ function §bookmark.new {
     _§bookmark.new $1
     
     eval "function $1 { 
-        bashrun.engine.action run launch \"$1\"
+        bashrun.engine.action run 0 \"$1\"
     }"
 }
 
@@ -31,7 +31,7 @@ function §bookmarks.dump {
 
     §bookmarks.seek_start
     while §bookmarks.next?; do
-	echo "function $(§bookmark.get_name) { :; }" >> $file
+	function_code "$(§bookmark.get_name)" >> $file
 	§bookmarks.next
     done
 }

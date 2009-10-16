@@ -12,27 +12,28 @@ configure-defaults () {
 
     +action 'pass'
     --desc 'Passthrough command'
-    --type 'shell'
+    --accept 0
     --core 1
 
-    action-pass () { :; }
+    action-pass () { return 1; }
 
 # abort #######################################################################
 
     +action 'abort'
     --desc 'Abort (unmap window)'
-    --type 'shell'
+    --accept 0
     --core 1
     
     action-abort () {
 	[[ "$(§mode.get_unmap)" -eq 1 ]] && bashrun.window.unmap
+	return 1
     }
     
 # quit #########################################################################
     
     +action 'quit'
     --desc 'Exit bashrun'
-    --type 'shell'
+    --accept 0
     --core 1
     
     action-quit () {
@@ -44,7 +45,7 @@ configure-defaults () {
     
     +action debug
     --desc "Toggle debug mode"
-    --type "shell"
+    --accept 0
     --core 1
     
     action-debug () {
@@ -63,7 +64,7 @@ configure-defaults () {
     
     +action 'run'
     --desc 'Run command'
-    --type 'trap'
+    --accept 1
     --core 1
     
     action-run () 
@@ -77,7 +78,7 @@ configure-defaults () {
     
     +action 'term-run'
     --desc 'Run command in terminal'
-    --type 'trap'
+    --accept 1
     --core 1
     
     action-term-run () 
@@ -92,7 +93,7 @@ configure-defaults () {
     
     +action 'term-page'
     --desc 'Run command in terminal and page'
-    --type 'trap'
+    --accept 1
     --core 1
     
     action-term-page () 
@@ -108,7 +109,7 @@ configure-defaults () {
     
     +action 'term-hold'
     --desc 'Run command in terminal and hold'
-    --type 'trap'
+    --accept 1
     --core 1
     
     action-term-hold () 
@@ -127,7 +128,7 @@ configure-defaults () {
     
     +action 'su-run'
     --desc 'Run command as root'
-    --type 'trap'
+    --accept 1
     --deps 'su'
     --core 1
     
@@ -142,7 +143,7 @@ configure-defaults () {
     
     +action 'su-term-run'
     --desc 'Run command in terminal as root'
-    --type 'trap'
+    --accept 1
     --deps 'su'
     --core 1
     
@@ -157,7 +158,7 @@ configure-defaults () {
     
     +action 'su-term-page'
     --desc 'Run command in terminal as root and page'
-    --type 'trap'
+    --accept 1
     --deps 'su'
     --core 1
     
@@ -172,7 +173,7 @@ configure-defaults () {
     
     +action 'su-term-hold'
     --desc 'Run command in terminal as root and hold'
-    --type 'trap'
+    --accept 1
     --deps 'su'
     --core 1
     
@@ -187,7 +188,7 @@ configure-defaults () {
     
     +action 'show-manual'
     --desc 'Show manual page for command'
-    --type 'trap'
+    --accept 1
     --deps 'man'
     --core 1
     
@@ -198,7 +199,7 @@ configure-defaults () {
     
     +action 'show-info'
     --desc 'Show info page for command'
-    --type 'trap'
+    --accept 1
     --deps 'info'
     --core 1
     
@@ -209,7 +210,7 @@ configure-defaults () {
     
     +action 'show-help'
     --desc 'Show help for shell builtin'
-    --type 'trap'
+    --accept 1
     --core 1
     
     function action-show-help {
@@ -228,7 +229,7 @@ configure-defaults () {
     
     +action 'browse'
     --desc 'Open page in $BROWSER'
-    --type 'trap'
+    --accept 1
     --core 1
     
     function action-browse {
@@ -237,7 +238,7 @@ configure-defaults () {
     
     +action 'google-search'
     --desc 'Search google using $BROWSER'
-    --type 'trap'
+    --accept 1
     --core 1
     
     function action-google-search {
@@ -246,7 +247,7 @@ configure-defaults () {
     
     +action 'dict-lookup'
     --desc 'Lookup in dictionary'
-    --type 'trap'
+    --accept 1
     --deps 'dict'
     --core 1
     
@@ -257,8 +258,8 @@ configure-defaults () {
     }
     
     +action 'bashrun-manual'
-    --description 'Show bashrun manual'
-    --type 'shell'
+    --desc 'Show bashrun manual'
+    --accept 0
     --deps 'man'
     --core 1
     
@@ -269,7 +270,7 @@ configure-defaults () {
 
     +action 'bashrun-bindings'
     --desc 'Show current keybindings'
-    --type 'shell'
+    --accept 0
     --core 1
     
     function action-bashrun-bindings {
@@ -284,12 +285,12 @@ configure-defaults () {
 	fi
 	command "less $tmpfile"
 	action-term-run
-	return 1
+	return 0
     }
 
     +action 'cycle-size'
     --desc 'Cycle through window sizes of current mode'
-    --type 'shell'
+    --accept 0
     --core 1
     
     function action-cycle-size {
@@ -315,7 +316,7 @@ configure-defaults () {
     
     +action 'cycle-mode'
     --desc 'Cycle through available modes'
-    --type shell
+    --accept 0
     --core 1
     
     function action-cycle-mode {

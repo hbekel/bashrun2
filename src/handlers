@@ -39,7 +39,7 @@ function §handlers.install_completion {
 		source /tmp/compfunc
 	    
 		eval "function $prefix { 
-                        bashrun.engine.action run launch \"$prefix \$@\" 
+                        bashrun.engine.action run 0 \"$prefix \$@\" 
                       }"
 		
 		complete -F "_bashrun_$name" "$prefix"

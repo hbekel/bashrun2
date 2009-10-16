@@ -1,12 +1,12 @@
 # -*- shell-script -*-
 
-class "§action" "name:r type desc deps bash help init reset core:r" ""
+class "§action" "name:r accept desc deps bash help init reset core:r" ""
 
 function_clone "§action.new" "_§action.new"
 function §action.new {
 
     _§action.new "$1"
-    §action.set_type "trap"
+    §action.set_accept "1"
     §action.set_desc "$1"
     §action.set_bash "3 2"
 
@@ -23,14 +23,14 @@ function §action.new {
 function §action.bind {
 
     local action="$(§action.get_name)"
-    local type="$(§action.get_type)"
+    local accept="$(§action.get_accept)"
 
     local keyseq="$1"
     local keymap="${2:-$BASHRUN_KEYMAP}"
     local keyname="${3:-$(ks2kn $keyseq)}"
 
     local bind=''
-    local accept='\C-x00'
+    local enter='\C-x00'
     local char=''
 
     BASHRUN_KEYMAP="$keymap"
@@ -106,13 +106,11 @@ function §action.bind {
 	bashrun.debug -y "ref" -v "$action" "->" -v "\C-z\\x$char" "($keymap)" 
     fi
     
-    # don't accept-line for 'launch' or 'shell' bindings
-    if [[ "$type" != 'trap' ]]; then
-	accept=''
-    fi
+    # don't trigger accept-line if +action --accept == 0
+    [[ accept -eq 0 ]] && enter=''
 
     # bind the requested keyseq to the internal character
-    bind="-m $keymap '\"$keyseq\"':$'\"\C-z\x$char$accept\"'"
+    bind="-m $keymap '\"$keyseq\"':$'\"\C-z\x$char$enter\"'"
     
     # bind
     bashrun.debug emph -y "usr" -v "$action" "->" -v "$keyname" "($keymap)" 
@@ -320,7 +318,7 @@ function §action.run {
 
     local res=""
     [[ retval -eq 0 ]] && res="-c launch"
-    [[ retval -eq 1 ]] && res="-y abort"
+    [[ retval -eq 1 ]] && res="-y abort (all done)"
     bashrun.debug -v "$action" "returned" -v "$retval" "->" $res
 
     return $retval
@@ -431,7 +429,7 @@ function §action.list {
 
     local name="$(§action.get_name)"
     local desc="$(§action.get_desc)"
-    local type="$(§action.get_type)"
+    local accept="$(§action.get_accept)"
     local deps="$(§action.get_deps)"
     local help="$(§action.get_help)"
     local uses="$(§action.uses)"
@@ -439,7 +437,7 @@ function §action.list {
     # print header
     print_header "$name -> $desc" "-"
 
-    echo "type: $type"
+    echo "accept: $accept"
 
     if [[ "$deps" != '' ]]; then
 	echo -e "deps: $(§action.pretty_print_deps)"
@@ -473,7 +471,7 @@ function §action.code {
 
     local name="$(§action.get_name)"
     local desc="$(§action.get_desc)"
-    local type="$(§action.get_type)"
+    local accept="$(§action.get_accept)"
     local deps="$(§action.get_deps)"
     local bash="$(§action.get_bash)"
     local help="$(§action.get_help)"
@@ -487,7 +485,7 @@ function §action.code {
     # add action 
     echo "+action '$name'"
     echo "  --desc '$desc'"
-    echo "  --type '$type'"
+    echo "  --accept $accept"
     [[ "$deps" != "" ]] && echo "  --deps '$deps'"
     [[ "$bash" != "3 2" ]] && echo "  --bash '$bash'"
     [[ "$help" != "" ]] && echo "  --help '$help'"

@@ -5,7 +5,6 @@
 BASHRUN_ACTION=''
 BASHRUN_EXECMODE=''
 BASHRUN_ENGINE_BUSY=0
-
 BASHRUN_LOGFILE=${BASHRUN_LOGFILE:-/dev/null}
 
 function bashrun.engine.init {
@@ -52,10 +51,10 @@ function bashrun.engine.init {
 
     # install command_not_found_handle for bash>=4 -> handle
     
-    if [[ "${BASH_VERSINFO[0]}" == "4" ]]; then
+    if bash4; then
 	function command_not_found_handle {
 	    if [[ BASHRUN_ALWAYS_HANDLE_UNKNOWN -eq 1 ]]; then
-		bashrun.engine.idle && bashrun.engine.action run launch "$*"
+		bashrun.engine.idle && bashrun.engine.action run 0 "$*"
 	    fi
 	}
     fi
@@ -75,56 +74,35 @@ function bashrun.engine.init {
 function bashrun.engine.action {
 
     local action=$1       # action to perform
-    local type=$2         # action type override
+    local accept=$2       # --accept override
     local command="$3"    # command override
 
     bashrun.separator "engine $action $command"
 
     if §actions.seek $action; then
 
-	# wait until engine is ready
-	while bashrun.engine.busy?; do
-	    sleep 0.25
-	done
-
 	bashrun.engine.busy
 	BASHRUN_RULES_APPLIED=0
 
 	BASHRUN_ACTION=$action
 
-	# type override
-	[[ $type == '' ]] && type=$(§action.get_type)
+	# overrides
+	[[ -z "$accept" ]] && accept=$(§action.get_accept)
+	
+	bashrun.debug "action" -v "$action" "accept" -c "$accept"
 
-	bashrun.debug -v "$action" -c "$type"
-
-	# dispatch action according to type
-	case $type in
+	case $accept in
 	    
-	    trap)
-	        # set the trap
-		bashrun.debug -v "trap" -c "set"
+	    1)
+	        # accept input via trap
+		bashrun.debug "accepting input from" -c "DEBUG trap"
 		trap bashrun.engine.trap DEBUG
 		;; 
 	    
-	    launch)
-		# command override
-		[[ $command == '' ]] && command=':'
-     
-		# run action directly
+	    0)
+		# launch directly 
 		bashrun.engine.launch "$command"
-		;;
-	    
-	    shell)
-		# just run action here
-		if §action.function?; then
-		    §action.run $command
-		    bashrun.separator
-		fi
-		bashrun.engine.reset 0
-		;;
-	    *)
-		bashrun.debug fail "no such action type:" -v "$type"
-		;;
+		;;	    
 	esac
     else
 	bashrun.debug fail "no such action:" -v "$action"
@@ -149,13 +127,14 @@ function bashrun.engine.trap {
     # pass through trap builtin
     if [[ "$BASHRUN_COMMAND" =~ ^trap ]]; then
 	bashrun.debug -v "trap" -c "removed"
-	bashrun.engine.reset 0
+	bashrun.engine.reset 
 	return 0
     fi
     bashrun.debug "command:" -v "$BASHRUN_COMMAND"
     bashrun.debug "   line:" -v "$BASHRUN_COMMAND_LINE"
 
     bashrun.engine.launch
+    bashrun.engine.reset
 
     bashrun.separator 
 
@@ -164,23 +143,22 @@ function bashrun.engine.trap {
 
 function bashrun.engine.launch {
 
-    local command=$1
+    local command="$1"
 
     # command override
-    if [[ $command != '' ]]; then
+    if [[ "$command" != '' ]]; then
+	bashrun.debug -c override -v "$command"
 	BASHRUN_COMMAND="$command"
 	BASHRUN_COMMAND_LINE="$command"
     fi
 
-    if §actions.seek $BASHRUN_ACTION; then
+    if §actions.seek "$BASHRUN_ACTION"; then
 	if §action.function?; then
 	    if ! §action.run; then
-		bashrun.engine.reset
 		return 0
 	    fi
 	fi
     fi
-
     bashrun.debug "$BASHRUN_COMMAND"
     
     if bashrun.command.executable?; then
@@ -188,8 +166,6 @@ function bashrun.engine.launch {
     else
 	bashrun.debug fail "not executable."
     fi
-
-    bashrun.engine.reset
     return 0
 }
 

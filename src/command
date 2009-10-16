@@ -51,8 +51,8 @@ function bashrun.command.get_word {
     word=$(echo $word | sed -r "s/^ +//;s/ +$//")
     word=$(echo $word | sed -r "s/^\\(+//;s/\\)+$//")
 
-    bashrun.debug -v "$BASHRUN_COMMAND_WORD"
     BASHRUN_COMMAND_WORD="$word"
+    bashrun.debug -v "$BASHRUN_COMMAND_WORD"
 }
 
 function bashrun.command.executable? {
