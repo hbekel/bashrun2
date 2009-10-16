@@ -50,10 +50,9 @@ function bashrun.engine.init {
     BASHRUN_EXECMODE='&'
 
     # install command_not_found_handle for bash>=4 -> handle
-    
     if bash4; then
 	function command_not_found_handle {
-	    if [[ BASHRUN_ALWAYS_HANDLE_UNKNOWN -eq 1 ]]; then
+	    if [[ BASHRUN_CMD_NOT_FOUND_HANDLE -eq 1 ]]; then
 		bashrun.engine.idle && bashrun.engine.action run 0 "$*"
 	    fi
 	}
@@ -80,7 +79,7 @@ function bashrun.engine.action {
     bashrun.separator "engine $action $command"
 
     if §actions.seek $action; then
-
+	
 	bashrun.engine.busy
 	BASHRUN_RULES_APPLIED=0
 
@@ -134,7 +133,6 @@ function bashrun.engine.trap {
     bashrun.debug "   line:" -v "$BASHRUN_COMMAND_LINE"
 
     bashrun.engine.launch
-    bashrun.engine.reset
 
     bashrun.separator 
 
@@ -155,8 +153,9 @@ function bashrun.engine.launch {
     if §actions.seek "$BASHRUN_ACTION"; then
 	if §action.function?; then
 	    if ! §action.run; then
+		bashrun.engine.reset
 		return 0
-	    fi
+	    fi		   
 	fi
     fi
     bashrun.debug "$BASHRUN_COMMAND"
@@ -166,6 +165,7 @@ function bashrun.engine.launch {
     else
 	bashrun.debug fail "not executable."
     fi
+    bashrun.engine.reset
     return 0
 }
 
@@ -184,10 +184,6 @@ function bashrun.engine.execute {
 
 function bashrun.engine.reset {
 
-    local unmap="${1:-1}"
-
-    bashrun.engine.idle
-
     # reset rules
     BASHRUN_RULES_APPLIED=0
 
@@ -198,7 +194,11 @@ function bashrun.engine.reset {
     §action.api.disable 
 
     # unmap the window if necessary
-    [[ unmap -eq 1 ]] && §mode.unmap? && bashrun.window.unmap
+    §mode.unmap? && bashrun.window.unmap
+
+    bashrun.engine.idle
+
+    bashrun.debug -c "reset"
 
     bashrun.separator
 }

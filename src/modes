@@ -40,7 +40,7 @@ function §mode.get_default_geometry {
 }   
 
 function §mode.unmap? {
-    [[ "$(§mode.get_unmap)" == "1" ]]
+    [[ "$(§mode.get_unmap)" == "1" && BASHRUN_DEBUG -eq 0 ]]
     return $?
 }
 

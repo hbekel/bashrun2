@@ -254,6 +254,7 @@ function bashrun.window.map {
 }
 
 function bashrun.window.unmap {
+
     bashrun.window? || return 1
     bashrun.window.update
 

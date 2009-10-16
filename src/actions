@@ -265,7 +265,10 @@ function §action.available? {
 
 function §action.core? {
     [[ "$(§action.get_core)" == "1" ]]
-    return $?
+}
+
+function §action.accept? {
+    [[ "$(§action.get_accept)" == "1" ]]
 }
 
 function §action.uses {

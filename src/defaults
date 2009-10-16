@@ -8,16 +8,12 @@ configure-defaults () {
 	_BASHRUN_ACTIONS[${_BASHRUN_ACTIONS_POSITION}+8]="$1"
     }
 
-# pass #########################################################################
-
     +action 'pass'
     --desc 'Passthrough command'
     --accept 0
     --core 1
 
     action-pass () { return 1; }
-
-# abort #######################################################################
 
     +action 'abort'
     --desc 'Abort (unmap window)'
@@ -29,8 +25,6 @@ configure-defaults () {
 	return 1
     }
     
-# quit #########################################################################
-    
     +action 'quit'
     --desc 'Exit bashrun'
     --accept 0
@@ -38,13 +32,11 @@ configure-defaults () {
     
     action-quit () {
 	shopt +s checkjobs
-	exit
+	exit 0
     }
     
-# debug ########################################################################
-    
     +action debug
-    --desc "Toggle debug mode"
+    --desc "Debug messages on/off"
     --accept 0
     --core 1
     
@@ -60,8 +52,6 @@ configure-defaults () {
 	return 1
     }
     
-## action run ##################################################################
-    
     +action 'run'
     --desc 'Run command'
     --accept 1
@@ -73,8 +63,6 @@ configure-defaults () {
 	+rules;
 	return 0
     }
-    
-## action run-term #############################################################
     
     +action 'term-run'
     --desc 'Run command in terminal'
@@ -89,8 +77,6 @@ configure-defaults () {
 	return 0
     }
     
-## action run-page #############################################################
-    
     +action 'term-page'
     --desc 'Run command in terminal and page'
     --accept 1
@@ -104,8 +90,6 @@ configure-defaults () {
 	+term;
 	return 0
     }
-    
-## action run-hold #############################################################
     
     +action 'term-hold'
     --desc 'Run command in terminal and hold'
@@ -124,8 +108,6 @@ configure-defaults () {
 	return 0
     }
     
-## action su-run ###############################################################
-    
     +action 'su-run'
     --desc 'Run command as root'
     --accept 1
@@ -138,8 +120,6 @@ configure-defaults () {
 	+user root;
 	return 0
     }
-    
-## action su-term-run ##########################################################
     
     +action 'su-term-run'
     --desc 'Run command in terminal as root'
@@ -154,8 +134,6 @@ configure-defaults () {
 	return 0
     }
     
-## action su-term-page #########################################################
-    
     +action 'su-term-page'
     --desc 'Run command in terminal as root and page'
     --accept 1
@@ -168,8 +146,6 @@ configure-defaults () {
 	+user root;
 	return 0
     }
-    
-## action su-term-page #########################################################
     
     +action 'su-term-hold'
     --desc 'Run command in terminal as root and hold'
@@ -184,8 +160,6 @@ configure-defaults () {
 	return 0
     }
     
-## show-manual, -info, -help  ###################################################
-    
     +action 'show-manual'
     --desc 'Show manual page for command'
     --accept 1
@@ -195,6 +169,7 @@ configure-defaults () {
     action-show-manual () {
 	command "man $(word)"
 	+term
+	return 0
     }
     
     +action 'show-info'
@@ -206,6 +181,7 @@ configure-defaults () {
     function action-show-info {
 	command "info $(word)"
 	+term
+	return 0
     }
     
     +action 'show-help'
@@ -223,9 +199,8 @@ configure-defaults () {
 	    return 0
 	fi	    
 	+term
+	return 0
     }
-    
-# browse/google/dict ###########################################################
     
     +action 'browse'
     --desc 'Open page in $BROWSER'
@@ -234,19 +209,21 @@ configure-defaults () {
     
     function action-browse {
 	command "$BROWSER '$(command)'"
+	return 0
     }
     
     +action 'google-search'
-    --desc 'Search google using $BROWSER'
+    --desc 'Google words using $BROWSER'
     --accept 1
     --core 1
     
     function action-google-search {
 	command "$BROWSER 'http://www.google.com/search?q=$(line)'"
+	return 0
     }
     
     +action 'dict-lookup'
-    --desc 'Lookup in dictionary'
+    --desc 'Lookup words in dictionary'
     --accept 1
     --deps 'dict'
     --core 1
@@ -255,6 +232,7 @@ configure-defaults () {
 	command "dict $(line)"
 	+rules
 	+term
+	return 0
     }
     
     +action 'bashrun-manual'
@@ -266,6 +244,7 @@ configure-defaults () {
     function action-bashrun-manual {
 	command "man bashrun"
 	action-term-run
+	return 0
     }
 
     +action 'bashrun-bindings'
@@ -331,5 +310,5 @@ configure-defaults () {
 
     unset -f §action.set_core
 }
-################################################################################
+
 
