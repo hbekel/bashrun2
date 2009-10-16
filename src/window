@@ -233,8 +233,12 @@ function bashrun.window.map {
 	bashrun.window.pos "$(geometry.x)" "$(geometry.y)"
     fi
 
-    # move to the current desktop and focus
-    xdotool set_desktop_for_window $BASHRUN_WINDOW_ID $(xdotool get_desktop)
+    # move to the current desktop if required
+    if [[ "$(xdotool get_desktop_for_window $BASHRUN_WINDOW_ID 2>/dev/null)" != "-1" ]]; then
+	xdotool set_desktop_for_window $BASHRUN_WINDOW_ID $(xdotool get_desktop)
+    fi
+
+    # focus
     xdotool windowactivate $BASHRUN_WINDOW_ID
     xdotool windowfocus $BASHRUN_WINDOW_ID	
     
