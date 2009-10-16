@@ -6,6 +6,15 @@ class "§handler" "name pattern string complete" ""
 
 ################################################################################
 
+function_clone §handler.new _§handler.new
+
+function §handler.new {
+    _§handler.new "$1"
+    
+    §handler.set_pattern '(.+)'
+    §handler.set_string '%1'
+}
+
 function §handlers.install_completion {
 
     local name=""
@@ -158,9 +167,9 @@ function §handler.code {
     print_line "handler $name" "#" "80"
     echo
     echo "+handler '$name'"
-    echo "  --pattern '$pattern'" 
-    echo "  --string  \"$string\""
-    [[ -n "$complete" ]] && echo "  --complete \"$complete\""
+    [[ "$pattern" != '(.+)' ]] && echo "  --pattern '$pattern'" 
+    [[ "$string" != '%1' ]] && echo "  --string  '$string'"
+    [[ -n "$complete" ]] && echo "  --complete '$complete'"
     echo
 
     if function? +handler-$name-complete; then
