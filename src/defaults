@@ -257,8 +257,8 @@ configure-defaults () {
     }
     
     +action 'bashrun-manual'
-    --desc 'Show bashrun manual'
-    --type 'launch'
+    --description 'Show bashrun manual'
+    --type 'shell'
     --deps 'man'
     --core 1
     
@@ -269,7 +269,7 @@ configure-defaults () {
 
     +action 'bashrun-bindings'
     --desc 'Show current keybindings'
-    --type 'launch'
+    --type 'shell'
     --core 1
     
     function action-bashrun-bindings {
@@ -284,6 +284,7 @@ configure-defaults () {
 	fi
 	command "less $tmpfile"
 	action-term-run
+	return 1
     }
 
     +action 'cycle-size'
