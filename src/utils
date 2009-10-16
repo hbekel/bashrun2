@@ -346,10 +346,44 @@ function print_binding {
 }
 
 function display_message {
+
+    local title="$1"
+    local text="$2"
+
+    if which dialog &>/dev/null; then
+	local prev_size="$(bashrun.window.size)"
+	bashrun.window.size --hint 40 12
+	
+	dialog --no-shadow --title "Bashrun $title" --msgbox "\n$text" 12 40
+	
+	bashrun.window.size --hint $prev_size
+	tput reset
+
+    elif which zenity &>/dev/null; then
+	local type="--info"
+	[[ "$title" =~ rror ]] && type="--error"
+	[[ "$title" =~ arning ]] && type="--warning"
+	    
+	zenity $type --title "Bashrun $title" --text "$text" &>/dev/null &
+	disown
     
-    local msg="$1"
-    echo -ne "$msg"
-    sleep 3
-    echo
+    elif which kdialog &>/dev/null; then
+	local type="--msgbox"
+	[[ "$title" =~ rror ]] && type="--error"
+	[[ "$title" =~ arning ]] && type="--sorry"
+
+	kdialog --title "Bashrun $title" $type "$text" &>/dev/null &
+	disown
+	
+    elif which noxmessage &>/dev/null; then
+	xmessage "$title: $text" &>/dev/null &
+	disown
+    else
+	local saved="$(§terminal.get_name)"
+	§terminals.seek "default"
+	eval "$(§terminal.get_command) 'echo -e \"Bashrun $title:\n\n$text\n\" | less' &>/dev/null &"
+	disown
+	§terminals.seek "$saved"
+    fi
 }
 
