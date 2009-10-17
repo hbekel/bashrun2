@@ -72,6 +72,12 @@ function §handlers.apply {
 	local pattern="$(§handler.get_pattern)"
 	local string="$(§handler.get_string)"
 
+	# eval if this contains vars (e.g. $PAGER, $BROWSER)
+	if [[ $string =~ \$.[a-zA-z0-9_] ]]; then
+	    bashrun.debug -c "evaling handler string..."
+	    eval "string=\"$string\""
+	fi
+
 	if [[ "$BASHRUN_COMMAND" =~ $pattern ]]; then	    
 
 	    bashrun.debug -v "$BASHRUN_COMMAND" "matches" -v "$pattern" -y "$name"
@@ -133,12 +139,6 @@ function §handlers.apply {
 		    BASHRUN_COMMAND="bashrun_show_error No content for \\$missing in $pattern §handler."
 		    return 1
 		fi
-	    fi
-
-	    # eval if this contains vars (e.g. $PAGER, $BROWSER)
-	    if [[ $string =~ \$.[a-zA-z0-9_] ]]; then
-		bashrun.debug -c "evaling handler string..."
-		eval "string=\"$string\""
 	    fi
 
 	    if [[ append -eq 1 ]]; then
