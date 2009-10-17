@@ -68,9 +68,9 @@ function §handlers.apply {
     while §handlers.next?; do
 	
 	local append=1
-	local name=$(§handler.get_name)
-	local pattern=$(§handler.get_pattern)
-	local string=$(§handler.get_string)
+	local name="$(§handler.get_name)"
+	local pattern="$(§handler.get_pattern)"
+	local string="$(§handler.get_string)"
 
 	if [[ "$BASHRUN_COMMAND" =~ $pattern ]]; then	    
 
@@ -78,8 +78,8 @@ function §handlers.apply {
 
 	    # check for file test prefix
 	    if [[ "$string" =~ ^([abcdefghkprstuwxOGLSN!]+): ]]; then
-		local tests=${BASH_REMATCH[1]}
-		string=${string/$tests:/}
+		local tests="${BASH_REMATCH[1]}"
+		string="${string/$tests:/}"
 
 		# perform tests
 		local test=""
@@ -120,7 +120,7 @@ function §handlers.apply {
 		    
 		    local match=${BASH_REMATCH[$i]}
 		    bashrun.debug "subexpression match \%$i $match"
-		    string=${string//%$i/$match}
+		    string="${string//%$i/$match}"
 		    
 		    bashrun.debug "$string"
 		    export append=0
@@ -137,6 +137,7 @@ function §handlers.apply {
 
 	    # eval if this contains vars (e.g. $PAGER, $BROWSER)
 	    if [[ $string =~ \$.[a-zA-z0-9_] ]]; then
+		bashrun.debug -c "evaling handler string..."
 		eval "string=\"$string\""
 	    fi
 
