@@ -2,7 +2,9 @@
 
 ################################################################################
 
-class "§handler" "name pattern string complete" ""
+class "§handler" "name pattern string complete fallback" ""
+
+BASHRUN_FROM_CMDNFH=0
 
 ################################################################################
 
@@ -13,6 +15,11 @@ function §handler.new {
     
     §handler.set_pattern '(.+)'
     §handler.set_string '%1'
+    §handler.set_fallback '0'
+}
+
+function handler.fallback? {
+    [[ "$(§handler.get_fallback)" == "1" ]]
 }
 
 function §handlers.install_completion {
@@ -81,6 +88,14 @@ function §handlers.apply {
 	if [[ "$BASHRUN_COMMAND" =~ $pattern ]]; then	    
 
 	    bashrun.debug -v "$BASHRUN_COMMAND" "matches" -v "$pattern" -y "$name"
+
+	    if [[ BASHRUN_FROM_CMDNFH -eq 1 ]]; then
+		if §handler.last? && §handler.fallback?; then
+		    bashrun.command.get_word
+		    echo "bash: $BASHRUN_COMMAND_WORD: command not found"
+		    return 0
+		fi		    
+	    fi
 
 	    # check for file test prefix
 	    if [[ "$string" =~ ^([abcdefghkprstuwxOGLSN!]+): ]]; then
@@ -159,6 +174,7 @@ function §handler.code {
     local pattern=$(§handler.get_pattern)
     local string=$(§handler.get_string)
     local complete=$(§handler.get_complete)
+    local fallback=$(§handler.get_fallback)
 
     name=${name//\'/\\\'}
     pattern=${pattern//\'/\\\'}
@@ -171,6 +187,7 @@ function §handler.code {
     [[ "$pattern" != '(.+)' ]] && echo "  --pattern '$pattern'" 
     [[ "$string" != '%1' ]] && echo "  --string  '$string'"
     [[ -n "$complete" ]] && echo "  --complete '$complete'"
+    [[ "$fallback" -ne 0 ]] && echo "  --fallback '$fallback'"
     echo
 
     if function? +handler-$name-complete; then

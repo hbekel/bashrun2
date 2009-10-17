@@ -306,6 +306,26 @@ function object.set { # key value
     fi
 }
 
+function object.first? { # [key]
+    if [[ $# -eq 1 ]]; then
+	[[  "$1" == "$(objects.current)" ]]
+    else
+	[[ _OBJECTS_POSITION -eq 0  ]]
+    fi
+}
+
+function object.last? { # [key]
+    local i
+    (( i = (_OBJECTS_SIZE-1) * _OBJECTS_WIDTH ))
+    local id=${_OBJECTS[$i]}
+
+    if [[ $# -eq 1 ]]; then
+	[[ "$id" == "$1" ]]
+    else
+	[[ "$id" == "$(objects.current)" ]]
+    fi
+}
+
 function object.code {
     
     local i=0;

@@ -53,7 +53,9 @@ function bashrun.engine.init {
     if bash4; then
 	function command_not_found_handle {
 	    if [[ BASHRUN_CMD_NOT_FOUND_HANDLE -eq 1 ]]; then
-		bashrun.engine.idle && bashrun.engine.action run 0 "$*"
+		if bashrun.engine.idle?; then
+		    BASHRUN_FROM_CMDNFH=1 bashrun.engine.action run 0 "$*"
+		fi
 	    fi
 	}
     fi
