@@ -411,6 +411,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 		    val="${!var} $1"
 		    val=$(printf '%q ' "$val") 		    
 		    val=${val//\$/\\\\\$}
+		    val=${val//\"/\\\\\"}
 		    eval "$var=$val"
 		else
 		    left[${#left[@]}]="$1"
