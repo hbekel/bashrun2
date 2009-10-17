@@ -6,9 +6,25 @@ BASHRUN_SHARE="$BASHRUN_PREFIX/share/bashrun-engine"
 
 . $BASHRUN_SHARE/frontend
 
-mode="${1:-launcher}"
+parse_arguments "$@"
+
 wid="$(bashrun.registry.find $mode)"
 num="$(bashrun.registry.length)"
+
+case $switch in
+    version)
+	version && exit 0
+	;;
+    help)
+	usage && exit 0
+	;;    
+    debug)
+	BASHRUN_DEBUG=1
+	;;
+    upgrade)
+	echo "upgrade: not implemented" && exit 0
+	;;	
+esac
 
 if [[ "$wid" != "none" ]]; then    
     
@@ -45,15 +61,19 @@ else
 	geometry="$(geometry)"
     fi
 
-    command="$(§terminal.get_command)"
+    terminal="$(§terminal.get_command)"
 
-    command=${command//%m/$mode}
-    command=${command//%g/$geometry}        
+    terminal=${terminal//%m/$mode}
+    terminal=${terminal//%g/$geometry}        
 
     # launch terminal
-    BASHRUN_FEEDBACK="$feedback" BASHRUN=1 BASHRUN_MODE="$mode" $command &    
+    BASHRUN=1 \
+	BASHRUN_MODE="$mode" \
+	BASHRUN_FEEDBACK="$feedback" \
+	BASHRUN_DEBUG=$BASHRUN_DEBUG \
+	$terminal $termopts &    
 
-    wid="$(get_wid $num)"
+    wid="$(waitwid $num)"
     bashrun.window.id "$wid"
 
     # map the window to make it expand if animated
