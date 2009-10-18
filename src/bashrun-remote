@@ -4,13 +4,11 @@ BASHRUN_PREFIX=`which bashrun 2> /dev/null`
 BASHRUN_PREFIX=${BASHRUN_PREFIX/\/bin\/bashrun/}
 BASHRUN_SHARE="$BASHRUN_PREFIX/share/bashrun-engine"
 
-. $BASHRUN_SHARE/frontend
+source $BASHRUN_SHARE/frontend
 
 parse_arguments "$@"
 
-wid="$(bashrun.registry.find $choice $state $mode)"
-num="$(bashrun.registry.length)"
-
+# handle switches first
 case $switch in
     version)
 	version && exit 0
@@ -21,12 +19,20 @@ case $switch in
     debug)
 	BASHRUN_DEBUG=1
 	;;
-    upgrade)
-	echo "upgrade: not implemented" && exit 0
-	;;	
 esac
 
-if [[ "$wid" != "none" ]]; then    
+# get number of existing instances 
+num="$(bashrun.registry.length)"
+
+# (should read: response = §instances.request "$choice" "$state" "$mode")
+wid="$(bashrun.registry.find $choice "$state" $mode)"
+
+if [[ "$wid" == "none" ]]; then
+    echo "bashrun: error: no $state $mode found."
+    exit 1
+fi
+
+if [[ "$wid" != "new" ]]; then    
     
     bashrun.window.id "$wid"
     §modes.seek "$mode"
@@ -38,9 +44,7 @@ else
 
     # get requested mode
     if ! §modes.seek "$mode"; then
-	echo "$0: warning: no such mode '$mode', using 'launcher'" 
-
-        # startup mode defaults to launcher
+	echo "bashrun: warning: no such mode '$mode', using default mode 'launcher'" 
 	mode="launcher"
 	§modes.seek $mode
     fi

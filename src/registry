@@ -49,34 +49,102 @@ function bashrun.registry.remove {
 
 function bashrun.registry.find {
     
-    local choice="${1:-first}"
-    local state="${2:-idle}"
-    local mode="${3:-any}"   
-    local entry="" wid="" pid=""
+    # return window ids of requested instances or "new"
+
+    local choice="$1"
+    local state="$2"
+    local mode="$3"   
+
+    [[ -z "$state" ]] && state="any"
+
+    local entries="" entry="" wid="" wids="" pid="" found=""
 
     if [[ ! -f $BASHRUN_REGISTRY ]]; then
-	echo "none"
+	echo "new"
 	return 1
     fi
 
-    for entry in $(tac $BASHRUN_REGISTRY); do
-	if [[ "$entry" =~ $mode || "$mode" == "any" ]]; then
-	    [[ "$entry" =~ (.+?):(.+?):(.+) ]];
-	    wid=${BASH_REMATCH[1]}	    
-	    pid=${BASH_REMATCH[2]}
-	    if bashrun.instance.exists? $wid; then
-		if bashrun.instance.idle? $pid; then
-		    echo "$wid"
-		    return 0
+    if [[ "$choice" == "new" ]]; then
+	echo "new"
+	return 1
+    fi
+
+    bashrun.registry.cleanup
+
+    if [[ "$choice" == "all" ]]; then
+	wids="$(bashrun.registry.get_wids)"
+    fi
+
+    if [[ "$choice" =~ [0-9] && "$(bashrun.registy.get_wids)" =~ "$choice" ]]; then
+	wids="$choice"
+    fi
+
+    if [[ "$wids" == "" ]]; then
+	wids="$(bashrun.registry.get_wids)"
+    fi
+
+    if [[ "$choice" == "last" ]]; then
+	entries="$(tac $BASHRUN_REGISTRY)"
+    else
+	entries="$(<$BASHRUN_REGISTRY)"
+    fi
+
+    local entry_wid entry_pid entry_mode
+    local single=0
+
+    if [[ "$choice" =~ (first|last|[0-9]+) ]]; then
+	single=1
+    fi
+
+    for entry in $entries; do
+	[[ "$entry" =~ (.+?):(.+?):(.+) ]];
+	entry_wid=${BASH_REMATCH[1]}
+	entry_pid=${BASH_REMATCH[2]}
+	entry_mode=${BASH_REMATCH[3]}
+
+	for wid in $wids; do
+	    if [[ "$entry_wid" == "$wid" ]]; then
+		if [[ "$entry_mode" == "$mode" || "$mode" == "any" ]]; then
+		    if [[ "$state" == "any" ]]; then
+			[[ single -eq 1 ]] && echo "$wid" && return 0
+			found="$found $wid"
+		    else
+			if [[ "$state" == "busy" ]];then
+			    if bashrun.instance.busy? "$entry_pid"; then
+				[[ single -eq 1 ]] && echo "$wid" && return 0
+				found="$found $wid"
+			    fi
+			elif [[ "$state" == "idle" ]]; then
+			    if bashrun.instance.idle? "$entry_pid"; then
+				[[ single -eq 1 ]] && echo "$wid" && return 0
+				found="$found $wid"
+			    fi
+			fi
+		    fi
 		fi
-	    else
-		# this is a stale entry
-		bashrun.registry.remove "$wid"
 	    fi
+	done
+    done
+
+    if [[ -n "$found" ]]; then
+	echo "$found"
+    else
+	if [[ "$state" != "busy" ]]; then
+	    echo "new"
+	else
+	    echo "none"
 	fi
-    done 
-    echo "none"
-    return 1
+    fi    
+}
+
+function bashrun.registry.cleanup {
+
+    local wid=""
+    for wid in $(bashrun.registry.get_wids); do
+	if ! bashrun.instance.exists? "$wid"; then
+	    bashrun.registry.remove "$wid"
+	fi
+    done
 }
 
 function bashrun.registry.get_last_wid {

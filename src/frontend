@@ -1,4 +1,3 @@
-
 # -*- shell-script -*-
 
 ############################################################
@@ -42,17 +41,17 @@ function usage {
      -h, --help    : show this message
      -d, --debug   : enable debug messages
 
-   Choice: which instance to use: [choice[:state]] (default: first:idle)
+   Choice: which instance to use: [choice[:state]] (default: last:idle)
      
-     Creates a new instance if no existing instance matches.
+     If no existing instance matches, a new instance will be created.
                                      
      first  : Use first (oldest) instance created
      last   : Use last (latest) instance created
-     all    : Use all available instances
+     all    : Use all available instances (mode defaults to 'any')
      <id>   : Use instance with window id <id>
      new    : Create a new instance in any case
 
-     state : limit choice to the specified state (default: idle)
+     state : limit choice to the specified state (default: none)
        
        idle : Use idle instances only
        busy : Use busy instances only
@@ -62,7 +61,7 @@ function usage {
      default modes : launcher, terminal, dropdown 
      custom modes  : $custom  
 
-     Use 'any' to choose an instance without regard to mode
+     Use 'any' to choose an instance regardless of mode
 
    Commands: [[--]command[:modifier] [arguments] (default: toggle)    
        
@@ -83,7 +82,7 @@ function usage {
 
 switch=""
 choice="last"
-state="new"
+state="idle"
 mode="launcher"
 command="toggle"
 command_modifier=""
@@ -101,7 +100,13 @@ function parse_arguments () {
     local wids=" $(bashrun.registry.get_wids) "
     local choice_set=0
 
-    local modes=" $(§modes.all) any "
+    local modes=""
+    local name=""
+    for name in $(§modes.all); do
+	modes="$modes $name ${name}s"
+    done
+    modes=" $modes any "
+
     local mode_set=0
 
     local commands=" show hide toggle exit restart remote su wid wait "
@@ -191,7 +196,13 @@ function parse_arguments () {
 	    
 	    if [[ "$choices" =~ " $word " || "$wids" =~ " $word " ]]; then
 		choice="$word"
-		[[ -n "$cond" ]] && state="$cond"
+		if [[ -n "$cond" ]]; then 
+		    state="$cond"
+		else
+		    # if choice is given explicitly without state, state is "" (i.e any)
+		    # if choice wasn't given at all, state will default to idle
+		    state=""
+		fi
 		choice_set=1
 		switch_set=1
 		debug? && echo "choice: $choice, $state: $state"
@@ -200,7 +211,15 @@ function parse_arguments () {
 	fi
 
 	if [[ "$mode_set" == "0" && "$modes" =~ " $word " ]]; then
-	    mode="$word"
+
+	    # some syntactic sugar allowing to call modes in plural
+	    if [[ " $(§modes.all) "  =~ " $word " || "$word" == "any" ]]; then
+		mode="$word"
+	    else
+		local len=${#word}
+		mode="${word:0:$len-1}"
+	    fi
+
 	    mode_set=1
 	    switch_set=1
 	    choice_set=1
@@ -240,21 +259,7 @@ function parse_arguments () {
 	termopts="$(printf "%q " ${termopts[@]})"
     fi
 
-    if debug?; then
-	echo "--------------------------------------------------------------------------------"
-	[[ -n "$switch" ]] && echo "switch     : $switch"
-	echo "
-choice  : $choice
-  policy   : $state
-
-mode       : $mode
-
-command    : $command
-  modifier : $command_modifier
-  args     : (${command_args[@]})
-
-termopts   : (${termopts[@]})"
-    fi
+    [[ "$choice" == "all" && "$mode_set" == "0" ]] && mode="any"
 
     unset -f debug?
 }

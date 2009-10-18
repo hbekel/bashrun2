@@ -31,6 +31,6 @@ function bashrun.instance.idle? () {
 }
 
 function bashrun.instance.busy? () {
-    !bashrun.instance.idle? $1
+    ! bashrun.instance.idle? $1
     return $?
 }
