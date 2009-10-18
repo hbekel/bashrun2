@@ -24,9 +24,9 @@ BASHRUN_REGISTRY=$BASHRUN_CACHE_HOME/registry
 BASHRUN_PINGPONG=$BASHRUN_CACHE_HOME/pingpong
 
 source $BASHRUN_SHARE/objects
-objects.cache_home $BASHRUN_CACHE_HOME
-objects.data_home $BASHRUN_CACHE_HOME
-objects.namespace "bashrun"
+§objects.cache_home $BASHRUN_CACHE_HOME
+§objects.data_home $BASHRUN_CACHE_HOME
+§objects.namespace "bashrun"
 
 §prepare_directories
 

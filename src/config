@@ -40,7 +40,7 @@ function §configure {
 	§progress.update +10 "Initializing... [${type//§/}]"
 
 	local len=${#type}
-	if [[ "$(objects.types)" =~ "${type:0:$len-1} " ]]; then
+	if [[ "$(§objects.types)" =~ "${type:0:$len-1} " ]]; then
 	    §configure.type $type
 	else
 	    if [[ "$type" == "§keys" ]]; then

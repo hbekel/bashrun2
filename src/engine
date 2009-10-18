@@ -34,7 +34,7 @@ function §engine.init {
     §actions.init
 
     # reset object positions
-    objects.seek_start
+    §objects.seek_start
 
     §progress.update +5 "Initializing... [engine]"
 

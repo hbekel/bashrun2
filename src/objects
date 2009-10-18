@@ -9,7 +9,7 @@ _OBJECTS_NAMESPACE='boop'
 _OBJECTS_TYPES=''
 _OBJECTS_FOCUS=''
 
-function objects.cache_home {
+function §objects.cache_home {
     
     local cache_home=$1
     if [[ "$cache_home" == '' ]]; then
@@ -19,7 +19,7 @@ function objects.cache_home {
     fi
 }
 
-function objects.data_home {
+function §objects.data_home {
     
     local data_home=$1
     if [[ "$data_home" == '' ]]; then
@@ -29,7 +29,7 @@ function objects.data_home {
     fi
 }
 
-function objects.namespace {
+function §objects.namespace {
     
     local namespace=$1
     if [[ "$namespace" == '' ]]; then
@@ -39,11 +39,11 @@ function objects.namespace {
     fi
 }
 
-function objects.types {    
+function §objects.types {    
     echo " $_OBJECTS_TYPES "
 }
 
-function objects.focus {
+function §objects.focus {
     
     local type=$1
     if [[ "$type" == '' ]]; then
@@ -53,7 +53,7 @@ function objects.focus {
     fi
 }
 
-function objects.seek_start {
+function §objects.seek_start {
     local type=""
     for type in $_OBJECTS_TYPES; do
 	${type}s.seek_start
@@ -109,7 +109,7 @@ function class {
 	return 0
     fi
 
-    local NAME="$(objects.namespace)_$name"
+    local NAME="$(§objects.namespace)_$name"
     NAME=${NAME//§/}
     NAME=$(echo $NAME | tr "[:lower:]" "[:upper:]")
 
@@ -121,7 +121,7 @@ function class {
 	sed "s|_OBJECTS_HAVE_INTERFACE=0|_OBJECTS_HAVE_INTERFACE=$have_interface|" | \
 	sed "s|_OBJECTS_INTERFACE_METHODS=''|_OBJECTS_INTERFACE_METHODS='$methods'|" | \
 	sed "s|object|$name|g;s|+$name|$plusname|g;s|OBJECT|$NAME|g;" | \
-	sed "s|ObJeCt|OBJECT|g;s|oBjEcT|object|g" \
+	sed "s|ObJeCt|OBJECT|g;s|oBjEcT|§object|g" \
 	> $tmpfile
 
     local i=0
@@ -135,10 +135,10 @@ function class {
 	fi
 
 	if [[ "$access" =~ r ]]; then
-      	    object.create_reader $name $NAME $key $i
+      	    §object.create_reader $name $NAME $key $i
 	fi
 	if [[ "$access" =~ w ]]; then
-	    object.create_writer $name $NAME $key $i
+	    §object.create_writer $name $NAME $key $i
 	fi
 	let i++
     done
@@ -148,32 +148,32 @@ function class {
     return 0
 }
 
-function objects.list {
+function §objects.list {
     ${_OBJECTS_FOCUS}s.list 
 }
 
-function objects.dump {
+function §objects.dump {
     local type=""
     for type in $_OBJECTS_TYPES; do
 	eval "${type}s.dump"
     done
 }
 
-function objects.restore {
+function §objects.restore {
     local type=""
     for type in $_OBJECTS_TYPES; do
 	eval "${type}s.restore"
     done
 }
 
-function objects.clear {
+function §objects.clear {
     local type=""
     for type in $_OBJECTS_TYPES; do
 	eval "${type}s.clear"
     done
 }
 
-function object.create_reader {
+function §object.create_reader {
     local name=$1
     local NAME=$2
     local key=$3
@@ -189,7 +189,7 @@ EOF
     ) >> $tmpfile
 }
 
-function object.create_writer {
+function §object.create_writer {
     local name=$1
     local NAME=$2
     local key=$3
@@ -206,19 +206,19 @@ EOF
     ) >> $tmpfile
 }
 
-function object.create_accessors {
-    object.create_reader "$@"
-    object.create_writer "$@"
+function §object.create_accessors {
+    §object.create_reader "$@"
+    §object.create_writer "$@"
 }
 
-function objects.complete_id {
+function §objects.complete_id {
 
     local cur prev opts
     COMPREPLY=()
     
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
-    opts="$($(objects.focus)s.all)"
+    opts="$($(§objects.focus)s.all)"
     
     if [[ ${cur} == * ]]; then
 	COMPREPLY=( $(compgen -W "${opts}" ${cur}) )
@@ -226,7 +226,7 @@ function objects.complete_id {
     return 0
 }
 
-function objects.complete_type {
+function §objects.complete_type {
 
     local cur prev opts
     COMPREPLY=()
@@ -235,7 +235,7 @@ function objects.complete_type {
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     
     local type
-    for type in $(objects.types); do
+    for type in $(§objects.types); do
 	if ${type}s.interface?; then
 	    opts="$opts $type"
 	fi
