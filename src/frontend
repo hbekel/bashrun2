@@ -14,8 +14,8 @@
 . $BASHRUN_RCFILE
 
 # load modes and terminals 
-bashrun.configure.type "§modes"
-bashrun.configure.type "§terminals"
+§configure.type "§modes"
+§configure.type "§terminals"
 
 # global defaults, may be set by parse_arguments()
 switch=""
@@ -98,7 +98,7 @@ function parse_arguments () {
     local switch_set=0
 
     local choices=" new first last all "
-    local wids=" $(bashrun.registry.get_wids) "
+    local wids=" $(§registry.get_wids) "
     local choice_set=0
 
     local states=" busy idle "
@@ -281,8 +281,8 @@ function waitwid {
     ((expected+=1))
 
     # wait for instance to register
-    until [[ "$(bashrun.registry.length)" -eq expected ]]; do
+    until [[ "$(§registry.length)" -eq expected ]]; do
 	sleep 0.2
     done
-    bashrun.registry.get_last_wid
+    §registry.get_last_wid
 }

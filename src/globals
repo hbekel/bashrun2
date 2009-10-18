@@ -28,6 +28,6 @@ objects.cache_home $BASHRUN_CACHE_HOME
 objects.data_home $BASHRUN_CACHE_HOME
 objects.namespace "bashrun"
 
-bashrun.prepare_directories
+§prepare_directories
 
 ################################################################################

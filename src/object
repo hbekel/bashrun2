@@ -343,7 +343,7 @@ function object.code {
 
 function objects.code {
 
-    print_header 'OBJECTS' '#'
+    §print_header 'OBJECTS' '#'
 
     objects.seek_start
     while objects.next?; do
@@ -449,7 +449,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	
 	# --new
 	var="_OBJECTS_INTERFACE_OPTION_new"
-	if defined? $var; then
+	if §defined? $var; then
 	    if [[ ${!var} != '' ]]; then
 		if ! objects.seek ${!var}; then
 		    object.new "${!var}"
@@ -464,7 +464,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	local which=""
 	var="_OBJECTS_INTERFACE_OPTION_all"
 
-	if defined? $var; then
+	if §defined? $var; then
 	    which="$(objects.all)"
 	else
 	    if [[ "${#left[@]}" != "0" ]]; then
@@ -489,7 +489,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	    
 	    # --code
 	    var="_OBJECTS_INTERFACE_OPTION_code"
-	    if defined? $var; then	    
+	    if §defined? $var; then	    
 		object.code
 	    fi
 	    
@@ -498,7 +498,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	    local args=''
 	    for method in $_OBJECTS_INTERFACE_METHODS; do
 		var="_OBJECTS_INTERFACE_OPTION_$method"
-		if defined? $var; then
+		if §defined? $var; then
 		    if $(type -t object.$method &> /dev/null); then
 			args="${!var}"
 			args=${args//\\/\\\\}
@@ -514,7 +514,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 		key=${_OBJECTS_KEYS[$i]}
 		var="_OBJECTS_INTERFACE_OPTION_$key"
 
-		if defined? $var; then
+		if §defined? $var; then
 		    val="${!var}"
 		    if [[ "$val" == '' ]]; then
 			object.get_$key

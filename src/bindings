@@ -36,11 +36,11 @@ function §binding.code {
     echo "--bind $args"
 }
 
-function_clone "§bindings.dump" "_§bindings.dump"
+§function.clone "§bindings.dump" "§_bindings.dump"
 
 function §bindings.dump {
 
-    _§bindings.dump
+    §_bindings.dump
 
     local file=$_OBJECTS_DATA_HOME/§bindings.dump
 
@@ -58,11 +58,11 @@ function §bindings.dump {
     §bindings.seek $saved
 }
 
-function_clone "§internals.dump" "_§internals.dump"
+§function.clone "§internals.dump" "§_internals.dump"
 
 function §internals.dump {
 
-    _§internals.dump
+    §_internals.dump
 
     local file=$_OBJECTS_DATA_HOME/§internals.dump
     local saved=$(§internal.get_action)

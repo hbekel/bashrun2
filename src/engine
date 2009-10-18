@@ -7,36 +7,36 @@ BASHRUN_EXECMODE=''
 BASHRUN_ENGINE_BUSY=0
 BASHRUN_LOGFILE=${BASHRUN_LOGFILE:-/dev/null}
 
-function bashrun.engine.init {
+function §engine.init {
     
-    bashrun.engine.busy
+    §engine.busy
 
-    bashrun.separator "bashrun-engine $BASHRUN_VERSION"
+    §separator "bashrun-engine $BASHRUN_VERSION"
 
-    progress.update +10 "Initializing... [window]"
+    §progress.update +10 "Initializing... [window]"
 
     # set wid to terminal $WINDOWID
-    bashrun.window.id $WINDOWID
+    §window.id $WINDOWID
 
     # get current readline bindings
-    bashrun.debug "getting current readline bindings..."
+    §debug "getting current readline bindings..."
     readline_get_bindings
 
-    progress.update +5
+    §progress.update +5
         
     # load/restore configuration
-    bashrun.configure
+    §configure
 
     §handlers.install_completion
 
     # run init callbacks
-    bashrun.debug -v "+action" -v "--init" "callbacks..."
+    §debug -v "+action" -v "--init" "callbacks..."
     §actions.init
 
     # reset object positions
     objects.seek_start
 
-    progress.update +5 "Initializing... [engine]"
+    §progress.update +5 "Initializing... [engine]"
 
     # switch to initial mode passed from env
     §modes.seek "$BASHRUN_MODE"
@@ -50,39 +50,37 @@ function bashrun.engine.init {
     BASHRUN_EXECMODE='&'
 
     # install command_not_found_handle for bash>=4 -> handle
-    if bash4; then
+    if §bash4; then
 	function command_not_found_handle {
 	    if [[ BASHRUN_CMD_NOT_FOUND_HANDLE -eq 1 ]]; then
-		if bashrun.engine.idle?; then
-		    BASHRUN_FROM_CMDNFH=1 bashrun.engine.action run 0 "$*"
+		if §engine.idle?; then
+		    BASHRUN_FROM_CMDNFH=1 §engine.action run 0 "$*"
 		fi
 	    fi
 	}
     fi
 
     # shutdown on exit
-    trap bashrun.engine.shutdown EXIT
+    trap §engine.shutdown EXIT
     
-    bashrun.debug emph -y "done"
+    §debug emph -y "done"
 
-    bashrun.separator 
+    §separator 
     
-    progress.destroy
-
-    bashrun.engine.idle
+    §engine.idle
 }
 
-function bashrun.engine.action {
+function §engine.action {
 
     local action=$1       # action to perform
     local accept=$2       # --accept override
     local command="$3"    # command override
 
-    bashrun.separator "engine $action $command"
+    §separator "engine $action $command"
 
     if §actions.seek $action; then
 	
-	bashrun.engine.busy
+	§engine.busy
 	BASHRUN_RULES_APPLIED=0
 
 	BASHRUN_ACTION=$action
@@ -90,30 +88,30 @@ function bashrun.engine.action {
 	# overrides
 	[[ -z "$accept" ]] && accept=$(§action.get_accept)
 	
-	bashrun.debug "action" -v "$action" "accept" -c "$accept"
+	§debug "action" -v "$action" "accept" -c "$accept"
 
 	case $accept in
 	    
 	    1)
 	        # accept input via trap
-		bashrun.debug "accepting input from" -c "DEBUG trap"
-		trap bashrun.engine.trap DEBUG
+		§debug "accepting input from" -c "DEBUG trap"
+		trap §engine.trap DEBUG
 		;; 
 	    
 	    0)
 		# launch directly 
-		bashrun.engine.launch "$command"
+		§engine.launch "$command"
 		;;	    
 	esac
     else
-	bashrun.debug fail "no such action:" -v "$action"
+	§debug fail "no such action:" -v "$action"
     fi
 }
 
-function bashrun.engine.trap {
+function §engine.trap {
     
     # the verbatim command line entered
-    BASHRUN_COMMAND_LINE=$(bashrun.command.get_line)
+    BASHRUN_COMMAND_LINE=$(§command.get_line)
 
     # the command about to be executed,
     # as expanded by the shell
@@ -123,30 +121,30 @@ function bashrun.engine.trap {
     BASHRUN_EXECMODE="&"
 
     # remove quotes (;|&)
-    bashrun.command.unquote
+    §command.unquote
 
     # pass through trap builtin
     if [[ "$BASHRUN_COMMAND" =~ ^trap ]]; then
-	bashrun.debug -v "trap" -c "removed"
-	bashrun.engine.busy? && bashrun.engine.reset 
+	§debug -v "trap" -c "removed"
+	§engine.busy? && §engine.reset 
 	return 0
     fi
-    bashrun.debug "command:" -v "$BASHRUN_COMMAND"
-    bashrun.debug "   line:" -v "$BASHRUN_COMMAND_LINE"
+    §debug "command:" -v "$BASHRUN_COMMAND"
+    §debug "   line:" -v "$BASHRUN_COMMAND_LINE"
 
-    bashrun.engine.launch
+    §engine.launch
 
     return 1
 }
 
-function bashrun.engine.launch {
+function §engine.launch {
 
     local command="$1"
     local status=0
 
     # command override
     if [[ "$command" != '' ]]; then
-	bashrun.debug -c override -v "$command"
+	§debug -c override -v "$command"
 	BASHRUN_COMMAND="$command"
 	BASHRUN_COMMAND_LINE="$command"
     fi
@@ -156,22 +154,22 @@ function bashrun.engine.launch {
 	    §action.run
 	    status=$?
 	    if [[ status -ne 0 ]]; then
-		[[ status -eq 1 ]] && bashrun.engine.reset 
-		[[ status -eq 2 ]] && bashrun.engine.reset 0
+		[[ status -eq 1 ]] && §engine.reset 
+		[[ status -eq 2 ]] && §engine.reset 0
 		return 0
 	    fi
 	fi
     fi
-    bashrun.debug "$BASHRUN_COMMAND"
+    §debug "$BASHRUN_COMMAND"
     
-    bashrun.engine.execute
-    bashrun.engine.reset
+    §engine.execute
+    §engine.reset
     return 0
 }
 
-function bashrun.engine.execute {
+function §engine.execute {
 
-    bashrun.prepare_logfile
+    §prepare_logfile
 
     # execute command
     if [[ "$BASHRUN_EXECMODE" == "&" ]]; then
@@ -182,7 +180,7 @@ function bashrun.engine.execute {
     fi
 }
 
-function bashrun.engine.reset {
+function §engine.reset {
 
     local unmap=${1:-1}
 
@@ -196,34 +194,34 @@ function bashrun.engine.reset {
     §action.api.disable 
 
     # unmap the window if requested/necessary
-    [[ unmap -eq 1 ]] && §mode.unmap? && bashrun.window.unmap
+    [[ unmap -eq 1 ]] && §mode.unmap? && §window.unmap
 
-    bashrun.engine.idle
+    §engine.idle
 
-    bashrun.debug -c "reset"
+    §debug -c "reset"
 
-    bashrun.separator
+    §separator
 }
 
-function bashrun.engine.busy {
+function §engine.busy {
     BASHRUN_ENGINE_BUSY=1
 }
 
-function bashrun.engine.busy? {
+function §engine.busy? {
     [[ "$BASHRUN_ENGINE_BUSY" == "1" ]]
 }
 
-function bashrun.engine.idle {
+function §engine.idle {
     BASHRUN_ENGINE_BUSY=0
 }
 
-function bashrun.engine.idle? {
+function §engine.idle? {
     [[ "$BASHRUN_ENGINE_BUSY" == "0" ]]
 }
 
-function bashrun.engine.shutdown { 
+function §engine.shutdown { 
 
     # remove this instance from registry
-    bashrun.registry.remove
-    bashrun.debug "exit"
+    §registry.remove
+    §debug "exit"
 }    

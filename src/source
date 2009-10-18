@@ -21,15 +21,15 @@ source $share/globals
 source $share/registry
 
 # setup pingpong (this needs to happen as early as possible)
-function bashrun.pong { echo "$$" > $BASHRUN_PINGPONG; }
-trap bashrun.pong SIGUSR1
+function §pong { echo "$$" > $BASHRUN_PINGPONG; }
+trap §pong SIGUSR1
 
 # register this instance (also needed asap)
-bashrun.registry.add
+§registry.add
 
 # setup progress bar
 source $share/progress
-progress.new "Initializing... [objects]"
+§progress.new "Initializing... [objects]"
 
 source $share/config
 source $share/instance
@@ -50,9 +50,9 @@ source $share/bookmarks
 source $share/engine
 
 if [[ BASHRUN_DEBUG -eq 1 ]]; then
-    time bashrun.engine.init
+    time §engine.init
 else
-    bashrun.engine.init
+    §engine.init
 fi
 
 unset share

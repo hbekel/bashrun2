@@ -2,7 +2,7 @@
 
 ################################################################################
 
-function bashrun.registry.length {
+function §registry.length {
     if [[ -f $BASHRUN_REGISTRY ]]; then
 	cat $BASHRUN_REGISTRY | wc -l 
     else
@@ -10,7 +10,7 @@ function bashrun.registry.length {
     fi
 }
 
-function bashrun.registry.get_wids {
+function §registry.get_wids {
     if [[ -f $BASHRUN_REGISTRY ]]; then
 	cat $BASHRUN_REGISTRY | cut -d: -f1
     else
@@ -18,18 +18,18 @@ function bashrun.registry.get_wids {
     fi
 }
 
-function bashrun.registry.add {
+function §registry.add {
     
     # add window id to widfile
     if [[ ! -f $BASHRUN_REGISTRY ]]; then
 	touch $BASHRUN_REGISTRY
     fi
     local entry="$WINDOWID:$$:$BASHRUN_MODE"
-    bashrun.debug "entry" -v "$entry" '>>' -v "${BASHRUN_REGISTRY/$HOME/~}"
+    §debug "entry" -v "$entry" '>>' -v "${BASHRUN_REGISTRY/$HOME/~}"
     echo "$entry" >> $BASHRUN_REGISTRY
 }
 
-function bashrun.registry.remove {
+function §registry.remove {
 
     local wid="${1:-$WINDOWID}"
     local info=''
@@ -47,7 +47,7 @@ function bashrun.registry.remove {
     fi
 }
 
-function bashrun.registry.find {
+function §registry.request {
     
     # return window ids of requested instances or "new"
 
@@ -69,18 +69,18 @@ function bashrun.registry.find {
 	return 1
     fi
 
-    bashrun.registry.cleanup
+    §registry.cleanup
 
     if [[ "$choice" == "all" ]]; then
-	wids="$(bashrun.registry.get_wids)"
+	wids="$(§registry.get_wids)"
     fi
 
-    if [[ "$choice" =~ [0-9] && "$(bashrun.registy.get_wids)" =~ "$choice" ]]; then
+    if [[ "$choice" =~ [0-9] && "$(§registy.get_wids)" =~ "$choice" ]]; then
 	wids="$choice"
     fi
 
     if [[ "$wids" == "" ]]; then
-	wids="$(bashrun.registry.get_wids)"
+	wids="$(§registry.get_wids)"
     fi
 
     if [[ "$choice" == "last" ]]; then
@@ -110,12 +110,12 @@ function bashrun.registry.find {
 			found="$found $wid"
 		    else
 			if [[ "$state" == "busy" ]];then
-			    if bashrun.instance.busy? "$entry_pid"; then
+			    if §instance.busy? "$entry_pid"; then
 				[[ single -eq 1 ]] && echo "$wid" && return 0
 				found="$found $wid"
 			    fi
 			elif [[ "$state" == "idle" ]]; then
-			    if bashrun.instance.idle? "$entry_pid"; then
+			    if §instance.idle? "$entry_pid"; then
 				[[ single -eq 1 ]] && echo "$wid" && return 0
 				found="$found $wid"
 			    fi
@@ -137,17 +137,17 @@ function bashrun.registry.find {
     fi    
 }
 
-function bashrun.registry.cleanup {
+function §registry.cleanup {
 
     local wid=""
-    for wid in $(bashrun.registry.get_wids); do
-	if ! bashrun.instance.exists? "$wid"; then
-	    bashrun.registry.remove "$wid"
+    for wid in $(§registry.get_wids); do
+	if ! §instance.exists? "$wid"; then
+	    §registry.remove "$wid"
 	fi
     done
 }
 
-function bashrun.registry.get_last_wid {
+function §registry.get_last_wid {
     if [[ -f $BASHRUN_REGISTRY ]]; then
 	tac $BASHRUN_REGISTRY | head -n1 | cut -d: -f1
     else
@@ -155,7 +155,7 @@ function bashrun.registry.get_last_wid {
     fi
 }
 
-function bashrun.registry.set_mode {
+function §registry.set_mode {
     
     local prev="$1"
     local mode="$2"
@@ -173,7 +173,7 @@ function bashrun.registry.set_mode {
     mv $BASHRUN_REGISTRY.tmp $BASHRUN_REGISTRY
 }
 
-function bashrun.registry.get_mode {
+function §registry.get_mode {
     
     local wid="$1"
     local info=""
@@ -188,7 +188,7 @@ function bashrun.registry.get_mode {
     return 1
 }
 
-function bashrun.registry.get_pid {
+function §registry.get_pid {
 
     local wid="$1"
     local info=""

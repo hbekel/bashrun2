@@ -4,23 +4,50 @@
 
 BASHRUN_DEBUG_ACTION=0
 
-function defined? {
-    [[ ${!1-X} == ${!1-Y} ]]
+function §defined? {
+    [[ "${!1-X}" == "${!1-Y}" ]]
 }
 
-function bash3 {
+function §function.defined? {
+    [[ "$(type -t $1 2> /dev/null)" == "function" ]]
+    return $?
+}
+
+function §function.exported? () {
+    [[ "$(declare -pf | grep foo)" =~ "declare -fx $1" ]]
+}	
+
+function §function.code {
+    echo "$(type $1 | sed '1 d')"
+}
+
+function §function.clone {
+
+    local function="$1"
+    local newname="$2"
+
+    if $(type -t $function &> /dev/null); then
+	local code="$(echo -n '#'; type $function)"
+	code="${code/$function \(\)/$newname ()}"
+	eval "$code"
+    else
+	echo "§function.clone: error: no such function: $function"
+    fi
+}
+
+function §bash3 {
     [[ ${BASH_VERSINFO[0]} -eq 3 ]]
 }
 
-function bash4 {
+function §bash4 {
     [[ ${BASH_VERSINFO[0]} -eq 4 ]]
 }
 
-function bashrun.debug {
+function §debug {
 
-    # bashrun.debug [--success] "var=" var "->" g "yes!" 
-    # bashrun.debug --warn "var=" var "->" y "hmm..." 
-    # bashrun.debug --fail "var=" var "->" r "you fail!" 
+    # §debug [--success] "var=" var "->" g "yes!" 
+    # §debug --warn "var=" var "->" y "hmm..." 
+    # §debug --fail "var=" var "->" r "you fail!" 
 
     [[ BASHRUN_DEBUG -eq 0 ]] && return
     
@@ -43,7 +70,7 @@ function bashrun.debug {
     
     local _func=${FUNCNAME[1]}
     _func=${_func//}
-    _func=${_func/bashrun./}
+    _func=${_func/§/}
     
     local _from=${FUNCNAME[2]}
     _from=${_from//}
@@ -86,8 +113,8 @@ function bashrun.debug {
 	    echo -ne "${!col}"
 	    requested=1
 
-	elif [[ ! "$str" =~ ^[0-9] && $(defined? "$str") ]]; then # variable
-	    if defined? "$str"; then
+	elif [[ ! "$str" =~ ^[0-9] && $(§defined? "$str") ]]; then # variable
+	    if §defined? "$str"; then
 		echo -ne "$d$str$b$v " # name
 		echo -n  "${!str} "    #value 
 	    fi
@@ -100,7 +127,7 @@ function bashrun.debug {
     echo -e "$n"
 }
 
-function bashrun.separator {
+function §separator {
 
     [[ BASHRUN_DEBUG -eq 0 ]] && return
 
@@ -126,7 +153,7 @@ function bashrun.separator {
     echo
 }
 
-function bashrun.prepare_directories {
+function §prepare_directories {
 
     # create XDG directories
     local dir
@@ -136,13 +163,13 @@ function bashrun.prepare_directories {
 	dir=${!dir}
 	
 	if [[ ! -d $dir ]]; then
-	    bashrun.debug "$dir"
+	    §debug "$dir"
 	    install -d -m 700 $dir
 	fi
     done
 }
 
-function bashrun.prepare_logfile {
+function §prepare_logfile {
 
     # set to /dev/null if empty
     if [[ "$BASHRUN_LOGFILE" == "" ]]; then 
@@ -151,27 +178,18 @@ function bashrun.prepare_logfile {
  
     # touch unless exists
     if [[ ! -e "$BASHRUN_LOGFILE" ]]; then
-	bashrun.debug "creating logfile $BASHRUN_LOGFILE"
+	§debug "creating logfile $BASHRUN_LOGFILE"
 	touch "$BASHRUN_LOGFILE"
     fi
 
     # revert to /dev/null unless writable
     if [[ ! -w "$BASHRUN_LOGFILE" ]]; then
-	bashrun.debug "logfile $BASHRUN_LOGFILE is not writeable"
+	§debug "logfile $BASHRUN_LOGFILE is not writeable"
 	BASHRUN_LOGFILE="/dev/null"
     fi
 }
 
-function function? {
-    [[ "$(type -t $1 2> /dev/null)" == "function" ]]
-    return $?
-}
-
-function.exported? () {
-    [[ "$(declare -pf | grep foo)" =~ "declare -fx $1" ]]
-}	
-
-function ks2kn {
+function §ks2kn {
     local keyseq=$1
 
     if §keynames.seek "$keyseq"; then
@@ -195,7 +213,7 @@ function ks2kn {
     echo "$keyname"
 }
 
-function print_line {
+function §print_line {
 
     local title=$1
     local char=${2:--}
@@ -213,7 +231,7 @@ function print_line {
     echo
 }
 
-function print_header {
+function §print_header {
     
     local title="$1"
 
@@ -222,15 +240,15 @@ function print_header {
     title=${title/${prefix}_/}
 
     local char=${2:-#}
-    print_line '' "$char"
-    print_line "$title" "$char" '-1'
-    print_line '' "$char"
+    §print_line '' "$char"
+    §print_line "$title" "$char" '-1'
+    §print_line '' "$char"
     echo
 }
 
-function print_bindings {
+function §print_bindings {
         
-    # some colours (used in print_bindings)
+    # some colours (used in §print_bindings)
     local w="\033[1;37m" # white
     local r="\033[1;31m" # red
     local g="\033[1;32m" # green 
@@ -254,14 +272,14 @@ function print_bindings {
     local keymap=""
 
     for keymap in emacs vi-insert vi-command; do
-	bindings="$(bound_and_sorted $keymap)"
+	bindings="$(§bound_and_sorted $keymap)"
 	if [[ -n "$bindings" ]]; then
 	    echo -e "${c}$keymap:${n}\n"
 	    for id in $bindings; do
 		if [[ "$id" == "|" ]]; then		    
 		    echo
 		else
-		    print_binding "$id"
+		    §print_binding "$id"
 		fi
 	    done
 	    echo
@@ -269,7 +287,7 @@ function print_bindings {
     done
 }
 
-function bound_and_sorted {
+function §bound_and_sorted {
     
     local keymap="${1:-emacs}"
     local ids="$(§bindings.select keymap "$keymap")"
@@ -316,7 +334,7 @@ function bound_and_sorted {
     [[ found -eq 1 ]] && echo "$sorted"
 }
 
-function print_binding {
+function §print_binding {
     
     local id="$1"
     local name=""
@@ -338,7 +356,7 @@ function print_binding {
     if §keynames.seek "$keyseq"; then
 	keyname="$(§keyname.get_name)"
     else
-	keyname="$(ks2kn $keyseq)"
+	keyname="$(§ks2kn $keyseq)"
     fi
     
     echo -ne " ${w}$keyname\t${n}$desc"
@@ -349,18 +367,18 @@ function print_binding {
     fi
 }
 
-function display_message {
+function §display_message {
 
     local title="$1"
     local text="$2"
 
     if which dialog &>/dev/null; then
-	local prev_size="$(bashrun.window.size)"
-	bashrun.window.size --hint 40 12
+	local prev_size="$(§window.size)"
+	§window.size --hint 40 12
 	
 	dialog --no-shadow --title "Bashrun $title" --msgbox "\n$text" 12 40
 	
-	bashrun.window.size --hint $prev_size
+	§window.size --hint $prev_size
 	tput reset
 
     elif which zenity &>/dev/null; then

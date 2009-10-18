@@ -21,7 +21,7 @@ configure-defaults () {
     --core 1
     
     action-abort () {
-	[[ "$(§mode.get_unmap)" -eq 1 ]] && bashrun.window.unmap
+	[[ "$(§mode.get_unmap)" -eq 1 ]] && §window.unmap
 	return 1
     }
     
@@ -44,9 +44,9 @@ configure-defaults () {
 	
 	if [[ BASHRUN_DEBUG -eq 0 ]]; then
 	    BASHRUN_DEBUG=1
-	    bashrun.debug "debug mode" -g "enabled"
+	    §debug "debug mode" -g "enabled"
 	else
-	    bashrun.debug "debug mode" -r "disabled"
+	    §debug "debug mode" -r "disabled"
 	    BASHRUN_DEBUG=0
 	fi
 	return 1
@@ -256,10 +256,10 @@ configure-defaults () {
 
 	local tmpfile=$BASHRUN_CACHE_HOME/keybindings
 	if [[ ! -f "$tmpfile" ]]; then
-	    print_bindings > $tmpfile
+	    §print_bindings > $tmpfile
 
 	elif §bindings.modified?; then
-	    print_bindings > $tmpfile
+	    §print_bindings > $tmpfile
 	    §bindings.modified 0
 	fi
 	command "less $tmpfile"
@@ -286,7 +286,7 @@ configure-defaults () {
 	    fi
 	    next="$(echo "$geom" | cut -d ' ' -f $current)"
 
-	    bashrun.window.geometry "$next"
+	    §window.geometry "$next"
 	    §mode.set_current $current	
 	fi
 	tput reset

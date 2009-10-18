@@ -6,13 +6,13 @@ class "§mode" "name comp unmap geom anim ps1 ps2 onmap onunmap feedback current
 
 ################################################################################
 
-function_clone "§mode.new" "_§mode.new"
+§function.clone "§mode.new" "§_mode.new"
 
 BASHRUN_MODE="${BASHRUN_MODE:-launcher}"
 
 function §mode.new { 
 
-    _§mode.new "$1"
+    §_mode.new "$1"
     §mode.set_geom "80x24"
     §mode.set_current "1"
     §mode.set_comp 'complete'
@@ -50,27 +50,27 @@ function §mode.switch {
     local previous="$BASHRUN_MODE"
     
     if [[ "$previous" != "$current" ]]; then
-	bashrun.debug "switching from" -v "$previous" "to" -v "$current"
+	§debug "switching from" -v "$previous" "to" -v "$current"
     fi
 
     if [[ "$previous" != '' && "$previous" != "$current" ]]; then
-	if function? "mode-$previous-leave"; then
+	if §function.defined? "mode-$previous-leave"; then
 	    mode-$previous-leave
 	fi
     fi
 
     # apply geometry
-    bashrun.window.geometry "$(§mode.get_default_geometry)" 
+    §window.geometry "$(§mode.get_default_geometry)" 
 
-    if function?  "mode-$current-enter"; then
+    if §function.defined?  "mode-$current-enter"; then
 	mode-$current-enter
     fi
     
     # enable animation
     if [[ "$(§mode.get_anim)" == "1" ]]; then
-	bashrun.window.animate 1
+	§window.animate 1
     else
-	bashrun.window.animate 0
+	§window.animate 0
     fi
     tput cr; tput dl1
     
@@ -81,7 +81,7 @@ function §mode.switch {
     [[ -n "$ps2" ]] && PS2="$ps2"
 
     BASHRUN_MODE="$current"
-    bashrun.registry.set_mode "$previous" "$current"
+    §registry.set_mode "$previous" "$current"
 
     xdotool set_window $BASHRUN_WINDOW_ID \
 	--name "bashrun-$current" \
@@ -109,7 +109,7 @@ function §mode.code {
     local onunmap="$(§mode.get_onunmap)"
     local feedback="$(§mode.get_feedback)"
 
-    print_line "mode $name" "#" "80"
+    §print_line "mode $name" "#" "80"
     echo
 
     echo "+mode '$name'"
@@ -124,18 +124,18 @@ function §mode.code {
     [[ "$feedback" != '0' ]] && echo "  --feedback   '$feedback'"
     echo
 
-    if function? "mode-$name-enter"; then
-	function_code "mode-$name-enter"
+    if §function.defined? "mode-$name-enter"; then
+	§function.code "mode-$name-enter"
 	echo
     fi
 
-    if function? "mode-$name-leave"; then
-	function_code "mode-$name-leave"
+    if §function.defined? "mode-$name-leave"; then
+	§function.code "mode-$name-leave"
 	echo
     fi      
 }
 
-function_clone "§modes.dump" "_§modes.dump"
+§function.clone "§modes.dump" "§_modes.dump"
 
 function §modes.dump {
 
@@ -144,20 +144,20 @@ function §modes.dump {
     local func=''
     local current=$(§mode.get_name)
 
-    _§modes.dump
+    §_modes.dump
 
     §modes.seek_start
     while §modes.next?; do
 	mode=$(§mode.get_name)
 
 	func="mode-$mode-enter"
-	if function? "$func"; then
-	    function_code "$func" >> $file
+	if §function.defined? "$func"; then
+	    §function.code "$func" >> $file
 	fi
 
 	func="mode-$mode-leave"
-	if function? "$func"; then
-	    function_code "$func" >> $file
+	if §function.defined? "$func"; then
+	    §function.code "$func" >> $file
 	fi
 	§modes.next
     done

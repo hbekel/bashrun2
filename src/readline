@@ -37,9 +37,9 @@ function readline_rebind {
     local binding="-m $keymap '$readline'"    
 
     if [[ "$readline" != '' ]]; then 
-	bashrun.debug "bind $binding"
+	§debug "bind $binding"
 	eval "bind $binding"
     else
-	bashrun.debug "$keyseq: no previous binding"
+	§debug "$keyseq: no previous binding"
     fi
 }

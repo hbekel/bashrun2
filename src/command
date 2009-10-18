@@ -6,7 +6,7 @@ BASHRUN_COMMAND=''
 BASHRUN_COMMAND_LINE=''
 BASHRUN_COMMAND_WORD=''
 
-function bashrun.command.unquote {
+function §command.unquote {
 
     command="$BASHRUN_COMMAND"
     # unquote quoted &;|
@@ -19,7 +19,7 @@ function bashrun.command.unquote {
     BASHRUN_COMMAND=$command
 }
 
-function bashrun.command.get_line {
+function §command.get_line {
     # updates BASHRUN_COMMAND_LINE to contain the complete and
     # verbatim line entered by the user.
     
@@ -36,7 +36,7 @@ function bashrun.command.get_line {
     echo "$BASHRUN_COMMAND_LINE"
 }
 
-function bashrun.command.get_word {
+function §command.get_word {
 
     # updates BASHRUN_COMMAND_WORD to contain the first word of the
     # current command.
@@ -52,66 +52,66 @@ function bashrun.command.get_word {
     word=$(echo $word | sed -r "s/^\\(+//;s/\\)+$//")
 
     BASHRUN_COMMAND_WORD="$word"
-    bashrun.debug -v "$BASHRUN_COMMAND_WORD"
+    §debug -v "$BASHRUN_COMMAND_WORD"
 }
 
-function bashrun.command.executable? {
+function §command.executable? {
     
     # check if BASHRUN_COMMAND_WORD is executable
 
-    bashrun.command.get_word
+    §command.get_word
 
     local word="$BASHRUN_COMMAND_WORD"
     local type=`type -t $word`
 
     if [[ "$type" =~ (alias|keyword|builtin) ]]; then
-	bashrun.debug "$word-> $type -> yes"
+	§debug "$word-> $type -> yes"
 	return 0
     fi
 
     if [[ "$type" == "function" ]]; then
-	if function.exported? $word; then
-	    bashrun.debug "$word -> exported $type -> no"
+	if §function.exported? $word; then
+	    §debug "$word -> exported $type -> no"
 	    return 0
 	else	    
-	    bashrun.debug "$word -> $type -> no"
+	    §debug "$word -> $type -> no"
 	    return 1
 	fi
     fi
 
     if [[ "$type" == "file" ]]; then
 	if [[ `which $word 2> /dev/null` ]]; then
-	    bashrun.debug "which: `which $word` -> yes"
+	    §debug "which: `which $word` -> yes"
 	    return 0
 	fi
 	if [[ -x $word ]]; then
-	    bashrun.debug "+x $word -> yes"
+	    §debug "+x $word -> yes"
 	    return 0
 	fi
     fi
 
-    bashrun.debug "$word -> no"
+    §debug "$word -> no"
     return 1
 }
 
-function bashrun.command.builtin? {
+function §command.builtin? {
 
     # check if BASHRUN_COMMAND_WORD is a shell builtin command
 
-    bashrun.command.get_word
+    §command.get_word
     local word="$BASHRUN_COMMAND_WORD"
 
     local result=`type $word 2>&1 | head -n1`
 
     if [[ "$result" =~ builtin ]]; then
-	bashrun.debug "$word: yes"
+	§debug "$word: yes"
 	return 0
     fi
-    bashrun.debug "$word: no"
+    §debug "$word: no"
     return 1
 }
 
-function bashrun.command.bookmark? {
+function §command.bookmark? {
 
     if §bookmarks.seek "$1"; then
 	return 0
@@ -119,7 +119,7 @@ function bashrun.command.bookmark? {
     return 1
 }
 
-function bashrun.command.add_su {
+function §command.add_su {
 
     local user=${1:-root}
 
@@ -138,15 +138,15 @@ function bashrun.command.add_su {
     fi
     # run the su part (passwort entry) in foreground 
     BASHRUN_EXECMODE="" 
-    bashrun.debug "$BASHRUN_COMMAND"
+    §debug "$BASHRUN_COMMAND"
 }
 
-function bashrun.command.add_terminal {
+function §command.add_terminal {
 
-    bashrun.command.get_word
+    §command.get_word
 
     if [[ "$BASHRUN_COMMAND_WORD" =~ (xterm|?rxvt?) ]]; then
-	bashrun.debug "already in terminal"
+	§debug "already in terminal"
 	return 1
     fi
 
@@ -165,12 +165,12 @@ function bashrun.command.add_terminal {
 
     BASHRUN_COMMAND="$(§terminal.get_command) \"$BASHRUN_COMMAND\""
 
-    bashrun.debug "$BASHRUN_COMMAND"
+    §debug "$BASHRUN_COMMAND"
 
     return 0
 }
 
-function bashrun.command.add_pager {
+function §command.add_pager {
     BASHRUN_COMMAND="$BASHRUN_COMMAND | ${PAGER:-less -f}"
-    bashrun.debug "$BASHRUN_COMMAND"
+    §debug "$BASHRUN_COMMAND"
 }

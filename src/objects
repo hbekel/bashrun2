@@ -246,27 +246,3 @@ function objects.complete_type {
     return 0
 }
 
-# utility functions
-
-function function_code {
-    echo "$(type $1 | sed '1 d')"
-}
-
-function function_clone {
-
-    local function="$1"
-    local newname="$2"
-
-    if $(type -t $function &> /dev/null); then
-	local code="$(echo -n '#'; type $function)"
-	code="${code/$function \(\)/$newname ()}"
-	eval "$code"
-    else
-	echo "function_clone: error: no such function: $function"
-    fi
-}
-
-function defined? {
-    [[ "${!1-X}" == "${!1-Y}" ]]
-}
-

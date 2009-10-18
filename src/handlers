@@ -8,10 +8,10 @@ BASHRUN_FROM_CMDNFH=0
 
 ################################################################################
 
-function_clone §handler.new _§handler.new
+§function.clone §handler.new §_handler.new
 
 function §handler.new {
-    _§handler.new "$1"
+    §_handler.new "$1"
     
     §handler.set_pattern '(.+)'
     §handler.set_string '%1'
@@ -33,7 +33,7 @@ function §handlers.install_completion {
 	name="$(§handler.get_name)"
 	prefix=($(§handler.get_complete))
 	if [[ -n prefix ]]; then
-	    if function? +handler-$name-complete; then
+	    if §function.defined? +handler-$name-complete; then
 	    
 		func='function _bashrun___NAME__ {
 
@@ -55,7 +55,7 @@ function §handlers.install_completion {
 		source /tmp/compfunc
 	    
 		eval "function $prefix { 
-                        bashrun.engine.action run 0 \"$prefix \$@\" 
+                        §engine.action run 0 \"$prefix \$@\" 
                       }"
 		
 		complete -F "_bashrun_$name" "$prefix"
@@ -69,7 +69,7 @@ function §handlers.apply {
     
     # applies matching handlers to BASHRUN_BASHRUN_COMMAND
 
-    bashrun.debug "trying to match §handlers..."
+    §debug "trying to match §handlers..."
     
     §handlers.seek_start
     while §handlers.next?; do
@@ -81,17 +81,17 @@ function §handlers.apply {
 
 	# eval if this contains vars (e.g. $PAGER, $BROWSER)
 	if [[ $string =~ \$.[a-zA-z0-9_] ]]; then
-	    bashrun.debug -c "evaling handler string..."
+	    §debug -c "evaling handler string..."
 	    eval "string=\"$string\""
 	fi
 
 	if [[ "$BASHRUN_COMMAND" =~ $pattern ]]; then	    
 
-	    bashrun.debug -v "$BASHRUN_COMMAND" "matches" -v "$pattern" -y "$name"
+	    §debug -v "$BASHRUN_COMMAND" "matches" -v "$pattern" -y "$name"
 
 	    if [[ BASHRUN_FROM_CMDNFH -eq 1 ]]; then
 		if §handler.last? && §handler.fallback?; then
-		    bashrun.command.get_word
+		    §command.get_word
 		    echo "bash: $BASHRUN_COMMAND_WORD: command not found"
 		    return 0
 		fi		    
@@ -114,10 +114,10 @@ function §handlers.apply {
 		    else
 			test="$test -$CHAR"
 			if eval "test $test $BASHRUN_COMMAND_WORD"; then
-			    bashrun.debug "test $test $BASHRUN_COMMAND_WORD -> success"
+			    §debug "test $test $BASHRUN_COMMAND_WORD -> success"
 			    success=1
 			else
-			    bashrun.debug "test $test $BASHRUN_COMMAND_WORD -> FAIL"
+			    §debug "test $test $BASHRUN_COMMAND_WORD -> FAIL"
 			    success=0
 			    break
 			fi			
@@ -125,7 +125,7 @@ function §handlers.apply {
 		    fi
 		done
 		if [[ ! success -eq 1 ]]; then
-		    bashrun.debug "not handled"
+		    §debug "not handled"
 		    §handlers.next
 		    continue
 		fi
@@ -140,17 +140,17 @@ function §handlers.apply {
 		for (( i=1; i<${#BASH_REMATCH[*]}; i++ )); do
 		    
 		    local match=${BASH_REMATCH[$i]}
-		    bashrun.debug "subexpression match \%$i $match"
+		    §debug "subexpression match \%$i $match"
 		    string="${string//%$i/$match}"
 		    
-		    bashrun.debug "$string"
+		    §debug "$string"
 		    export append=0
 		done
 	        # fail if unmatched $n's remain in handler string
 		if [[ "$string" =~ (%[0-9]) ]]; then
 		    local missing=${BASH_REMATCH[1]}
-		    bashrun.debug "handler incomplete: no content for $missing"
-		    bashrun.debug " -> not executing, informing user"
+		    §debug "handler incomplete: no content for $missing"
+		    §debug " -> not executing, informing user"
 		    BASHRUN_COMMAND="bashrun_show_error No content for \\$missing in $pattern §handler."
 		    return 1
 		fi
@@ -161,7 +161,7 @@ function §handlers.apply {
 	    else
 		BASHRUN_COMMAND="$string"
 	    fi
-	    bashrun.debug "$string"
+	    §debug "$string"
 	    return
 	fi
 	§handlers.next
@@ -181,7 +181,7 @@ function §handler.code {
     string=${string//\"/\\\"}
     string=${string//\$/\\\$}
 
-    print_line "handler $name" "#" "80"
+    §print_line "handler $name" "#" "80"
     echo
     echo "+handler '$name'"
     [[ "$pattern" != '(.+)' ]] && echo "  --pattern '$pattern'" 
@@ -190,27 +190,27 @@ function §handler.code {
     [[ "$fallback" -ne 0 ]] && echo "  --fallback '$fallback'"
     echo
 
-    if function? +handler-$name-complete; then
-	function_code +handler-$name-complete
+    if §function.defined? +handler-$name-complete; then
+	§function.code +handler-$name-complete
 	echo
     fi
 }
 
-function_clone "§handlers.dump" "_§handlers.dump"
+§function.clone "§handlers.dump" "§_handlers.dump"
 
 function §handlers.dump {
 
     local file="$_OBJECTS_DATA_HOME/${1:-§handlers.dump}"
     local name=''
-    _§handlers.dump $1
+    §_handlers.dump $1
 
     local saved="$(§handler.get_name)"
 
     §handlers.seek_start
     while §handlers.next?; do
 	name="$(§handler.get_name)"
-	if function? +handler-$name-complete; then
-	    function_code "+handler-$name-complete" >> "$file"
+	if §function.defined? +handler-$name-complete; then
+	    §function.code "+handler-$name-complete" >> "$file"
 	fi
 	§handlers.next
     done

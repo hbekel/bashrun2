@@ -2,13 +2,13 @@
 
 ################################################################################
 
-function bashrun.instance.exists? () {
+function §instance.exists? () {
     local wid="$1"
     xwininfo -id $wid &>/dev/null
     return $?
 }
 
-function bashrun.instance.idle? () {
+function §instance.idle? () {
 
     local pid="$1"
     local tries=0
@@ -30,7 +30,7 @@ function bashrun.instance.idle? () {
     return 1
 }
 
-function bashrun.instance.busy? () {
-    ! bashrun.instance.idle? $1
+function §instance.busy? () {
+    ! §instance.idle? $1
     return $?
 }

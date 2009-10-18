@@ -2,15 +2,15 @@
 
 class "§action" "name:r accept desc deps bash help init reset core:r" ""
 
-function_clone "§action.new" "_§action.new"
+§function.clone "§action.new" "§_action.new"
 function §action.new {
 
-    _§action.new "$1"
+    §_action.new "$1"
     §action.set_accept "1"
     §action.set_desc "$1"
     §action.set_bash "3 2"
 
-    if ! function? "action-$1"; then
+    if ! §function.defined? "action-$1"; then
 	eval "
 	action-$1 ()
 	{ 
@@ -27,7 +27,7 @@ function §action.bind {
 
     local keyseq="$1"
     local keymap="${2:-$BASHRUN_KEYMAP}"
-    local keyname="${3:-$(ks2kn $keyseq)}"
+    local keyname="${3:-$(§ks2kn $keyseq)}"
 
     local bind=''
     local enter='\C-x00'
@@ -79,14 +79,14 @@ function §action.bind {
 	char=$(printf "%.2X" $BASHRUN_BINDINGS_NEXT_CHAR)
 
 	if [[ BASHRUN_BINDINGS_NEXT_CHAR -gt 0x7f ]]; then
-	    bashrun.debug warn "maximum number of internal keyseqs reached, skipping..."
+	    §debug warn "maximum number of internal keyseqs reached, skipping..."
 	    return 1
 	fi
 	
 	bind="-m $keymap -x \$'\"\C-z\\x$char\":"
-	bind="$bind tput cr; bashrun.engine.action $action'"
+	bind="$bind tput cr; §engine.action $action'"
 
-	bashrun.debug -y "int" -v "$action" "->" -v "\C-z\\x$char" "($keymap)" 
+	§debug -y "int" -v "$action" "->" -v "\C-z\\x$char" "($keymap)" 
 	eval "bind $bind"
 	
 	#save readline binding in internal
@@ -103,7 +103,7 @@ function §action.bind {
     else
 	# there's already an internal character bound, use it
 	char="$(§internal.get_char)"
-	bashrun.debug -y "ref" -v "$action" "->" -v "\C-z\\x$char" "($keymap)" 
+	§debug -y "ref" -v "$action" "->" -v "\C-z\\x$char" "($keymap)" 
     fi
     
     # don't trigger accept-line if +action --accept == 0
@@ -113,7 +113,7 @@ function §action.bind {
     bind="-m $keymap '\"$keyseq\"':$'\"\C-z\x$char$enter\"'"
     
     # bind
-    bashrun.debug emph -y "usr" -v "$action" "->" -v "$keyname" "($keymap)" 
+    §debug emph -y "usr" -v "$action" "->" -v "$keyname" "($keymap)" 
     # echo "bind $bind"
     eval "bind $bind"
 
@@ -167,7 +167,7 @@ function §action.unbind {
     
     # unbind keyseq
     unbind="-m $keymap -r '$keyseq'"
-    bashrun.debug "unbind" -v "$action" "from" -v "$keyseq" -v "($keymap)"
+    §debug "unbind" -v "$action" "from" -v "$keyseq" -v "($keymap)"
     eval "bind $unbind"
 
     # rebind original readline binding
@@ -235,7 +235,7 @@ function §action.bound? {
 }
 
 function §action.function? {
-    function? "action-$(§action.get_name)"
+    §function.defined? "action-$(§action.get_name)"
     return $?
 }
 
@@ -302,7 +302,7 @@ function §action.run {
 	BASHRUN_COMMAND="$command"
     fi
 
-    bashrun.separator "action-$action"
+    §separator "action-$action"
 
     local retval
 
@@ -322,7 +322,7 @@ function §action.run {
     local res=""
     [[ retval -eq 0 ]] && res="-c launch"
     [[ retval -eq 1 ]] && res="-y abort (all done)"
-    bashrun.debug -v "$action" "returned" -v "$retval" "->" $res
+    §debug -v "$action" "returned" -v "$retval" "->" $res
 
     return $retval
 }
@@ -334,34 +334,34 @@ function §action.api.enable {
 	    echo "$BASHRUN_COMMAND"
 	else
 	    BASHRUN_COMMAND="$@"
-	    bashrun.debug "$BASHRUN_COMMAND"
+	    §debug "$BASHRUN_COMMAND"
 	fi
     }
     function word { 
-	bashrun.command.get_word; 
+	§command.get_word; 
 	echo "$BASHRUN_COMMAND_WORD";
     }
     function line { echo "$BASHRUN_COMMAND_LINE"; }
 
     function executable? {
-	bashrun.command.executable?
+	§command.executable?
 	return $?
     }
 
     function builtin? {
-	bashrun.command.builtin?
+	§command.builtin?
 	return $?
     }
 
     function bookmark? {
-	bashrun.command.bookmark?
+	§command.bookmark?
     }
     
     function +handlers { §handlers.apply; }
     function +rules { §rules.apply; }
-    function +term { bashrun.command.add_terminal $1; }
-    function +pager { bashrun.command.add_pager; }
-    function +user { bashrun.command.add_su ${1:-root}; }
+    function +term { §command.add_terminal $1; }
+    function +pager { §command.add_pager; }
+    function +user { §command.add_su ${1:-root}; }
 }
 
 function §action.api.disable {
@@ -438,7 +438,7 @@ function §action.list {
     local uses="$(§action.uses)"
     
     # print header
-    print_header "$name -> $desc" "-"
+    §print_header "$name -> $desc" "-"
 
     echo "accept: $accept"
 
@@ -458,7 +458,7 @@ function §action.list {
 	    §bindings.seek --next "$id"
 	    if §binding.bound?; then
 		echo -ne '\t'
-		echo "$(ks2kn $(§binding.get_keyseq)) ($(§binding.get_keymap)-mode)"
+		echo "$(§ks2kn $(§binding.get_keyseq)) ($(§binding.get_keymap)-mode)"
 	    fi
 	done
 	echo
@@ -482,7 +482,7 @@ function §action.code {
     local reset="$(§action.get_reset)"
 
     echo
-    print_line "action $name" "#" "80"
+    §print_line "action $name" "#" "80"
     echo
 
     # add action 
@@ -507,24 +507,24 @@ function §action.code {
     # function
     if §action.function?; then
 	echo
-	function_code "action-$name"
+	§function.code "action-$name"
     fi
 }
 
-function_clone "§actions.dump" "_§actions.dump"
+§function.clone "§actions.dump" "§_actions.dump"
 
 function §actions.dump {
 
     local file="$_OBJECTS_DATA_HOME/${1:-§actions.dump}"
     local action=''
-    _§actions.dump $1
+    §_actions.dump $1
 
     local saved="$(§action.get_name)"
 
     §actions.seek_start
     while §actions.next?; do
 	action="$(§action.get_name)"
-	function_code "action-$action" >> "$file"
+	§function.code "action-$action" >> "$file"
 	§actions.next
     done
     §actions.seek "$saved"    
@@ -573,12 +573,12 @@ function +bind () {
 
     local action="$1"
     local keyseq="$2"
-    local keyname="${3:-$(ks2kn $keyseq)}"
+    local keyname="${3:-$(§ks2kn $keyseq)}"
 
     if §actions.seek "$action"; then
 	§action.bind "$keyseq" "$BASHRUN_KEYMAP" "$keyname"
     else
-	bashrun.debug fail "no such action:" -v $action
+	§debug fail "no such action:" -v $action
 	return 1
     fi
 }
@@ -591,7 +591,7 @@ function +unbind () {
     if §actions.seek "$action"; then
 	§action.unbind "$keyseq" "$BASHRUN_KEYMAP"
     else
-	bashrun.debug fail "no such action:" -v $action
+	§debug fail "no such action:" -v $action
 	return 1
     fi
 }
@@ -603,7 +603,7 @@ function +rebind () {
     if §actions.seek "$action"; then
 	§action.rebind "$BASHRUN_KEYMAP"
     else
-	bashrun.debug fail "no such action:" -v $action
+	§debug fail "no such action:" -v $action
 	return 1
     fi
 }
@@ -612,8 +612,8 @@ function +rebind () {
 function +keymap () {
     local keymap="$1"
     if [[ ! "$keymap" =~ (emacs|vi-insert|vi-command) ]]; then
-	bashrun.debug fail "must be one of 'emacs', 'vi-insert' or 'vi-command'"
-	bashrun.debug warn "keymap remains set to" -v $BASHRUN_KEYMAP
+	§debug fail "must be one of 'emacs', 'vi-insert' or 'vi-command'"
+	§debug warn "keymap remains set to" -v $BASHRUN_KEYMAP
 	return 1
     fi
     BASHRUN_KEYMAP="$keymap"

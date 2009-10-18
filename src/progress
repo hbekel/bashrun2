@@ -6,19 +6,19 @@ PROGRESS_PERCENT=0
 PROGRESS_TASK="Busy"
 PROGRESS_LINE=""
 
-function progress.enabled? {
+function §progress.enabled? {
     [[ BASHRUN_DEBUG -eq 0 && BASHRUN_FEEDBACK -eq 1 ]]
 }
 
-progress.new () {
+§progress.new () {
     PROGRESS_TASK="${1:-Progress}"
     PROGRESS_PERCENT=${2:-0}
 
-    progress.enabled? && tput civis
-    progress.update "$PROGRESS_PERCENT"
+    §progress.enabled? && tput civis
+    §progress.update "$PROGRESS_PERCENT"
 }
 
-progress.update () {
+§progress.update () {
 
     local value="$1"
     if [[ "${value:0:1}" == "+" ]]; then
@@ -30,11 +30,11 @@ progress.update () {
     if [[ $# -eq 2 ]]; then
 	PROGRESS_TASK="$2"
     fi
-    progress.update_line
-    progress.draw
+    §progress.update_line
+    §progress.draw
 }
 
-progress.update_line () {
+§progress.update_line () {
 
     PROGRESS_LINE="$PROGRESS_TASK"
     for ((i=0; i<$COLUMNS-${#PROGRESS_TASK}-${#PROGRESS_PERCENT}-4; i++)); do
@@ -43,9 +43,9 @@ progress.update_line () {
     PROGRESS_LINE="$PROGRESS_LINE [$PROGRESS_PERCENT%]"
 }
 
-progress.draw () {
+§progress.draw () {
 
-    progress.enabled? || return
+    §progress.enabled? || return
 
     local l="$(echo "scale=2; $COLUMNS * (${PROGRESS_PERCENT}.0 / 100.0)" | bc -q | cut -d. -f1)"
     local i=0
@@ -64,23 +64,23 @@ progress.draw () {
     done
 }
     
-progress.reset () {
+§progress.reset () {
     PROGRESS_PERCENT=0
     PROGRESS_TASK="Busy"
 }
 
-progress.destroy () {
+§progress.destroy () {
 
     echo -ne '\e[0m'
-    progress.enabled? && tput reset
+    §progress.enabled? && tput reset
    
     unset PROGRESS_PERCENT PROGRESS_TASK PROGRESS_LINE
     unset -f \
-	progress.enabled? \
-	progress.new \
-	progress.update \
-	progress.update_line \
-	progress.draw \
-	progress.reset \
-	progress.destroy
+	§progress.enabled? \
+	§progress.new \
+	§progress.update \
+	§progress.update_line \
+	§progress.draw \
+	§progress.reset \
+	§progress.destroy
 }

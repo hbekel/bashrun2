@@ -22,23 +22,24 @@ case $switch in
 esac
 
 # get number of existing instances 
-num="$(bashrun.registry.length)"
+num="$(§registry.length)"
 
-# (should read: response = §instances.request "$choice" "$state" "$mode")
-wid="$(bashrun.registry.find $choice "$state" $mode)"
+response="$(§registry.request $choice "$state" $mode)"
 
-if [[ "$wid" == "none" ]]; then
+if [[ "$response" == "none" ]]; then
     echo "bashrun: error: no $state $mode found."
     exit 1
 fi
 
-if [[ "$wid" != "new" ]]; then    
+if [[ "$response" != "new" ]]; then    
     
-    bashrun.window.id "$wid"
-    §modes.seek "$mode"
-    bashrun.window.toggle
+    wid="$response"
 
-else
+    §window.id "$wid"
+    §modes.seek "$mode"
+    §window.toggle
+
+else       
     # get the bashrun terminal
     §terminals.seek "bashrun"
 
@@ -78,8 +79,8 @@ else
 	$terminal $termopts &    
 
     wid="$(waitwid $num)"
-    bashrun.window.id "$wid"
+    §window.id "$wid"
 
     # map the window to make it expand if animated
-    bashrun.window.map
+    §window.map
 fi

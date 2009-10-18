@@ -39,11 +39,11 @@ function completion.set {
 	    bind 'set completion-query-items -1'
 	    ;;
 	*)
-	    bashrun.debug --fail "unknown completion type:" -v "$ctype"
+	    §debug --fail "unknown completion type:" -v "$ctype"
 	    ;;
     esac
     BASHRUN_COMPLETION="$ctype"
-    bashrun.debug -v "$ctype"
+    §debug -v "$ctype"
 }
 
 function completion.apply_threshold {
@@ -53,7 +53,7 @@ function completion.apply_threshold {
     local threshold="$3"
 
     declare -i t=$threshold
-    bashrun.debug -v $t -ge -v $BASHRUN_WINDOW_HEIGHT "?"
+    §debug -v $t -ge -v $BASHRUN_WINDOW_HEIGHT "?"
 
     if [[ $BASHRUN_WINDOW_HEIGHT -ge $t ]]; then
 	completion.set "$atype"
