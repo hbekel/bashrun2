@@ -2,8 +2,6 @@
 
 ################################################################################
 
-# "class variables" ############################################################
-
 _OBJECTS=()
 _OBJECTS_KEYS=()
 _OBJECTS_WIDTH=${#_OBJECTS_KEYS[@]}
@@ -16,8 +14,6 @@ _OBJECTS_HAVE_INTERFACE=0
 _OBJECTS_INTERFACE_METHODS=''
 _OBJECTS_INTERFACE_OPTIONS=''
 _OBJECTS_INTERFACE_OPTIONS_FOUND=()
-
-# "class methods" (seeking to, matching and iterating objects) #################
 
 function objects.seek { # args
     
@@ -252,6 +248,7 @@ function object.delete {
 
     local start=$_OBJECTS_POSITION
     local width=$_OBJECTS_WIDTH
+    local i=0
 
     for((i=$start; i<=$start+$width-1; i++)); do
 	unset _OBJECTS[$i]
@@ -415,7 +412,11 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	# parse commandline arguments	
 	local current=""
 	local left=()
+	local key=''
 	local var=''
+	local val=''
+	local f=''
+	local i=0
 	local expect='arg' # optarg or arg       
 
 	while [[ "$1" != '' ]]; do
@@ -482,10 +483,10 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 		object.new "$id"
 	    fi
 
-	    local i=0
-	    local key=''
-	    local var=''
-	    local val=''
+	    i=0
+	    key=''
+	    var=''
+	    val=''
 	    
 	    # --code
 	    var="_OBJECTS_INTERFACE_OPTION_code"
@@ -527,7 +528,6 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 
         # cleanup all _OBJECTS_INTERFACE_OPTION_* vars
 
-	local f=''
 	for f in ${_OBJECTS_INTERFACE_OPTIONS_FOUND[@]}; do
 	    var="_OBJECTS_INTERFACE_OPTION_$f"
 	    unset $var

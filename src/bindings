@@ -2,9 +2,9 @@
 
 ################################################################################
 
-class "§internal" "action keymap char readline"
-class "§binding" "keyseq keymap action is_bound readline"  
-class "§keyname" "keyseq name"                             
+§class "§internal" "action keymap char readline"
+§class "§binding" "keyseq keymap action is_bound readline"  
+§class "§keyname" "keyseq name"                             
 
 bind '"\C-x00": accept-line'
 

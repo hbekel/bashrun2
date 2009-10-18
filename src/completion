@@ -4,14 +4,14 @@
 
 BASHRUN_COMPLETION=''
 
-function completion.set {
+function §completion.set {
 
     local ctype="$1"
     local atype="$2"
     local threshold="${3:-0}"
 
     if [[ $# -eq 3 && $threshold -gt 0 ]]; then
-	completion.apply_threshold "$ctype" "$atype" "$threshold"
+	§completion.apply_threshold "$ctype" "$atype" "$threshold"
 	return $?
     fi
 
@@ -46,7 +46,7 @@ function completion.set {
     §debug -v "$ctype"
 }
 
-function completion.apply_threshold {
+function §completion.apply_threshold {
 
     local ctype="$1"
     local atype="$2"
@@ -56,9 +56,9 @@ function completion.apply_threshold {
     §debug -v $t -ge -v $BASHRUN_WINDOW_HEIGHT "?"
 
     if [[ $BASHRUN_WINDOW_HEIGHT -ge $t ]]; then
-	completion.set "$atype"
+	§completion.set "$atype"
     else
-	completion.set "$ctype"
+	§completion.set "$ctype"
     fi
 
     if [[ BASHRUN_WINDOW_HEIGHT -gt 1 ]]; then

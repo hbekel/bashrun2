@@ -1,3 +1,5 @@
+# -*- shell-script -*-
+
 declare GEOMETRY_WIDTH=0 GEOMETRY_HEIGHT=0 \
     GEOMETRY_XOFF=0 GEOMETRY_YOFF=0 \
     GEOMETRY_HAS_SIZE=0 GEOMETRY_HAS_POSITION=0 \
@@ -7,7 +9,7 @@ declare GEOMETRY_WIDTH=0 GEOMETRY_HEIGHT=0 \
 declare -i DISPLAY_WIDTH=${BASH_REMATCH[1]}
 declare -i DISPLAY_HEIGHT=${BASH_REMATCH[2]}
 
-function geometry.parse {
+function §geometry.parse {
 
     GEOMETRY_HAS_SIZE=0
     GEOMETRY_HAS_POSITION=0
@@ -43,19 +45,19 @@ function geometry.parse {
     return 0
 }
 
-function geometry.size? {
+function §geometry.size? {
     [[ GEOMETRY_HAS_SIZE -eq 1 ]]
     return $?
 }
 
-function geometry.position? {
+function §geometry.position? {
     [[ GEOMETRY_HAS_POSITION -eq 1 ]]
     return $?
 }
 
-function geometry.width { 
+function §geometry.width { 
     if [[ $# -eq 0 ]]; then
-	if geometry.size?; then
+	if §geometry.size?; then
 	    echo $GEOMETRY_WIDTH
 	fi
     else
@@ -64,9 +66,9 @@ function geometry.width {
     fi
 }
 
-function geometry.height {
+function §geometry.height {
     if [[ $# -eq 0 ]]; then
-	if geometry.size?; then
+	if §geometry.size?; then
 	    echo $GEOMETRY_HEIGHT
 	fi
     else
@@ -75,15 +77,15 @@ function geometry.height {
     fi
 }
 
-function geometry.x {
-    geometry.calc_point $GEOMETRY_XOFF $DISPLAY_WIDTH $1
+function §geometry.x {
+    §geometry.calc_point $GEOMETRY_XOFF $DISPLAY_WIDTH $1
 }
 
-function geometry.y {
-    geometry.calc_point $GEOMETRY_YOFF $DISPLAY_HEIGHT $1
+function §geometry.y {
+    §geometry.calc_point $GEOMETRY_YOFF $DISPLAY_HEIGHT $1
 }
 
-function geometry.calc_point {
+function §geometry.calc_point {
 
     local spec=$1
     local display=$2
@@ -103,9 +105,9 @@ function geometry.calc_point {
     fi
 }
 
-function geometry {
-    geometry.size? && echo -n "${GEOMETRY_WIDTH}x${GEOMETRY_HEIGHT}"
-    geometry.position? && echo -n "${GEOMETRY_XOFF}${GEOMETRY_YOFF}"
-    [[ geometry.size? || geometry.position? ]] && echo
+function §geometry {
+    §geometry.size? && echo -n "${GEOMETRY_WIDTH}x${GEOMETRY_HEIGHT}"
+    §geometry.position? && echo -n "${GEOMETRY_XOFF}${GEOMETRY_YOFF}"
+    [[ §geometry.size? || §geometry.position? ]] && echo
 }
 

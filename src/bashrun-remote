@@ -58,12 +58,12 @@ else
 
     # get command and insert properties and geometry from requested mode
     geometry=$(§mode.get_default_geometry)
-    geometry.parse $geometry
+    §geometry.parse $geometry
 
     if [[ animation -eq 1 ]]; then
 	# start with a one line terminal
-	geometry.height 1
-	geometry="$(geometry)"
+	§geometry.height 1
+	geometry="$(§geometry)"
     fi
 
     terminal="$(§terminal.get_command)"

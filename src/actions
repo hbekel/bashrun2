@@ -1,8 +1,13 @@
 # -*- shell-script -*-
 
-class "§action" "name:r accept desc deps bash help init reset core:r" ""
+################################################################################
+
+§class "§action" "name:r accept desc deps bash help init reset core:r" ""
 
 §function.clone "§action.new" "§_action.new"
+
+################################################################################
+
 function §action.new {
 
     §_action.new "$1"
@@ -171,7 +176,7 @@ function §action.unbind {
     eval "bind $unbind"
 
     # rebind original readline binding
-    readline_rebind "$keyseq" "$keymap"
+    §readline.rebind "$keyseq" "$keymap"
 
     # clear binding
     §bindings.seek "$keyseq" "$keymap"
@@ -252,7 +257,6 @@ function §action.available? {
     done
 
     # check for bash version
-    local i=0
     for version in $(§action.get_bash); do
 	if [[ "${BASH_VERSINFO[$i]}" -lt "$version" ]]; then
 	    result=1
@@ -404,7 +408,6 @@ function §action.pretty_print_deps {
 	    str=", $found$dep$n$str" 
 	done
 
-	local i=0
 	local ok="$g"
 	for version in $bash; do
 	    if [[ "${BASH_VERSINFO[$i]}" -lt "$version" ]]; then

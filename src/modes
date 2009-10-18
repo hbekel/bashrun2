@@ -2,7 +2,7 @@
 
 ################################################################################
 
-class "§mode" "name comp unmap geom anim ps1 ps2 onmap onunmap feedback current" 'switch'
+§class "§mode" "name comp unmap geom anim ps1 ps2 onmap onunmap feedback current" 'switch'
 
 ################################################################################
 

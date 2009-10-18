@@ -4,7 +4,7 @@
 
 BASHRUN_READLINE=()
 
-function readline_get_bindings {
+function §readline.get_bindings {
 
     local restore=$IFS
     IFS=$'\n' 
@@ -12,11 +12,12 @@ function readline_get_bindings {
     IFS=$restore
 }
 
-function readline_get_binding {
+function §readline.get_binding {
 
     local keyseq=$1
     local line='';
-    
+    local i=0
+
     for (( i=0; i<${#BASHRUN_READLINE[@]}; i+=1 )); do
 	line=${BASHRUN_READLINE[$i]}
 	[[ "$line" =~ ^# ]] && continue
@@ -28,10 +29,10 @@ function readline_get_binding {
     done    
 }
 
-function readline_rebind {
+function §readline.rebind {
     local keyseq=$1
     local keymap=${2:-emacs}
-    local readline=$(readline_get_binding $keyseq)
+    local readline=$(§readline.get_binding $keyseq)
     readline=${readline//\'/\\x27}
     
     local binding="-m $keymap '$readline'"    

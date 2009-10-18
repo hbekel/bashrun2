@@ -2,7 +2,7 @@
 
 ################################################################################
 
-class "§rule" "name progs" ""
+§class "§rule" "name progs" ""
 
 BASHRUN_RULES_APPLIED=0
 

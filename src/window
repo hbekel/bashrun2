@@ -136,18 +136,18 @@ function §window.update {
 function §window.geometry {
 
     §window.update
-    if [[ "$(geometry)" != "$1" ]]; then
-	geometry.parse "$1"
+    if [[ "$(§geometry)" != "$1" ]]; then
+	§geometry.parse "$1"
 	§debug "Setting geometry" -v  "$1" 
 
-	if geometry.size?; then
-	    §window.size --hint $(geometry.width) $(geometry.height)
+	if §geometry.size?; then
+	    §window.size --hint $(§geometry.width) $(§geometry.height)
 	fi
 
 
-	if geometry.position?; then
-	    §window.pos $(geometry.x $BASHRUN_WINDOW_PIXEL_WIDTH) \
-		$(geometry.y $BASHRUN_WINDOW_PIXEL_HEIGHT)	
+	if §geometry.position?; then
+	    §window.pos $(§geometry.x $BASHRUN_WINDOW_PIXEL_WIDTH) \
+		$(§geometry.y $BASHRUN_WINDOW_PIXEL_HEIGHT)	
 	fi
     fi
 }
@@ -211,7 +211,7 @@ function §window.size {
     fi 
         
     # apply completion threshold if necessary
-    §window.terminal? && completion.set $(§mode.get_comp)
+    §window.terminal? && §completion.set $(§mode.get_comp)
     return 0
 }
  
@@ -223,14 +223,14 @@ function §window.map {
     §modes.seek $(§registry.get_mode $BASHRUN_WINDOW_ID)
 
     # parse geometry for this mode 
-    geometry.parse "$(§mode.get_default_geometry)"
+    §geometry.parse "$(§mode.get_default_geometry)"
 
     # map the window
     xdotool windowmap $BASHRUN_WINDOW_ID
     
     # apply position
-    if geometry.position?; then
-	§window.pos "$(geometry.x)" "$(geometry.y)"
+    if §geometry.position?; then
+	§window.pos "$(§geometry.x)" "$(§geometry.y)"
     fi
 
     # move to the current desktop if required
@@ -302,7 +302,7 @@ function §window.collapse {
 
 function §window.expand {
 
-    local max_height="$(geometry.height)"
+    local max_height="$(§geometry.height)"
 
     [[ BASHRUN_WINDOW_HEIGHT -ge max_height ]] && return 1
 

@@ -20,7 +20,7 @@ function §engine.init {
 
     # get current readline bindings
     §debug "getting current readline bindings..."
-    readline_get_bindings
+    §readline.get_bindings
 
     §progress.update +5
         
@@ -67,6 +67,8 @@ function §engine.init {
 
     §separator 
     
+    §progress.reset
+
     §engine.idle
 }
 

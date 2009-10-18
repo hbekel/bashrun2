@@ -60,7 +60,7 @@ function §objects.seek_start {
     done    
 }
 
-function class {
+function §class {
 
     # create object from 'objects' template
 

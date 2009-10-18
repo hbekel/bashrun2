@@ -36,6 +36,7 @@ function §progress.enabled? {
 
 §progress.update_line () {
 
+    local i=0
     PROGRESS_LINE="$PROGRESS_TASK"
     for ((i=0; i<$COLUMNS-${#PROGRESS_TASK}-${#PROGRESS_PERCENT}-4; i++)); do
 	PROGRESS_LINE="$PROGRESS_LINE "
@@ -65,14 +66,15 @@ function §progress.enabled? {
 }
     
 §progress.reset () {
+
     PROGRESS_PERCENT=0
     PROGRESS_TASK="Busy"
-}
-
-§progress.destroy () {
 
     echo -ne '\e[0m'
     §progress.enabled? && tput reset
+}
+
+§progress.destroy () {
    
     unset PROGRESS_PERCENT PROGRESS_TASK PROGRESS_LINE
     unset -f \
