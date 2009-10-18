@@ -2,33 +2,33 @@
 
 ################################################################################
 
-PROGRESS_PERCENT=0
-PROGRESS_TASK="Busy"
-PROGRESS_LINE=""
+BASHRUN_PROGRESS_PERCENT=0
+BASHRUN_PROGRESS_TASK="Busy"
+BASHRUN_PROGRESS_LINE=""
 
 function §progress.enabled? {
     [[ BASHRUN_DEBUG -eq 0 && BASHRUN_FEEDBACK -eq 1 ]]
 }
 
 §progress.new () {
-    PROGRESS_TASK="${1:-Progress}"
-    PROGRESS_PERCENT=${2:-0}
+    BASHRUN_PROGRESS_TASK="${1:-Progress}"
+    BASHRUN_PROGRESS_PERCENT=${2:-0}
 
     §progress.enabled? && tput civis
-    §progress.update "$PROGRESS_PERCENT"
+    §progress.update "$BASHRUN_PROGRESS_PERCENT"
 }
 
 §progress.update () {
 
     local value="$1"
     if [[ "${value:0:1}" == "+" ]]; then
-	((PROGRESS_PERCENT+=${value:1}))
+	((BASHRUN_PROGRESS_PERCENT+=${value:1}))
     else
-	PROGRESS_PERCENT="$value"
+	BASHRUN_PROGRESS_PERCENT="$value"
     fi
 
     if [[ $# -eq 2 ]]; then
-	PROGRESS_TASK="$2"
+	BASHRUN_PROGRESS_TASK="$2"
     fi
     §progress.update_line
     §progress.draw
@@ -37,23 +37,23 @@ function §progress.enabled? {
 §progress.update_line () {
 
     local i=0
-    PROGRESS_LINE="$PROGRESS_TASK"
-    for ((i=0; i<$COLUMNS-${#PROGRESS_TASK}-${#PROGRESS_PERCENT}-4; i++)); do
-	PROGRESS_LINE="$PROGRESS_LINE "
+    BASHRUN_PROGRESS_LINE="$BASHRUN_PROGRESS_TASK"
+    for ((i=0; i<$COLUMNS-${#BASHRUN_PROGRESS_TASK}-${#BASHRUN_PROGRESS_PERCENT}-4; i++)); do
+	BASHRUN_PROGRESS_LINE="$BASHRUN_PROGRESS_LINE "
     done
-    PROGRESS_LINE="$PROGRESS_LINE [$PROGRESS_PERCENT%]"
+    BASHRUN_PROGRESS_LINE="$BASHRUN_PROGRESS_LINE [$BASHRUN_PROGRESS_PERCENT%]"
 }
 
 §progress.draw () {
 
     §progress.enabled? || return
 
-    local l="$(echo "scale=2; $COLUMNS * (${PROGRESS_PERCENT}.0 / 100.0)" | bc -q | cut -d. -f1)"
+    local l="$(echo "scale=2; $COLUMNS * (${BASHRUN_PROGRESS_PERCENT}.0 / 100.0)" | bc -q | cut -d. -f1)"
     local i=0
     local char=""
     echo -ne '\e[0G'
     echo -ne '\e[1m'
-    for ((i=0; i<${#PROGRESS_LINE}; i++)); do
+    for ((i=0; i<${#BASHRUN_PROGRESS_LINE}; i++)); do
 	if [[ i -lt l ]]; then	    
 	    echo -ne '\e[33m'
 	    echo -ne '\e[44m'
@@ -61,14 +61,14 @@ function §progress.enabled? {
 	    echo -ne '\e[34m'
 	    echo -ne '\e[40m'
 	fi
-	echo -n "${PROGRESS_LINE:$i:1}"
+	echo -n "${BASHRUN_PROGRESS_LINE:$i:1}"
     done
 }
     
 §progress.reset () {
 
-    PROGRESS_PERCENT=0
-    PROGRESS_TASK="Busy"
+    BASHRUN_PROGRESS_PERCENT=0
+    BASHRUN_PROGRESS_TASK="Busy"
 
     echo -ne '\e[0m'
     §progress.enabled? && tput reset
@@ -76,7 +76,7 @@ function §progress.enabled? {
 
 §progress.destroy () {
    
-    unset PROGRESS_PERCENT PROGRESS_TASK PROGRESS_LINE
+    unset BASHRUN_PROGRESS_PERCENT BASHRUN_PROGRESS_TASK BASHRUN_PROGRESS_LINE
     unset -f \
 	§progress.enabled? \
 	§progress.new \

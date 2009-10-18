@@ -15,9 +15,9 @@ function §action.new {
     §action.set_desc "$1"
     §action.set_bash "3 2"
 
-    if ! §function.defined? "action-$1"; then
+    if ! §function.defined? "+action-$1"; then
 	eval "
-	action-$1 ()
+	+action-$1 ()
 	{ 
 	    ! executable? && +handlers
 	    return 0
@@ -59,7 +59,7 @@ function §action.bind {
     # bind -x C-g directly
     # this way C-g will still abort from readline searches and the like
     if [[ "$keyseq" == "\C-g" ]]; then
-	bind="-m $keymap -x '\"$keyseq\": action-abort'"
+	bind="-m $keymap -x '\"$keyseq\": +action-abort'"
 	eval "bind $bind"
 	# create or set binding
 	if §bindings.seek "$keyseq" "$keymap"; then
@@ -240,7 +240,7 @@ function §action.bound? {
 }
 
 function §action.function? {
-    §function.defined? "action-$(§action.get_name)"
+    §function.defined? "+action-$(§action.get_name)"
     return $?
 }
 
@@ -277,7 +277,7 @@ function §action.accept? {
 
 function §action.uses {
 
-    local code="$(type action-$(§action.get_name))"
+    local code="$(type +action-$(§action.get_name))"
     local applies=""
     local methods="command line \+handlers \+rules \+term \+pager \+user executable? builtin? bookmark?"
 
@@ -306,7 +306,7 @@ function §action.run {
 	BASHRUN_COMMAND="$command"
     fi
 
-    §separator "action-$action"
+    §separator "+action-$action"
 
     local retval
 
@@ -317,7 +317,7 @@ function §action.run {
     BASHRUN_DEBUG_ACTION=1
 
     # run the action function
-    action-$action "$@"
+    +action-$action "$@"
     retval=$?
 
     # disable action debugging
@@ -326,6 +326,7 @@ function §action.run {
     local res=""
     [[ retval -eq 0 ]] && res="-c launch"
     [[ retval -eq 1 ]] && res="-y abort (all done)"
+    [[ retval -eq 2 ]] && res="-y abort (all done, don't unmap)"
     §debug -v "$action" "returned" -v "$retval" "->" $res
 
     return $retval
@@ -510,7 +511,7 @@ function §action.code {
     # function
     if §action.function?; then
 	echo
-	§function.code "action-$name"
+	§function.code "+action-$name"
     fi
 }
 
@@ -527,7 +528,7 @@ function §actions.dump {
     §actions.seek_start
     while §actions.next?; do
 	action="$(§action.get_name)"
-	§function.code "action-$action" >> "$file"
+	§function.code "+action-$action" >> "$file"
 	§actions.next
     done
     §actions.seek "$saved"    

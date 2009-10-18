@@ -20,19 +20,19 @@ function §configure {
 
     §progress.update +10 "Initializing... [core]"
     if [[ ! -f $BASHRUN_CACHE_HOME/§defaults.dump ]]; then
-	configure-defaults
+	+configure-defaults
 	§actions.dump "§defaults.dump"
     else
 	source $BASHRUN_CACHE_HOME/§defaults.dump
     fi
-    unset -f configure-defaults
+    unset -f +configure-defaults
 
-    # loop through defined configure-* functions
+    # loop through defined +configure-* functions
 
-    for line in $(set | grep ^configure-); do
+    for line in $(set | grep '^+configure-'); do
 	[[ "$line" == "()" ]] && continue
 
-	[[ "$line" =~ ^configure-(.+) ]]
+	[[ "$line" =~ ^\+configure-(.+) ]]
 	type="§${BASH_REMATCH[1]}"
 
 	[[ "$type" == "§defaults" ]] && continue;
@@ -46,10 +46,10 @@ function §configure {
 	    if [[ "$type" == "§keys" ]]; then
 		§configure.keys
 	    else
-		§debug warn -v $type ": unknown object type, skipping configure-${type//§/}()"
+		§debug warn -v $type ": unknown object type, skipping +configure-${type//§/}()"
 	    fi
 	fi
-	unset -f configure-${type//§/}
+	unset -f +configure-${type//§/}
     done
 }
 
@@ -59,7 +59,7 @@ function §configure.type {
     local dump="${2:-$BASHRUN_CACHE_HOME/$type.dump}"
     local dumprc="${3:-$BASHRUN_CACHE_HOME/$type.rc}"
 
-    local config="configure-$type"
+    local config="+configure-$type"
     config=${config//§/}
 
     # if a dump exists
@@ -92,7 +92,7 @@ function §reconfigure.type {
     $type.dump
     
     # cache the configure function that created the dump
-    §function.code configure-${type//§/} > $dumprc
+    §function.code +configure-${type//§/} > $dumprc
 }
 
 function §configure.keys {
@@ -101,20 +101,20 @@ function §configure.keys {
 
     # dumps already exists by now (created by §action.dump)
 
-    # if no dumprc exists, configure-keys() has not been used before...
+    # if no dumprc exists, +configure-keys() has not been used before...
     if [[ ! -f "$dumprc" ]]; then
 	touch "$dumprc"
     fi
 
-    # if the configure-keys function has changed or the actions have been
+    # if the +configure-keys function has changed or the actions have been
     # reconfigured before (and in that case don't include these bindings yet)...
 
-    if [[ "$(<$dumprc)" != "$(§function.code configure-keys)" ]]; then	
+    if [[ "$(<$dumprc)" != "$(§function.code +configure-keys)" ]]; then	
 
 	§debug "reconfiguring" -v "§keys"
 
 	# run configure function
-	configure-keys
+	+configure-keys
 
 	# dump bindings (et al) again
 	§internals.dump
@@ -122,7 +122,7 @@ function §configure.keys {
 	§keynames.dump
 
         # cache the configure function that created the dump
-	§function.code configure-keys > $dumprc
+	§function.code +configure-keys > $dumprc
     else
 	§debug "restoring" -v "§keys"
 

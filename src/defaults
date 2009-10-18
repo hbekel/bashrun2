@@ -2,7 +2,7 @@
 
 ################################################################################
 
-configure-defaults () {
++configure-defaults () {
 
     function §action.set_core {
 	_BASHRUN_ACTIONS[${_BASHRUN_ACTIONS_POSITION}+8]="$1"
@@ -13,14 +13,14 @@ configure-defaults () {
     --accept 0
     --core 1
 
-    action-pass () { return 1; }
+    +action-pass () { return 1; }
 
     +action 'abort'
     --desc 'Abort (unmap window)'
     --accept 0
     --core 1
     
-    action-abort () {
+    +action-abort () {
 	[[ "$(§mode.get_unmap)" -eq 1 ]] && §window.unmap
 	return 1
     }
@@ -30,7 +30,7 @@ configure-defaults () {
     --accept 0
     --core 1
     
-    action-quit () {
+    +action-quit () {
 	shopt +s checkjobs
 	exit 0
     }
@@ -40,7 +40,7 @@ configure-defaults () {
     --accept 0
     --core 1
     
-    action-debug () {
+    +action-debug () {
 	
 	if [[ BASHRUN_DEBUG -eq 0 ]]; then
 	    BASHRUN_DEBUG=1
@@ -57,7 +57,7 @@ configure-defaults () {
     --accept 1
     --core 1
     
-    action-run () 
+    +action-run () 
     { 
 	! executable? && +handlers;
 	+rules;
@@ -69,7 +69,7 @@ configure-defaults () {
     --accept 1
     --core 1
     
-    action-term-run () 
+    +action-term-run () 
     { 
 	! executable? && +handlers;
 	+rules;
@@ -82,7 +82,7 @@ configure-defaults () {
     --accept 1
     --core 1
     
-    action-term-page () 
+    +action-term-page () 
     { 
 	! executable? && +handlers;	
 	+pager;
@@ -96,7 +96,7 @@ configure-defaults () {
     --accept 1
     --core 1
     
-    action-term-hold () 
+    +action-term-hold () 
     { 
 	! executable? && +handlers;
 	if [[ "$(command)" =~ ^\(.+?\)$ ]]; then
@@ -114,9 +114,9 @@ configure-defaults () {
     --deps 'su'
     --core 1
     
-    action-su-run () 
+    +action-su-run () 
     { 
-	action-run;
+	+action-run;
 	+user root;
 	return 0
     }
@@ -127,9 +127,9 @@ configure-defaults () {
     --deps 'su'
     --core 1
     
-    action-su-term-run () 
+    +action-su-term-run () 
     { 
-	action-term-run;
+	+action-term-run;
 	+user root;
 	return 0
     }
@@ -140,9 +140,9 @@ configure-defaults () {
     --deps 'su'
     --core 1
     
-    action-su-term-page () 
+    +action-su-term-page () 
     { 
-	action-term-page;
+	+action-term-page;
 	+user root;
 	return 0
     }
@@ -153,9 +153,9 @@ configure-defaults () {
     --deps 'su'
     --core 1
     
-    action-su-term-hold () 
+    +action-su-term-hold () 
     { 
-	action-term-hold;
+	+action-term-hold;
 	+user root;
 	return 0
     }
@@ -166,7 +166,7 @@ configure-defaults () {
     --deps 'man'
     --core 1
     
-    action-show-manual () {
+    +action-show-manual () {
 	command "man $(word)"
 	+term
 	return 0
@@ -178,7 +178,7 @@ configure-defaults () {
     --deps 'info'
     --core 1
     
-    function action-show-info {
+    function +action-show-info {
 	command "info $(word)"
 	+term
 	return 0
@@ -189,13 +189,13 @@ configure-defaults () {
     --accept 1
     --core 1
     
-    function action-show-help {
+    function +action-show-help {
 	if builtin?; then
 	    command "help $(word)"
 	    +pager
 	else
 	    debug "$(word): not a builtin, showing manual"
-	    action-show-manual
+	    +action-show-manual
 	    return 0
 	fi	    
 	+term
@@ -207,7 +207,7 @@ configure-defaults () {
     --accept 1
     --core 1
     
-    function action-browse {
+    function +action-browse {
 	command "$BROWSER '$(command)'"
 	return 0
     }
@@ -217,7 +217,7 @@ configure-defaults () {
     --accept 1
     --core 1
     
-    function action-google-search {
+    function +action-google-search {
 	command "$BROWSER 'http://www.google.com/search?q=$(line)'"
 	return 0
     }
@@ -228,7 +228,7 @@ configure-defaults () {
     --deps 'dict'
     --core 1
     
-    function action-dict-lookup {
+    function +action-dict-lookup {
 	command "dict $(line)"
 	+rules
 	+term
@@ -241,9 +241,9 @@ configure-defaults () {
     --deps 'man'
     --core 1
     
-    function action-bashrun-manual {
+    function +action-bashrun-manual {
 	command "man bashrun"
-	action-term-run
+	+action-term-run
 	return 0
     }
 
@@ -252,7 +252,7 @@ configure-defaults () {
     --accept 0
     --core 1
     
-    function action-bashrun-bindings {
+    function +action-bashrun-bindings {
 
 	local tmpfile=$BASHRUN_CACHE_HOME/keybindings
 	if [[ ! -f "$tmpfile" ]]; then
@@ -263,7 +263,7 @@ configure-defaults () {
 	    §bindings.modified 0
 	fi
 	command "less $tmpfile"
-	action-term-run
+	+action-term-run
 	return 0
     }
 
@@ -272,7 +272,7 @@ configure-defaults () {
     --accept 0
     --core 1
     
-    function action-cycle-size {
+    function +action-cycle-size {
 	
 	if §mode.multigeom?; then
 	    
@@ -298,7 +298,7 @@ configure-defaults () {
     --accept 0
     --core 1
     
-    function action-cycle-mode {
+    function +action-cycle-mode {
 	
 	§modes.next
 	if [[ "$(§mode.get_name)" == '' ]]; then
