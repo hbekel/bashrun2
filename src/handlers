@@ -18,7 +18,7 @@ function §handler.new {
     §handler.set_fallback '0'
 }
 
-function handler.fallback? {
+function §handler.fallback? {
     [[ "$(§handler.get_fallback)" == "1" ]]
 }
 
@@ -90,7 +90,7 @@ function §handlers.apply {
 	    §debug -v "$BASHRUN_COMMAND" "matches" -v "$pattern" -y "$name"
 
 	    if [[ BASHRUN_FROM_CMDNFH -eq 1 ]]; then
-		if §handler.last? && §handler.fallback?; then
+		if §handler.last? && §§handler.fallback?; then
 		    §command.get_word
 		    echo "bash: $BASHRUN_COMMAND_WORD: command not found"
 		    return 0
