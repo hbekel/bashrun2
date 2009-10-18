@@ -8,7 +8,7 @@ BASHRUN_SHARE="$BASHRUN_PREFIX/share/bashrun-engine"
 
 parse_arguments "$@"
 
-wid="$(bashrun.registry.find $mode)"
+wid="$(bashrun.registry.find $choice $state $mode)"
 num="$(bashrun.registry.length)"
 
 case $switch in

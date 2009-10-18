@@ -26,36 +26,64 @@ function version {
 
 function usage {
 
-    version
-    echo "
-Usage: bashrun [option]
+    local custom=" $(§modes.all) "
+    custom=${custom/ launcher / }
+    custom=${custom/ terminal / }
+    custom=${custom/ dropdown / }
+    custom="${custom:1}"
 
-   Options:
+    [[ "$custom" =~ ^\ +$ ]] && custom="none"
+
+    echo "Usage: bashrun [opt] [choice[:state]] [mode] [cmd[:mod]] [args] [-- termopts]
+
+   Options: 
+
      -v, --version : show version information
      -h, --help    : show this message
-     -d, --debug   : start bashrun in debug mode
+     -d, --debug   : enable debug messages
 
-     Available if xdotool(1) is installed:
-       --show    : show bashrun window and focus it
-       --hide    : hide the bashrun window
-       --toggle  : toggle window visibility
-       --exit    : exit bashrun
-       --restart : restart bashrun
-       --su cmd  : run command as root,
-                   prompts for password in bashrun
-       --wid     : print window id
-       --wait    : wait until window is unmapped
-       --debug   : toggle debug mode
+   Choice: which instance to use: [choice[:state]] (default: first:idle)
+     
+     Creates a new instance if no existing instance matches.
+                                     
+     first  : Use first (oldest) instance created
+     last   : Use last (latest) instance created
+     all    : Use all available instances
+     <id>   : Use instance with window id <id>
+     new    : Create a new instance in any case
 
-       Press F1 in bashrun to list the current keybindings.
+     state : limit choice to the specified state (default: idle)
+       
+       idle : Use idle instances only
+       busy : Use busy instances only
 
-For more information, see bashrun(1) or visit http://bashrun.sourceforge.net
+   Mode: create/use instance in the specified mode: [mode] (default: launcher)
+ 
+     default modes : launcher, terminal, dropdown 
+     custom modes  : $custom  
+
+     Use 'any' to choose an instance without regard to mode
+
+   Commands: [[--]command[:modifier] [arguments] (default: toggle)    
+       
+       show     : show (map) window and focus it
+       hide     : hide (unmap) window 
+       toggle   : focus window if not focused/visible, hide otherwise  
+       exit     : exit instance
+       restart  : exit instance, restart in the same mode
+       wid      : print window id
+       wait     : wait until window is mapped/unmapped
+
+       su[:user|?] <cmd>     : run <cmd> as user (?=ask) (default: su:root)
+       action <action> <cmd> : invoke <action> for <cmd>
+
+   Terminal Options: pass additional options to terminal: [-- termopts]
 "
 }
 
 switch=""
-qualifier="last"
-qualifier_policy="new"
+choice="last"
+state="new"
 mode="launcher"
 command="toggle"
 command_modifier=""
@@ -64,17 +92,16 @@ termopts=()
 
 function parse_arguments () {
 
-    # bashrun [--switch] [qualifier] [mode] [[--]command] [args]
-
     function debug? { return 1; }
 
-    local switches=" version:v help:h debug:d upgrade:U "
-    local switched=0
+    local switches=" version:v help:h debug:d "
+    local switch_set=0
 
-    local qualifiers=" new first last all "
-    local qualified=0
+    local choices=" new first last all "
+    local wids=" $(bashrun.registry.get_wids) "
+    local choice_set=0
 
-    local modes=" $(§modes.all) "
+    local modes=" $(§modes.all) any "
     local mode_set=0
 
     local commands=" show hide toggle exit restart remote su wid wait "
@@ -96,8 +123,8 @@ function parse_arguments () {
 	# if -- the remaining words are either command arguments or termopts
 	if [[ "$1" == "--" ]]; then
 	    terminated=1
-	    switched=1
-	    qualified=1
+	    switch_set=1
+	    choice_set=1
 	    mode_set=1
 	    command_set=1
 	    shift; continue
@@ -117,12 +144,12 @@ function parse_arguments () {
 		debug? && echo "switch or action: $word"
 		
 	        # check for single character switch
-		if [[ "$switched" == "0" && "$word" =~ ^[a-zA-Z]$ ]]; then
+		if [[ "$switch_set" == "0" && "$word" =~ ^[a-zA-Z]$ ]]; then
 		    debug? && echo "single character switch: $word"
 		    
 		    [[ "$switches" =~ \ ([^:]+):${word}\  ]]		    
 		    switch="${BASH_REMATCH[1]}"
-		    switched=1
+		    switch_set=1
 		    debug? && echo "switch: $switch"
 		    shift; continue
 		fi
@@ -137,8 +164,8 @@ function parse_arguments () {
 		    [[ -n "$cond" ]] && command_modifier="$cond"
 		    command="$word"		    
 		    command_set=1		   
-		    switched=1
-		    qualified=1
+		    switch_set=1
+		    choice_set=1
 		    mode_set=1
 		
 		    debug? && echo "command: $command"
@@ -146,28 +173,28 @@ function parse_arguments () {
 		fi
 	    
 	        # check for long switch
-		if [[ "$switched" == "0" && "$switches" =~ \ $word:[a-zA-Z]\  ]]; then
+		if [[ "$switch_set" == "0" && "$switches" =~ \ $word:[a-zA-Z]\  ]]; then
 		    switch="$word"
-		    switched=1
+		    switch_set=1
 		    debug? && echo "long switch: $switch"
 		    shift; continue
 		fi
 	    fi 
 	fi
 
-	if [[ "$qualified" == "0" ]]; then
+	if [[ "$choice_set" == "0" ]]; then
  	    if [[ "$word" =~ ^([^:]+):([^:]+) ]]; then
 		word="${BASH_REMATCH[1]}"
 		cond="${BASH_REMATCH[2]}"
 	    fi
-	    debug? && echo "qualifier? word='$word' cond='$cond'"
+	    debug? && echo "choice? word='$word' cond='$cond'"
 	    
-	    if [[ "$qualifiers" =~ " $word " ]]; then
-		qualifier="$word"
-		[[ -n "$cond" ]] && qualifier_policy="$cond"
-		qualified=1
-		switched=1
-		debug? && echo "qualifier: $qualifier, $qualifier_policy: $qualifier_policy"
+	    if [[ "$choices" =~ " $word " || "$wids" =~ " $word " ]]; then
+		choice="$word"
+		[[ -n "$cond" ]] && state="$cond"
+		choice_set=1
+		switch_set=1
+		debug? && echo "choice: $choice, $state: $state"
 		shift; continue
 	    fi
 	fi
@@ -175,8 +202,8 @@ function parse_arguments () {
 	if [[ "$mode_set" == "0" && "$modes" =~ " $word " ]]; then
 	    mode="$word"
 	    mode_set=1
-	    switched=1
-	    qualified=1
+	    switch_set=1
+	    choice_set=1
 	    debug? && echo "mode: $mode ($modes)"
             shift; continue
 	fi
@@ -192,8 +219,8 @@ function parse_arguments () {
 		command="$word"
 		[[ -n "$cond" ]] && command_modifier="$cond"
 		command_set=1
-		switched=1
-		qualified=1
+		switch_set=1
+		choice_set=1
 		mode_set=1
 		debug? && echo "command: $command, modifier: $command_modifier"
 		shift; continue
@@ -217,8 +244,8 @@ function parse_arguments () {
 	echo "--------------------------------------------------------------------------------"
 	[[ -n "$switch" ]] && echo "switch     : $switch"
 	echo "
-qualifier  : $qualifier
-  policy   : $qualifier_policy
+choice  : $choice
+  policy   : $state
 
 mode       : $mode
 
