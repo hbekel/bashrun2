@@ -153,25 +153,26 @@ function §window.geometry {
 }
 
 function §window.pos {
-   if [[ $# -eq 0 ]]; then
-       §window.update
-       echo $BASHRUN_WINDOW_POS_X $BASHRUN_WINDOW_POS_Y
-   else
-       §window? || return 1
-
-       local x="$1"
-       local y="$2"
-
-       if [[ "$x" =~ ([0-9]+)x([0-9]+) ]]; then
-	   x=${BASH_REMATCH[1]}
-	   y=${BASH_REMATCH[2]}
-       fi
-
-       xdotool windowmove $BASHRUN_WINDOW_ID $x $y
-       BASHRUN_WINDOW_POS_X=$x
-       BASHRUN_WINDOW_POS_Y=$y
-   fi
-   return 0
+    
+    if [[ $# -eq 0 ]]; then
+	§window.update
+	echo $BASHRUN_WINDOW_POS_X $BASHRUN_WINDOW_POS_Y
+    else
+	§window? || return 1
+	
+	local x="$1"
+	local y="$2"
+	
+	if [[ "$x" =~ ([0-9]+)x([0-9]+) ]]; then
+	    x=${BASH_REMATCH[1]}
+	    y=${BASH_REMATCH[2]}
+	fi
+	
+	§xdo windowmove $BASHRUN_WINDOW_ID $x $y 
+	BASHRUN_WINDOW_POS_X=$x
+	BASHRUN_WINDOW_POS_Y=$y
+    fi
+    return 0
 }
 
 function §window.size {
@@ -185,7 +186,7 @@ function §window.size {
 
     §window? || return 1
 
-    # resize from the outside using xdotool (using xterms/urxvt's
+    # resize from the outside using §xdo (using xterms/urxvt's
     # escape sequences is unreliable, causing random freezes)
 
     local hint=""
@@ -198,14 +199,14 @@ function §window.size {
 	if [[ "$width" =~ ([0-9]+)x([0-9]+) ]]; then
 	    local w=${BASH_REMATCH[1]}
 	    local h=${BASH_REMATCH[2]}
-	    xdotool windowsize $hint $BASHRUN_WINDOW_ID $w $h
+	    §xdo windowsize $hint $BASHRUN_WINDOW_ID $w $h
 	    BASHRUN_WINDOW_WIDTH=$w
 	    BASHRUN_WINDOW_HEIGHT=$h
 	fi
     fi
 
     if [[ $# -eq 2 ]]; then
-	xdotool windowsize $hint $BASHRUN_WINDOW_ID $1 $2
+	§xdo windowsize $hint $BASHRUN_WINDOW_ID $1 $2
 	BASHRUN_WINDOW_WIDTH=$1
 	BASHRUN_WINDOW_HEIGHT=$2
     fi 
@@ -226,7 +227,7 @@ function §window.map {
     §geometry.parse "$(§mode.get_default_geometry)"
 
     # map the window
-    xdotool windowmap $BASHRUN_WINDOW_ID
+    §xdo windowmap $BASHRUN_WINDOW_ID
     
     # apply position
     if §geometry.position?; then
@@ -234,13 +235,13 @@ function §window.map {
     fi
 
     # move to the current desktop if required
-    if [[ "$(xdotool get_desktop_for_window $BASHRUN_WINDOW_ID 2>/dev/null)" != "-1" ]]; then
-	xdotool set_desktop_for_window $BASHRUN_WINDOW_ID $(xdotool get_desktop)
+    if [[ "$(§xdo get_desktop_for_window $BASHRUN_WINDOW_ID 2>/dev/null)" != "-1" ]]; then
+	§xdo set_desktop_for_window $BASHRUN_WINDOW_ID $(§xdo get_desktop)
     fi
 
     # focus
-    xdotool windowactivate $BASHRUN_WINDOW_ID
-    xdotool windowfocus $BASHRUN_WINDOW_ID	
+    §xdo windowactivate $BASHRUN_WINDOW_ID
+    §xdo windowfocus $BASHRUN_WINDOW_ID	
     
     # call user supplied onmap handler
     local onmap="$(§mode.get_onmap)"
@@ -263,7 +264,7 @@ function §window.unmap {
     if [[ BASHRUN_WINDOW_ANIMATE -eq 1 ]]; then
 	§window.collapse
     fi
-    xdotool windowunmap $BASHRUN_WINDOW_ID
+    §xdo windowunmap $BASHRUN_WINDOW_ID
 
     # call user supplied onunmap handler
     local onunmap="$(§mode.get_onunmap)"
@@ -280,7 +281,7 @@ function §window.toggle {
     if [[ BASHRUN_WINDOW_MAPPED -eq 0 ]]; then	
 	§window.map
     else
-	if [[ "$(xdotool getwindowfocus)" != $BASHRUN_WINDOW_ID ]]; then
+	if [[ "$(§xdo getwindowfocus)" != $BASHRUN_WINDOW_ID ]]; then
 	    §window.map
 	else
 	    §window.unmap
@@ -294,7 +295,7 @@ function §window.collapse {
     local i=0
     for (( i=$BASHRUN_WINDOW_HEIGHT; i>1; i-- )); do
 	(( BASHRUN_WINDOW_HEIGHT-=1 ))
-	xdotool windowsize --usehints $BASHRUN_WINDOW_ID \
+	§xdo windowsize --usehints $BASHRUN_WINDOW_ID \
 	    $BASHRUN_WINDOW_WIDTH \
 	    $BASHRUN_WINDOW_HEIGHT
     done
@@ -309,8 +310,11 @@ function §window.expand {
     local i=0
     for (( i=1; i<=max_height-1; i++ )); do
 	(( BASHRUN_WINDOW_HEIGHT+=1 ))
-	xdotool windowsize --usehints $BASHRUN_WINDOW_ID \
+	§xdo windowsize --usehints $BASHRUN_WINDOW_ID \
 	    $BASHRUN_WINDOW_WIDTH \
 	    $BASHRUN_WINDOW_HEIGHT
     done
 }
+
+# Test for xdotool early on...
+§xdo &>/dev/null

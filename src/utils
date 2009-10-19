@@ -4,6 +4,14 @@
 
 BASHRUN_DEBUG_ACTION=0
 
+function §bash3 {
+    [[ ${BASH_VERSINFO[0]} -eq 3 ]]
+}
+
+function §bash4 {
+    [[ ${BASH_VERSINFO[0]} -eq 4 ]]
+}
+
 function §defined? {
     [[ "${!1-X}" == "${!1-Y}" ]]
 }
@@ -35,13 +43,37 @@ function §function.clone {
     fi
 }
 
-function §bash3 {
-    [[ ${BASH_VERSINFO[0]} -eq 3 ]]
-}
+BASHRUN_XDOTOOL="unknown"
 
-function §bash4 {
-    [[ ${BASH_VERSINFO[0]} -eq 4 ]]
+function §xdo {
+
+    if [[ "$BASHRUN_XDOTOOL" == "unknown" ]]; then
+
+        # assume xdotool is present
+	BASHRUN_XDOTOOL=1
+
+        # check if xdotool available at all
+	if ! which xdotool &>/dev/null; then
+	    BASHRUN_XDOTOOL=0
+
+        # check if >=20090815 (support for set_window)
+	elif (xdotool set_window 2>&1 | grep 'Unknown command' &>/dev/null); then
+	    BASHRUN_XDOTOOL=0
+	fi
+    fi
+    
+    if [[ BASHRUN_XDOTOOL -eq 0 ]]; then
+	§display_message "Error" "Bashrun requires xdotool>=20090815\n\nSee http://www.semicomplete.com/projects/xdotool/\n\nExiting..."
+	exit 1
+    fi
+
+    if [[ BASHRUN_DEBUG -eq 1 ]]; then
+	xdotool $@
+    else
+	xdotool $@ &>/dev/null
+    fi
 }
+export -f §xdo
 
 function §debug {
 
@@ -372,7 +404,7 @@ function §display_message {
     local title="$1"
     local text="$2"
 
-    if which dialog &>/dev/null; then
+    if (which dialog &>/dev/null && which xdotool &>/dev/null) then
 	local prev_size="$(§window.size)"
 	§window.size --hint 40 12
 	
@@ -386,25 +418,21 @@ function §display_message {
 	[[ "$title" =~ rror ]] && type="--error"
 	[[ "$title" =~ arning ]] && type="--warning"
 	    
-	zenity $type --title "Bashrun $title" --text "$text" &>/dev/null &
-	disown
+	zenity $type --title "Bashrun $title" --text "$text" &>/dev/null
     
     elif which kdialog &>/dev/null; then
 	local type="--msgbox"
 	[[ "$title" =~ rror ]] && type="--error"
 	[[ "$title" =~ arning ]] && type="--sorry"
 
-	kdialog --title "Bashrun $title" $type "$text" &>/dev/null &
-	disown
+	kdialog --title "Bashrun $title" $type "$text" &>/dev/null
 	
-    elif which noxmessage &>/dev/null; then
-	xmessage "$title: $text" &>/dev/null &
-	disown
+    elif which xmessage &>/dev/null; then
+	xmessage "$title: $text" &>/dev/null
     else
 	local saved="$(§terminal.get_name)"
 	§terminals.seek "default"
-	eval "$(§terminal.get_command) 'echo -e \"Bashrun $title:\n\n$text\n\" | less' &>/dev/null &"
-	disown
+	eval "$(§terminal.get_command) 'echo -e \"Bashrun $title:\n\n$text\n\" | less' &>/dev/null"
 	§terminals.seek "$saved"
     fi
 }

@@ -8,8 +8,8 @@
 . $BASHRUN_SHARE/geometry
 . $BASHRUN_SHARE/instance
 . $BASHRUN_SHARE/registry
-. $BASHRUN_SHARE/window
 . $BASHRUN_SHARE/terminals
+. $BASHRUN_SHARE/window
 . $BASHRUN_SHARE/modes
 . $BASHRUN_RCFILE
 
