@@ -94,33 +94,21 @@ function parse_arguments () {
 
     function debug? { return 1; }
 
-    # FIXME: backwards compatibility
-    #
-    # this is how it should work:
-    # 
-    # no args at or one switch -> "last idle launcher show"
-    # no args or one command ->  "last idle launcher <command>"
-    # 
-    # everything else -> parse
-    # 
-    # this is the current state:
+    # if zero or one args were given and the simple method gave up,
+    # command is already set, defaults are still "last idle launcher"
 
-    # if no args are given at all, defaults is 
-    # "last idle launcher show"
-
-    if [[ $# -eq 0 ]]; then
+    if [[ defaults -eq 1 ]]; then
 	choice="last"
 	state="idle"
 	mode="launcher"
-	command="show"
 	return 0
     fi
 
     # else defaults are "all any show"
+    command="show"
     choice="all"
     state=""
     mode="any"
-    command="show"
 
     local switches=" version:v help:h debug:d "
     local switch_set=0

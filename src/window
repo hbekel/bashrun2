@@ -69,7 +69,7 @@ function §window.update {
 
     if [[ $# -eq 1 ]]; then
 	# fast update, mapping state only
-	if xwininfo -id $BASHRUN_WINDOW_ID | grep -q isViewable; then
+	if [[ "$(xwininfo -id $BASHRUN_WINDOW_ID)" =~ "IsViewable" ]]; then
 	    BASHRUN_WINDOW_MAPPED=1
 	else
 	    BASHRUN_WINDOW_MAPPED=0
@@ -289,15 +289,25 @@ function §window.unmap {
     return 0
 }
 
-function §window.toggle {
+function §window.toggle { # [smart] [fast]
+    
+    local smart=$1
+    local fast=$2
+
     §window? || return 1
-    §window.update $1
+    §window.update $fast
+
+    echo "MAPPED: $BASHRUN_WINDOW_MAPPED"
 
     if [[ BASHRUN_WINDOW_MAPPED -eq 0 ]]; then	
 	§window.map
     else
-	if [[ "$(§xdo getwindowfocus)" != "$BASHRUN_WINDOW_ID" ]]; then
-	    §window.map
+	if [[ "$smart" == "1" ]]; then
+	    if [[ "$(§xdo getwindowfocus)" != "$BASHRUN_WINDOW_ID" ]]; then
+		§window.map
+	    else
+		§window.unmap
+	    fi
 	else
 	    §window.unmap
 	fi

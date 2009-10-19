@@ -6,12 +6,12 @@ BASHRUN_SHARE="$BASHRUN_PREFIX/share/bashrun-engine"
 
 
 if [[ $# -eq 0 ]]; then
-    source $BASHRUN_SHARE/simple $1
+    source $BASHRUN_SHARE/simple
     [[ $? -eq 0 ]] && exit 0
     
 elif [[ $# -eq 1 ]]; then
     case $1 in
-	show|--show|hide|--hide|toggle|--toggle)
+	show|--show|hide|--hide|toggle|--toggle|smart-toggle|--smart-toggle)
 	    source $BASHRUN_SHARE/simple $1
 	    [[ $? -eq 0 ]] && exit 0
 	    ;;

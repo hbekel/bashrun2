@@ -77,10 +77,6 @@ function §xdo {
 
 function §debug {
 
-    # §debug [--success] "var=" var "->" g "yes!" 
-    # §debug --warn "var=" var "->" y "hmm..." 
-    # §debug --fail "var=" var "->" r "you fail!" 
-
     [[ BASHRUN_DEBUG -eq 0 ]] && return
     
     # color
