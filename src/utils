@@ -63,14 +63,15 @@ function §xdo {
     fi
     
     if [[ BASHRUN_XDOTOOL -eq 0 ]]; then
-	§display_message "Error" "Bashrun requires xdotool>=20090815\n\nSee http://www.semicomplete.com/projects/xdotool/\n\nExiting..."
+	§display_message "Error" \
+	    "Bashrun requires xdotool>=20090815\n\nSee http://www.semicomplete.com/projects/xdotool/\n\nExiting..."
 	exit 1
     fi
 
     if [[ BASHRUN_DEBUG -eq 1 ]]; then
 	xdotool $@
     else
-	xdotool $@ &>/dev/null
+	xdotool $@ 2>/dev/null
     fi
 }
 export -f §xdo
@@ -404,7 +405,7 @@ function §display_message {
     local title="$1"
     local text="$2"
 
-    if (which dialog &>/dev/null && which xdotool &>/dev/null) then
+    if (which dialog &>/dev/null && which xdotool &>/dev/null && §window.terminal?) then
 	local prev_size="$(§window.size)"
 	§window.size --hint 40 12
 	

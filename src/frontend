@@ -17,12 +17,12 @@
 §configure.type "§modes"
 §configure.type "§terminals"
 
-# global defaults, may be set by parse_arguments()
+# global and most general defaults, may be set by parse_arguments()
 switch=""
-choice="last"
-state="idle"
-mode="launcher"
-command="toggle"
+choice=""
+state=""
+mode=""
+command=""
 command_modifier=""
 command_args=()
 termopts=()
@@ -93,6 +93,34 @@ function usage {
 function parse_arguments () {
 
     function debug? { return 1; }
+
+    # FIXME: backwards compatibility
+    #
+    # this is how it should work:
+    # 
+    # no args at or one switch -> "last idle launcher toggle"
+    # no args or one command ->  "last idle launcher <command>"
+    # 
+    # everything else -> parse
+    # 
+    # this is the current state:
+
+    # if no args are given at all, defaults is 
+    # "last idle launcher toggle"
+
+    if [[ $# -eq 0 ]]; then
+	choice="last"
+	state="idle"
+	mode="launcher"
+	command="toggle"
+	return 0
+    fi
+
+    # else defaults are "all any show"
+    choice="all"
+    state=""
+    mode="any"
+    command="show"
 
     local switches=" version:v help:h debug:d "
     local switch_set=0
@@ -269,20 +297,77 @@ function parse_arguments () {
 	termopts="$(printf "%q " ${termopts[@]})"
     fi
 
-    [[ "$choice" == "all" && "$mode_set" == "0" ]] && mode="any"
-    [[ "$state_set" == "0" && "$choice_set" == "1" ]] && state=""
-
     unset -f debug?
 }
 
-function waitwid {
+new () {
+
+    # get the bashrun terminal
+    §terminals.seek "bashrun"
     
-    expected=$1
+    # get requested mode
+    if ! §modes.seek "$mode"; then
+	mode="launcher"
+	§modes.seek $mode
+    fi
+
+    # find out whether this mode has feedback enabled
+    feedback="$(§mode.get_feedback)"
+
+    # find out whether it's animated
+    animation="$(§mode.get_anim)"
+
+    # get command and insert properties and geometry from requested mode
+    geometry=$(§mode.get_default_geometry)
+    §geometry.parse $geometry
+
+    if [[ animation -eq 1 ]]; then
+	# start with a one line terminal
+	§geometry.height 1
+	geometry="$(§geometry)"
+    fi
+
+    terminal="$(§terminal.get_command)"
+
+    terminal=${terminal//%m/$mode}
+    terminal=${terminal//%g/$geometry}        
+
+    # launch terminal
+    BASHRUN=1 \
+	BASHRUN_MODE="$mode" \
+	BASHRUN_FEEDBACK="$feedback" \
+	BASHRUN_DEBUG=$BASHRUN_DEBUG \
+	$terminal $termopts &    
+
+    local wid=""
+    wid="$(waitwid)"
+
+    §window.id "$wid"
+
+    # map the window to make it expand if animated
+    §window.map    
+
+    echo "$wid"
+}
+
+# get number of existing instances at startup
+expected="$(§registry.length)"
+
+function waitwid { 
+   # wait until new instance is registered and return it'swid
+    
+    # we expect the number of instances to increase by one
     ((expected+=1))
 
-    # wait for instance to register
+    local attempts=50
     until [[ "$(§registry.length)" -eq expected ]]; do
-	sleep 0.2
+	if [[ attempts -eq 0 ]]; then
+	    echo "failed"
+	    exit 1
+	fi
+	((attempts-=1))
+	sleep 0.1
     done
     §registry.get_last_wid
 }
+

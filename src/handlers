@@ -150,8 +150,7 @@ function §handlers.apply {
 		if [[ "$string" =~ (%[0-9]) ]]; then
 		    local missing=${BASH_REMATCH[1]}
 		    §debug "handler incomplete: no content for $missing"
-		    §debug " -> not executing, informing user"
-		    BASHRUN_COMMAND="bashrun_show_error No content for \\$missing in $pattern §handler."
+		    §debug " -> not executing"
 		    return 1
 		fi
 	    fi

@@ -21,66 +21,45 @@ case $switch in
 	;;
 esac
 
-# get number of existing instances 
-num="$(§registry.length)"
-
 response="$(§registry.request $choice "$state" $mode)"
+
+#§display_message "Info" "request: $choice $state $mode\nresponse: $response"
+#echo -e "request: $choice $state $mode ($command)\nresponse: $response"
 
 if [[ "$response" == "none" ]]; then
     echo "bashrun: error: no $state $mode found."
     exit 1
 fi
 
-if [[ "$response" != "new" ]]; then    
-    
-    wid="$response"
-
-    §window.id "$wid"
-    §modes.seek "$mode"
-    §window.toggle
-
-else       
-    # get the bashrun terminal
-    §terminals.seek "bashrun"
-
-    # get requested mode
-    if ! §modes.seek "$mode"; then
-	echo "bashrun: warning: no such mode '$mode', using default mode 'launcher'" 
-	mode="launcher"
-	§modes.seek $mode
-    fi
-
-    # find out whether this mode has feedback enabled
-    feedback="$(§mode.get_feedback)"
-
-    # find out whether it's animated
-    animation="$(§mode.get_anim)"
-
-    # get command and insert properties and geometry from requested mode
-    geometry=$(§mode.get_default_geometry)
-    §geometry.parse $geometry
-
-    if [[ animation -eq 1 ]]; then
-	# start with a one line terminal
-	§geometry.height 1
-	geometry="$(§geometry)"
-    fi
-
-    terminal="$(§terminal.get_command)"
-
-    terminal=${terminal//%m/$mode}
-    terminal=${terminal//%g/$geometry}        
-
-    # launch terminal
-    BASHRUN=1 \
-	BASHRUN_MODE="$mode" \
-	BASHRUN_FEEDBACK="$feedback" \
-	BASHRUN_DEBUG=$BASHRUN_DEBUG \
-	$terminal $termopts &    
-
-    wid="$(waitwid $num)"
-    §window.id "$wid"
-
-    # map the window to make it expand if animated
-    §window.map
+if [[ "$response" == "new" ]]; then    
+    wids="$(new)"
+else
+    wids="$response"
 fi
+
+for wid in $wids; do
+    §window.id "$wid"
+
+    #echo -n "$wid ($BASHRUN_WINDOW_ID) -> $command (currently "
+    #§window.mapped? || echo -n "un"
+    #echo "mapped)"
+
+    case "$command" in
+	wid)
+	    echo "$wid"
+	    ;;
+	show)
+	    §window.map
+	    ;;
+	hide)
+	    §window.unmap
+	    ;;	
+	toggle)
+	    [[ "$response" != "new" ]] && §window.toggle
+	    ;;
+	*)
+	    echo "bashrun: command '$command' unknown or not implemented"
+	    exit 1
+    esac
+done
+exit 0

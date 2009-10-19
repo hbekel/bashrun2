@@ -235,7 +235,7 @@ function §window.map {
     fi
 
     # move to the current desktop if required
-    if [[ "$(§xdo get_desktop_for_window $BASHRUN_WINDOW_ID 2>/dev/null)" != "-1" ]]; then
+    if [[ "$(§xdo get_desktop_for_window $BASHRUN_WINDOW_ID)" != "-1" ]]; then
 	§xdo set_desktop_for_window $BASHRUN_WINDOW_ID $(§xdo get_desktop)
     fi
 
@@ -281,7 +281,7 @@ function §window.toggle {
     if [[ BASHRUN_WINDOW_MAPPED -eq 0 ]]; then	
 	§window.map
     else
-	if [[ "$(§xdo getwindowfocus)" != $BASHRUN_WINDOW_ID ]]; then
+	if [[ "$(§xdo getwindowfocus)" != "$BASHRUN_WINDOW_ID" ]]; then
 	    §window.map
 	else
 	    §window.unmap
