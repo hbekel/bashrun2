@@ -32,6 +32,7 @@ FILES=(
     readline
     registry
     rules
+    simple
     source
     terminals
     utils

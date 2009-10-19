@@ -20,6 +20,8 @@ function §registry.get_wids {
 
 function §registry.add {
     
+    local first=0
+
     # add window id to widfile
     if [[ ! -f $BASHRUN_REGISTRY ]]; then
 	touch $BASHRUN_REGISTRY
@@ -27,6 +29,12 @@ function §registry.add {
     local entry="$WINDOWID:$$:$BASHRUN_MODE"
     §debug "entry" -v "$entry" '>>' -v "${BASHRUN_REGISTRY/$HOME/~}"
     echo "$entry" >> $BASHRUN_REGISTRY
+
+    if [[ "$(§registry.request first any launcher)" != "new" &&
+		"$BASHRUN_MODE" == "launcher" ]]; then
+	§debug -c "first launcher instance"
+	echo "$WINDOWID" > $BASHRUN_CACHE_HOME/launcher
+    fi
 }
 
 function §registry.remove {
@@ -44,6 +52,11 @@ function §registry.remove {
     mv $BASHRUN_REGISTRY.tmp $BASHRUN_REGISTRY
     if [[ "$(<$BASHRUN_REGISTRY)" == '' ]]; then
 	rm $BASHRUN_REGISTRY
+	rm $BASHRUN_CACHE_HOME/launcher
+    else
+	if [[ "$(§registry.request first any launcher)" == "new" ]]; then
+	    rm $BASHRUN_CACHE_HOME/launcher
+	fi
     fi
 }
 

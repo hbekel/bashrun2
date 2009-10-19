@@ -4,6 +4,20 @@ BASHRUN_PREFIX=`which bashrun 2> /dev/null`
 BASHRUN_PREFIX=${BASHRUN_PREFIX/\/bin\/bashrun/}
 BASHRUN_SHARE="$BASHRUN_PREFIX/share/bashrun-engine"
 
+
+if [[ $# -eq 0 ]]; then
+    source $BASHRUN_SHARE/simple $1
+    [[ $? -eq 0 ]] && exit 0
+    
+elif [[ $# -eq 1 ]]; then
+    case $1 in
+	show|--show|hide|--hide|toggle|--toggle)
+	    source $BASHRUN_SHARE/simple $1
+	    [[ $? -eq 0 ]] && exit 0
+	    ;;
+    esac
+fi
+
 source $BASHRUN_SHARE/frontend
 
 parse_arguments "$@"

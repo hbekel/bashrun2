@@ -55,14 +55,29 @@ function §window.id {
     
     if [[ $# -eq 0 ]]; then
 	echo $BASHRUN_WINDOW_ID
-    else
+    elif [[ $# -eq 1 ]]; then
 	BASHRUN_WINDOW_ID=$1	    
 	§window.update
+    else
+	BASHRUN_WINDOW_ID=$1	    
+	§window.update 1
     fi
     return 0
 }
 
 function §window.update {
+
+    if [[ $# -eq 1 ]]; then
+	# fast update, mapping state only
+	if xwininfo -id $BASHRUN_WINDOW_ID | grep -q isViewable; then
+	    BASHRUN_WINDOW_MAPPED=1
+	else
+	    BASHRUN_WINDOW_MAPPED=0
+	fi
+	return 0
+    fi
+
+    # complete update
 
     local saved="$IFS"
     local line=''
@@ -219,7 +234,7 @@ function §window.size {
 function §window.map {
 
     §window? || return 1
-    §window.update
+    [[ $# -eq 1 ]] || §window.update
     
     §modes.seek $(§registry.get_mode $BASHRUN_WINDOW_ID)
 
@@ -257,7 +272,7 @@ function §window.map {
 function §window.unmap {
 
     §window? || return 1
-    §window.update
+    [[ $# -eq 1 ]] || §window.update
 
     §modes.seek $(§registry.get_mode $BASHRUN_WINDOW_ID)
 
@@ -276,7 +291,7 @@ function §window.unmap {
 
 function §window.toggle {
     §window? || return 1
-    §window.update
+    §window.update $1
 
     if [[ BASHRUN_WINDOW_MAPPED -eq 0 ]]; then	
 	§window.map

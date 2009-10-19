@@ -1,0 +1,32 @@
+# -*- shell-script -*-
+
+command="${1:-show}"
+command=${command/--/}
+
+widfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun-engine/launcher"
+
+if [[ ! -f "$widfile" ]]; then
+    return 1
+fi
+
+wid="$(<$widfile)"
+
+[[ -z "$wid" ]] && return 1
+
+§xdo () { xdotool "$@"; } 
+source $BASHRUN_SHARE/window
+
+§window.id "$wid" 1 &>/dev/null
+
+case $command in
+    show)
+	§window.map 1 &>/dev/null
+	;;
+    hide)
+	§window.unmap 1 &>/dev/null
+	;;
+    toggle)
+	§window.toggle 1 &>/dev/null
+	;;
+esac
+return 0

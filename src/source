@@ -19,6 +19,7 @@ share=$prefix/share/bashrun-engine
 source $share/utils
 source $share/globals
 source $share/registry
+source $share/instance
 
 # setup pingpong (this needs to happen as early as possible)
 function §pong { echo "$$" > $BASHRUN_PINGPONG; }
@@ -32,7 +33,6 @@ source $share/progress
 §progress.new "Initializing... [objects]"
 
 source $share/config
-source $share/instance
 source $share/geometry
 source $share/terminals
 source $share/window

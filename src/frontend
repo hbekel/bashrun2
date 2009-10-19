@@ -98,7 +98,7 @@ function parse_arguments () {
     #
     # this is how it should work:
     # 
-    # no args at or one switch -> "last idle launcher toggle"
+    # no args at or one switch -> "last idle launcher show"
     # no args or one command ->  "last idle launcher <command>"
     # 
     # everything else -> parse
@@ -106,13 +106,13 @@ function parse_arguments () {
     # this is the current state:
 
     # if no args are given at all, defaults is 
-    # "last idle launcher toggle"
+    # "last idle launcher show"
 
     if [[ $# -eq 0 ]]; then
 	choice="last"
 	state="idle"
 	mode="launcher"
-	command="toggle"
+	command="show"
 	return 0
     fi
 
