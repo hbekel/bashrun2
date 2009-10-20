@@ -88,7 +88,10 @@ function §config.get_funcname { # $wanted
 }
 
 function §configs.restore {
- 
+
+    §configs.restore_core
+    §configs.collect_user_configs
+
     §configs.seek_start
     while §configs.next?; do
 	§config.restore
@@ -102,6 +105,8 @@ function §config.restore {
     local restore="$(§config.get_dumpname core)"
     local state="restoring"
     local name=""
+
+    §progress.update +12 "Initializing... [$type]"
 
     for name in $(§config.get_names); do
 	[[ "$name" == "core" ]] && continue
@@ -146,7 +151,7 @@ function §config.restore {
     fi	    
 }
 
-function §configs.collect {
+function §configs.restore_core {
 
     source $BASHRUN_SHARE/defaults
     source $BASHRUN_RCFILE
@@ -156,10 +161,7 @@ function §configs.collect {
 
     local line function name type dumpfile
 
-    # First we'll configure && dump the all the core config functions
-    # (once) with the reserved name 'core' -- Since they are
-    # considered immutable, we won't have to check wether they've
-    # changed, and dump them only once if no dump exists
+    §progress.update +5 "Initializing... [core]"
 
     for function in $functions; do
 	if [[ "$function" =~ ^\+configure-core-(.+) ]]; then
@@ -180,6 +182,17 @@ function §configs.collect {
 	    §config.add_name "core"
 	fi
     done
+}
+
+function §configs.collect_user_configs {
+
+    source $BASHRUN_SHARE/defaults
+    source $BASHRUN_RCFILE
+
+    local types="actions|modes|terminals|rules|handlers|keys"
+    local functions="$(declare -f | grep '^+configure-' | awk '{ print $1 }')"
+
+    local line function name type
 
     # then we'll process the user config functions
     for function in $(declare -f | grep '^+configure'); do

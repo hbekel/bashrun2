@@ -8,15 +8,17 @@
 . $BASHRUN_SHARE/geometry
 . $BASHRUN_SHARE/instance
 . $BASHRUN_SHARE/registry
+. $BASHRUN_SHARE/progress
 . $BASHRUN_SHARE/terminals
 . $BASHRUN_SHARE/window
 . $BASHRUN_SHARE/modes
 . $BASHRUN_RCFILE
 
 # load modes and terminals 
-§configs.collect
-§configs.seek "modes" && §config.restore
-§configs.seek "terminals" && §config.restore
+§configs.restore_core # FIXME: allow selective core restore
+§configs.collect_user_configs
+§configs.seek "modes" && §config.restore 
+§configs.seek "terminals" && §config.restore 
 
 # global and most general defaults, may be set by parse_arguments()
 switch=""

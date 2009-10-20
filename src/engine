@@ -25,7 +25,6 @@ function §engine.init {
     §progress.update +5
         
     # load/restore configuration
-    §configs.collect
     §configs.restore
 
     §handlers.install_completion
@@ -37,7 +36,7 @@ function §engine.init {
     # reset object positions
     §objects.seek_start
 
-    §progress.update +5 "Initializing... [engine]"
+    §progress.update 100 "Initializing... [engine]"
 
     # switch to initial mode passed from env
     §modes.seek "$BASHRUN_MODE"
