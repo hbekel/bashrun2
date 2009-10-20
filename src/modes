@@ -139,12 +139,12 @@ function §mode.code {
 
 function §modes.dump {
 
-    local file=$_OBJECTS_DATA_HOME/§modes.dump
+    local file=${1:-$_OBJECTS_DATA_HOME/§modes.dump}
     local mode=''
     local func=''
     local current=$(§mode.get_name)
 
-    §_modes.dump
+    §_modes.dump $file
 
     §modes.seek_start
     while §modes.next?; do

@@ -14,15 +14,15 @@
 . $BASHRUN_RCFILE
 
 # load modes and terminals 
-§configure.type "§modes"
-§configure.type "§terminals"
+§configs.collect
+§configs.seek "modes" && §config.restore
+§configs.seek "terminals" && §config.restore
 
 # global and most general defaults, may be set by parse_arguments()
 switch=""
 choice=""
 state=""
 mode=""
-command=""
 command_modifier=""
 command_args=()
 termopts=()

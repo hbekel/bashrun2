@@ -36,15 +36,24 @@ function §binding.code {
     echo "--bind $args"
 }
 
+function §keys.dump () {
+    §bindings.dump "$@"
+}
+
 §function.clone "§bindings.dump" "§_bindings.dump"
+§function.clone "§internals.dump" "§_internals.dump"
+§function.clone "§keynames.dump" "§_keynames.dump"
 
 function §bindings.dump {
 
-    §_bindings.dump
+    local file=$_OBJECTS_DATA_HOME/${1:-§bindings.dump}
 
-    local file=$_OBJECTS_DATA_HOME/§bindings.dump
+    §_bindings.dump "${1:-§bindings.dump}"
 
     echo "BASHRUN_BINDINGS_NEXT_CHAR=$BASHRUN_BINDINGS_NEXT_CHAR" >> $file
+
+    §internals.dump "${1:-§bindings.dump}" append
+    §keynames.dump "${1:-§bindings.dump}" append
 
     local saved=$(§binding.get_keyseq)
 
@@ -58,13 +67,12 @@ function §bindings.dump {
     §bindings.seek $saved
 }
 
-§function.clone "§internals.dump" "§_internals.dump"
-
 function §internals.dump {
 
-    §_internals.dump
+    local file="$_OBJECTS_DATA_HOME/${1:-§internals.dump}"
 
-    local file=$_OBJECTS_DATA_HOME/§internals.dump
+    §_internals.dump "${1:-§internals.dump}" append
+
     local saved=$(§internal.get_action)
 
     §internals.seek_start
@@ -75,5 +83,10 @@ function §internals.dump {
     §internals.seek $saved
 }
 
+function §keynames.dump {
+
+    §_keynames.dump "${1:-§keynames.dump}" append
+
+}
 
 ################################################################################

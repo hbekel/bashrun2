@@ -154,6 +154,10 @@ function objects.interface? {
     [[ _OBJECTS_HAVE_INTERFACE -eq 0 ]] && return 1
 }
 
+function objects.empty? {
+    [[ _OBJECTS_SIZE -eq 0 ]]
+}
+
 function objects.list { # [-l] [ids]
 
     local current=$_OBJECTS_POSITION
@@ -198,23 +202,48 @@ function objects.all {
 
 function objects.dump {
     
+    if objects.empty?; then
+	touch $_ObJeCtS_DATA_HOME/${1:-objects.dump}
+	return 0
+    fi
+
     local data="$(printf "%q " "${_OBJECTS[@]}")"
 
-    echo "
-    _OBJECTS_KEYS=(${_OBJECTS_KEYS[@]})
-    _OBJECTS_WIDTH=${_OBJECTS_WIDTH}
-    _OBJECTS_POSITION=0
-    _OBJECTS_NEXT=0
-    _OBJECTS_SIZE=${_OBJECTS_SIZE}
-    _OBJECTS_MODIFIED=0
-    
-    _OBJECTS_HAVE_INTERFACE=${_OBJECTS_HAVE_INTERFACE}
-    _OBJECTS_INTERFACE_METHODS='${_OBJECTS_INTERFACE_METHODS}'
-    _OBJECTS_INTERFACE_OPTIONS='${_OBJECTS_INTERFACE_OPTIONS}'
-    _OBJECTS_INTERFACE_OPTIONS_FOUND=()
+    if [[ "$2" == "append" ]]; then
 
-    _OBJECTS=($data)
-    " > $_ObJeCtS_DATA_HOME/${1:-objects.dump}
+	echo "
+        _OBJECTS_KEYS=(${_OBJECTS_KEYS[@]})
+        _OBJECTS_WIDTH=${_OBJECTS_WIDTH}
+        _OBJECTS_POSITION=0
+        _OBJECTS_NEXT=0
+        _OBJECTS_SIZE=${_OBJECTS_SIZE}
+        _OBJECTS_MODIFIED=0
+    
+        _OBJECTS_HAVE_INTERFACE=${_OBJECTS_HAVE_INTERFACE}
+        _OBJECTS_INTERFACE_METHODS='${_OBJECTS_INTERFACE_METHODS}'
+        _OBJECTS_INTERFACE_OPTIONS='${_OBJECTS_INTERFACE_OPTIONS}'
+        _OBJECTS_INTERFACE_OPTIONS_FOUND=()
+
+        _OBJECTS=($data)
+        " >> $_ObJeCtS_DATA_HOME/${1:-objects.dump}
+
+    else
+	echo "
+        _OBJECTS_KEYS=(${_OBJECTS_KEYS[@]})
+        _OBJECTS_WIDTH=${_OBJECTS_WIDTH}
+        _OBJECTS_POSITION=0
+        _OBJECTS_NEXT=0
+        _OBJECTS_SIZE=${_OBJECTS_SIZE}
+        _OBJECTS_MODIFIED=0
+    
+        _OBJECTS_HAVE_INTERFACE=${_OBJECTS_HAVE_INTERFACE}
+        _OBJECTS_INTERFACE_METHODS='${_OBJECTS_INTERFACE_METHODS}'
+        _OBJECTS_INTERFACE_OPTIONS='${_OBJECTS_INTERFACE_OPTIONS}'
+        _OBJECTS_INTERFACE_OPTIONS_FOUND=()
+
+        _OBJECTS=($data)
+        " > $_ObJeCtS_DATA_HOME/${1:-objects.dump}
+    fi
 
 }
 

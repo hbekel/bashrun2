@@ -2,132 +2,202 @@
 
 ################################################################################
 
-function §configure {
+§class §config "type names"
 
-    local rcfile="${BASHRUN_RCFILE/$HOME/~}"
+################################################################################
+
+function §config.add_name () {
+    local name="$1"
+    if [[ "$(§config.get_names)" == "" ]]; then
+	§config.set_names "$name"
+    else
+	§config.set_names "$(§config.get_names) $name"
+    fi
+}
+
+function §configs.list () {
+
+    §configs.seek_start
+    while §configs.next?; do
+	echo "$(§config.get_type) ($(§config.get_names))"
+	§configs.next
+    done
+}
+
+function §config.get_dumpname { # $wanted
+
+    local wanted="$1"
+    local dump="$(§config.get_type)"
+    local name=""
+    
+    echo "wanted: $wanted" >> bashrun.log
+
+    for name in $(§config.get_names); do	
+	dump="$dump-$name"
+	[[ "$name" == "$wanted" ]] && break
+    done
+    echo "returning $dump.dump" >> bashrun.log 
+    echo "$dump.dump"
+}
+
+function §config.get_final_dumpname {
+    [[ "§(config.get_names)" =~ ([^\ ])$ ]]
+    echo "$(§config.get_dumpname "${BASH_REMATCH[1]}")"
+}
+
+function §config.get_rcname { # $wanted
+
+    local wanted="$1"
+    local dump="$(§config.get_type)"
+    local name=""
+    
+    for name in $(§config.get_names); do	
+	dump="$dump-$name"
+	[[ "$name" == "$wanted" ]] && break
+    done
+
+    echo "$dump.rc"
+}
+
+function §config.changed? { # $name
+
+    local name="$1"
+    local state="$2"
+    local rcfile="$BASHRUN_CACHE_HOME/$(§config.get_rcname "$name")"
+    local function="$(§config.get_funcname "$name")"
+
+    if [[ "$state" == "reconfiguring" ]]; then
+	return 0
+
+    elif [[ ! -f $rcfile ]]; then
+	return 0    
+
+    elif [[ "$(<$rcfile)" != "$(§function.code "$function")" ]]; then
+	return 0
+    fi
+    return 1
+}
+
+function §config.get_funcname { # $wanted
+    local name="$1"
+    if [[ "$name" == "user" ]]; then
+	echo "+configure-$(§config.get_type)"
+    else
+	echo "+configure-$name-$(§config.get_type)"
+    fi
+}
+
+function §configs.restore {
+ 
+    §configs.seek_start
+    while §configs.next?; do
+	§config.restore
+	§configs.next
+    done
+}
+
+function §config.restore {
+
+    local type="$(§config.get_type)"
+    local restore="$(§config.get_dumpname core)"
+    local state="restoring"
+    local name=""
+
+    for name in $(§config.get_names); do
+	[[ "$name" == "core" ]] && continue
+
+	if §config.changed? "$name" "$state"; then
+
+	    §debug -y "$(§config.get_funcname "$name")" "->" -c "reconfigure..."
+
+	    # restore the previous dump unless reconfiguring	    
+	    if [[ "$state" == "restoring" ]]; then
+		§debug "restoring " -v "$restore"
+		. "$BASHRUN_CACHE_HOME/$restore"
+	    fi
+
+	    state="reconfiguring" # we're reconfiguring from now on...
+
+	    # run the config function for this part
+	    §debug "calling " -v "$(§config.get_funcname "$name")"
+
+	    $(§config.get_funcname "$name")
+
+	    # dump the results in the proper dumpfile
+	    §debug "dumping" -v "$(§config.get_dumpname "$name")"
+
+	    §$type.dump "$(§config.get_dumpname "$name")"
+
+	    # cache the config function in the proper rcfile
+	    §debug "caching" -v "$(§config.get_rcname "$name")"
+
+	    §function.code "$(§config.get_funcname "$name")" > \
+		$BASHRUN_CACHE_HOME/$(§config.get_rcname "$name")
+	
+	else
+	    §debug -y "$(§config.get_funcname "$name")" "->" -c "restore..."
+	fi
+	restore="$(§config.get_dumpname "$name")"
+    done
+    
+    if [[ "$state" == "restoring" ]]; then
+	§debug -c "restore" -v "$(§config.get_final_dumpname)"
+	. "$BASHRUN_CACHE_HOME/$(§config.get_final_dumpname)"
+    fi	    
+}
+
+function §configs.collect {
 
     source $BASHRUN_SHARE/defaults
     source $BASHRUN_RCFILE
 
-    local line=""
-    local type=""
+    local types="actions|modes|terminals|rules|handlers|keys"
+    local functions="$(declare -f | grep '^+configure-' | awk '{ print $1 }')"
 
-    §separator "source $rcfile"
+    local line function name type dumpfile
 
-    # core actions need to be sourced first and only need to be cached
-    # once since they're considered immutable
-    §debug "installing" -v "core actions"
+    # First we'll configure && dump the all the core config functions
+    # (once) with the reserved name 'core' -- Since they are
+    # considered immutable, we won't have to check wether they've
+    # changed, and dump them only once if no dump exists
 
-    §progress.update +10 "Initializing... [core]"
-    if [[ ! -f $BASHRUN_CACHE_HOME/§defaults.dump ]]; then
-	+configure-defaults
-	§actions.dump "§defaults.dump"
-    else
-	source $BASHRUN_CACHE_HOME/§defaults.dump
-    fi
-    unset -f +configure-defaults
+    for function in $functions; do
+	if [[ "$function" =~ ^\+configure-core-(.+) ]]; then
 
-    # loop through defined +configure-* functions
+	    type="${BASH_REMATCH[1]}"
+	    dumpfile="$type-core.dump"	    
 
-    for line in $(set | grep '^+configure-'); do
-	[[ "$line" == "()" ]] && continue
-
-	[[ "$line" =~ ^\+configure-(.+) ]]
-	type="§${BASH_REMATCH[1]}"
-
-	[[ "$type" == "§defaults" ]] && continue;
-
-	§progress.update +10 "Initializing... [${type//§/}]"
-
-	local len=${#type}
-	if [[ "$(§objects.types)" =~ "${type:0:$len-1} " ]]; then
-	    §configure.type $type
-	else
-	    if [[ "$type" == "§keys" ]]; then
-		§configure.keys
-	    else
-		§debug warn -v $type ": unknown object type, skipping +configure-${type//§/}()"
+	    if [[ ! -f $BASHRUN_CACHE_HOME/$dumpfile ]]; then
+		§debug -y "core" -c "$type" "->" -v "$dumpfile"
+		$function
+		§$type.dump $dumpfile
 	    fi
+
+	    if ! §configs.seek "$type"; then
+		§config.new "$type"
+	    fi
+	    §configs.seek "$type"
+	    §config.add_name "core"
 	fi
-	unset -f +configure-${type//§/}
     done
-}
 
-function §configure.type {
-    
-    local type="$1"
-    local dump="${2:-$BASHRUN_CACHE_HOME/$type.dump}"
-    local dumprc="${3:-$BASHRUN_CACHE_HOME/$type.rc}"
+    # then we'll process the user config functions
+    for function in $(declare -f | grep '^+configure'); do
 
-    local config="+configure-$type"
-    config=${config//§/}
+	# parse the function name to determine the identifier, the name and the type
+	[[ "$function" =~ ^(\+configure-([^-]+?)?-?($types)) ]] || continue
 
-    # if a dump exists
-    if [[ -f "$dump" ]]; then
+	function="${BASH_REMATCH[1]}"
+	type="${BASH_REMATCH[3]}"
+	name="${BASH_REMATCH[2]:-user}"
 
-	# if the configure function has changed
-	if [[ "$(<$dumprc)" != "$(§function.code $config)" ]]; then
+	[[ "$name" == "core" ]] && continue
 
-	    # reconfigure this type
-	    §reconfigure.type "$type", "$config", "$dumprc"
-	else
-	    # restore type
-	    §debug "restoring" -v "$type"
-	    $type.restore
+	if ! §configs.seek "$type"; then
+	    §config.new "$type"
 	fi
-    else
-	# reconfigure this type
-	§reconfigure.type "$type", "$config", "$dumprc"
-    fi
+	§configs.seek "$type"
+	§config.add_name "$name"
+    done   
 }
 
-function §reconfigure.type {
-
-    §debug -v "$type"
-
-    # run configure function
-    $config
-    
-    # dump configuration results
-    $type.dump
-    
-    # cache the configure function that created the dump
-    §function.code +configure-${type//§/} > $dumprc
-}
-
-function §configure.keys {
-
-    local dumprc="$BASHRUN_CACHE_HOME/§keys.rc"
-
-    # dumps already exists by now (created by §action.dump)
-
-    # if no dumprc exists, +configure-keys() has not been used before...
-    if [[ ! -f "$dumprc" ]]; then
-	touch "$dumprc"
-    fi
-
-    # if the +configure-keys function has changed or the actions have been
-    # reconfigured before (and in that case don't include these bindings yet)...
-
-    if [[ "$(<$dumprc)" != "$(§function.code +configure-keys)" ]]; then	
-
-	§debug "reconfiguring" -v "§keys"
-
-	# run configure function
-	+configure-keys
-
-	# dump bindings (et al) again
-	§internals.dump
-	§bindings.dump
-	§keynames.dump
-
-        # cache the configure function that created the dump
-	§function.code +configure-keys > $dumprc
-    else
-	§debug "restoring" -v "§keys"
-
-	§internals.restore
-	§keynames.restore
-	§bindings.restore
-    fi
-}

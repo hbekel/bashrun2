@@ -2,7 +2,23 @@
 
 ################################################################################
 
-+configure-defaults () {
++configure-core-modes () {
+    +mode default
+}
+
++configure-core-terminals () {
+    
+    +terminal bashrun 
+      --command "urxvt -geometry %g -name bashrun-%m -title bashrun-%m"
+      
+    +terminal default   --command "urxvt -e bash -c"
+}
+
++configure-core-rules () { :; }
++configure-core-handlers () { :; }
++configure-core-keys () { :; }
+
++configure-core-actions () {
 
     function §action.set_core {
 	_BASHRUN_ACTIONS[${_BASHRUN_ACTIONS_POSITION}+8]="$1"
@@ -13,7 +29,7 @@
     --accept 0
     --core 1
 
-    +action-pass () { return 1; }
+    +action-pass () { $BASHRUN_COMMAND; }
 
     +action 'abort'
     --desc 'Abort (unmap window)'

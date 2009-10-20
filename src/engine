@@ -25,7 +25,8 @@ function §engine.init {
     §progress.update +5
         
     # load/restore configuration
-    §configure
+    §configs.collect
+    §configs.restore
 
     §handlers.install_completion
 

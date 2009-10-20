@@ -201,7 +201,7 @@ function §handlers.dump {
 
     local file="$_OBJECTS_DATA_HOME/${1:-§handlers.dump}"
     local name=''
-    §_handlers.dump $1
+    §_handlers.dump "$1"
 
     local saved="$(§handler.get_name)"
 
