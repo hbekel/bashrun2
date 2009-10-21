@@ -30,13 +30,10 @@ function §config.get_dumpname { # $wanted
     local dump="$(§config.get_type)"
     local name=""
     
-    echo "wanted: $wanted" >> bashrun.log
-
     for name in $(§config.get_names); do	
 	dump="$dump-$name"
 	[[ "$name" == "$wanted" ]] && break
     done
-    echo "returning $dump.dump" >> bashrun.log 
     echo "$dump.dump"
 }
 

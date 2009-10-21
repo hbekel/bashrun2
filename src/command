@@ -12,7 +12,7 @@ function §command.unquote {
     # unquote quoted &;|
     command=${command//\\&/&}
     command=${command//\\|/|}
-    command=${command// \\; /;}
+    command=${command//\\;/;}
     command=${command//&&/ && }
     command=${command//||/ || }
 

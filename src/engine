@@ -38,9 +38,10 @@ function §engine.init {
 
     §progress.update 100 "Initializing... [engine]"
 
-    # switch to initial mode passed from env
+    # initialize mode passed from env
     §modes.seek "$BASHRUN_MODE"
-    §mode.switch
+    §debug "calling §mode.init for $(§mode.get_name)"
+    §mode.init
 
     # enable extdebug and prepare escape from trap
     # (bashdb bugs out if extdebug is set directly from a startup file)
@@ -131,8 +132,8 @@ function §engine.trap {
 	§engine.busy? && §engine.reset 
 	return 0
     fi
+    §debug "line   :" -v "$BASHRUN_COMMAND_LINE"
     §debug "command:" -v "$BASHRUN_COMMAND"
-    §debug "   line:" -v "$BASHRUN_COMMAND_LINE"
 
     §engine.launch
 

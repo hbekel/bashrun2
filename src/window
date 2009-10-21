@@ -137,15 +137,7 @@ function §window.update {
     BASHRUN_WINDOW_PIXEL_WIDTH=$pw
     BASHRUN_WINDOW_PIXEL_HEIGHT=$ph
 
-    local saved="$(§mode.get_name)"
-    if [[ -f $BASHRUN_REGISTRY ]]; then
-	local mode="$(§registry.get_mode $BASHRUN_WINDOW_ID)"
-	if [[ "$mode" != "none" ]]; then
-	    §modes.seek "$mode"
-	    BASHRUN_WINDOW_ANIMATE="$(§mode.get_anim)"
-	    §modes.seek "$saved"
-	fi
-    fi
+    BASHRUN_WINDOW_ANIMATE="$(§mode.get_anim)"
 }
 
 function §window.geometry {
@@ -236,8 +228,6 @@ function §window.map {
     §window? || return 1
     [[ $# -eq 1 ]] || §window.update
     
-    §modes.seek $(§registry.get_mode $BASHRUN_WINDOW_ID)
-
     # parse geometry for this mode 
     §geometry.parse "$(§mode.get_default_geometry)"
 
@@ -273,8 +263,6 @@ function §window.unmap {
 
     §window? || return 1
     [[ $# -eq 1 ]] || §window.update
-
-    §modes.seek $(§registry.get_mode $BASHRUN_WINDOW_ID)
 
     if [[ BASHRUN_WINDOW_ANIMATE -eq 1 ]]; then
 	§window.collapse

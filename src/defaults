@@ -4,6 +4,22 @@
 
 +configure-core-modes () {
     +mode default
+
+    +mode-default-init () {
+
+	stty ixon		
+	
+	+keymap emacs
+	+unbind run      '\C-m'
+	+unbind run      '\C-j'
+	+unbind term-run '\e\C-m'
+	+unbind pass     '\ew'
+	+unbind quit     '\C-q'
+	+unbind abort    '\C-g'
+
+	+bind run '\e\C-m'
+	+bind term-run '\et'
+    }    
 }
 
 +configure-core-terminals () {
@@ -307,23 +323,7 @@
 	fi
 	tput reset
 	return 2
-    }
-    
-    +action 'cycle-mode'
-    --desc 'Cycle through available modes'
-    --accept 0
-    --core 1
-    
-    function +action-cycle-mode {
-	
-	§modes.next
-	if [[ "$(§mode.get_name)" == '' ]]; then
-	    §modes.seek_start
-	fi
-	§mode.switch
-	return 2
-    }   
-
+    }    
     unset -f §action.set_core
 }
 
