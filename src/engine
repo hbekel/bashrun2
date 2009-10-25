@@ -40,7 +40,7 @@ function §engine.init {
 
     # initialize mode passed from env
     §modes.seek "$BASHRUN_MODE"
-    §debug "calling §mode.init for $(§mode.get_name)"
+    §debug "calling" -v "§mode.init" "for" -v "$(§mode.get_name)"
     §mode.init
 
     # enable extdebug and prepare escape from trap

@@ -121,16 +121,16 @@ function §config.restore {
 	    state="reconfiguring" # we're reconfiguring from now on...
 
 	    # run the config function for this part
-	    §debug "calling " -v "$(§config.get_funcname "$name")"
+	    §debug "calling" -v "$(§config.get_funcname "$name")"
 
 	    $(§config.get_funcname "$name")
 
-	    # dump the results in the proper dumpfile
+	    # dump the results in the corresponding dumpfile
 	    §debug "dumping" -v "$(§config.get_dumpname "$name")"
 
 	    §$type.dump "$(§config.get_dumpname "$name")"
 
-	    # cache the config function in the proper rcfile
+	    # cache the config function in the corresponding rcfile
 	    §debug "caching" -v "$(§config.get_rcname "$name")"
 
 	    §function.code "$(§config.get_funcname "$name")" > \
