@@ -8,7 +8,7 @@
 
 §function.clone "§mode.new" "§_mode.new"
 
-BASHRUN_MODE="${BASHRUN_MODE:-default}"
+BASHRUN_MODE="${BASHRUN_MODE:-terminal}"
 
 function §mode.new { 
 
@@ -47,6 +47,7 @@ function §mode.init {
     local name="$(§mode.get_name)"
 
     if §function.defined? "+mode-$name-init"; then
+	§debug -v "+mode-$name-init"
 	+mode-$name-init
     fi
 
@@ -56,6 +57,9 @@ function §mode.init {
     else
 	§window.animate 0
     fi
+
+    # init completion
+    §completion.init
 }
 
 function §mode.reset {

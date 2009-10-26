@@ -2,215 +2,49 @@
 
 ################################################################################
 
-function §registry.length {
-    if [[ -f $BASHRUN_REGISTRY ]]; then
-	cat $BASHRUN_REGISTRY | wc -l 
-    else
-	echo 0
-    fi
-}
-
-function §registry.get_wids {
-    if [[ -f $BASHRUN_REGISTRY ]]; then
-	cat $BASHRUN_REGISTRY | cut -d: -f1
-    else
-	echo "none"
-    fi
-}
-
 function §registry.add {
+
+    local widfile="$BASHRUN_CACHE_HOME/${BASHRUN_MODE:-terminal}"
     
-    local first=0
-
-    # add window id to widfile
-    if [[ ! -f $BASHRUN_REGISTRY ]]; then
-	touch $BASHRUN_REGISTRY
+    if [[ -f "$widfile" ]]; then	
+	if ! §window.exists? "$(<$widfile)"; then
+	    rm "$widfile"
+	else
+	    return 1
+	fi
     fi
-    local entry="$WINDOWID:$$:$BASHRUN_MODE"
-    §debug "entry" -v "$entry" '>>' -v "${BASHRUN_REGISTRY/$HOME/~}"
-    echo "$entry" >> $BASHRUN_REGISTRY
 
-    if [[ "$(§registry.request first any launcher)" != "new" &&
-		"$BASHRUN_MODE" == "launcher" ]]; then
-	§debug -c "first launcher instance"
-	echo "$WINDOWID" > $BASHRUN_CACHE_HOME/launcher
+    if [[ ! -f "$widfile" ]]; then	
+	echo "$WINDOWID" >> "$widfile"
+	return 0
     fi
+    return 1
 }
 
 function §registry.remove {
-
-    local wid="${1:-$WINDOWID}"
-    local info=''
-
-    echo -n '' > $BASHRUN_REGISTRY.tmp
-
-    for info in $(<$BASHRUN_REGISTRY); do
-	if [[ ! "$info" =~ "$wid" ]]; then
-	    echo $info >> $BASHRUN_REGISTRY.tmp
-	fi
-    done
-    mv $BASHRUN_REGISTRY.tmp $BASHRUN_REGISTRY
-    if [[ "$(<$BASHRUN_REGISTRY)" == '' ]]; then
-	rm $BASHRUN_REGISTRY
-	rm $BASHRUN_CACHE_HOME/launcher
-    else
-	if [[ "$(§registry.request first any launcher)" == "new" ]]; then
-	    rm $BASHRUN_CACHE_HOME/launcher
-	fi
+    local widfile="$BASHRUN_CACHE_HOME/${BASHRUN_MODE:-terminal}"
+    if [[ -f "$widfile" ]]; then
+	rm "$widfile"
     fi
 }
 
 function §registry.request {
-    
-    # return window ids of requested instances or "new"
+    local mode="${1:-terminal}"
+    local widfile="$BASHRUN_CACHE_HOME/$mode"
 
-    local choice="$1"
-    local state="$2"
-    local mode="$3"   
-
-    [[ -z "$state" ]] && state="any"
-
-    local entries="" entry="" wid="" wids="" pid="" found=""
-
-    if [[ ! -f $BASHRUN_REGISTRY ]]; then
+    if [[ ! -f "$widfile" ]]; then
 	echo "new"
 	return 1
-    fi
-
-    if [[ "$choice" == "new" ]]; then
-	echo "new"
-	return 1
-    fi
-
-    §registry.cleanup
-
-    if [[ "$choice" == "all" ]]; then
-	wids="$(§registry.get_wids)"
-    fi
-
-    if [[ "$choice" =~ [0-9] && "$(§registy.get_wids)" =~ "$choice" ]]; then
-	wids="$choice"
-    fi
-
-    if [[ "$wids" == "" ]]; then
-	wids="$(§registry.get_wids)"
-    fi
-
-    if [[ "$choice" == "last" ]]; then
-	entries="$(tac $BASHRUN_REGISTRY)"
     else
-	entries="$(<$BASHRUN_REGISTRY)"
-    fi
-
-    local entry_wid entry_pid entry_mode
-    local single=0
-
-    if [[ "$choice" =~ (first|last|[0-9]+) ]]; then
-	single=1
-    fi
-
-    for entry in $entries; do
-	[[ "$entry" =~ (.+?):(.+?):(.+) ]];
-	entry_wid=${BASH_REMATCH[1]}
-	entry_pid=${BASH_REMATCH[2]}
-	entry_mode=${BASH_REMATCH[3]}
-
-	for wid in $wids; do
-	    if [[ "$entry_wid" == "$wid" ]]; then
-		if [[ "$entry_mode" == "$mode" || "$mode" == "any" ]]; then
-		    if [[ "$state" == "any" ]]; then
-			[[ single -eq 1 ]] && echo "$wid" && return 0
-			found="$found $wid"
-		    else
-			if [[ "$state" == "busy" ]];then
-			    if §instance.busy? "$entry_pid"; then
-				[[ single -eq 1 ]] && echo "$wid" && return 0
-				found="$found $wid"
-			    fi
-			elif [[ "$state" == "idle" ]]; then
-			    if §instance.idle? "$entry_pid"; then
-				[[ single -eq 1 ]] && echo "$wid" && return 0
-				found="$found $wid"
-			    fi
-			fi
-		    fi
-		fi
-	    fi
-	done
-    done
-
-    if [[ -n "$found" ]]; then
-	echo "$found"
-    else
-	if [[ "$state" != "busy" ]]; then
+	local wid="$(<$widfile)"
+	if ! §window.exists? "$wid"; then
+	    rm "$widfile"
 	    echo "new"
+	    return 1
 	else
-	    echo "none"
+	    echo "$(<$widfile)"
+	    return 0
 	fi
-    fi    
-}
-
-function §registry.cleanup {
-
-    local wid=""
-    for wid in $(§registry.get_wids); do
-	if ! §instance.exists? "$wid"; then
-	    §registry.remove "$wid"
-	fi
-    done
-}
-
-function §registry.get_last_wid {
-    if [[ -f $BASHRUN_REGISTRY ]]; then
-	tac $BASHRUN_REGISTRY | head -n1 | cut -d: -f1
-    else
-	echo "none"
     fi
 }
 
-function §registry.set_mode {
-    
-    local prev="$1"
-    local mode="$2"
-
-    local info=''
-    echo -n '' > $BASHRUN_REGISTRY.tmp
-
-    for info in $(<$BASHRUN_REGISTRY); do
-	if [[ ! "$info" =~ "$WINDOWID" ]]; then
-	    echo $info >> $BASHRUN_REGISTRY.tmp
-	else
-	    echo ${info/$prev/$mode} >> $BASHRUN_REGISTRY.tmp
-	fi
-    done
-    mv $BASHRUN_REGISTRY.tmp $BASHRUN_REGISTRY
-}
-
-function §registry.get_mode {
-    
-    local wid="$1"
-    local info=""
-
-    for info in $(<$BASHRUN_REGISTRY); do
-	if [[ "$info" =~ "$wid" ]]; then
-	    echo "$info" | cut -d ':' -f 3
-	    return 0
-	fi
-    done
-    echo "none"
-    return 1
-}
-
-function §registry.get_pid {
-
-    local wid="$1"
-    local info=""
-
-    for info in $(<$BASHRUN_REGISTRY); do
-	if [[ "$info" =~ "$wid" ]]; then
-	    echo $info | cut -d ':' -f 2
-	    return 0
-	fi
-    done
-    return 1 
-}

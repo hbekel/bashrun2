@@ -4,6 +4,10 @@
 
 BASHRUN_COMPLETION=''
 
+function §completion.init {
+    §completion.set $(§mode.get_comp)
+}
+
 function §completion.set {
 
     local ctype="$1"
@@ -20,6 +24,7 @@ function §completion.set {
     fi
 
     # reset readline settings to defaults
+    # FIXME: restore from user's settings
     bind 'set page-completions on'
     bind 'set print-completions-horizontally off'
     bind 'set completion-query-items 100'
@@ -39,7 +44,7 @@ function §completion.set {
 	    bind 'set completion-query-items -1'
 	    ;;
 	*)
-	    §debug --fail "unknown completion type:" -v "$ctype"
+	    §debug "unknown completion type:" -v "$ctype"
 	    ;;
     esac
     BASHRUN_COMPLETION="$ctype"

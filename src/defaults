@@ -3,9 +3,10 @@
 ################################################################################
 
 +configure-core-modes () {
-    +mode default
 
-    +mode-default-init () {
+    +mode terminal
+
+    +mode-terminal-init () {
 
 	stty ixon		
 	

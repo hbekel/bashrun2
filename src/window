@@ -21,6 +21,12 @@ function §window? {
     return 1
 }
 
+function §window.exists? () {
+    local wid="$1"
+    xwininfo -id $wid &>/dev/null
+    return $?
+}
+
 function §window.mapped? {
     §window? || return 1
 

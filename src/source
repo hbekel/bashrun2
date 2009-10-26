@@ -19,7 +19,6 @@ share=$prefix/share/bashrun-engine
 source $share/utils
 source $share/globals
 source $share/registry
-source $share/instance
 
 # setup pingpong (this needs to happen as early as possible)
 function §pong { echo "$$" > $BASHRUN_PINGPONG; }

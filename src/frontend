@@ -6,7 +6,6 @@
 . $BASHRUN_SHARE/globals
 . $BASHRUN_SHARE/config
 . $BASHRUN_SHARE/geometry
-. $BASHRUN_SHARE/instance
 . $BASHRUN_SHARE/registry
 . $BASHRUN_SHARE/progress
 . $BASHRUN_SHARE/terminals
@@ -15,282 +14,14 @@
 . $BASHRUN_RCFILE
 
 # load modes and terminals 
-§configs.restore_core # FIXME: allow selective core restore
+§configs.restore_core 
 §configs.collect_user_configs
 §configs.seek "modes" && §config.restore 
 §configs.seek "terminals" && §config.restore 
 
-# global and most general defaults, may be set by parse_arguments()
-switch=""
-choice=""
-state=""
-mode=""
-command_modifier=""
-command_args=()
-termopts=()
-
 ############################################################
 
-function version {
-    echo "bashrun $BASHRUN_VERSION Copyright (C) 2009 Henning Bekel <h.bekel@googlemail.com>"
-}
-
-function usage {
-
-    local custom=" $(§modes.all) "
-    custom=${custom/ launcher / }
-    custom=${custom/ terminal / }
-    custom=${custom/ dropdown / }
-    custom="${custom:1}"
-
-    [[ "$custom" =~ ^\ +$ ]] && custom="none"
-
-    echo "Usage: bashrun [opt] [choice] [state] [mode] [cmd[:mod]] [args] [-- termopts]
-
-   Options: 
-
-     -v, --version : show version information
-     -h, --help    : show this message
-     -d, --debug   : enable debug messages
-
-   Choice: which instance to use: [choice] (default: last)
-     
-     If no existing instance matches, a new instance will be created.
-                                     
-     first  : Use first (oldest) instance created
-     last   : Use last (latest) instance created
-     all    : Use all available instances (mode defaults to 'any')
-     <id>   : Use instance with window id <id>
-     new    : Create a new instance in any case
-
-   State : limit choice to the specified state: [state] (default: not set)
-       
-       idle : Use idle instances only
-       busy : Use busy instances only
-
-   Mode: create/use instance in the specified mode: [mode] (default: launcher)
- 
-     default modes : launcher, terminal, dropdown 
-     custom modes  : $custom  
-
-     Use 'any' to choose an instance regardless of mode
-
-   Commands: [[--]command[:modifier] [arguments] (default: toggle)    
-       
-       show     : show (map) window and focus it
-       hide     : hide (unmap) window 
-       toggle   : focus window if not focused/visible, hide otherwise  
-       exit     : exit instance
-       restart  : exit instance, restart in the same mode
-       wid      : print window id
-       wait     : wait until window is mapped/unmapped
-
-       su[:user|?] <cmd>     : run <cmd> as user (?=ask) (default: su:root)
-       action <action> <cmd> : invoke <action> for <cmd>
-
-   Terminal Options: pass additional options to terminal: [-- termopts]
-"
-}
-
-function parse_arguments () {
-
-    function debug? { return 1; }
-
-    # if zero or one args were given and the simple method gave up,
-    # command is already set, defaults are still "last idle launcher"
-
-    if [[ defaults -eq 1 ]]; then
-	choice="last"
-	state="idle"
-	mode="launcher"
-	return 0
-    fi
-
-    # else defaults are "all any show"
-    command="show"
-    choice="all"
-    state=""
-    mode="any"
-
-    local switches=" version:v help:h debug:d "
-    local switch_set=0
-
-    local choices=" new first last all "
-    local wids=" $(§registry.get_wids) "
-    local choice_set=0
-
-    local states=" busy idle "
-    local state_set=0
-
-    local modes=""
-    local name=""
-    for name in $(§modes.all); do
-	modes="$modes $name ${name}s"
-    done
-    modes=" $modes any "
-
-    local mode_set=0
-
-    local commands=" show hide toggle exit restart remote su wid wait "
-    local command_set=0
-
-    local terminated=0
-
-    local word=""
-    local cond=""
-    local pos=-1
-
-    until [[ $# -eq 0 ]]; do
-	((pos+=1))
-	debug? && echo "-- $pos: $1 ---------------------"
-
-	word="$1"
-	cond=""
-
-	# if -- the remaining words are either command arguments or termopts
-	if [[ "$1" == "--" ]]; then
-	    terminated=1
-	    switch_set=1
-	    choice_set=1
-	    state_set=1
-	    mode_set=1
-	    command_set=1
-	    shift; continue
-	fi
-
-	# collect terminal options
-	if [[ "$terminated" == "1" ]]; then
-	    debug? && echo "terminal option: $1"
-	    termopts[${#termopts[@]}]="$1"
-	    shift; continue	
-	fi
-
-	# check for switch or command
-	if [[ "$terminated" == "0" ]]; then
-	    if [[ "$word" =~ ^--?(.+) ]]; then
-		word="${BASH_REMATCH[1]}"
-		debug? && echo "switch or action: $word"
-		
-	        # check for single character switch
-		if [[ "$switch_set" == "0" && "$word" =~ ^[a-zA-Z]$ ]]; then
-		    debug? && echo "single character switch: $word"
-		    
-		    [[ "$switches" =~ \ ([^:]+):${word}\  ]]		    
-		    switch="${BASH_REMATCH[1]}"
-		    switch_set=1
-		    debug? && echo "switch: $switch"
-		    shift; continue
-		fi
-		
-	        # check for --command
-		if [[ "$command_set" == "0" && "$commands" =~ " $word " ]]; then		
-		    if [[ "$word" =~ ^([^:]+):([^:]+) ]]; then
-			word="${BASH_REMATCH[1]}"
-			cond="${BASH_REMATCH[2]}"
-		    fi
-		    debug? && echo "--command? word='$word' cond='$cond'"
-		    [[ -n "$cond" ]] && command_modifier="$cond"
-		    command="$word"		    
-		    command_set=1		   
-		    switch_set=1
-		    choice_set=1
-		    state_set=1
-		    mode_set=1
-		
-		    debug? && echo "command: $command"
-		    shift; continue
-		fi
-	    
-	        # check for long switch
-		if [[ "$switch_set" == "0" && "$switches" =~ \ $word:[a-zA-Z]\  ]]; then
-		    switch="$word"
-		    switch_set=1
-		    debug? && echo "long switch: $switch"
-		    shift; continue
-		fi
-	    fi 
-	fi
-
-	if [[ "$choice_set" == "0" ]]; then 	    
-	    debug? && echo "choice? word='$word'"
-	    
-	    if [[ "$choices" =~ " $word " || "$wids" =~ " $word " ]]; then
-		choice="$word"
-		choice_set=1
-		switch_set=1
-		debug? && echo "choice: $choice, $state: $state"
-		shift; continue
-	    fi
-	fi
-
-	if [[ "$state_set" == "0" ]]; then 	    
-	    debug? && echo "state? word='$word'"
-	    
-	    if [[ "$states" =~ " $word " ]]; then
-		state="$word"
-		state_set=1
-		choice_set=1
-		switch_set=1
-		debug? && echo "state: $state"
-		shift; continue
-	    fi
-	fi
-
-	if [[ "$mode_set" == "0" && "$modes" =~ " $word " ]]; then
-
-	    # some syntactic sugar allowing to call modes in plural
-	    if [[ " $(§modes.all) "  =~ " $word " || "$word" == "any" ]]; then
-		mode="$word"
-	    else
-		local len=${#word}
-		mode="${word:0:$len-1}"
-	    fi
-
-	    mode_set=1
-	    switch_set=1
-	    choice_set=1
-	    state_set=1
-	    debug? && echo "mode: $mode ($modes)"
-            shift; continue
-	fi
-
-	if [[ "$command_set" == "0" ]]; then
-	    if [[ "$word" =~ ^([^:]+):([^:]+) ]]; then
-		word="${BASH_REMATCH[1]}"
-		cond="${BASH_REMATCH[2]}"
-	    fi
-	    debug? && echo "command? word='$word' cond='$cond'"
-
-	    if [[ "$commands" =~ " $word " ]]; then		
-		command="$word"
-		[[ -n "$cond" ]] && command_modifier="$cond"
-		command_set=1
-		switch_set=1
-		choice_set=1
-		state_set=1
-		mode_set=1
-		debug? && echo "command: $command, modifier: $command_modifier"
-		shift; continue
-	    fi
-	fi
-
-	# collect command arguments
-	if [[ terminated -eq 0 ]]; then
-	    debug? && echo "command arg: $word"
-	    command_args[${#command_args[@]}]="$word"
-	fi
-	shift
-    done    
-
-    # quote terminal options
-    if [[ "${termopts[@]}" != "" ]]; then
-	termopts="$(printf "%q " ${termopts[@]})"
-    fi
-
-    unset -f debug?
-}
-
-new () {
+launch () {
 
     # get the bashrun terminal
     §terminals.seek "bashrun"
@@ -340,17 +71,13 @@ new () {
     echo "$wid"
 }
 
-# get number of existing instances at startup
-expected="$(§registry.length)"
-
 function waitwid { 
-   # wait until new instance is registered and return it'swid
+   # wait until new instance is registered and return it's wid
     
-    # we expect the number of instances to increase by one
-    ((expected+=1))
-
     local attempts=50
-    until [[ "$(§registry.length)" -eq expected ]]; do
+    local widfile="$BASHRUN_CACHE_HOME/$mode"
+
+    until [[ -f $BASHRUN_CACHE_HOME/$mode ]]; do
 	if [[ attempts -eq 0 ]]; then
 	    echo "failed"
 	    exit 1
@@ -358,6 +85,6 @@ function waitwid {
 	((attempts-=1))
 	sleep 0.1
     done
-    §registry.get_last_wid
+    echo "$(<$widfile)" 
 }
 

@@ -1,79 +1,111 @@
 #!/bin/bash
 
-BASHRUN_PREFIX=`which bashrun 2> /dev/null`
-BASHRUN_PREFIX=${BASHRUN_PREFIX/\/bin\/bashrun/}
+BASHRUN_PREFIX=`which bashrun-remote 2> /dev/null`
+BASHRUN_PREFIX=${BASHRUN_PREFIX/\/bin\/bashrun-remote/}
 BASHRUN_SHARE="$BASHRUN_PREFIX/share/bashrun-engine"
 
+mode="launcher"
+command="show"
 
-if [[ $# -eq 0 ]]; then
-    source $BASHRUN_SHARE/simple
-    [[ $? -eq 0 ]] && exit 0
-    
-elif [[ $# -eq 1 ]]; then
-    case $1 in
-	show|--show|hide|--hide|toggle|--toggle|smart-toggle|--smart-toggle)
-	    source $BASHRUN_SHARE/simple $1
-	    [[ $? -eq 0 ]] && exit 0
-	    ;;
-    esac
+# Fast handling of 'bashrun [--mode <mode>] [show|hide|toggle|smart]'
+
+if [[ $# -eq 3 || $# -eq 2 ]]; then
+    if [[ "$*" =~ ^(\-\-mode|-m)\ ([^\ ]+) ]]; then
+	mode=${BASH_REMATCH[2]}
+	shift; shift
+    fi
 fi
 
-source $BASHRUN_SHARE/frontend
+if [[ $# -eq 1 ]]; then
+    case $1 in
+	show|--show|hide|--hide|toggle|--toggle|smart|--smart|wid|--wid)
+	    command=$1
+	    shift
+	    ;;
+    esac    
+fi
 
-parse_arguments "$@"
+if [[ $# -eq 0 ]]; then            
+    source $BASHRUN_SHARE/simple
+    [[ $? -eq 0 ]] && exit 0
+fi
 
-# handle switches first
-case $switch in
-    version)
+# The above usage didn't apply or no instance was found in the specified mode...
+
+version () {
+    echo "bashrun $BASHRUN_VERSION Copyright (C) 2009 Henning Bekel <h.bekel@googlemail.com>"
+}
+
+usage () {
+    echo "Usage: bashrun [option] [[command[:modifier]] [args]...]
+
+  Options: 
+
+    -v, --version : show version information and exit
+    -h, --help    : show this message and exit
+    -m, --mode    : select mode to launch/control
+
+  Commands: 
+       
+    show     : show (map) window, move to current desktop  and focus it
+    hide     : hide (unmap) window 
+    toggle   : hide if visible, show if hidden
+    smart    : move window up front if not focused/visible, hide otherwise  
+    exit     : exit instance
+    wid      : print window id
+    pid      : print pid of bashrun session
+    wait     : wait until window is mapped/unmapped
+
+    su[:user|?] <cmd>     : run <cmd> as user (?=ask) (default: 'su:root')
+    action <action> <cmd> : invoke <action> for <cmd>
+"
+}
+
+# handle option first
+case "$1" in
+    -v|--version)
 	version && exit 0
 	;;
-    help)
+    -h|--help)
 	usage && exit 0
 	;;    
-    debug)
-	BASHRUN_DEBUG=1
+    -m|--mode)
+	mode=${2:-launcher}
+	shift; shift
 	;;
 esac
 
-response="$(§registry.request $choice "$state" $mode)"
+echo "frontend: remaining args: $*"
 
-#§display_message "Info" "request: $choice $state $mode\nresponse: $response"
-#echo -e "request: $choice $state $mode ($command)\nresponse: $response"
+source $BASHRUN_SHARE/frontend
 
-if [[ "$response" == "none" ]]; then
-    echo "bashrun: error: no $state $mode found."
-    exit 1
-fi
+response="$(§registry.request $mode)"
 
 if [[ "$response" == "new" ]]; then    
-    wids="$(new)"
+    wid="$(launch)"
 else
-    wids="$response"
+    wid="$response"
 fi
 
-for wid in $wids; do
-    §window.id "$wid"
+§window.id "$wid"
 
-    #echo -n "$wid ($BASHRUN_WINDOW_ID) -> $command (currently "
-    #§window.mapped? || echo -n "un"
-    #echo "mapped)"
+[[ $# -gt 0 ]] && command="$1"
 
-    case "$command" in
-	wid)
-	    echo "$wid"
-	    ;;
-	show)
-	    §window.map
-	    ;;
-	hide)
-	    §window.unmap
-	    ;;	
-	toggle)
-	    [[ "$response" != "new" ]] && §window.toggle
-	    ;;
-	*)
-	    echo "bashrun: command '$command' unknown or not implemented"
-	    exit 1
-    esac
-done
+case "$command" in
+    wid)
+	echo "$wid"
+	;;
+    show)
+	§window.map
+	;;
+    hide)
+	§window.unmap
+	;;	
+    toggle)
+	[[ "$response" != "new" ]] && §window.toggle
+	;;
+    *)
+	echo "bashrun: command '$command' unknown or not implemented"
+	exit 1
+esac
 exit 0
