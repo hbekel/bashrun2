@@ -88,10 +88,8 @@ function §action.bind {
 	    return 1
 	fi
 	
-	# FIXME: remove tputs when bash supports "no crlf after bind -x"
-
 	bind="-m $keymap -x \$'\"\C-z\\x$char\":"
-	bind="$bind tput cuu1; tput dl1; §engine.action $action'"
+	bind="$bind §engine.action $action'"
 
 	§debug -y "int" -v "$action" "->" -v "\C-z\\x$char" "($keymap)" 
 	eval "bind $bind"
