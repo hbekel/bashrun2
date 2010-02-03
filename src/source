@@ -18,6 +18,7 @@ share=$prefix/share/bashrun-engine
 
 source $share/utils
 source $share/globals
+source $share/window
 source $share/registry
 
 # setup pingpong (this needs to happen as early as possible)
@@ -34,7 +35,6 @@ source $share/progress
 source $share/config
 source $share/geometry
 source $share/terminals
-source $share/window
 source $share/command
 source $share/readline
 source $share/completion
