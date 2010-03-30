@@ -133,9 +133,9 @@
     { 
 	! executable? && +handlers;
 	if [[ "$(command)" =~ ^\(.+?\)$ ]]; then
-	    command "$(command); read -n1";
+	    command "tput civis; $(command); read -n1";
 	else
-	    command "($(command)); read -n1";
+	    command "tput civis; ($(command)); read -n1";
 	fi
 	+term;
 	return 0
