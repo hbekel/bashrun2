@@ -52,7 +52,6 @@ function §command.get_word {
     word=$(echo $word | sed -r "s/^\\(+//;s/\\)+$//")
 
     BASHRUN_COMMAND_WORD="$word"
-    §debug -v "$BASHRUN_COMMAND_WORD"
 }
 
 function §command.executable? {
@@ -145,7 +144,7 @@ function §command.add_terminal {
 
     §command.get_word
 
-    if [[ "$BASHRUN_COMMAND_WORD" =~ (xterm|?rxvt?) ]]; then
+    if [[ "$BASHRUN_COMMAND_WORD" =~ (xterm|.?+rxvt) ]]; then
 	§debug "already in terminal"
 	return 1
     fi

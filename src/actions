@@ -364,7 +364,7 @@ function §action.api.enable {
     
     function +handlers { §handlers.apply; }
     function +rules { §rules.apply; }
-    function +term { §command.add_terminal $1; }
+    function +term { §rules.apply; §command.add_terminal $1; }
     function +pager { §command.add_pager; }
     function +user { §command.add_su ${1:-root}; }
 }
