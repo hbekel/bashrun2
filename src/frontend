@@ -78,9 +78,9 @@ function waitwid {
    # wait until new instance is registered and return it's wid
     
     local attempts=50
-    local widfile="$BASHRUN_CACHE_HOME/$mode"
+    local widfile="$BASHRUN_CACHE_HOME/${mode}-wid"
 
-    until [[ -f $BASHRUN_CACHE_HOME/$mode ]]; do
+    until [[ -f $widfile ]]; do
 	if [[ attempts -eq 0 ]]; then
 	    echo "failed"
 	    exit 1
@@ -90,4 +90,3 @@ function waitwid {
     done
     echo "$(<$widfile)" 
 }
-

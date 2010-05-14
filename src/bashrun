@@ -4,6 +4,7 @@
 BASHRUN_PREFIX=`which bashrun 2> /dev/null`
 BASHRUN_PREFIX=${BASHRUN_PREFIX/\/bin\/bashrun/}
 BASHRUN_SHARE="$BASHRUN_PREFIX/share/bashrun"
+BASHRUN_CACHE_HOME="$HOME/.cache/bashrun"
 
 # default mode and command (show the launcher) 
 mode="launcher"
@@ -21,7 +22,7 @@ fi
 
 if [[ $# -eq 1 ]]; then
     case $1 in
-	show|--show|hide|--hide|toggle|--toggle|smart|--smart|wid|--wid)
+	show|--show|hide|--hide|toggle|--toggle|smart|--smart|wid|--wid|pid|--pid)
 	    command=$1
 	    shift
 	    ;;
@@ -29,11 +30,13 @@ if [[ $# -eq 1 ]]; then
 fi
 
 if [[ $# -eq 0 ]]; then
+    # delegate to the simple frontend script
     source $BASHRUN_SHARE/simple
     [[ $? -eq 0 ]] && exit 0
 fi
 
-# The above cases didn't apply or no instance was found in the specified mode...
+# The above cases didn't apply, or no instance was found in the
+# specified mode... proceed
 
 source $BASHRUN_SHARE/utils
 
@@ -51,40 +54,56 @@ case "$1" in
 	;;
 esac
 
-echo "frontend: remaining args: $*"
-
+# initialize the complete frontend
 source $BASHRUN_SHARE/frontend
 
+# get the window id of a running instance or launch a new instance...
 response="$(§registry.request $mode)"
+§debug "response" -v "$response"
 
 if [[ "$response" == "new" ]]; then    
     wid="$(launch)"
 else
     wid="$response"
+    §window.id "$wid"
 fi
 
-§window.id "$wid"
+# handle remaining arguments...
+§debug "remaining args:" -v "$*"
 
-[[ $# -gt 0 ]] && command="$1"
+if [[ $# -gt 0 ]]; then
+    command="$1"
+    shift
+fi
+
+# separate command and command modifier (if any)
+if [[ "$command" =~ ([^:]+?):(.+?) ]]; then
+    command="${BASH_REMATCH[1]}"
+    modifier="${BASH_REMATCH[2]}"
+fi
+§debug "command:" -v "$command" "modifier:" -v "$modifier" 
 
 case "$command" in
+    show)
+	[[ "$response" != "new" ]] && §window.map &>/dev/null
+	;;
+    hide)
+	§window.unmap &>/dev/null
+	;;	
+    toggle)
+	[[ "$response" != "new" ]] && §window.toggle &>/dev/null
+	;;
+    smart)
+	[[ "$response" != "new" ]] && §window.toggle 1 &>/dev/null
+	;;
     wid)
 	echo "$wid"
 	;;
     pid)
-	echo "$pid"
-	;;
-    show)
-	§window.map
-	;;
-    hide)
-	§window.unmap
-	;;	
-    toggle)
-	[[ "$response" != "new" ]] && §window.toggle
+	echo "$(<$BASHRUN_CACHE_HOME/${mode}-pid)"
 	;;
     *)
-	echo "bashrun: command '$command' unknown or not implemented"
+	echo "bashrun: unknown command: $command"
 	exit 1
 esac
 exit 0

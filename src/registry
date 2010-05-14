@@ -4,7 +4,8 @@
 
 function §registry.add {
 
-    local widfile="$BASHRUN_CACHE_HOME/${BASHRUN_MODE:-terminal}"
+    local widfile="$BASHRUN_CACHE_HOME/${BASHRUN_MODE:-terminal}-wid"
+    local pidfile="$BASHRUN_CACHE_HOME/${BASHRUN_MODE:-terminal}-pid"
     
     if [[ -f "$widfile" ]]; then	
 	if ! §window.exists? "$(<$widfile)"; then
@@ -14,23 +15,34 @@ function §registry.add {
 	fi
     fi
 
+    if [[ ! -f "$pidfile" ]]; then	
+	echo "$$" > "$pidfile"
+    fi
+
     if [[ ! -f "$widfile" ]]; then	
-	echo "$WINDOWID" >> "$widfile"
+	echo "$WINDOWID" > "$widfile"
 	return 0
     fi
     return 1
 }
 
 function §registry.remove {
-    local widfile="$BASHRUN_CACHE_HOME/${BASHRUN_MODE:-terminal}"
+    local widfile="$BASHRUN_CACHE_HOME/${BASHRUN_MODE:-terminal}-wid"
+    local pidfile="$BASHRUN_CACHE_HOME/${BASHRUN_MODE:-terminal}-pid"
+
+    if [[ -f "$pidfile" ]]; then
+	rm "$pidfile"
+    fi
+
     if [[ -f "$widfile" ]]; then
 	rm "$widfile"
     fi
+
 }
 
 function §registry.request {
     local mode="${1:-terminal}"
-    local widfile="$BASHRUN_CACHE_HOME/$mode"
+    local widfile="$BASHRUN_CACHE_HOME/${mode}-wid"
 
     if [[ ! -f "$widfile" ]]; then
 	echo "new"

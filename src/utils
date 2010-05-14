@@ -126,9 +126,9 @@ function §debug {
 	    ;;
     esac
     if [[ BASHRUN_DEBUG_ACTION -eq 1 ]]; then
-	echo -ne "$col$_from$n $d"
+	echo -ne "$col$_from$n $d" >&2
     else
-	echo -ne "$col$_func$n $d"
+	echo -ne "$col$_func$n $d" >&2
     fi
 
     local str=''

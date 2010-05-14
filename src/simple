@@ -2,7 +2,7 @@
 
 command="${command//--/}"
 
-widfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/$mode"
+widfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/${mode}-wid"
 
 if [[ ! -f "$widfile" ]]; then
     defaults=1
@@ -35,6 +35,9 @@ case $command in
 	;;    
     wid)
 	echo "$wid"
+	;;
+    pid)
+	echo "$(<$BASHRUN_CACHE_HOME/${mode}-pid)"
 	;;
 esac
 return 0
