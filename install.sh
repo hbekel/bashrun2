@@ -7,9 +7,9 @@ if [[ "$1" =~ ^--prefix=.+ ]]; then
 fi
 
 install -v -d $PREFIX/bin
-install -v -m 755 src/bashrun-remote $PREFIX/bin
+install -v -m 755 src/bashrun $PREFIX/bin
 
-install -v -d $PREFIX/share/bashrun-engine
+install -v -d $PREFIX/share/bashrun
 
 FILES=(
     actions
@@ -39,7 +39,7 @@ FILES=(
 )
 
 for file in ${FILES[@]}; do
-    install -v -m 644 src/$file $PREFIX/share/bashrun-engine
+    install -v -m 644 src/$file $PREFIX/share/bashrun
 done
 echo
-echo -e "\033[1;32mbashrun-engine development version has been installed in $PREFIX\033[0m"
+echo -e "\033[1;32mbashrun development version has been installed in $PREFIX\033[0m"

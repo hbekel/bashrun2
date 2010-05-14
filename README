@@ -13,26 +13,26 @@ A quick tour...
 
 $ ./install.sh --prefix=/usr
 
-This will install the source files in /usr/share/bashrun-engine and
-put a script called bashrun-remote into /usr/bin. This version will
+This will install the source files in /usr/share/bashrun and
+put a script called bashrun into /usr/bin. This version will
 not interfere with an existing bashrun install.
 
 Now open a terminal and source
 
-$ . /usr/share/bashrun-engine/source
+$ . /usr/share/bashrun/source
 
 This will initialize the bashrun engine and create directories in the
 users home dir. For now these are
 
-~/.config/bashrun-engine/      
-~/.local/share/bashrun-engine
-~/.cache/bashrun-engine
+~/.config/bashrun/      
+~/.local/share/bashrun
+~/.cache/bashrun
 
 The engine is now loaded into the current session, although no actions
 are yet defined or bound. Copy the rc.example from the install tarball
 to your config dir:
 
-$ cp rc.example ~/.config/bashrun-engine/rc
+$ cp rc.example ~/.config/bashrun/rc
 
 It contains a few example actions and bindings to get you started. You
 can now either source the engine again, or just source the rc
@@ -316,10 +316,10 @@ later)
 3. Remote invocation of bashrun actions.
 
 The only binary provided with this version is
-/usr/bin/bashrun-remote. It can be used to remotely invoke an action
+/usr/bin/bashrun. It can be used to remotely invoke an action
 in the latest running instance of bashrun:
 
-$ bashrun-remote <action-name> <commandline>
+$ bashrun <action-name> <commandline>
 
 (There will be a way of naming instances in the future to be able to
 explicitly choose the bashrun instance that is used to run the action.)
@@ -330,9 +330,9 @@ from a shell that doesn't use a bashrun engine.
 
 For example, try
 
-$ bashrun-remote map
-$ bashrun-remote unmap
-$ bashrun-remote toggle
+$ bashrun map
+$ bashrun unmap
+$ bashrun toggle
 
 To change the map state of the terminal window.
 
@@ -351,7 +351,7 @@ add new actions at runtime these will persist until the next time the
 rc file gets sourced. to save an action permanently to the rc, use sth
 like
 
-+action --code >> ~/.config/bashrun-engine/rc
++action --code >> ~/.config/bashrun/rc
 
 --code is available for +handler and +rule as well...
 

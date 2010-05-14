@@ -1,8 +1,8 @@
 #!/bin/bash
 
-BASHRUN_PREFIX=`which bashrun-remote 2> /dev/null`
-BASHRUN_PREFIX=${BASHRUN_PREFIX/\/bin\/bashrun-remote/}
-BASHRUN_SHARE="$BASHRUN_PREFIX/share/bashrun-engine"
+BASHRUN_PREFIX=`which bashrun 2> /dev/null`
+BASHRUN_PREFIX=${BASHRUN_PREFIX/\/bin\/bashrun/}
+BASHRUN_SHARE="$BASHRUN_PREFIX/share/bashrun"
 
 mode="launcher"
 command="show"

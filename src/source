@@ -12,9 +12,9 @@ if [[ "$TERM" == "linux" ]]; then
 fi
 
 # bootstrap install locations
-path=$(which bashrun-remote) 
-prefix=${path/\/bin\/bashrun-remote/}
-share=$prefix/share/bashrun-engine
+path=$(which bashrun) 
+prefix=${path/\/bin\/bashrun/}
+share=$prefix/share/bashrun
 
 source $share/utils
 source $share/globals

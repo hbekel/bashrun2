@@ -11,7 +11,7 @@ function §engine.init {
     
     §engine.busy
 
-    §separator "bashrun-engine $BASHRUN_VERSION"
+    §separator "bashrun $BASHRUN_VERSION"
 
     §progress.update +10 "Initializing... [window]"
 

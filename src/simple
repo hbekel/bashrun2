@@ -2,7 +2,7 @@
 
 echo "simple: $mode $command"
 
-widfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun-engine/$mode"
+widfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/$mode"
 
 if [[ ! -f "$widfile" ]]; then
     defaults=1
