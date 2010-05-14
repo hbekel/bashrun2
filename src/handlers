@@ -51,8 +51,9 @@ function §handlers.install_completion {
 		func=${func//__NAME__/$name}
 		func=${func//__COMPGEN__/+handler-$name-complete}
 
-		echo "$func" > /tmp/compfunc
-		source /tmp/compfunc
+		echo "$func" > $BASHRUN_CACHE_HOME/compfunc
+		source $BASHRUN_CACHE_HOME/compfunc
+		rm $BASHRUN_CACHE_HOME/compfunc		
 	    
 		eval "function $prefix { 
                         §engine.action run 0 \"$prefix \$@\" 
