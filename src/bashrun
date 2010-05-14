@@ -1,13 +1,16 @@
 #!/bin/bash
 
+# determine the install location
 BASHRUN_PREFIX=`which bashrun 2> /dev/null`
 BASHRUN_PREFIX=${BASHRUN_PREFIX/\/bin\/bashrun/}
 BASHRUN_SHARE="$BASHRUN_PREFIX/share/bashrun"
 
+# default mode and command (show the launcher) 
 mode="launcher"
 command="show"
 
-# Fast handling of 'bashrun [--mode <mode>] [show|hide|toggle|smart]'
+# Fast handling of the simple (and probably most common) use cases,
+# as in 'bashrun [--mode <mode>] [show|hide|toggle|smart]'
 
 if [[ $# -eq 3 || $# -eq 2 ]]; then
     if [[ "$*" =~ ^(\-\-mode|-m)\ ([^\ ]+) ]]; then
@@ -25,43 +28,16 @@ if [[ $# -eq 1 ]]; then
     esac    
 fi
 
-if [[ $# -eq 0 ]]; then            
+if [[ $# -eq 0 ]]; then
     source $BASHRUN_SHARE/simple
     [[ $? -eq 0 ]] && exit 0
 fi
 
-# The above usage didn't apply or no instance was found in the specified mode...
+# The above cases didn't apply or no instance was found in the specified mode...
 
-version () {
-    echo "bashrun $BASHRUN_VERSION Copyright (C) 2009 Henning Bekel <h.bekel@googlemail.com>"
-}
+source $BASHRUN_SHARE/utils
 
-usage () {
-    echo "Usage: bashrun [option] [[command[:modifier]] [args]...]
-
-  Options: 
-
-    -v, --version : show version information and exit
-    -h, --help    : show this message and exit
-    -m, --mode    : select mode to launch/control
-
-  Commands: 
-       
-    show     : show (map) window, move to current desktop  and focus it
-    hide     : hide (unmap) window 
-    toggle   : hide if visible, show if hidden
-    smart    : move window up front if not focused/visible, hide otherwise  
-    exit     : exit instance
-    wid      : print window id
-    pid      : print pid of bashrun session
-    wait     : wait until window is mapped/unmapped
-
-    su[:user|?] <cmd>     : run <cmd> as user (?=ask) (default: 'su:root')
-    action <action> <cmd> : invoke <action> for <cmd>
-"
-}
-
-# handle option first
+# handle options first
 case "$1" in
     -v|--version)
 	version && exit 0
@@ -94,6 +70,9 @@ fi
 case "$command" in
     wid)
 	echo "$wid"
+	;;
+    pid)
+	echo "$pid"
 	;;
     show)
 	§window.map

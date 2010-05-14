@@ -21,11 +21,7 @@ source $share/globals
 source $share/window
 source $share/registry
 
-# setup pingpong (this needs to happen as early as possible)
-function §pong { echo "$$" > $BASHRUN_PINGPONG; }
-trap §pong SIGUSR1
-
-# register this instance (also needed asap)
+# register this instance 
 §registry.add
 
 # setup progress bar

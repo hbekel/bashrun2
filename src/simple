@@ -1,6 +1,6 @@
 # -*- shell-script -*-
 
-echo "simple: $mode $command"
+command="${command//--/}"
 
 widfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/$mode"
 
@@ -16,7 +16,7 @@ source $BASHRUN_SHARE/window
 
 §window.id "$wid" 1 &>/dev/null
 
-case "${command//--/}" in
+case $command in
 
     show)
 	§window.map 1 &>/dev/null

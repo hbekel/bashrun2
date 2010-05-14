@@ -291,8 +291,6 @@ function §window.toggle { # [smart] [fast]
     §window? || return 1
     §window.update $fast
 
-    echo "MAPPED: $BASHRUN_WINDOW_MAPPED"
-
     if [[ BASHRUN_WINDOW_MAPPED -eq 0 ]]; then	
 	§window.map
     else

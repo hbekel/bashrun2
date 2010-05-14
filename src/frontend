@@ -38,18 +38,19 @@ launch () {
     # find out whether it's animated
     animation="$(§mode.get_anim)"
 
-    # get command and insert properties and geometry from requested mode
+    # get initial terminal geometry for the requested mode
     geometry=$(§mode.get_default_geometry)
     §geometry.parse $geometry
 
+    # start with a one line terminal if this mode is animated
     if [[ animation -eq 1 ]]; then
-	# start with a one line terminal
 	§geometry.height 1
 	geometry="$(§geometry)"
     fi
 
+    # get terminal command and insert properties and geometry from
+    # requested mode
     terminal="$(§terminal.get_command)"
-
     terminal=${terminal//%m/$mode}
     terminal=${terminal//%g/$geometry}        
 
@@ -60,9 +61,11 @@ launch () {
 	BASHRUN_DEBUG=$BASHRUN_DEBUG \
 	$terminal $termopts &    
 
+    # wait for the new instance to register and get it's window id
     local wid=""
     wid="$(waitwid)"
 
+    # initialize §window
     §window.id "$wid"
 
     # map the window to make it expand if animated

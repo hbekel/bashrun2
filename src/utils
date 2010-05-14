@@ -433,3 +433,32 @@ function §display_message {
     fi
 }
 
+version () {
+    . $BASHRUN_SHARE/globals 2> /dev/null
+    echo "bashrun $BASHRUN_VERSION Copyright (C) 2009 Henning Bekel <h.bekel@googlemail.com>"
+}
+
+usage () {
+    echo "Usage: bashrun [option] [[command[:modifier]] [args]...]
+
+  Options: 
+
+    -v, --version : show version information and exit
+    -h, --help    : show this message and exit
+    -m, --mode    : select mode to launch/control
+
+  Commands: 
+       
+    show     : show (map) window, move to current desktop  and focus it
+    hide     : hide (unmap) window 
+    toggle   : hide if visible, show if hidden
+    smart    : move window up front if not focused/visible, hide otherwise  
+    exit     : exit instance
+    wid      : print window id
+    pid      : print pid of bashrun session
+    wait     : wait until window is mapped/unmapped
+
+    su[:user|?] <cmd>     : run <cmd> as user (?=ask) (default: 'su:root')
+    action <action> <cmd> : invoke <action> for <cmd>
+"
+}
