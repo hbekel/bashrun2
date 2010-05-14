@@ -13,6 +13,7 @@ install -v -d $PREFIX/share/bashrun
 
 FILES=(
     actions
+    bashrc
     bindings
     bookmarks
     command
@@ -32,7 +33,6 @@ FILES=(
     registry
     rules
     simple
-    source
     terminals
     utils
     window
