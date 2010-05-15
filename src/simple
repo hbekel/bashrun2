@@ -10,6 +10,7 @@ if [[ ! -f "$widfile" ]]; then
 fi
 
 wid="$(<$widfile)"
+pid="$(<$BASHRUN_CACHE_HOME/${mode}-pid)"
 
 §xdo () { xdotool "$@"; } 
 source $BASHRUN_SHARE/window
@@ -34,10 +35,18 @@ case $command in
 	§window.toggle 1 1 &>/dev/null
 	;;    
     wid)
-	echo "$wid"
+	echo $wid
 	;;
     pid)
-	echo "$(<$BASHRUN_CACHE_HOME/${mode}-pid)"
+	echo $pid
+	;;
+    exit|quit)
+	kill $pid
+	;;
+    restart)
+	kill $pid
+	sleep 1
+	exec bashrun -m "$mode"
 	;;
 esac
 return 0

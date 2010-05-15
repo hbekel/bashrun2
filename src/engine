@@ -61,7 +61,8 @@ function §engine.init {
 	}
     fi
 
-    # shutdown on exit
+    # shutdown on EXIT and TERM
+    trap §engine.shutdown TERM
     trap §engine.shutdown EXIT
     
     §debug emph -y "done"
@@ -227,4 +228,5 @@ function §engine.shutdown {
     # remove this instance from registry
     §registry.remove
     §debug "exit"
+    exit 0
 }    

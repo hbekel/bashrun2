@@ -22,7 +22,7 @@ fi
 
 if [[ $# -eq 1 ]]; then
     case $1 in
-	show|--show|hide|--hide|toggle|--toggle|smart|--smart|wid|--wid|pid|--pid)
+	show|--show|hide|--hide|toggle|--toggle|smart|--smart|wid|--wid|pid|--pid|exit|--exit|quit|--quit|restart|--restart)
 	    command=$1
 	    shift
 	    ;;
@@ -36,7 +36,11 @@ if [[ $# -eq 0 ]]; then
 fi
 
 # The above cases didn't apply, or no instance was found in the
-# specified mode... proceed
+# specified mode... proceed unless command == exit|quit
+
+if [[ "$command" =~ (exit|quit) ]]; then
+    exit 0
+fi
 
 source $BASHRUN_SHARE/utils
 
@@ -65,8 +69,8 @@ if [[ "$response" == "new" ]]; then
     wid="$(launch)"
 else
     wid="$response"
-    §window.id "$wid"
 fi
+§window.id "$wid"
 
 # handle remaining arguments...
 §debug "remaining args:" -v "$*"
@@ -101,6 +105,9 @@ case "$command" in
 	;;
     pid)
 	echo "$(<$BASHRUN_CACHE_HOME/${mode}-pid)"
+	;;
+    restart)
+	:
 	;;
     *)
 	echo "bashrun: unknown command: $command"

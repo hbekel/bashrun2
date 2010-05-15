@@ -435,7 +435,7 @@ function §display_message {
 
 version () {
     . $BASHRUN_SHARE/globals 2> /dev/null
-    echo "bashrun $BASHRUN_VERSION Copyright (C) 2009 Henning Bekel <h.bekel@googlemail.com>"
+    echo "bashrun $BASHRUN_VERSION Copyright (C) 2010 Henning Bekel <h.bekel@googlemail.com>"
 }
 
 usage () {
@@ -449,16 +449,16 @@ usage () {
 
   Commands: 
        
-    show     : show (map) window, move to current desktop  and focus it
-    hide     : hide (unmap) window 
-    toggle   : hide if visible, show if hidden
-    smart    : move window up front if not focused/visible, hide otherwise  
-    exit     : exit instance
-    wid      : print window id
-    pid      : print pid of bashrun session
-    wait     : wait until window is mapped/unmapped
+    show      : show (map) window, move to current desktop  and focus it
+    hide      : hide (unmap) window 
+    toggle    : hide if visible, show if hidden
+    smart     : move window up front if not focused/visible, hide otherwise  
+    wid       : print window id
+    pid       : print pid of bashrun session
+    quit,exit : terminate instance
+    restart   : restart instance
 
-    su[:user|?] <cmd>     : run <cmd> as user (?=ask) (default: 'su:root')
-    action <action> <cmd> : invoke <action> for <cmd>
+    su[:user|?] <cmd>      : run <cmd> as user (?=ask) (default: 'su:root')
+    action <action> <cmd>  : invoke <action> for <cmd>
 "
 }
