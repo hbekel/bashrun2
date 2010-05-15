@@ -244,6 +244,10 @@ function §action.function? {
     return $?
 }
 
+function §action.depends_on? {
+    [[ " $(§action.get_deps) " =~ \ $1\  ]]
+}
+
 function §action.available? {
 
     local dep=''

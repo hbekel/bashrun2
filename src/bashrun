@@ -3,10 +3,13 @@
 # determine the install location
 BASHRUN_PREFIX=`which bashrun 2> /dev/null`
 BASHRUN_PREFIX=${BASHRUN_PREFIX/\/bin\/bashrun/}
+
+# setup bashrun directories
 BASHRUN_SHARE="$BASHRUN_PREFIX/share/bashrun"
 BASHRUN_CACHE_HOME="$HOME/.cache/bashrun"
+BASHRUN_DATA_HOME="$HOME/.local/share/bashrun"
 
-# default mode and command (show the launcher) 
+# without agruments, show the launcher
 mode="launcher"
 command="show"
 
@@ -32,19 +35,22 @@ fi
 if [[ $# -eq 0 ]]; then
     # delegate to the simple frontend script
     source $BASHRUN_SHARE/simple
+
+    # if it reports success then we're done
     [[ $? -eq 0 ]] && exit 0
 fi
 
 # The above cases didn't apply, or no instance was found in the
-# specified mode... proceed unless command == exit|quit
+# specified mode... proceed unless command =~ (exit|quit)
 
 if [[ "$command" =~ (exit|quit) ]]; then
     exit 0
 fi
 
+# load version and usage functions
 source $BASHRUN_SHARE/utils
 
-# handle options first
+# handle option first
 case "$1" in
     -v|--version)
 	version && exit 0
@@ -63,6 +69,8 @@ source $BASHRUN_SHARE/frontend
 
 # get the window id of a running instance or launch a new instance...
 response="$(§registry.request $mode)"
+
+# response now contains the window id of a running instance or "new"
 §debug "response" -v "$response"
 
 if [[ "$response" == "new" ]]; then    
@@ -70,22 +78,20 @@ if [[ "$response" == "new" ]]; then
 else
     wid="$response"
 fi
+
+# set wid for the §window 'object'
 §window.id "$wid"
 
-# handle remaining arguments...
+# get the pid of the bash session
+pid="$(<$BASHRUN_CACHE_HOME/${mode}-pid)"
+
+# handle the remaining arguments...
 §debug "remaining args:" -v "$*"
 
 if [[ $# -gt 0 ]]; then
     command="$1"
     shift
 fi
-
-# separate command and command modifier (if any)
-if [[ "$command" =~ ([^:]+?):(.+?) ]]; then
-    command="${BASH_REMATCH[1]}"
-    modifier="${BASH_REMATCH[2]}"
-fi
-§debug "command:" -v "$command" "modifier:" -v "$modifier" 
 
 case "$command" in
     show)
@@ -104,10 +110,16 @@ case "$command" in
 	echo "$wid"
 	;;
     pid)
-	echo "$(<$BASHRUN_CACHE_HOME/${mode}-pid)"
+	echo "$pid"
 	;;
     restart)
 	:
+	;;
+    su|--su)
+	remote "su-run $@"
+	;;
+    do)
+	remote "$@"
 	;;
     *)
 	echo "bashrun: unknown command: $command"

@@ -133,6 +133,7 @@ function §command.add_su {
 
     # run the command itself in the background
     if [[ ! "$BASHRUN_COMMAND" =~ \&\ *$ ]]; then
+	
 	BASHRUN_COMMAND="su $user -c '$BASHRUN_COMMAND &> /dev/null &'"
     fi
     # run the su part (passwort entry) in foreground 

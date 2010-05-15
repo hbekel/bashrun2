@@ -7,9 +7,11 @@ function §registry.add {
     local widfile="$BASHRUN_CACHE_HOME/${BASHRUN_MODE:-terminal}-wid"
     local pidfile="$BASHRUN_CACHE_HOME/${BASHRUN_MODE:-terminal}-pid"
     
+    # remove stale wid and pid files
     if [[ -f "$widfile" ]]; then	
 	if ! §window.exists? "$(<$widfile)"; then
 	    rm "$widfile"
+	    rm "$pidfile"
 	else
 	    return 1
 	fi

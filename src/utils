@@ -439,7 +439,7 @@ version () {
 }
 
 usage () {
-    echo "Usage: bashrun [option] [[command[:modifier]] [args]...]
+    echo "Usage: bashrun [option] [[command] [args]...]
 
   Options: 
 
@@ -449,16 +449,17 @@ usage () {
 
   Commands: 
        
-    show      : show (map) window, move to current desktop  and focus it
-    hide      : hide (unmap) window 
+    show      : show window, move to current desktop and focus
+    hide      : hide window 
     toggle    : hide if visible, show if hidden
     smart     : move window up front if not focused/visible, hide otherwise  
+    restart   : restart bashrun 
+    quit,exit : terminate bashrun
     wid       : print window id
     pid       : print pid of bashrun session
-    quit,exit : terminate instance
-    restart   : restart instance
 
-    su[:user|?] <cmd>      : run <cmd> as user (?=ask) (default: 'su:root')
-    action <action> <cmd>  : invoke <action> for <cmd>
+    su <cmd>       : run <cmd> as root, using bashrun for password entry
+    do <act> <cmd> : remotely invoke <action> for <cmd>
+
 "
 }

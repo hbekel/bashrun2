@@ -64,12 +64,15 @@ function §engine.init {
     # shutdown on EXIT and TERM
     trap §engine.shutdown TERM
     trap §engine.shutdown EXIT
-    
+    trap §remote.run SIGUSR1
+
     §debug emph -y "done"
 
     §separator 
     
     §progress.reset
+
+    touch $BASHRUN_CACHE_HOME/${BASHRUN_MODE}-ready
 
     §engine.idle
 }
@@ -179,8 +182,13 @@ function §engine.execute {
     if [[ "$BASHRUN_EXECMODE" == "&" ]]; then
 	/bin/bash -c "$BASHRUN_COMMAND >> $BASHRUN_LOGFILE 2>&1 &" > /dev/null 2>&1
     else
-	# this can only be a su command (so far)
+	# this can only be a su command...        
+        # map window for password entry
+	§window.map && tput cr
+	
 	/bin/bash -c "$BASHRUN_COMMAND"
+
+	§mode.unmap? && §window.unmap
     fi
 }
 
@@ -198,8 +206,15 @@ function §engine.reset {
     §action.api.disable 
 
     # unmap the window if requested/necessary
-    [[ unmap -eq 1 ]] && §mode.unmap? && §window.unmap
-
+    if [[ unmap -eq 1 ]]; then 
+	if §mode.unmap?; then
+	    if [[ -f "$BASHRUN_RESET_TERM" ]]; then
+		rm $BASHRUN_RESET_TERM
+	    else
+		§window.unmap
+	    fi
+	fi
+    fi
     §engine.idle
 
     §debug -c "reset"
@@ -227,6 +242,9 @@ function §engine.shutdown {
 
     # remove this instance from registry
     §registry.remove
+
+    rm $BASHRUN_CACHE_HOME/${BASHRUN_MODE}-ready
+
     §debug "exit"
     exit 0
 }    

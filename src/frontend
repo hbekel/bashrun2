@@ -2,6 +2,8 @@
 
 ############################################################
 
+BASHRUN_MODE="$mode"
+
 . $BASHRUN_SHARE/utils
 . $BASHRUN_SHARE/globals
 . $BASHRUN_SHARE/config
@@ -62,16 +64,7 @@ launch () {
 	$terminal $termopts &    
 
     # wait for the new instance to register and get it's window id
-    local wid=""
-    wid="$(waitwid)"
-
-    # initialize §window
-    §window.id "$wid"
-
-    # map the window to make it expand if animated
-    §window.map    
-
-    echo "$wid"
+    echo "$(waitwid)"
 }
 
 function waitwid { 
@@ -89,4 +82,18 @@ function waitwid {
 	sleep 0.1
     done
     echo "$(<$widfile)" 
+}
+
+function remote {
+
+    # wait until a newly started instance is ready
+    until [[ -f $BASHRUN_CACHE_HOME/${mode}-ready ]]; do
+	sleep 0.1
+    done
+
+    # put "<action> <cmd>" in the "remote" file
+    echo "$@" > $BASHRUN_DATA_HOME/remote
+
+    # send SIGUSR1 to bashrun to pick it up (see §remote)
+    kill -USR1 "$(<$BASHRUN_CACHE_HOME/${mode}-pid)"
 }

@@ -1,7 +1,7 @@
 # -*- shell-script -*-
 
-command="${command//--/}"
 
+command="${command//--/}"
 widfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/${mode}-wid"
 
 if [[ ! -f "$widfile" ]]; then
@@ -13,6 +13,7 @@ wid="$(<$widfile)"
 pid="$(<$BASHRUN_CACHE_HOME/${mode}-pid)"
 
 §xdo () { xdotool "$@"; } 
+BASHRUN_MODE="$mode"
 source $BASHRUN_SHARE/window
 
 §window.id "$wid" 1 &>/dev/null

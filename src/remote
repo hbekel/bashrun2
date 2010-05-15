@@ -1,0 +1,44 @@
+# -*- shell-script -*-
+
+################################################################################
+################################################################################
+
+BASHRUN_REMOTE=$BASHRUN_DATA_HOME/remote
+
+################################################################################
+
+function §remote.run {
+
+    local words
+    local action
+    local accept
+    local command
+
+    if [[ -f $BASHRUN_REMOTE ]]; then
+	
+	words=($(<$BASHRUN_REMOTE))
+	action=${words[0]}	
+	accept=0
+
+	# everything else goes into command
+	command=${words[@]:1}
+
+	§debug "$action" "$accept" "$command"
+
+	§actions.seek "$action"	
+
+	§action.depends_on? "su" && stty echo cooked -cbreak
+
+	§engine.action "$action" "$accept" "$command"	
+
+	§action.depends_on? "su" && touch $BASHRUN_RESET_TERM
+
+	# remove command file
+	rm $BASHRUN_REMOTE
+
+    else
+	§debug warn "no command pending in" -v "$BASHRUN_REMOTE"
+	return 1
+    fi
+}
+

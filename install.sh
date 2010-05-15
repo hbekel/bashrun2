@@ -31,6 +31,7 @@ FILES=(
     progress
     readline
     registry
+    remote
     rules
     simple
     terminals
