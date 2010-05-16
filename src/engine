@@ -137,6 +137,10 @@ function §engine.trap {
 	§engine.busy? && §engine.reset 
 	return 0
     fi
+
+    # pass through exit builtin
+    [[ "$BASHRUN_COMMAND" =~ ^exit ]] && return 0
+
     §debug "line   :" -v "$BASHRUN_COMMAND_LINE"
     §debug "command:" -v "$BASHRUN_COMMAND"
 

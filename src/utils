@@ -209,11 +209,18 @@ function §prepare_directories {
 	dir="BASHRUN_${dir}_HOME"
 	dir=${!dir}
 	
-	if [[ ! -d $dir ]]; then
+	if [[ ! -d $dir && ! -L $dir ]]; then
 	    §debug "$dir"
 	    install -d -m 700 $dir
 	fi
     done
+
+    # create plugin directory
+    dir="$BASHRUN_CONFIG_HOME/plugins"
+    if [[ ! -d $dir && ! -L $dir ]]; then
+	§debug "$dir"
+	install -d -m 700 $dir
+    fi
 }
 
 function §prepare_logfile {
