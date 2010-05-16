@@ -11,3 +11,27 @@ function §terminal.code {
     echo "  --command '$(§terminal.get_command)'"
     echo
 }
+
+function §terminal.binary {
+    [[ "$(§terminal.get_command)" =~ ^([^\ ]+?) ]]
+    echo "${BASH_REMATCH[1]}"
+}
+
+function §terminals.used {
+    local used=""
+    local saved="$(§terminal.get_name)"
+    local binary=""
+
+    §terminals.seek_start
+    while §terminals.next?; do
+	
+	binary="$(§terminal.binary)"
+	if [[ ! " $used " =~ $binary ]]; then
+	    used="$binary $used"
+	fi
+	§terminals.next
+    done
+    §terminals.seek "$saved"
+    
+    echo " $used "
+}

@@ -150,11 +150,14 @@ function §command.add_su {
 function §command.add_terminal {
 
     §command.get_word
+    local terminal=""
 
-    if [[ "$BASHRUN_COMMAND_WORD" =~ (xterm|.?+rxvt) ]]; then
-	§debug "already in terminal"
-	return 1
-    fi
+    for terminal in $(§terminals.used); do
+	if [[ "$BASHRUN_COMMAND_WORD" == "$terminal" ]]; then
+	    §debug "already using" -v "$terminal"
+	    return 1
+	fi
+    done
 
     if [[ $# -eq 1 ]]; then
 	if ! §terminals.seek "$1"; then

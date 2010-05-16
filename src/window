@@ -64,7 +64,7 @@ function §window.wait {
 
 function §window.terminal? {
     §window? || return 1
-    if [[ "$TERM" =~ (xterm|rxvt) && "$BASHRUN_WINDOW_ID" == "$WINDOWID" ]]; then
+    if [[ "$BASHRUN_WINDOW_ID" == "$WINDOWID" ]]; then
 	return 0
     fi
     return 1
