@@ -153,7 +153,7 @@ function §configs.restore_core {
     source $BASHRUN_SHARE/defaults
     source $BASHRUN_RCFILE
 
-    local types="actions|modes|terminals|rules|handlers|keys"
+    local types="actions|modes|terminals|rules|handlers|keys|bookmarks"
     local functions="$(declare -f | grep '^+configure-' | awk '{ print $1 }')"
 
     local line function name type dumpfile
@@ -186,7 +186,7 @@ function §configs.collect_user_configs {
     source $BASHRUN_SHARE/defaults
     source $BASHRUN_RCFILE
 
-    local types="actions|modes|terminals|rules|handlers|keys"
+    local types="actions|modes|terminals|rules|handlers|keys|bookmarks"
     local functions="$(declare -f | grep '^+configure-' | awk '{ print $1 }')"
 
     local line function name type
@@ -194,7 +194,9 @@ function §configs.collect_user_configs {
     # then we'll process the user config functions
     for function in $(declare -f | grep '^+configure'); do
 
-	# parse the function name to determine the identifier, the name and the type
+	# parse the function name to determine the identifier, the
+	# name and the type
+	
 	[[ "$function" =~ ^(\+configure-([^-]+?)?-?($types)) ]] || continue
 
 	function="${BASH_REMATCH[1]}"

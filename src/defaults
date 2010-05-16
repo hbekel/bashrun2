@@ -28,12 +28,13 @@
     +terminal bashrun 
       --command "urxvt -geometry %g -name bashrun-%m -title bashrun-%m"
       
-    +terminal default   --command "urxvt -e bash -c"
+    +terminal default --command "urxvt -e bash -c"
 }
 
 +configure-core-rules () { :; }
 +configure-core-handlers () { :; }
 +configure-core-keys () { :; }
++configure-core-bookmarks () { :; }
 
 +configure-core-actions () {
 

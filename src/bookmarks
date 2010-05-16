@@ -25,9 +25,9 @@ function §bookmark.code {
 
 function §bookmarks.dump {
     
-    §_bookmarks.dump
+    local file="$_OBJECTS_DATA_HOME/${1:-§bookmarks.dump}"
 
-    local file=$_OBJECTS_DATA_HOME/§bookmarks.dump
+    §_bookmarks.dump $1
 
     §bookmarks.seek_start
     while §bookmarks.next?; do
