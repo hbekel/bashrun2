@@ -150,7 +150,7 @@ function §config.restore {
 
 function §configs.restore_core {
 
-    source $BASHRUN_SHARE/defaults
+    source $BASHRUN_SHARE/core
     source $BASHRUN_RCFILE
 
     local types="actions|modes|terminals|rules|handlers|keys|bookmarks"
@@ -183,7 +183,7 @@ function §configs.restore_core {
 
 function §configs.collect_user_configs {
 
-    source $BASHRUN_SHARE/defaults
+    source $BASHRUN_SHARE/core
     source $BASHRUN_RCFILE
 
     local types="actions|modes|terminals|rules|handlers|keys|bookmarks"

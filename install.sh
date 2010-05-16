@@ -19,7 +19,7 @@ FILES=(
     command
     completion
     config
-    defaults
+    core
     engine
     frontend
     geometry
