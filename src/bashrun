@@ -116,10 +116,10 @@ case "$command" in
 	:
 	;;
     su|--su)
-	remote "su-run $@"
+	remote su-run $@
 	;;
     do)
-	remote "$@"
+	remote $@
 	;;
     wait)
 	state=${1:-unmap}

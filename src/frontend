@@ -75,7 +75,7 @@ function remote {
     if §wait "[[ -f $BASHRUN_CACHE_HOME/${mode}-ready ]]"; then
 	
         # put "<action> <cmd>" in the "remote" file
-	echo "$@" > $BASHRUN_DATA_HOME/remote
+	echo $@ > $BASHRUN_DATA_HOME/remote
 
         # send SIGUSR1 to bashrun to pick it up (see §remote)
 	kill -USR1 "$(<$BASHRUN_CACHE_HOME/${mode}-pid)"

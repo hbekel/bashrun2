@@ -369,7 +369,8 @@ function §action.api.enable {
     function +handlers { §handlers.apply; }
     function +rules { §rules.apply; }
     function +term { §rules.apply; §command.add_terminal $1; }
-    function +pager { §command.add_pager; }
+    function +hold { §command.add_hold $1; }
+    function +pager { §command.add_pager; }    
     function +user { §command.add_su ${1:-root}; }
 }
 
@@ -385,6 +386,7 @@ function §action.api.disable {
 	    +handlers \
 	    +rules \
 	    +term \
+	    +hold \
 	    +pager \
 	    +user
 }
@@ -503,14 +505,14 @@ function §action.code {
     [[ "$init" != "" ]] && echo "  --init '$init'"
     [[ "$reset" != "" ]] && echo "  --reset '$reset'"
     
-    # bind action
-    if §action.bound?; then
-	§bindings.seek_start
-	for id in $(§bindings.select action "$name"); do
-	    §bindings.seek --next "$id"
-	    §binding.code 1
-	done
-    fi
+    # don't show +action --bind here
+    # if §action.bound?; then
+    #	§bindings.seek_start
+    #	for id in $(§bindings.select action "$name"); do
+    #	    §bindings.seek --next "$id"
+    #	    §binding.code 1
+    #	done
+    # fi
 
     # function
     if §action.function?; then
