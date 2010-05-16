@@ -122,6 +122,12 @@ function §command.add_su {
 
     local user=${1:-root}
 
+    # don't wrap in su -c '' twice...
+    if [[ "$BASHRUN_COMMAND" =~ ^su\  ]]; then
+	§debug "already using su"
+	return 0
+    fi
+
     # COMMAND goes into su -c '' -> escape single quotes
     BASHRUN_COMMAND=${BASHRUN_COMMAND//\'/\\\'}
 

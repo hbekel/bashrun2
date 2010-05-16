@@ -22,7 +22,7 @@ function §engine.init {
     §debug "getting current readline bindings..."
     §readline.get_bindings
 
-    §progress.update +5
+    §progress.update +1
         
     # load/restore configuration
     §configs.restore
