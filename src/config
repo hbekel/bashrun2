@@ -153,7 +153,7 @@ function §configs.restore_core {
     source $BASHRUN_SHARE/core
     source $BASHRUN_RCFILE
 
-    local types="actions|modes|terminals|rules|handlers|keys|bookmarks"
+    local types="${1:-actions|modes|terminals|rules|handlers|keys|bookmarks}"
     local functions="$(declare -f | grep '^+configure-' | awk '{ print $1 }')"
 
     local line function name type dumpfile
@@ -186,7 +186,7 @@ function §configs.collect_user_configs {
     source $BASHRUN_SHARE/core
     source $BASHRUN_RCFILE
 
-    local types="actions|modes|terminals|rules|handlers|keys|bookmarks"
+    local types="${1:-actions|modes|terminals|rules|handlers|keys|bookmarks}"
     local functions="$(declare -f | grep '^+configure-' | awk '{ print $1 }')"
 
     local line function name type

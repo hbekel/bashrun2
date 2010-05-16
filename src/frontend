@@ -16,8 +16,9 @@ BASHRUN_MODE="$mode"
 . $BASHRUN_RCFILE
 
 # load modes and terminals 
-§configs.restore_core 
-§configs.collect_user_configs
+§configs.restore_core "modes|terminals"
+§configs.collect_user_configs "modes|terminals"
+
 §configs.seek "modes" && §config.restore 
 §configs.seek "terminals" && §config.restore 
 
