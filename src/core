@@ -26,11 +26,10 @@
 +configure-core-terminals () {
     
     +terminal bashrun 
-      --command "urxvt -geometry %g -name bashrun-%m -title bashrun-%m"
+      --command "xterm -geometry %g -name bashrun-%m -title bashrun-%m"
       
-    +terminal default --command "urxvt -e bash -c"
-    +terminal notify --command "urxvt -g 40x4+0+0 -e bash -c"
-
+    +terminal default --command "xterm -e bash -c"
+    +terminal notify --command "xterm -g 40x4+0+0 -e bash -c"
 }
 
 +configure-core-rules () { :; }
