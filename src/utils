@@ -43,6 +43,25 @@ function §function.clone {
     fi
 }
 
+function §wait { 
+    # wait until code returns success,
+    # bail out after 3 secs (30*0.1)
+    # e.g. §wait "[[ -f some_file ]]"
+    #      §wait "§window.mapped?"
+
+    local code=${1:-:}
+    local attempts=30
+
+    eval "until $code; do
+	if [[ attempts -eq 0 ]]; then
+	    exit 1
+	fi
+	((attempts-=1))
+	sleep 0.1
+    done"
+    return 0
+}
+
 BASHRUN_XDOTOOL="unknown"
 
 function §xdo {
@@ -460,6 +479,6 @@ usage () {
 
     su <cmd>       : run <cmd> as root, using bashrun for password entry
     do <act> <cmd> : remotely invoke <action> for <cmd>
-
+    wait <state>   : wait until bashrun is in <state> ([ready|map|unmap])
 "
 }

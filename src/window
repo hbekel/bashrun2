@@ -33,14 +33,33 @@ function §window.mapped? {
     §window? || return 1
 
     [[ BASHRUN_WINDOW_MAPPED -eq 1 ]]
-    return $?
 }
 
 function §window.unmapped? {
     §window? || return 1
 
     [[ BASHRUN_WINDOW_MAPPED -eq 0 ]]
-    return $?
+}
+
+function §window.wait {
+
+    local state=${1:-unmap}
+    local name="bashrun-$BASHRUN_MODE"
+
+    if [[ "$state" == "map" ]]; then
+	while sleep 0.1; do
+	    if [[ ! "$(xdotool search --onlyvisible --name $name 2> /dev/null)" == '' ]]; then
+		break
+	    fi
+	done
+
+    elif [[ "$state" == "unmap" ]]; then
+	while sleep 0.1; do
+	    if [[ "$(xdotool search --onlyvisible --name $name 2> /dev/null)" == '' ]]; then
+		break
+	    fi
+	done
+    fi
 }
 
 function §window.terminal? {

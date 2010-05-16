@@ -64,36 +64,24 @@ launch () {
 	$terminal $termopts &    
 
     # wait for the new instance to register and get it's window id
-    echo "$(waitwid)"
-}
-
-function waitwid { 
-   # wait until new instance is registered and return it's wid
-    
-    local attempts=50
-    local widfile="$BASHRUN_CACHE_HOME/${mode}-wid"
-
-    until [[ -f $widfile ]]; do
-	if [[ attempts -eq 0 ]]; then
-	    echo "failed"
-	    exit 1
-	fi
-	((attempts-=1))
-	sleep 0.1
-    done
-    echo "$(<$widfile)" 
+    widfile="$BASHRUN_CACHE_HOME/${mode}-wid"
+    §wait "[[ -f $widfile ]]"
+    echo "$(<$widfile)"
 }
 
 function remote {
 
     # wait until a newly started instance is ready
-    until [[ -f $BASHRUN_CACHE_HOME/${mode}-ready ]]; do
-	sleep 0.1
-    done
+    if §wait "[[ -f $BASHRUN_CACHE_HOME/${mode}-ready ]]"; then
+	
+        # put "<action> <cmd>" in the "remote" file
+	echo "$@" > $BASHRUN_DATA_HOME/remote
 
-    # put "<action> <cmd>" in the "remote" file
-    echo "$@" > $BASHRUN_DATA_HOME/remote
-
-    # send SIGUSR1 to bashrun to pick it up (see §remote)
-    kill -USR1 "$(<$BASHRUN_CACHE_HOME/${mode}-pid)"
+        # send SIGUSR1 to bashrun to pick it up (see §remote)
+	kill -USR1 "$(<$BASHRUN_CACHE_HOME/${mode}-pid)"
+    else
+	echo "bashrun: error: bashrun-$mode not ready"
+	return 1
+    fi
+    return 0
 }

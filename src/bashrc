@@ -2,7 +2,7 @@
 
 ################################################################################
 #
-# Source this to load and initialize the bashrun engine.
+# Load and initialize the bashrun engine
 #
 ################################################################################
 

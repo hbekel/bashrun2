@@ -121,6 +121,17 @@ case "$command" in
     do)
 	remote "$@"
 	;;
+    wait)
+	state=${1:-unmap}
+	case "$state" in
+	    ready)
+		§wait "[[ -f $BASHRUN_CACHE_HOME/${mode}-ready ]]"
+		;;
+	    map|unmap)
+		§window.wait "$state"
+		;;	    
+	esac
+	;;
     *)
 	echo "bashrun: unknown command: $command"
 	exit 1
