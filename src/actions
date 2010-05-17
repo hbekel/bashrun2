@@ -2,7 +2,10 @@
 
 ################################################################################
 
-§class "§action" "name:r accept:b desc deps bash help init reset core:rb" ""
+§class "§action" "name:r accept:b desc deps bash core:rb" ""
+
+# Warning: if the "core" property changes it's position, the temporary
+# setter in file 'core' needs to be adjusted.
 
 §function.clone "§action.new" "§_action.new"
 
@@ -445,7 +448,6 @@ function §action.list {
     local desc="$(§action.get_desc)"
     local accept="$(§action.get_accept)"
     local deps="$(§action.get_deps)"
-    local help="$(§action.get_help)"
     local uses="$(§action.uses)"
     
     # print header
@@ -474,11 +476,6 @@ function §action.list {
 	done
 	echo
     fi
-
-    if [[ "$help" != '' ]]; then
-	echo "$help"
-	echo
-    fi
 }
 
 function §action.code {
@@ -488,9 +485,6 @@ function §action.code {
     local accept="$(§action.get_accept)"
     local deps="$(§action.get_deps)"
     local bash="$(§action.get_bash)"
-    local help="$(§action.get_help)"
-    local init="$(§action.get_init)"
-    local reset="$(§action.get_reset)"
 
     echo
     §print_line "action $name" "#" "80"
@@ -502,11 +496,8 @@ function §action.code {
     echo "  --accept $accept"
     [[ "$deps" != "" ]] && echo "  --deps '$deps'"
     [[ "$bash" != "3.2" ]] && echo "  --bash '$bash'"
-    [[ "$help" != "" ]] && echo "  --help '$help'"
-    [[ "$init" != "" ]] && echo "  --init '$init'"
-    [[ "$reset" != "" ]] && echo "  --reset '$reset'"
     
-    # don't show +action --bind here
+    # don't show +action --bind here, may give people the wrong idea
     # if §action.bound?; then
     #	§bindings.seek_start
     #	for id in $(§bindings.select action "$name"); do
@@ -539,43 +530,6 @@ function §actions.dump {
 	§actions.next
     done
     §actions.seek "$saved"    
-}
-
-function §actions.init {
-    
-    local action=""
-    local callback=""
-
-    §actions.seek_start
-    while §actions.next?; do
-	action="$(§action.get_name)"
-	callback="$(§action.get_init)"
-	if [[ "$callback" != "" ]]; then
-	    eval "$callback"
-	fi
-	§actions.seek "$action"
-	§actions.next
-    done    
-    §actions.seek_start
-}
-
-function §actions.reset {
-    
-    local action=""
-    local callback=""
-
-    §actions.seek_start
-    while §actions.next?; do
-	action="$(§action.get_name)"
-	callback="$(§action.get_reset)"
-	if [[ "$callback" != "" ]]; then
-	    echo "reset: $callback"
-	    eval "$callback"
-	fi
-	§actions.seek "$action"
-	§actions.next
-    done    
-    §actions.seek_start
 }
 
 ## shortcut functions to §action.bind ##

@@ -36,10 +36,6 @@ function §engine.init {
     # create completion functions for handlers
     §handlers.install_completion
 
-    # run init callbacks
-    §debug -v "+action" -v "--init" "callbacks..."
-    §actions.init
-
     # reset object positions
     §objects.seek_start
 

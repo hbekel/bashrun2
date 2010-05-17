@@ -50,7 +50,7 @@
 	[[ "$input" =~ ^([Yy]es|[Tt]rue|1)$ ]] && value=1;
 	[[ "$input" =~ ^([Nn]o|[Ff]false|0)$ ]] && value=0;
 
-	_BASHRUN_ACTIONS[${_BASHRUN_ACTIONS_POSITION}+8]="$1"
+	_BASHRUN_ACTIONS[${_BASHRUN_ACTIONS_POSITION}+5]="$1"
     }
 
     +action 'pass'
