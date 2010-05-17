@@ -68,7 +68,13 @@ launch () {
     # wait for the new instance to register and get it's window id
     widfile="$BASHRUN_CACHE_HOME/${mode}-wid"
     §wait "[[ -f $widfile ]]"
-    echo "$(<$widfile)"
+
+    # map window and return wid
+    wid="$(<$widfile)"
+    §window.id $wid
+    §window.map &> /dev/null
+
+    echo "$wid"
 }
 
 function remote {

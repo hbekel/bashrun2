@@ -95,7 +95,7 @@ fi
 
 case "$command" in
     show)
-	[[ "$response" != "new" ]] && §window.map &>/dev/null
+	§window.map &>/dev/null
 	;;
     hide)
 	§window.unmap &>/dev/null
