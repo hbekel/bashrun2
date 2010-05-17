@@ -83,7 +83,7 @@ function §engine.init {
 function §engine.action {
 
     local action=$1       # action to perform
-    local accept=$2       # --accept override
+    local input=$2        # input override
     local command="$3"    # command override
 
     §separator "engine $action $command"
@@ -96,11 +96,11 @@ function §engine.action {
 	BASHRUN_ACTION=$action
 
 	# overrides
-	[[ -z "$accept" ]] && accept=$(§action.get_accept)
+	[[ -z "$input" ]] && input=$(§action.get_input)
 	
-	§debug "action" -v "$action" "accept" -c "$accept"
+	§debug "action" -v "$action" "input" -c "$input"
 
-	case $accept in
+	case $input in
 	    
 	    1)
 	        # accept input via trap

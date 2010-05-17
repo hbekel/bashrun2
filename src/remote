@@ -1,7 +1,6 @@
 # -*- shell-script -*-
 
 ################################################################################
-################################################################################
 
 BASHRUN_REMOTE=$BASHRUN_DATA_HOME/remote
 
@@ -11,25 +10,25 @@ function §remote.run {
 
     local words
     local action
-    local accept
+    local input
     local command
 
     if [[ -f $BASHRUN_REMOTE ]]; then
 	
 	words=($(<$BASHRUN_REMOTE))
 	action=${words[0]}	
-	accept=0
+	input=0
 
 	# everything else goes into command
 	command=${words[@]:1}
 
-	§debug "$action" "$accept" "$command"
+	§debug "$action" "$input" "$command"
 
 	§actions.seek "$action"	
 
 	§action.depends_on? "su" && stty echo cooked -cbreak
 
-	§engine.action "$action" "$accept" "$command"	
+	§engine.action "$action" "$input" "$command"	
 
 	§action.depends_on? "su" && touch $BASHRUN_RESET_TERM
 

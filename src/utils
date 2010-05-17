@@ -406,7 +406,7 @@ function §print_binding {
     name="$(§binding.get_action)"
     
     §actions.seek "$name"
-    desc="$(§action.get_desc)"
+    desc="$(§action.get_description)"
     
     deps="$(§action.pretty_print_deps)"
     keyseq="$(§binding.get_keyseq)"

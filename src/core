@@ -54,15 +54,15 @@
     }
 
     +action 'pass'
-    --desc 'Passthrough command'
-    --accept 0
+    --description 'Passthrough command'
+    --input 0
     --core 1
 
     +action-pass () { $BASHRUN_COMMAND; }
 
     +action 'abort'
-    --desc 'Abort (unmap window)'
-    --accept 0
+    --description 'Abort (unmap window)'
+    --input 0
     --core 1
     
     +action-abort () {
@@ -72,8 +72,8 @@
     }
     
     +action 'quit'
-    --desc 'Exit bashrun'
-    --accept 0
+    --description 'Exit bashrun'
+    --input 0
     --core 1
     
     +action-quit () {
@@ -82,8 +82,8 @@
     }
     
     +action debug
-    --desc "Debug messages on/off"
-    --accept 0
+    --description "Debug messages on/off"
+    --input 0
     --core 1
     
     +action-debug () {
@@ -99,8 +99,8 @@
     }
     
     +action 'run'
-    --desc 'Run command'
-    --accept 1
+    --description 'Run command'
+    --input 1
     --core 1
     
     +action-run () 
@@ -111,8 +111,8 @@
     }
     
     +action 'term-run'
-    --desc 'Run command in terminal'
-    --accept 1
+    --description 'Run command in terminal'
+    --input 1
     --core 1
     
     +action-term-run () 
@@ -124,8 +124,8 @@
     }
     
     +action 'term-page'
-    --desc 'Run command in terminal and page'
-    --accept 1
+    --description 'Run command in terminal and page'
+    --input 1
     --core 1
     
     +action-term-page () 
@@ -138,8 +138,8 @@
     }
     
     +action 'term-hold'
-    --desc 'Run command in terminal and hold'
-    --accept 1
+    --description 'Run command in terminal and hold'
+    --input 1
     --core 1
     
     +action-term-hold () 
@@ -151,9 +151,9 @@
     }
 
     +action term-notify
-      --desc 'Run command in terminal and hold for two seconds'
+      --description 'Run command in terminal and hold for two seconds'
       --core 1
-      --accept 1
+      --input 1
 
     +action-term-notify () 
     { 
@@ -164,9 +164,9 @@
     }
     
     +action 'su-run'
-    --desc 'Run command as root'
-    --accept 1
-    --deps 'su'
+    --description 'Run command as root'
+    --input 1
+    --depends 'su'
     --core 1
     
     +action-su-run () 
@@ -177,9 +177,9 @@
     }
     
     +action 'su-term-run'
-    --desc 'Run command in terminal as root'
-    --accept 1
-    --deps 'su'
+    --description 'Run command in terminal as root'
+    --input 1
+    --depends 'su'
     --core 1
     
     +action-su-term-run () 
@@ -190,9 +190,9 @@
     }
     
     +action 'su-term-page'
-    --desc 'Run command in terminal as root and page'
-    --accept 1
-    --deps 'su'
+    --description 'Run command in terminal as root and page'
+    --input 1
+    --depends 'su'
     --core 1
     
     +action-su-term-page () 
@@ -203,9 +203,9 @@
     }
     
     +action 'su-term-hold'
-    --desc 'Run command in terminal as root and hold'
-    --accept 1
-    --deps 'su'
+    --description 'Run command in terminal as root and hold'
+    --input 1
+    --depends 'su'
     --core 1
     
     +action-su-term-hold () 
@@ -216,10 +216,10 @@
     }
 
     +action su-term-notify
-      --desc 'Run command in terminal as root and hold for two seconds'
+      --description 'Run command in terminal as root and hold for two seconds'
       --core 1
-      --accept 1    
-      --deps 'su'
+      --input 1    
+      --depends 'su'
     
     +action-su-term-notify () 
     { 
@@ -229,9 +229,9 @@
     }
     
     +action 'show-manual'
-    --desc 'Show manual page for command'
-    --accept 1
-    --deps 'man'
+    --description 'Show manual page for command'
+    --input 1
+    --depends 'man'
     --core 1
     
     +action-show-manual () {
@@ -241,9 +241,9 @@
     }
     
     +action 'show-info'
-    --desc 'Show info page for command'
-    --accept 1
-    --deps 'info'
+    --description 'Show info page for command'
+    --input 1
+    --depends 'info'
     --core 1
     
     function +action-show-info {
@@ -253,8 +253,8 @@
     }
     
     +action 'show-help'
-    --desc 'Show help for shell builtin'
-    --accept 1
+    --description 'Show help for shell builtin'
+    --input 1
     --core 1
     
     function +action-show-help {
@@ -271,8 +271,8 @@
     }
     
     +action 'browse'
-    --desc 'Open page in $BROWSER'
-    --accept 1
+    --description 'Open page in $BROWSER'
+    --input 1
     --core 1
     
     function +action-browse {
@@ -281,8 +281,8 @@
     }
     
     +action 'google-search'
-    --desc 'Google words using $BROWSER'
-    --accept 1
+    --description 'Google words using $BROWSER'
+    --input 1
     --core 1
     
     function +action-google-search {
@@ -291,9 +291,9 @@
     }
     
     +action 'dict-lookup'
-    --desc 'Lookup words in dictionary'
-    --accept 1
-    --deps 'dict'
+    --description 'Lookup words in dictionary'
+    --input 1
+    --depends 'dict'
     --core 1
     
     function +action-dict-lookup {
@@ -304,9 +304,9 @@
     }
     
     +action 'bashrun-manual'
-    --desc 'Show bashrun manual'
-    --accept 0
-    --deps 'man'
+    --description 'Show bashrun manual'
+    --input 0
+    --depends 'man'
     --core 1
     
     function +action-bashrun-manual {
@@ -316,8 +316,8 @@
     }
 
     +action 'bashrun-bindings'
-    --desc 'Show current keybindings'
-    --accept 0
+    --description 'Show current keybindings'
+    --input 0
     --core 1
     
     function +action-bashrun-bindings {
@@ -336,8 +336,8 @@
     }
 
     +action 'cycle-size'
-    --desc 'Cycle through window sizes of current mode'
-    --accept 0
+    --description 'Cycle through window sizes of current mode'
+    --input 0
     --core 1
     
     function +action-cycle-size {
