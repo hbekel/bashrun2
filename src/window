@@ -288,8 +288,8 @@ function §window.map {
     fi
 
     # call user supplied onmap handler
-    local onmap="$(§mode.get_onmap)"
-    [[ -n "$onmap" ]] && $onmap
+    local file="$BASHRUN_CACHE_HOME/${BASHRUN_MODE}-onmap"
+    [[ -f "$file" ]] && source "$file"
     
     if [[ BASHRUN_WINDOW_ANIMATE -eq 1 ]]; then
 	§window.expand
@@ -309,8 +309,8 @@ function §window.unmap {
     §xdo windowunmap $BASHRUN_WINDOW_ID
 
     # call user supplied onunmap handler
-    local onunmap="$(§mode.get_onunmap)"
-    [[ -n "$onunmap" ]] && $onunmap
+    local file="$BASHRUN_CACHE_HOME/${BASHRUN_MODE}-onunmap"
+    [[ -f "$file" ]] && source "$file"
     
     BASHRUN_WINDOW_MAPPED=0
     return 0

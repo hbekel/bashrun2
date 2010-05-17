@@ -48,6 +48,12 @@ function §mode.init {
 
     local name="$(§mode.get_name)"
 
+    local onmap="$(§mode.get_onmap)"
+    local onunmap="$(§mode.get_onunmap)"
+
+    local onmap_file="$BASHRUN_CACHE_HOME/${name}-onmap"
+    local onunmap_file="$BASHRUN_CACHE_HOME/${name}-onunmap"
+
     if §function.defined? "+mode-$name-init"; then
 	§debug -v "+mode-$name-init"
 	+mode-$name-init
@@ -58,6 +64,19 @@ function §mode.init {
 	§window.animate 1
     else
 	§window.animate 0
+    fi
+
+    # write onmap/onunmap files
+    if [[ -n "$onmap" ]]; then 
+	echo "$onmap" > "$onmap_file"
+    else
+	[[ -f "$onmap_file" ]] && rm "$onmap_file" 
+    fi
+
+    if [[ -n "$onunmap" ]]; then 
+	echo "$onunmap" > "$onunmap_file"
+    else
+	[[ -f "$onunmap_file" ]] && rm "$onunmap_file" 
     fi
 
     # init logfile
