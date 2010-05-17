@@ -56,7 +56,7 @@ function §engine.init {
     # install command_not_found_handle for bash>=4 -> handle
     if §bash4; then
 	function command_not_found_handle {
-	    if [[ BASHRUN_CMD_NOT_FOUND_HANDLE -eq 1 ]]; then
+	    if [[ "$(§mode.get_cmdnfh)" == "1" ]]; then
 		if §engine.idle?; then
 		    BASHRUN_FROM_CMDNFH=1 §engine.action run 0 "$*"
 		fi

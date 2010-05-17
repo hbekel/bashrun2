@@ -5,6 +5,7 @@
 +configure-core-modes () {
 
     +mode terminal
+      --cmdnfh 1
 
     +mode-terminal-init () {
 

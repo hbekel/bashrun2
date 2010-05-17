@@ -2,9 +2,8 @@
 
 ################################################################################
 
-§class "§mode" "name geometry completion animated:b 
-                unmap:b onmap onunmap 
-                feedback:b logfile current" ""
+§class "§mode" "name geometry completion unmap:b feedback:b animated:b 
+                onmap onunmap cmdnfh logfile current" ""
 
 ################################################################################
 
