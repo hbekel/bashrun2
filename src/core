@@ -9,8 +9,6 @@
 
     +mode-terminal-init () {
 
-	stty ixon		
-	
 	+keymap emacs
 	+unbind run      '\C-m'
 	+unbind run      '\C-j'
