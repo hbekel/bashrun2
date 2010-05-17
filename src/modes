@@ -2,7 +2,8 @@
 
 ################################################################################
 
-§class "§mode" "name comp unmap:b geom anim:b onmap onunmap 
+§class "§mode" "name geometry completion animated:b 
+                unmap:b onmap onunmap 
                 feedback:b logfile current" ""
 
 ################################################################################
@@ -14,11 +15,11 @@ BASHRUN_MODE="${BASHRUN_MODE:-terminal}"
 function §mode.new { 
 
     §_mode.new "$1"
-    §mode.set_geom "80x24"
+    §mode.set_geometry "80x24"
     §mode.set_current "1"
-    §mode.set_comp 'complete'
+    §mode.set_completion 'complete'
     §mode.set_unmap '0'
-    §mode.set_anim '0'
+    §mode.set_animated '0'
     §mode.set_onmap ""
     §mode.set_onunmap ""
     §mode.set_feedback "0"
@@ -26,16 +27,16 @@ function §mode.new {
 }
 
 function §mode.multigeom? {
-    [[ "$(§mode.get_geom)" =~ \  ]]
+    [[ "$(§mode.get_geometry)" =~ \  ]]
     return $?
 }
 
 function §mode.get_default_geometry {
 
-    if [[ "$(§mode.get_geom)" =~ ([^\ ]+)\ [^\ ]+ ]]; then
+    if [[ "$(§mode.get_geometry)" =~ ([^\ ]+)\ [^\ ]+ ]]; then
 	echo "${BASH_REMATCH[1]}"
     else
-	§mode.get_geom
+	§mode.get_geometry
     fi
 }   
 
@@ -60,7 +61,7 @@ function §mode.init {
     fi
 
     # apply animation
-    if [[ "$(§mode.get_anim)" == "1" ]]; then
+    if [[ "$(§mode.get_animated)" == "1" ]]; then
 	§window.animate 1
     else
 	§window.animate 0
@@ -97,10 +98,10 @@ function §mode.reset {
 function §mode.code {
 
     local name="$(§mode.get_name)"
-    local comp="$(§mode.get_comp)"
+    local completion="$(§mode.get_completion)"
     local unmap="$(§mode.get_unmap)"
-    local geom="$(§mode.get_geom)"
-    local anim="$(§mode.get_anim)"
+    local geometry="$(§mode.get_geometry)"
+    local animated="$(§mode.get_animated)"
     local onmap="$(§mode.get_onmap)"
     local onunmap="$(§mode.get_onunmap)"
     local feedback="$(§mode.get_feedback)"
@@ -110,14 +111,14 @@ function §mode.code {
     echo
 
     echo "+mode '$name'"
-    [[ "$geom" != '80x24' ]] && echo "  --geom  '$geom'"
-    [[ "$comp" != 'complete' ]] && echo "  --comp  '$comp'"
+    [[ "$geometry" != '80x24' ]] && echo "  --geometry '$geometry'"
+    [[ "$completion" != 'complete' ]] && echo "  --completion '$completion'"
     [[ "$unmap" != '0' ]] && echo "  --unmap '$unmap'"
-    [[ "$anim" != '0' ]] && echo "  --anim  '$anim'"
-    [[ "$onmap" != '' ]] && echo "  --onmap   '$onmap'"
-    [[ "$onunmap" != '' ]] && echo "  --onunmap   '$onunmap'"
-    [[ "$feedback" != '0' ]] && echo "  --feedback   '$feedback'"
-    [[ "$logfile" != '/dev/null' ]] && echo "  --logfile    '$logfile'"
+    [[ "$animated" != '0' ]] && echo "  --animated '$animated'"
+    [[ "$onmap" != '' ]] && echo "  --onmap '$onmap'"
+    [[ "$onunmap" != '' ]] && echo "  --onunmap '$onunmap'"
+    [[ "$feedback" != '0' ]] && echo "  --feedback '$feedback'"
+    [[ "$logfile" != '/dev/null' ]] && echo "  --logfile '$logfile'"
     echo
 
     if §function.defined? "+mode-$name-init"; then

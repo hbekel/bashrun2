@@ -40,7 +40,7 @@ launch () {
     feedback="$(§mode.get_feedback)"
 
     # find out whether it's animated
-    animation="$(§mode.get_anim)"
+    animation="$(§mode.get_animated)"
 
     # get initial terminal geometry for the requested mode
     geometry=$(§mode.get_default_geometry)

@@ -344,7 +344,7 @@
 	
 	if §mode.multigeom?; then
 	    
-	    local geom="$(§mode.get_geom)"
+	    local geom="$(§mode.get_geometry)"
 	    local current="$(§mode.get_current)"
 	    ((current+=1))
 

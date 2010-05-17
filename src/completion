@@ -5,7 +5,7 @@
 BASHRUN_COMPLETION=''
 
 function §completion.init {
-    §completion.set $(§mode.get_comp)
+    §completion.set $(§mode.get_completion)
 }
 
 function §completion.set {

@@ -171,7 +171,7 @@ function §window.update {
     BASHRUN_WINDOW_PIXEL_WIDTH=$pw
     BASHRUN_WINDOW_PIXEL_HEIGHT=$ph
 
-    BASHRUN_WINDOW_ANIMATE="$(§mode.get_anim)"
+    BASHRUN_WINDOW_ANIMATE="$(§mode.get_animated)"
 }
 
 function §window.geometry {
@@ -253,7 +253,7 @@ function §window.size {
     fi 
         
     # apply completion threshold if necessary
-    §window.terminal? && §completion.set $(§mode.get_comp)
+    §window.terminal? && §completion.set $(§mode.get_completion)
     return 0
 }
  
