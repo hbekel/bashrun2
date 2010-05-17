@@ -29,6 +29,7 @@ source $share/progress
 §progress.new "Initializing... [objects]"
 
 source $share/config
+source $share/plugin
 source $share/remote
 source $share/geometry
 source $share/terminals

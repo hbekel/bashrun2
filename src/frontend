@@ -7,6 +7,7 @@ BASHRUN_MODE="$mode"
 . $BASHRUN_SHARE/utils
 . $BASHRUN_SHARE/globals
 . $BASHRUN_SHARE/config
+. $BASHRUN_SHARE/plugin
 . $BASHRUN_SHARE/geometry
 . $BASHRUN_SHARE/registry
 . $BASHRUN_SHARE/progress

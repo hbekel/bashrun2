@@ -1,0 +1,29 @@
+# -*- shell-script -*-
+
+BASHRUN_PLUGIN_DIRS="$BASHRUN_CONFIG_HOME/plugins $BASHRUN_SHARE/plugins"
+
+function §plugin.find {
+
+    local wanted="${1}"
+    local dir=""
+    local file=""
+
+    for dir in $BASHRUN_PLUGIN_DIRS; do
+	file="$dir/${wanted}.rc"
+	[[ -f "$file" ]] && echo "$file"
+    done
+    echo ""
+}
+
+function +plugins { 
+    local file=""
+    local name=""
+    for name in $*; do
+	file="$(§plugin.find "$name")"
+	if [[ -n "$file" ]]; then
+	    source "$file"
+	else
+	    §display_message "Error" "Can't find plugin \"$name\" in $BASHRUN_CONFIG_HOME/plugins or $BASHRUN_SHARE/plugins"
+	fi
+    done
+}

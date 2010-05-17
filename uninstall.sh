@@ -18,6 +18,9 @@ fi
 rm -v $PREFIX/bin/bashrun
 rmdir -v $PREFIX/bin
 
+rm -v $PREFIX/share/bashrun/plugins/*
+rmdir -v $PREFIX/share/bashrun/plugins
+
 rm -v $PREFIX/share/bashrun/*
 rmdir -v $PREFIX/share/bashrun
 

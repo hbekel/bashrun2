@@ -86,6 +86,9 @@ function §config.get_funcname { # $wanted
 
 function §configs.restore {
 
+    source $BASHRUN_SHARE/core
+    source $BASHRUN_RCFILE
+
     §configs.restore_core
     §configs.collect_user_configs
 
@@ -150,9 +153,6 @@ function §config.restore {
 
 function §configs.restore_core {
 
-    source $BASHRUN_SHARE/core
-    source $BASHRUN_RCFILE
-
     local types="${1:-actions|modes|terminals|rules|handlers|keys|bookmarks}"
     local functions="$(declare -f | grep '^+configure-' | awk '{ print $1 }')"
 
@@ -182,9 +182,6 @@ function §configs.restore_core {
 }
 
 function §configs.collect_user_configs {
-
-    source $BASHRUN_SHARE/core
-    source $BASHRUN_RCFILE
 
     local types="${1:-actions|modes|terminals|rules|handlers|keys|bookmarks}"
     local functions="$(declare -f | grep '^+configure-' | awk '{ print $1 }')"
