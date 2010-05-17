@@ -3,7 +3,7 @@
 ################################################################################
 
 §class "§internal" "action keymap char readline"
-§class "§binding" "keyseq keymap action is_bound readline"  
+§class "§binding" "keyseq keymap action is_bound:b readline"  
 §class "§keyname" "keyseq name"                             
 
 bind '"\C-x00": accept-line'

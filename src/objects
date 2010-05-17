@@ -130,6 +130,7 @@ function §class {
 	if [[ "$key" =~ (.+?):(.*) ]]; then
 	    key=${BASH_REMATCH[1]}
 	    access=${BASH_REMATCH[2]}
+	    [[ "$access" == "b" ]] && access="rwb"
 	else
 	    access="rw"
 	fi
@@ -138,7 +139,11 @@ function §class {
       	    §object.create_reader $name $NAME $key $i
 	fi
 	if [[ "$access" =~ w ]]; then
-	    §object.create_writer $name $NAME $key $i
+	    if [[ "$access" =~ b ]]; then
+		§object.create_bool_writer $name $NAME $key $i
+	    else
+		§object.create_writer $name $NAME $key $i
+	    fi
 	fi
 	let i++
     done
@@ -205,6 +210,32 @@ function ${name}.set_${key} {
 EOF
     ) >> $tmpfile
 }
+
+function §object.create_bool_writer {
+    local name=$1
+    local NAME=$2
+    local key=$3
+    local field=$4
+    local tmpfile=$_OBJECTS_CACHE_HOME/$name.bash
+
+    echo $(cat <<EOF
+
+function ${name}.set_${key} {
+
+     local input="\$1";
+     local value=0;
+
+     [[ -n "\$input" ]] && value=1;
+     [[ "\$input" =~ ^([Yy]es|[Tt]rue|1)\$ ]] && value=1;
+     [[ "\$input" =~ ^([Nn]o|[Ff]false|0)\$ ]] && value=0;
+
+    _${NAME}S[\$_${NAME}S_POSITION+$field]=\$value;
+    _${NAME}S_MODIFIED=1;
+}
+EOF
+    ) >> $tmpfile
+}
+
 
 function §object.create_accessors {
     §object.create_reader "$@"

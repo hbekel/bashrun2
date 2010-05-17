@@ -2,7 +2,7 @@
 
 ################################################################################
 
-§class "§action" "name:r accept desc deps bash help init reset core:r" ""
+§class "§action" "name:r accept:b desc deps bash help init reset core:rb" ""
 
 §function.clone "§action.new" "§_action.new"
 
@@ -334,7 +334,7 @@ function §action.run {
     [[ retval -eq 0 ]] && res="-c launch"
     [[ retval -eq 1 ]] && res="-y abort (all done)"
     [[ retval -eq 2 ]] && res="-y abort (all done, don't unmap)"
-    §debug -v "$action" "returned" -v "$retval" "->" $res
+    §debug -v "$action" "returns" -v "$retval" "->" $res
 
     return $retval
 }
@@ -501,7 +501,7 @@ function §action.code {
     echo "  --desc '$desc'"
     echo "  --accept $accept"
     [[ "$deps" != "" ]] && echo "  --deps '$deps'"
-    [[ "$bash" != "3 2" ]] && echo "  --bash '$bash'"
+    [[ "$bash" != "3.2" ]] && echo "  --bash '$bash'"
     [[ "$help" != "" ]] && echo "  --help '$help'"
     [[ "$init" != "" ]] && echo "  --init '$init'"
     [[ "$reset" != "" ]] && echo "  --reset '$reset'"

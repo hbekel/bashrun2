@@ -39,7 +39,17 @@
 
 +configure-core-actions () {
 
+    # temporary function to set the (otherwise readonly) boolean
+    # 'core' property
     function §action.set_core {
+
+	local input="$1";
+	local value=0;
+
+	[[ -n "$input" ]] && value=1;
+	[[ "$input" =~ ^([Yy]es|[Tt]rue|1)$ ]] && value=1;
+	[[ "$input" =~ ^([Nn]o|[Ff]false|0)$ ]] && value=0;
+
 	_BASHRUN_ACTIONS[${_BASHRUN_ACTIONS_POSITION}+8]="$1"
     }
 
@@ -350,6 +360,7 @@
 	tput reset
 	return 2
     }    
+    # remove temporary setter function
     unset -f §action.set_core
 }
 

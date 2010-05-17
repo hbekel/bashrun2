@@ -2,7 +2,7 @@
 
 ################################################################################
 
-§class "§handler" "name pattern string complete fallback" ""
+§class "§handler" "name pattern string complete fallback:b" ""
 
 BASHRUN_FROM_CMDNFH=0
 
