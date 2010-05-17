@@ -27,7 +27,7 @@ function §engine.init {
     # init keymap
     BASHRUN_KEYMAP="$(§readline.get_setting keymap)"
     §debug "initial keymap set to" -v $BASHRUN_KEYMAP
-    
+
     §progress.update +1
         
     # load/restore configuration
