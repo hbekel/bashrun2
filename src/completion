@@ -23,11 +23,14 @@ function §completion.set {
 	return 0
     fi
 
-    # reset readline settings to defaults
-    # FIXME: restore from user's settings
-    bind 'set page-completions on'
-    bind 'set print-completions-horizontally off'
-    bind 'set completion-query-items 100'
+    if [[ "$BASHRUN_COMPLETION" == "quiet-complete" ]]; then
+	
+        # if we're changing from quiet-complete, reset readline
+        # settings to user's initial settings
+	bind "set page-completions $(§readline.get_setting page-completions)"
+	bind "set print-completions-horizontally $(§readline.get_setting print-completions-horizontally)"
+	bind "set completion-query-items $(§readline.get_setting completion-query-items)"
+    fi
 
     # set completion type
     case "$ctype" in

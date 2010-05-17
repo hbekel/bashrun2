@@ -2,14 +2,45 @@
 
 ################################################################################
 
-BASHRUN_READLINE=()
+BASHRUN_READLINE_BINDINGS=()
+BASHRUN_READLINE_SETTINGS=()
 
-function §readline.get_bindings {
+function §readline.get_settings {
+    # retrieve the original user's settings that are in effect
+    # before bashrun alters any of them
 
     local restore=$IFS
     IFS=$'\n' 
-    BASHRUN_READLINE=($(bind -p; bind -s))
+    BASHRUN_READLINE_SETTINGS=($(bind -v))
+    IFS=$restore    
+}
+
+function §readline.get_bindings {
+
+    # retrieve the original user's keybindings that are in effect
+    # before bashrun binds any keys of it's own
+
+    local restore=$IFS
+    IFS=$'\n' 
+    BASHRUN_READLINE_BINDINGS=($(bind -p; bind -s))
     IFS=$restore
+}
+
+function §readline.get_setting {
+
+    local wanted="$1"
+    local name=""
+    local value=""
+
+    local i=0
+    for (( i=0; i<${#BASHRUN_READLINE_SETTINGS[@]}; i+=1 )); do
+
+	[[ "${BASHRUN_READLINE_SETTINGS[$i]}" =~ ^set\ ([^\ ]+)\ (.+) ]]
+	name="${BASH_REMATCH[1]}"
+	value="${BASH_REMATCH[2]}"
+	[[ "$name" == "$wanted" ]] && break
+    done
+    echo "$value"
 }
 
 function §readline.get_binding {
@@ -18,8 +49,8 @@ function §readline.get_binding {
     local line='';
     local i=0
 
-    for (( i=0; i<${#BASHRUN_READLINE[@]}; i+=1 )); do
-	line=${BASHRUN_READLINE[$i]}
+    for (( i=0; i<${#BASHRUN_READLINE_BINDINGS[@]}; i+=1 )); do
+	line=${BASHRUN_READLINE_BINDINGS[$i]}
 	[[ "$line" =~ ^# ]] && continue
 
 	if [[ "$line" =~ .?${keyseq}\" ]]; then # FIXME: regexp ^ ?!

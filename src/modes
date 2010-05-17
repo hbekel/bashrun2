@@ -2,7 +2,7 @@
 
 ################################################################################
 
-§class "§mode" "name comp unmap:b geom anim:b onmap onunmap feedback:b current:b" ''
+§class "§mode" "name comp unmap:b geom anim:b onmap onunmap feedback:b current" ''
 
 ################################################################################
 

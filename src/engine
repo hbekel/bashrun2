@@ -20,9 +20,14 @@ function §engine.init {
     §window.id $WINDOWID
 
     # get current readline bindings
-    §debug "getting current readline bindings..."
+    §debug "getting current readline settings and bindings..."
+    §readline.get_settings
     §readline.get_bindings
 
+    # init keymap
+    BASHRUN_KEYMAP="$(§readline.get_setting keymap)"
+    §debug "initial keymap set to" -v $BASHRUN_KEYMAP
+    
     §progress.update +1
         
     # load/restore configuration

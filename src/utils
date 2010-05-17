@@ -16,6 +16,10 @@ function §defined? {
     [[ "${!1-X}" == "${!1-Y}" ]]
 }
 
+function §set? {
+    (set -o | grep "$1" | grep on) &>/dev/null
+}
+
 function §function.defined? {
     [[ "$(type -t $1 2> /dev/null)" == "function" ]]
     return $?
