@@ -426,7 +426,10 @@ function §display_message {
     local title="$1"
     local text="$2"
 
-    if (which dialog &>/dev/null && which xdotool &>/dev/null && §window.terminal?) then
+    if (which dialog &>/dev/null && \
+	    which xdotool &>/dev/null \
+	    && §window.terminal?) then
+
 	local prev_size="$(§window.size)"
 	§window.size --hint 40 12
 	

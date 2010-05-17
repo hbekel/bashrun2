@@ -6,6 +6,7 @@ BASHRUN_ACTION=''
 BASHRUN_EXECMODE=''
 BASHRUN_ENGINE_BUSY=0
 BASHRUN_LOGFILE=${BASHRUN_LOGFILE:-/dev/null}
+BASHRUN_CMD_NOT_FOUND_HANDLE=0
 
 function §engine.init {
     
@@ -87,7 +88,7 @@ function §engine.action {
     §separator "engine $action $command"
 
     if §actions.seek $action; then
-	
+
 	§engine.busy
 	BASHRUN_RULES_APPLIED=0
 
@@ -162,6 +163,12 @@ function §engine.launch {
     fi
     
     if §actions.seek "$BASHRUN_ACTION"; then
+
+	if ! §action.available?; then
+	    §engine.reset 0
+	    return 0
+	fi
+	
 	if §action.function?; then
 	    §action.run
 	    status=$?
