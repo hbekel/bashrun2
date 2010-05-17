@@ -467,6 +467,9 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 		    left[${#left[@]}]="$1"
 		fi
 	    fi
+	    # if [[ "$current" == "add" ]]; then
+	    #	echo "--add ${!var}"
+	    # fi
 	    shift
 	done
 
@@ -532,7 +535,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 		    if $(type -t object.$method &> /dev/null); then
 			args="${!var}"
 			args=${args//\\/\\\\}
-			eval "object.$method $args"
+			eval "object.$method \"$args\""
 		    else
 			echo "method object.$method not implemented."
 		    fi

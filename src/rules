@@ -2,11 +2,22 @@
 
 ################################################################################
 
-§class "§rule" "name progs" ""
+§class "§rule" "name progs" "add"
 
 BASHRUN_RULES_APPLIED=0
 
 ################################################################################
+
+function §rule.add {
+
+    local progs="$(§rule.get_progs)"
+    if [[ -z "$progs" ]]; then
+	progs="$@"
+    else
+	progs="$progs $@"
+    fi
+    §rule.set_progs "$progs"
+}
 
 function §rules.apply {
 
@@ -103,28 +114,6 @@ function §rule.code {
     name=${name//\'/\\\'}
     progs=${progs//\'/\\\'}
 
-    local array=($progs)
-    local length=${#array[@]}
-
     echo "+rule '$name'"
-    echo -n "  --progs   '"
-
-    if [[ length -eq 1 ]]; then
-	echo "$progs'"
-	echo
-	return 0
-    fi
-
-    local i=0;
-    for program in ${array[@]}; do
-	if [[ i -eq 0 ]]; then
-	    echo "$program"
-	elif [[ i -gt 0 && i -lt length-1 ]]; then
-	    echo "             $program"
-	else
-	    echo "             $program'"
-	fi
-	((i+=1))
-    done
-    echo
+    echo "  --add '$progs'"
 }

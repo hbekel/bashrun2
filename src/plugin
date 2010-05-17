@@ -27,3 +27,5 @@ function +plugins {
 	fi
     done
 }
+
+§function.clone "+plugins" "+plugin"
