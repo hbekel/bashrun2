@@ -2,7 +2,7 @@
 
 ################################################################################
 
-§class "§handler" "name pattern string complete fallback:b" ""
+§class "§handler" "name pattern string action complete fallback:b" ""
 
 BASHRUN_FROM_CMDNFH=0
 
@@ -70,7 +70,7 @@ function §handlers.apply {
     
     # applies matching handlers to BASHRUN_BASHRUN_COMMAND
 
-    §debug "trying to match §handlers..."
+    §debug "trying to match handlers..."
     
     §handlers.seek_start
     while §handlers.next?; do
@@ -79,6 +79,7 @@ function §handlers.apply {
 	local name="$(§handler.get_name)"
 	local pattern="$(§handler.get_pattern)"
 	local string="$(§handler.get_string)"
+	local action="$(§handler.get_action)"
 
 	# eval if this contains vars (e.g. $PAGER, $BROWSER)
 	if [[ $string =~ \$.[a-zA-z0-9_] ]]; then
@@ -86,12 +87,13 @@ function §handlers.apply {
 	    eval "string=\"$string\""
 	fi
 
+	§debug "[[ \"$BASHRUN_COMMAND\" =~ $pattern ]]"	    
 	if [[ "$BASHRUN_COMMAND" =~ $pattern ]]; then	    
 
 	    §debug -v "$BASHRUN_COMMAND" "matches" -v "$pattern" -y "$name"
 
 	    if [[ BASHRUN_FROM_CMDNFH -eq 1 ]]; then
-		if §handler.last? && §§handler.fallback?; then
+		if §handler.last? && §handler.fallback?; then
 		    §command.get_word
 		    echo "bash: $BASHRUN_COMMAND_WORD: command not found"
 		    return 0
@@ -161,6 +163,16 @@ function §handlers.apply {
 	    else
 		BASHRUN_COMMAND="$string"
 	    fi
+
+	    if [[ -n "$action" ]]; then
+		local saved="$(§action.get_name)"
+		if §actions.seek "$action"; then
+		    if §action.available?; then
+			§action.run
+		    fi
+		fi
+	    fi
+
 	    §debug "$string"
 	    return
 	fi
@@ -173,6 +185,7 @@ function §handler.code {
     local name=$(§handler.get_name)
     local pattern=$(§handler.get_pattern)
     local string=$(§handler.get_string)
+    local action=$(§handler.get_action)
     local complete=$(§handler.get_complete)
     local fallback=$(§handler.get_fallback)
 
@@ -185,8 +198,9 @@ function §handler.code {
     echo
     echo "+handler '$name'"
     [[ "$pattern" != '(.+)' ]] && echo "  --pattern '$pattern'" 
-    [[ "$string" != '%1' ]] && echo "  --string  '$string'"
+    [[ "$string" != '%1' ]] && echo "  --string '$string'"
     [[ -n "$complete" ]] && echo "  --complete '$complete'"
+    [[ -n "$action" ]] && echo "  --action '$action'"
     [[ "$fallback" -ne 0 ]] && echo "  --fallback '$fallback'"
     echo
 
