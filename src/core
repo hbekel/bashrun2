@@ -4,7 +4,7 @@
 
 +configure-core-modes () {
 
-    +mode launcher
+    +mode bashrun
       --terminal "xterm -geometry %g -name bashrun-%m -title bashrun-%m"
       --geometry '40x1 40x8'
       --completion 'menu-complete complete 8'
@@ -12,7 +12,7 @@
       --feedback true
       --logfile '/dev/null'
 
-    +mode-launcher-init () {	
+    +mode-bashrun-init () {	
 	
 	HISTFILE=.local/share/bashrun/history
 	PS1='>'
@@ -372,7 +372,48 @@
 	fi
 	tput reset
 	return 2
-    }    
+    }
+
+    +action resize-up
+      --description "Resize terminal up"
+      --input false
+      --core true
+
+    +action-resize-up() {
+	§window.resize up
+	return 2
+    }
+
+    +action resize-down
+      --description "Resize terminal down"
+      --input false
+      --core true
+
+    +action-resize-down() {
+	§window.resize down
+	return 2
+    }
+
+    +action resize-left
+      --description "Resize terminal left"
+      --input false
+      --core true
+
+    +action-resize-left() {
+	§window.resize left
+	return 2
+    }
+
+    +action resize-right
+      --description "Resize terminal right"
+      --input false
+      --core true
+
+    +action-resize-right() {
+	§window.resize right
+	return 2
+    }
+      
     # remove temporary setter function
     unset -f §action.set_core
 }

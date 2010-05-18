@@ -216,6 +216,26 @@ function §window.pos {
     return 0
 }
 
+function §window.resize {
+    case $1 in
+	up)
+            (( BASHRUN_WINDOW_HEIGHT-=1 ))
+	    ;;
+	down)
+            (( BASHRUN_WINDOW_HEIGHT+=1 ))
+	    ;;
+	left)
+            (( BASHRUN_WINDOW_WIDTH-=1 ))
+	    ;;
+	right)
+            (( BASHRUN_WINDOW_WIDTH+=1 ))
+	    ;;
+    esac
+    [[ BASHRUN_WINDOW_HEIGHT -lt 1 ]] && BASHRUN_WINDOW_HEIGHT=1
+    [[ BASHRUN_WINDOW_WIDTH -lt 1 ]] && BASHRUN_WINDOW_WIDTH=1
+    §window.size --hint $BASHRUN_WINDOW_WIDTH $BASHRUN_WINDOW_HEIGHT
+}
+
 function §window.size {
     
     # get window size

@@ -13,7 +13,7 @@ BASHRUN_DATA_HOME="$HOME/.local/share/bashrun"
 source $BASHRUN_SHARE/frontend
 
 # default mode and command
-mode="launcher"
+mode="bashrun"
 command="show"
 
 # handle --version, --help and --mode options first
@@ -26,7 +26,7 @@ if [[ $# -gt 0 ]]; then
  	    usage && exit 0
  	    ;;    
 	-m|--mode)
- 	    mode=${2:-launcher}
+ 	    mode=${2:-bashrun}
  	    shift; shift
  	    ;;
     esac

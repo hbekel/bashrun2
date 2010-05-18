@@ -23,7 +23,7 @@ modeinfo() {
 
     # get requested mode
     if ! §modes.seek "$mode"; then
-	mode="launcher"
+	mode="bashrun"
 	§modes.seek $mode
     fi
     §mode.write_info
