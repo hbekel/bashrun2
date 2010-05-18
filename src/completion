@@ -27,9 +27,9 @@ function §completion.set {
 	
         # if we're changing from quiet-complete, reset readline
         # settings to user's initial settings
-	bind "set page-completions $(§readline.get_setting page-completions)"
-	bind "set print-completions-horizontally $(§readline.get_setting print-completions-horizontally)"
-	bind "set completion-query-items $(§readline.get_setting completion-query-items)"
+	§readline.reset "page-completions"
+	§readline.reset "print-completions-horizontally"
+	§readline.reset "completion-query-items"
     fi
 
     # set completion type

@@ -60,6 +60,11 @@ function §readline.get_binding {
     done    
 }
 
+function §readline.reset {
+    local varname="$1"
+    bind "set $varname $(§readline.get_setting $varname)"
+}
+
 function §readline.rebind {
     local keyseq=$1
     local keymap=${2:-emacs}
