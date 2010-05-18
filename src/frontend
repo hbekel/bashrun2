@@ -1,86 +1,91 @@
 # -*- shell-script -*-
 
-############################################################
-
-BASHRUN_MODE="$mode"
-
-. $BASHRUN_SHARE/utils
-. $BASHRUN_SHARE/globals
-. $BASHRUN_SHARE/config
-. $BASHRUN_SHARE/plugin
-. $BASHRUN_SHARE/geometry
-. $BASHRUN_SHARE/registry
-. $BASHRUN_SHARE/progress
-. $BASHRUN_SHARE/terminals
-. $BASHRUN_SHARE/window
-. $BASHRUN_SHARE/modes
-. $BASHRUN_RCFILE
-
-# load modes and terminals 
-§configs.restore_core "modes|terminals"
-§configs.collect_user_configs "modes|terminals"
-
-§configs.seek "modes" && §config.restore 
-§configs.seek "terminals" && §config.restore 
-
-############################################################
-
-launch () {
-
-    # get the terminal to use
-    §terminals.seek "$mode"
+modeinfo() {
     
+    source $BASHRUN_SHARE/utils
+    source $BASHRUN_SHARE/globals
+    source $BASHRUN_SHARE/config
+    source $BASHRUN_SHARE/plugin
+    source $BASHRUN_SHARE/geometry
+    source $BASHRUN_SHARE/registry
+    source $BASHRUN_SHARE/progress
+    source $BASHRUN_SHARE/terminals
+    source $BASHRUN_SHARE/window
+    source $BASHRUN_SHARE/modes
+    source $BASHRUN_RCFILE
+
+    # load modes and terminals 
+    §configs.restore_core "modes|terminals"
+    §configs.collect_user_configs "modes|terminals"
+
+    §configs.seek "modes" && §config.restore 
+    §configs.seek "terminals" && §config.restore 
+
     # get requested mode
     if ! §modes.seek "$mode"; then
 	mode="launcher"
 	§modes.seek $mode
     fi
+    §mode.write_info
+}
 
-    # find out whether this mode has feedback enabled
-    feedback="$(§mode.get_feedback)"
+source_window() {
 
-    # find out whether it's animated
-    animation="$(§mode.get_animated)"
+    # create the environment §window expects and set wid
 
-    # get initial terminal geometry for the requested mode
-    geometry=$(§mode.get_default_geometry)
-    §geometry.parse $geometry
+    BASHRUN_MODE="$mode"
+    source $BASHRUN_SHARE/geometry
+    source $BASHRUN_SHARE/window
 
-    # start with a one line terminal if this mode is animated
-    if [[ animation -eq 1 ]]; then
-	§geometry.height 1
+    BASHRUN_WINDOW_ANIMATE="$animated"
+    function §mode.get_animated { echo $animated; }
+    function §mode.get_default_geometry { echo $geometry; }    
+    function §xdo { xdotool $@; }
+
+    §window.id $wid
+}
+
+launch () {
+
+    # launch a one line terminal if this mode is animated
+    if [[ animated -eq 1 ]]; then
+	source $BASHRUN_SHARE/geometry
+	
+	§geometry.parse $geometry
+    	§geometry.height 1
+    	
 	geometry="$(§geometry)"
     fi
 
-    # get terminal command and insert properties and geometry from
-    # requested mode
-    terminal="$(§terminal.get_command)"
+    # insert geometry and mode into terminal command
+    terminal=${terminal//%g/$geometry}
     terminal=${terminal//%m/$mode}
-    terminal=${terminal//%g/$geometry}        
 
     # launch terminal
     BASHRUN=1 \
 	BASHRUN_MODE="$mode" \
 	BASHRUN_FEEDBACK="$feedback" \
 	BASHRUN_DEBUG=$BASHRUN_DEBUG \
-	$terminal $termopts &    
+	$terminal &    
 
-    # wait for the new instance to register and get it's window id
+    # wait for the new instance to register and get it's window id and pid
     widfile="$BASHRUN_CACHE_HOME/${mode}-wid"
-    §wait "[[ -f $widfile ]]"
-
-    # map window and return wid
+    wait_until "[[ -f $widfile ]]"
     wid="$(<$widfile)"
-    §window.id $wid
-    §window.map &> /dev/null
+    
+    pidfile="$BASHRUN_CACHE_HOME/${mode}-pid"
+    wait_until "[[ -f $pidfile ]]"
+    pid="$(<$pidfile)"
 
-    echo "$wid"
+    source_window
+
+    §window.map fast &> /dev/null
 }
 
 function remote {
 
     # wait until a newly started instance is ready
-    if §wait "[[ -f $BASHRUN_CACHE_HOME/${mode}-ready ]]"; then
+    if wait_until "[[ -f $BASHRUN_CACHE_HOME/${mode}-ready ]]"; then
 	
         # put "<action> <cmd>" in the "remote" file
 	echo $@ > $BASHRUN_DATA_HOME/remote
@@ -92,4 +97,54 @@ function remote {
 	return 1
     fi
     return 0
+}
+
+function wait_until { 
+    # wait until code returns success,
+    # bail out after 3 secs (30*0.1)
+    # e.g. wait_until "[[ -f some_file ]]"
+    #      wait_until "§window.mapped?"
+
+    local code=${1:-:}
+    local attempts=30
+
+    eval "until $code; do
+	if [[ attempts -eq 0 ]]; then
+	    exit 1
+	fi
+	((attempts-=1))
+	sleep 0.1
+    done"
+    return 0
+}
+
+version () {
+    . $BASHRUN_SHARE/globals 2> /dev/null
+    echo "bashrun $BASHRUN_VERSION Copyright (C) 2010 Henning Bekel <h.bekel@googlemail.com>"
+}
+
+usage () {
+    echo "Usage: bashrun [option] [[command] [args]...]
+
+  Options: 
+
+    -v, --version : show version information and exit
+    -h, --help    : show this message and exit
+    -m, --mode    : select mode to launch/control
+
+  Commands: 
+       
+    show      : show window, move to current desktop and focus
+    hide      : hide window 
+    toggle    : hide if visible, show if hidden
+    smart     : move window up front if not focused/visible, hide otherwise  
+    restart   : restart bashrun 
+    quit,exit : terminate bashrun
+    wid       : print window id
+    pid       : print pid of bashrun session
+
+    su <cmd>       : run <cmd> as root, using bashrun for password entry
+    do <act> <cmd> : remotely invoke <action> for <cmd>
+    wait <state>   : wait until bashrun is in <state> ([ready|map|unmap])
+"
 }

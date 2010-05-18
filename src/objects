@@ -227,7 +227,7 @@ function ${name}.set_${key} {
 
      [[ -n "\$input" ]] && value=1;
      [[ "\$input" =~ ^([Yy]es|[Tt]rue|1)\$ ]] && value=1;
-     [[ "\$input" =~ ^([Nn]o|[Ff]false|0)\$ ]] && value=0;
+     [[ "\$input" =~ ^([Nn]o|[Ff]alse|0)\$ ]] && value=0;
 
     _${NAME}S[\$_${NAME}S_POSITION+$field]=\$value;
     _${NAME}S_MODIFIED=1;

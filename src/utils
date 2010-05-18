@@ -47,27 +47,7 @@ function §function.clone {
     fi
 }
 
-function §wait { 
-    # wait until code returns success,
-    # bail out after 3 secs (30*0.1)
-    # e.g. §wait "[[ -f some_file ]]"
-    #      §wait "§window.mapped?"
-
-    local code=${1:-:}
-    local attempts=30
-
-    eval "until $code; do
-	if [[ attempts -eq 0 ]]; then
-	    exit 1
-	fi
-	((attempts-=1))
-	sleep 0.1
-    done"
-    return 0
-}
-
 BASHRUN_XDOTOOL="unknown"
-
 function §xdo {
 
     if [[ "$BASHRUN_XDOTOOL" == "unknown" ]]; then
@@ -464,35 +444,4 @@ function §display_message {
 	eval "$(§terminal.get_command) 'echo -e \"Bashrun $title:\n\n$text\n\" | less' &>/dev/null"
 	§terminals.seek "$saved"
     fi
-}
-
-version () {
-    . $BASHRUN_SHARE/globals 2> /dev/null
-    echo "bashrun $BASHRUN_VERSION Copyright (C) 2010 Henning Bekel <h.bekel@googlemail.com>"
-}
-
-usage () {
-    echo "Usage: bashrun [option] [[command] [args]...]
-
-  Options: 
-
-    -v, --version : show version information and exit
-    -h, --help    : show this message and exit
-    -m, --mode    : select mode to launch/control
-
-  Commands: 
-       
-    show      : show window, move to current desktop and focus
-    hide      : hide window 
-    toggle    : hide if visible, show if hidden
-    smart     : move window up front if not focused/visible, hide otherwise  
-    restart   : restart bashrun 
-    quit,exit : terminate bashrun
-    wid       : print window id
-    pid       : print pid of bashrun session
-
-    su <cmd>       : run <cmd> as root, using bashrun for password entry
-    do <act> <cmd> : remotely invoke <action> for <cmd>
-    wait <state>   : wait until bashrun is in <state> ([ready|map|unmap])
-"
 }

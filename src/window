@@ -260,7 +260,7 @@ function §window.size {
 function §window.map {
 
     §window? || return 1
-    [[ $# -eq 1 ]] || §window.update
+    [[ $# -eq 0 ]] && §window.update
     
     # parse geometry for this mode 
     §geometry.parse "$(§mode.get_default_geometry)"
@@ -329,15 +329,19 @@ function §window.toggle { # [smart] [fast]
     else
 	if [[ "$smart" == "1" ]]; then
 	    if [[ "$(§xdo getwindowfocus)" != "$BASHRUN_WINDOW_ID" ]]; then
-		§window.map
+		§window.map $fast
 	    else
-		§window.unmap
+		§window.unmap $fast
 	    fi
 	else
-	    §window.unmap
+	    §window.unmap $fast
 	fi
     fi
     return 0
+}
+
+function §window.toggle_smart {
+    §window.toggle 1 $1
 }
 
 function §window.collapse {
@@ -366,5 +370,3 @@ function §window.expand {
     done
 }
 
-# Test for xdotool early on...
-§xdo &>/dev/null

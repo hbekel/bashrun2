@@ -9,111 +9,85 @@ BASHRUN_SHARE="$BASHRUN_PREFIX/share/bashrun"
 BASHRUN_CACHE_HOME="$HOME/.cache/bashrun"
 BASHRUN_DATA_HOME="$HOME/.local/share/bashrun"
 
-# without arguments, show the launcher
+# load frontend functions
+source $BASHRUN_SHARE/frontend
+
+# default mode and command
 mode="launcher"
 command="show"
 
-# Fast handling of the simple (and probably most common) use cases,
-# as in 'bashrun [--mode <mode>] [show|hide|toggle|smart]'
-
-if [[ $# -eq 3 || $# -eq 2 ]]; then
-    if [[ "$*" =~ ^(\-\-mode|-m)\ ([^\ ]+) ]]; then
-	mode=${BASH_REMATCH[2]}
-	shift; shift
-    fi
+# handle --version, --help and --mode options first
+if [[ $# -gt 0 ]]; then
+    case "$1" in
+	-v|--version)
+ 	    version && exit 0
+ 	    ;;
+	-h|--help)
+ 	    usage && exit 0
+ 	    ;;    
+	-m|--mode)
+ 	    mode=${2:-launcher}
+ 	    shift; shift
+ 	    ;;
+    esac
 fi
 
-if [[ $# -eq 1 ]]; then
-    case $1 in
-	show|--show|hide|--hide|toggle|--toggle|smart|--smart|wid|--wid|pid|--pid|exit|--exit|quit|--quit|restart|--restart)
-	    command=$1
-	    shift
-	    ;;
-    esac    
+# get info about the requested mode
+MODEINFO="$BASHRUN_CACHE_HOME/${mode}-info"
+if [[ ! -f $MODEINFO ]]; then
+    modeinfo
 fi
+source $MODEINFO
 
-if [[ $# -eq 0 ]]; then
-    # delegate to the simple frontend script
-    source $BASHRUN_SHARE/simple
-
-    # if it reports success then we're done
-    [[ $? -eq 0 ]] && exit 0
-fi
-
-# The above cases didn't apply, or no instance was found in the
-# specified mode... proceed unless command =~ (exit|quit)
-
-if [[ "$command" =~ (exit|quit) ]]; then
-    exit 0
-fi
-
-# load version and usage functions
-source $BASHRUN_SHARE/utils
-
-# handle option first
-case "$1" in
-    -v|--version)
-	version && exit 0
-	;;
-    -h|--help)
-	usage && exit 0
-	;;    
-    -m|--mode)
-	mode=${2:-launcher}
-	shift; shift
-	;;
-esac
-
-# initialize the complete frontend
-source $BASHRUN_SHARE/frontend
-
-# get the window id of a running instance or launch a new instance...
-response="$(§registry.request $mode)"
-
-# response now contains the window id of a running instance or "new"
-§debug "response" -v "$response"
-
-if [[ "$response" == "new" ]]; then    
-    wid="$(launch)"
-else
-    wid="$response"
-fi
-
-# set wid for the §window 'object'
-§window.id "$wid"
-
-# get the pid of the bash session
-pid="$(<$BASHRUN_CACHE_HOME/${mode}-pid)"
-
-# handle the remaining arguments...
-§debug "remaining args:" -v "$*"
-
+# get command 
 if [[ $# -gt 0 ]]; then
     command="$1"
+    command=${command/--/}
     shift
 fi
 
+# launch a new instance if necessary
+launched=0
+if [[ ! "$(xprop -id $wid WM_CLASS 2>/dev/null)" =~ bashrun-$mode ]]; then
+    if [[ "$command" =~ (exit|quit) ]]; then
+	exit 0
+    else
+	launch
+	launched=1
+    fi
+fi
+
+# prepare §window class if necessary
+[[ launched -eq 0 ]] && source_window
+
 case "$command" in
     show)
-	§window.map &>/dev/null
+	§window.map fast &>/dev/null
 	;;
     hide)
-	§window.unmap &>/dev/null
+	§window.unmap fast &>/dev/null
 	;;	
     toggle)
-	[[ "$response" != "new" ]] && §window.toggle &>/dev/null
+	[[ launched -eq 0 ]] && §window.toggle fast &>/dev/null
 	;;
     smart)
-	[[ "$response" != "new" ]] && §window.toggle 1 &>/dev/null
+	[[ launched -eq 0 ]] && §window.toggle_smart fast 1 &>/dev/null
 	;;
     wid)
-	echo "$wid"
+	echo $wid
 	;;
     pid)
-	echo "$pid"
+	echo $pid
+	;;
+    exit|quit)
+	kill $pid
 	;;
     restart)
-	:
+	if [[ launched -eq 0 ]]; then
+	    kill $pid
+	    sleep 1
+	    exec bashrun -m $mode	
+	fi
 	;;
     su|--su)
 	remote su-run $@
@@ -125,15 +99,15 @@ case "$command" in
 	state=${1:-unmap}
 	case "$state" in
 	    ready)
-		§wait "[[ -f $BASHRUN_CACHE_HOME/${mode}-ready ]]"
+		wait_until "[[ -f $BASHRUN_CACHE_HOME/${mode}-ready ]]"
 		;;
 	    map|unmap)
-		§window.wait "$state"
+		§window.wait $state
 		;;	    
 	esac
 	;;
     *)
 	echo "bashrun: unknown command: $command"
 	exit 1
-esac
+esac 
 exit 0
