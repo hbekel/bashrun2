@@ -301,7 +301,7 @@ function §window.map {
 function §window.unmap {
 
     §window? || return 1
-    [[ $# -eq 1 ]] || §window.update
+    [[ $# -eq 0 ]] && §window.update
 
     if [[ BASHRUN_WINDOW_ANIMATE -eq 1 ]]; then
 	§window.collapse

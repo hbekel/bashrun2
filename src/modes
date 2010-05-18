@@ -84,6 +84,22 @@ function §mode.init {
 
     # init completion
     §completion.init
+
+    # dump info
+    if [[ "$BASHRUN_WINDOW_ID" == "$WINDOWID" ]]; then
+
+	local file="$BASHRUN_CACHE_HOME/$(§mode.get_name)-info"
+	local terminal=""
+
+	§terminals.seek "$name-mode"
+
+	echo "pid=$$
+              wid=$WINDOWID
+              geometry=$(§mode.get_default_geometry)
+              feedback=$(§mode.get_feedback)
+              animated=$(§mode.get_animated)
+	      terminal='$(§terminal.get_command)'" > $file
+    fi
 }
 
 function §mode.reset {

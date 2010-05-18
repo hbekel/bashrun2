@@ -27,8 +27,8 @@ BASHRUN_MODE="$mode"
 
 launch () {
 
-    # get the bashrun terminal
-    §terminals.seek "bashrun"
+    # get the terminal to use
+    §terminals.seek "$mode"
     
     # get requested mode
     if ! §modes.seek "$mode"; then

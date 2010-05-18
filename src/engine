@@ -42,7 +42,7 @@ function §engine.init {
     §progress.update 100 "Initializing... [engine]"
 
     # initialize mode passed from env
-    §modes.seek "$BASHRUN_MODE"
+    §modes.seek "$BASHRUN_MODE";
     §debug "calling" -v "§mode.init" "for" -v "$(§mode.get_name)"
     §mode.init
 

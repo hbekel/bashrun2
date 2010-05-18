@@ -9,7 +9,7 @@ BASHRUN_SHARE="$BASHRUN_PREFIX/share/bashrun"
 BASHRUN_CACHE_HOME="$HOME/.cache/bashrun"
 BASHRUN_DATA_HOME="$HOME/.local/share/bashrun"
 
-# without agruments, show the launcher
+# without arguments, show the launcher
 mode="launcher"
 command="show"
 
