@@ -12,14 +12,14 @@ modeinfo() {
     source $BASHRUN_SHARE/terminals
     source $BASHRUN_SHARE/window
     source $BASHRUN_SHARE/modes
-    source $BASHRUN_RCFILE
+    source $BASHRUN_SHARE/core 
+    source $BASHRUN_RCFILE 
 
-    # load modes and terminals 
-    §configs.restore_core "modes|terminals"
-    §configs.collect_user_configs "modes|terminals"
+    # load mode config
+    §configs.restore_core "modes" &>/dev/null
+    §configs.collect_user_configs "modes"
 
     §configs.seek "modes" && §config.restore 
-    §configs.seek "terminals" && §config.restore 
 
     # get requested mode
     if ! §modes.seek "$mode"; then
@@ -48,6 +48,8 @@ source_window() {
 launch () {
 
     # launch a one line terminal if this mode is animated
+    saved_geometry="$geometry"
+
     if [[ animated -eq 1 ]]; then
 	source $BASHRUN_SHARE/geometry
 	
@@ -78,6 +80,7 @@ launch () {
     pid="$(<$pidfile)"
 
     source_window
+    geometry="$saved_geometry"    
 
     §window.map fast &> /dev/null
 }

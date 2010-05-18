@@ -2,7 +2,8 @@
 
 ################################################################################
 
-§class "§mode" "name geometry completion unmap:b feedback:b animated:b 
+§class "§mode" "name terminal geometry
+                completion unmap:b feedback:b animated:b 
                 onmap onunmap cmdnfh logfile current" ""
 
 ################################################################################
@@ -14,6 +15,7 @@ BASHRUN_MODE="${BASHRUN_MODE:-terminal}"
 function §mode.new { 
 
     §_mode.new "$1"
+    §mode.set_terminal "xterm -geometry %g -name bashrun-%m -title bashrun-%m"
     §mode.set_geometry "80x24"
     §mode.set_current "1"
     §mode.set_completion 'complete'
@@ -92,14 +94,13 @@ function §mode.init {
 function §mode.write_info {
     local mode="$(§mode.get_name)"
     local file="$BASHRUN_CACHE_HOME/${mode}-info"
-    §terminals.seek "$mode"
     
     echo "pid=$$
           wid=$WINDOWID
           geometry=$(§mode.get_default_geometry)
           feedback=$(§mode.get_feedback)
           animated=$(§mode.get_animated)
-	  terminal='$(§terminal.get_command)'" > $file
+	  terminal='$(§mode.get_terminal)'" > $file
 }
 
 function §mode.reset {
@@ -113,6 +114,7 @@ function §mode.reset {
 function §mode.code {
 
     local name="$(§mode.get_name)"
+    local terminal="$(§mode.get_terminal)"
     local completion="$(§mode.get_completion)"
     local unmap="$(§mode.get_unmap)"
     local geometry="$(§mode.get_geometry)"
@@ -126,6 +128,7 @@ function §mode.code {
     echo
 
     echo "+mode '$name'"
+    echo "  --terminal '$terminal'"
     [[ "$geometry" != '80x24' ]] && echo "  --geometry '$geometry'"
     [[ "$completion" != 'complete' ]] && echo "  --completion '$completion'"
     [[ "$unmap" != '0' ]] && echo "  --unmap '$unmap'"

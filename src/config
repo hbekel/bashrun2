@@ -13,6 +13,16 @@ function §config.add_name () {
     else
 	§config.set_names "$(§config.get_names) $name"
     fi
+
+    # assure "user" config is always at the end
+    local names="$(§config.get_names)"
+    if [[ " $names " =~ \ user\  ]]; then
+	if [[ ! "$names" =~ user$ ]]; then
+	    names=${names/ user / }
+	    names="$names user"
+	    §config.set_names "$names"
+	fi
+    fi
 }
 
 function §configs.list () {
@@ -184,12 +194,13 @@ function §configs.restore_core {
 function §configs.collect_user_configs {
 
     local types="${1:-actions|modes|terminals|rules|handlers|keys|bookmarks}"
-    local functions="$(declare -f | grep '^+configure-' | awk '{ print $1 }')"
+    local functions="$(declare -f | grep '^+configure-')"
 
     local line function name type
 
     # then we'll process the user config functions
-    for function in $(declare -f | grep '^+configure'); do
+    
+    for function in $functions; do
 
 	# parse the function name to determine the identifier, the
 	# name and the type
@@ -207,6 +218,7 @@ function §configs.collect_user_configs {
 	fi
 	§configs.seek "$type"
 	§config.add_name "$name"
+	§debug -v "'$(§config.get_names)'"
     done   
 }
 

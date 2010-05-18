@@ -35,7 +35,6 @@ FILES=(
     registry
     remote
     rules
-    simple
     terminals
     utils
     window
@@ -45,7 +44,7 @@ for file in ${FILES[@]}; do
     install -v -m 644 src/$file $PREFIX/share/bashrun
 done
 
-PLUGINS=()
+PLUGINS=(terminal.rc dropdown.rc)
 for file in ${PLUGINS[@]}; do
     install -v -m 644 src/plugins/$file $PREFIX/share/bashrun/plugins
 done

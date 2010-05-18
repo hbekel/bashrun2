@@ -4,10 +4,27 @@
 
 +configure-core-modes () {
 
-    +mode terminal
-      --cmdnfh 1
+    +mode launcher
+      --terminal "xterm -geometry %g -name bashrun-%m -title bashrun-%m"
+      --geometry '40x1 40x8'
+      --completion 'menu-complete complete 8'
+      --unmap true
+      --feedback true
+      --logfile '/dev/null'
 
-    +mode-terminal-init () {
+    +mode-launcher-init () {	
+	
+	HISTFILE=.local/share/bashrun/history
+	PS1='>'
+	stty -ixon
+	stty eof 0201
+    }
+
+    +mode terminal
+      --terminal 'xterm -geometry %g -name bashrun-%m -title bashrun-%m'
+      --cmdnfh true
+
+    +mode-terminal-init() {
 
 	+keymap emacs
 	+unbind run      '\C-m'
@@ -24,12 +41,6 @@
 
 +configure-core-terminals () {
     
-    +terminal launcher
-      --command "xterm -geometry %g -name bashrun-%m -title bashrun-%m"
-    
-    +terminal terminal 
-      --command "urxvt $run %g -name bashrun-%m -title bashrun-%m"
-
     +terminal default --command "xterm -e bash -c"
     +terminal notify --command "xterm -g 40x4+0+0 -e bash -c"
 }
