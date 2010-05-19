@@ -164,7 +164,7 @@ function §config.restore {
 function §configs.restore_core {
 
     local types="${1:-actions|modes|terminals|rules|handlers|keys|bookmarks}"
-    local functions="$(declare -f | grep '^+configure-' | awk '{ print $1 }')"
+    local functions="$(declare -f | grep '^+configure-')"
 
     local line function name type dumpfile
 
@@ -218,7 +218,6 @@ function §configs.collect_user_configs {
 	fi
 	§configs.seek "$type"
 	§config.add_name "$name"
-	§debug -v "'$(§config.get_names)'"
     done   
 }
 

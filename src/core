@@ -61,7 +61,7 @@
 
 	[[ -n "$input" ]] && value=1;
 	[[ "$input" =~ ^([Yy]es|[Tt]rue|1)$ ]] && value=1;
-	[[ "$input" =~ ^([Nn]o|[Ff]false|0)$ ]] && value=0;
+	[[ "$input" =~ ^([Nn]o|[Ff]alse|0)$ ]] && value=0;
 
 	_BASHRUN_ACTIONS[${_BASHRUN_ACTIONS_POSITION}+5]="$1"
     }
@@ -282,6 +282,24 @@
 	+term
 	return 0
     }
+
+    +action copy-to-clipboard
+      --description "Copy command output to clipboard"
+      --core 1
+
+    function +action-copy-to-clipboard {
+	command "($(command)) | xclip"
+	return 0
+    }
+    
+    +action filter-clipboard 
+      --description "Run command as filter on clipboard"
+      --depends 'xclip'
+      --core 1
+
+    function +action-filter-clipboard {	
+	command "xclip -o | ($(command)) | xclip -i"
+    }
     
     +action 'browse'
     --description 'Open page in $BROWSER'
@@ -349,7 +367,7 @@
     }
 
     +action 'cycle-size'
-    --description 'Cycle through window sizes of current mode'
+    --description 'Cycle through geometries of the current mode'
     --input 0
     --core 1
     
@@ -376,8 +394,8 @@
 
     +action resize-up
       --description "Resize terminal up"
-      --input false
-      --core true
+      --input 0
+      --core 1
 
     +action-resize-up() {
 	§window.resize up
@@ -386,8 +404,8 @@
 
     +action resize-down
       --description "Resize terminal down"
-      --input false
-      --core true
+      --input 0
+      --core 1
 
     +action-resize-down() {
 	§window.resize down
@@ -396,8 +414,8 @@
 
     +action resize-left
       --description "Resize terminal left"
-      --input false
-      --core true
+      --input 0
+      --core 1
 
     +action-resize-left() {
 	§window.resize left
@@ -406,8 +424,8 @@
 
     +action resize-right
       --description "Resize terminal right"
-      --input false
-      --core true
+      --input 0
+      --core 1
 
     +action-resize-right() {
 	§window.resize right

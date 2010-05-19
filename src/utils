@@ -303,7 +303,8 @@ function §print_bindings {
                  su-run su-term-run su-term-page su-term-hold |
                  show-manual show-info show-help |
                  browse google-search dict-lookup |
-                 cycle-size cycle-mode"
+                 copy-to-clipboard filter-clipboard |
+                 cycle-size resize-up resize-down resize-left resize-right"
         
     local id=""
     local bindings=""
