@@ -4,7 +4,7 @@
 
 §class "§mode" "name terminal geometry
                 completion unmap:b feedback:b animated:b 
-                onmap onunmap cmdnfh logfile current" ""
+                onmap onunmap cmdnfh:b logfile current" ""
 
 ################################################################################
 

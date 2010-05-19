@@ -14,7 +14,6 @@ function §handler.new {
     §_handler.new "$1"
     
     §handler.set_pattern '(.+)'
-    §handler.set_string '%1'
     §handler.set_fallback '0'
 }
 
