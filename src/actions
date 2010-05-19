@@ -493,7 +493,7 @@ function §action.code {
     # add action 
     echo "+action '$name'"
     echo "  --description '$description'"
-    echo "  --input $input"
+    [[ "$input" != "" ]] && echo "  --input $input"
     [[ "$depends" != "" ]] && echo "  --depends '$depends'"
     [[ "$bash" != "3.2" ]] && echo "  --bash '$bash'"
     
@@ -573,7 +573,6 @@ function +rebind () {
     fi
 }
 
-
 function +keymap () {
     local keymap="$1"
     if [[ ! "$keymap" =~ (emacs|vi-insert|vi-command) ]]; then
@@ -584,4 +583,13 @@ function +keymap () {
     BASHRUN_KEYMAP="$keymap"
 }
 
-################################################################################
+function §keymaps.complete {
+    COMPREPLY=()    
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local keymaps="emacs vi-insert vi-command"
+    [[ ${cur} == * ]] && COMPREPLY=( $(compgen -W "${keymaps}" ${cur}) )
+    return 0
+}
+
+complete -o default -F §actions.complete_names +bind +unbind +rebind
+complete -o default -F §keymaps.complete +keymap

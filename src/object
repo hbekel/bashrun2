@@ -589,6 +589,18 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
         return 0
     }
 
+    function objects.complete_names {
+
+	COMPREPLY=($(objects.all))
+	local cur="${COMP_WORDS[COMP_CWORD]}"
+	local opts="$(objects.all)"
+
+	if [[ ${cur} == * ]]; then
+	    COMPREPLY=( $(compgen -W "${opts}" ${cur}) )
+	fi
+        return 0
+    }
+
     complete -o default -F objects.complete +object
     
 fi # end _OBJECTS_HAVE_INTERFACE
