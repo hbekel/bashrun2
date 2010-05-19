@@ -397,7 +397,7 @@ function §action.api.disable {
 	    +user
 }
 
-function §action.pretty_print_deps {
+function §action.print_depends {
 
     local dep=''
     local depends="$(§action.get_depends)"

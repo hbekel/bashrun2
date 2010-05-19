@@ -404,7 +404,7 @@ function §print_binding {
     §actions.seek "$name"
     desc="$(§action.get_description)"
     
-    deps="$(§action.pretty_print_deps)"
+    deps="$(§action.print_depends)"
     keyseq="$(§binding.get_keyseq)"
     
     if §keynames.seek "$keyseq"; then
