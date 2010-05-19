@@ -20,6 +20,7 @@ share=$prefix/share/bashrun
 # source utils and globals
 source $share/utils
 source $share/globals
+source $share/upgrade
 source $share/window
 source $share/registry
 

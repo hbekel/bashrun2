@@ -1,0 +1,18 @@
+# -*- shell-script -*-
+
+function §upgrade.required? {
+    if [[ -f $BASHRUN_RCFILE ]]; then
+	if ! grep BASHRUN_CONFIG_VERSION $BASHRUN_RCFILE &>/dev/null; then
+	    return 0
+	fi
+    fi
+    return 1
+}
+
+function §upgrade {
+    §upgrade.required? || return 0
+}
+
+
+
+

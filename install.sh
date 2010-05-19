@@ -36,6 +36,7 @@ FILES=(
     remote
     rules
     terminals
+    upgrade
     utils
     window
 )
