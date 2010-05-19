@@ -39,7 +39,10 @@ function source_window {
 
     BASHRUN_WINDOW_ANIMATE="$animated"
     function §mode.get_animated { echo $animated; }
-    function §mode.get_default_geometry { echo $geometry; }    
+    function §mode.get_geometry { echo $geometry; }    
+    function §mode.get_onmap { echo $onmap; }    
+    function §mode.get_onunmap { echo $onunmap; }    
+
     function §xdo { xdotool $@; }
 
     §window.id $wid

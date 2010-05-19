@@ -59,9 +59,6 @@ function §mode.init {
     local onmap="$(§mode.get_onmap)"
     local onunmap="$(§mode.get_onunmap)"
 
-    local onmap_file="$BASHRUN_CACHE_HOME/${name}-onmap"
-    local onunmap_file="$BASHRUN_CACHE_HOME/${name}-onunmap"
-
     if §function.defined? "+mode-$name-init"; then
 	§debug -v "+mode-$name-init"
 	+mode-$name-init
@@ -72,19 +69,6 @@ function §mode.init {
 	§window.animate 1
     else
 	§window.animate 0
-    fi
-
-    # write onmap/onunmap files
-    if [[ -n "$onmap" ]]; then 
-	echo "$onmap" > "$onmap_file"
-    else
-	[[ -f "$onmap_file" ]] && rm "$onmap_file" 
-    fi
-
-    if [[ -n "$onunmap" ]]; then 
-	echo "$onunmap" > "$onunmap_file"
-    else
-	[[ -f "$onunmap_file" ]] && rm "$onunmap_file" 
     fi
 
     # init logfile
@@ -101,12 +85,24 @@ function §mode.write_info {
     local mode="$(§mode.get_name)"
     local file="$BASHRUN_CACHE_HOME/${mode}-info"
     
+    local terminal="$(§mode.get_terminal)"
+    local onmap="$(§mode.get_onmap)"
+    local onunmap="$(§mode.get_onunmap)"
+
+    # escape double quotes 
+    terminal=${terminal//\"/\\\"}
+    onmap=${onmap//\"/\\\"}
+    onunmap=${onunmap//\"/\\\"}
+
+
     echo "pid=$$
           wid=$WINDOWID
+	  terminal=\"$(§mode.get_terminal)\"
           geometry=$(§mode.get_geometry 0)
           feedback=$(§mode.get_feedback)
           animated=$(§mode.get_animated)
-	  terminal='$(§mode.get_terminal)'" > $file
+          onmap=\"$(§mode.get_onmap)\"
+          onunmap=\"$(§mode.get_onunmap)\"" > $file
 }
 
 function §mode.reset {
