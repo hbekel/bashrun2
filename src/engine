@@ -59,8 +59,11 @@ function §engine.init {
 	    if [[ "$(§mode.get_cmdnfh)" == "1" ]]; then
 		if §engine.idle?; then
 		    BASHRUN_FROM_CMDNFH=1 §engine.action run 0 "$*"
+		    return 0
 		fi
 	    fi
+	    echo "bash: $1: command not found"
+	    return 127
 	}
     fi
 
