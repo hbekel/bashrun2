@@ -48,7 +48,7 @@ function §progress.enabled? {
 
     §progress.enabled? || return
 
-    local l="$(echo "scale=2; $COLUMNS * (${BASHRUN_PROGRESS_PERCENT}.0 / 100.0)" | bc -q | cut -d. -f1)"
+    local l=$(( COLUMNS * BASHRUN_PROGRESS_PERCENT / 100 ))
     local i=0
     local char=""
     echo -ne '\e[0G'
