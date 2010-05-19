@@ -150,7 +150,7 @@ function §config.restore {
 		$BASHRUN_CACHE_HOME/$(§config.get_rcname "$name")
 	
 	else
-	    §debug -y "$(§config.get_funcname "$name")" "->" -c "restore..."
+	    §debug -y "$(§config.get_funcname "$name")" "->" -c "cached..."
 	fi
 	restore="$(§config.get_dumpname "$name")"
     done

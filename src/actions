@@ -178,8 +178,8 @@ function §action.unbind {
     §debug "unbind" -v "$action" "from" -v "$keyseq" -v "($keymap)"
     eval "bind $unbind"
 
-    # rebind original readline binding
-    §readline.rebind "$keyseq" "$keymap"
+    # restore original readline binding
+    §readline.restore "$keyseq" "$keymap"
 
     # clear binding
     §bindings.seek "$keyseq" "$keymap"

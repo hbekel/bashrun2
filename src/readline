@@ -65,7 +65,7 @@ function §readline.reset {
     bind "set $varname $(§readline.get_setting $varname)"
 }
 
-function §readline.rebind {
+function §readline.restore {
     local keyseq=$1
     local keymap=${2:-emacs}
     local readline=$(§readline.get_binding $keyseq)
@@ -76,7 +76,5 @@ function §readline.rebind {
     if [[ "$readline" != '' ]]; then 
 	§debug "bind $binding"
 	eval "bind $binding"
-    else
-	§debug "$keyseq: no previous binding"
     fi
 }
