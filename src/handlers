@@ -81,10 +81,12 @@ function §handlers.apply {
 	local string="$(§handler.get_string)"
 	local action="$(§handler.get_action)"
 
+	local result=""
 	# eval if this contains vars (e.g. $PAGER, $BROWSER)
 	if [[ $string =~ \$.[a-zA-z0-9_] ]]; then
-	    §debug -c "evaling handler string..."
-	    eval "string=\"$string\""
+	    result="$(§interpolate '$string')"
+	    §debug -v "$string" "->" -v "$result"
+	    string="$result"
 	fi
 
 	if [[ "$BASHRUN_COMMAND" =~ $pattern ]]; then	    

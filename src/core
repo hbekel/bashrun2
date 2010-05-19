@@ -322,13 +322,12 @@
     }
     
     +action 'dict-lookup'
-    --description 'Lookup words in dictionary'
+    --description 'Lookup words in $DICT'
     --input 1
-    --depends 'dict'
     --core 1
     
     function +action-dict-lookup {
-	command "dict $(line)"
+	command "$DICT $(line)"
 	+rules
 	+term
 	return 0

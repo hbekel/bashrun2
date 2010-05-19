@@ -24,6 +24,10 @@ source $BASHRUN_SHARE/objects
 §objects.data_home $BASHRUN_CACHE_HOME
 §objects.namespace "bashrun"
 
+BROWSER=${BROWSER:-firefox}
+PAGER=${PAGER:-less -f}
+DICT=${DICT:-dict}
+
 §prepare_directories
 
 ################################################################################

@@ -47,6 +47,21 @@ function §function.clone {
     fi
 }
 
+function §interpolate {
+    local str="$1"
+    local var=""
+    local val=""
+
+    while [[ "$str" =~ \$([A-Za-z0-9_]+) ]]; do
+	var=${BASH_REMATCH[1]}
+	val=${!var}
+	val=${val//\$/__DoLlArSiGn__}
+	str=${str/\$$var/$val}
+    done
+    str=${str//__DoLlArSiGn__/\$}
+    echo "$str"
+}
+
 BASHRUN_XDOTOOL="unknown"
 function §xdo {
 
