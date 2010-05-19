@@ -283,7 +283,7 @@ function §window.map {
     [[ $# -eq 0 ]] && §window.update
     
     # parse geometry for this mode 
-    §geometry.parse "$(§mode.get_default_geometry)"
+    §geometry.parse "$(§mode.get_geometry 0)"
 
     # map the window
     §xdo windowmap $BASHRUN_WINDOW_ID

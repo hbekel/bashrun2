@@ -15,7 +15,7 @@ function §mode.new {
     §_mode.new "$1"
     §mode.set_terminal "xterm -geometry %g -name bashrun-%m -title bashrun-%m"
     §mode.set_geometry "80x24"
-    §mode.set_current "1"
+    §mode.set_current "0"
     §mode.set_completion 'complete'
     §mode.set_unmap '0'
     §mode.set_animated '0'
@@ -25,23 +25,31 @@ function §mode.new {
     §mode.set_logfile "/dev/null"
 }
 
-function §mode.multigeom? {
-    [[ "$(§mode.get_geometry)" =~ \  ]]
-    return $?
-}
+§function.clone §mode.get_geometry §_mode.get_geometry
 
-function §mode.get_default_geometry {
-
-    if [[ "$(§mode.get_geometry)" =~ ([^\ ]+)\ [^\ ]+ ]]; then
-	echo "${BASH_REMATCH[1]}"
-    else
-	§mode.get_geometry
+function §mode.get_geometry {
+    
+    if [[ $# -eq 0 ]]; then
+	§_mode.get_geometry
+	return 0
     fi
-}   
+
+    local wanted=${1:-0}
+    local geometry="$(§_mode.get_geometry)"
+    local g="" i=0
+
+    for g in $geometry; do	
+	if [[ i -eq $wanted ]]; then
+	    echo "$g"
+	    break
+	else
+	    ((i+=1))
+	fi
+    done
+}
 
 function §mode.unmap? {
     [[ "$(§mode.get_unmap)" == "1" && BASHRUN_DEBUG -eq 0 ]]
-    return $?
 }
 
 function §mode.init {
@@ -95,7 +103,7 @@ function §mode.write_info {
     
     echo "pid=$$
           wid=$WINDOWID
-          geometry=$(§mode.get_default_geometry)
+          geometry=$(§mode.get_geometry 0)
           feedback=$(§mode.get_feedback)
           animated=$(§mode.get_animated)
 	  terminal='$(§mode.get_terminal)'" > $file

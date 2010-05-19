@@ -371,18 +371,17 @@
     --core 1
     
     function +action-cycle-size {
-	
-	if §mode.multigeom?; then
+
+	if [[ -n "$(§mode.get_geometry 1)" ]]; then
 	    
-	    local geom="$(§mode.get_geometry)"
 	    local current="$(§mode.get_current)"
 	    ((current+=1))
 
-	    local next="$(echo "$geom" | cut -d ' ' -f $current)"
+	    local next="$(§mode.get_geometry $current)"
 	    if [[ "$next" == '' ]]; then
-		current=1
+		current=0
 	    fi
-	    next="$(echo "$geom" | cut -d ' ' -f $current)"
+	    next="$(§mode.get_geometry $current)"
 
 	    §window.geometry "$next"
 	    §mode.set_current $current	
