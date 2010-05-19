@@ -156,21 +156,21 @@ function §debug {
 	
 	if [[ "$str" =~ ^-([a-z])$ ]]; then # color
 	    col="${BASH_REMATCH[1]}"
-	    echo -ne "${!col}"
+	    echo -ne "${!col}" >&2
 	    requested=1
 
 	elif [[ ! "$str" =~ ^[0-9] && $(§defined? "$str") ]]; then # variable
 	    if §defined? "$str"; then
-		echo -ne "$d$str$b$v " # name
-		echo -n  "${!str} "    #value 
+		echo -ne "$d$str$b$v " >&2 # name
+		echo -n  "${!str} "    >&2 #value 
 	    fi
 	else
-	    [[ requested -eq 0 ]] && echo -ne "$d" 
-	    echo -n "$str "
+	    [[ requested -eq 0 ]] && echo -ne "$d" >&2 
+	    echo -n "$str " >&2
 	    requested=0
 	fi
     done
-    echo -e "$n"
+    echo -e "$n" >&2
 }
 
 function §separator {

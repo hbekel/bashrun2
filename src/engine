@@ -8,6 +8,8 @@ BASHRUN_ENGINE_BUSY=0
 BASHRUN_LOGFILE=${BASHRUN_LOGFILE:-/dev/null}
 BASHRUN_CMD_NOT_FOUND_HANDLE=0
 
+################################################################################
+
 function §engine.init {
     
     §engine.busy
@@ -24,7 +26,7 @@ function §engine.init {
     §readline.get_settings
     §readline.get_bindings
 
-    # init keymap
+    # initialize keymap
     BASHRUN_KEYMAP="$(§readline.get_setting keymap)"
     §debug "initial keymap set to" -v $BASHRUN_KEYMAP
 

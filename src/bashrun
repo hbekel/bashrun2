@@ -1,4 +1,25 @@
 #!/bin/bash
+######################################################################
+#
+# bashrun 0.16.0 -- X11 application launcher based on bash
+# Copyright (C) 2010 Henning Bekel <h.bekel@googlemail.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301, USA.
+#
+######################################################################
 
 # determine the install location
 BASHRUN_PREFIX=`which bashrun 2> /dev/null`
@@ -39,7 +60,7 @@ if [[ ! -f $MODEINFO ]]; then
 fi
 source $MODEINFO
 
-# get command 
+# get command argument 
 if [[ $# -gt 0 ]]; then
     command="$1"
     command=${command/--/}
@@ -47,6 +68,7 @@ if [[ $# -gt 0 ]]; then
 fi
 
 # launch a new instance if necessary
+
 launched=0
 if [[ ! "$(xprop -id $wid WM_CLASS 2>/dev/null)" =~ bashrun-$mode ]]; then
     if [[ "$command" =~ (exit|quit) ]]; then
@@ -60,6 +82,7 @@ fi
 # prepare §window class if necessary
 [[ launched -eq 0 ]] && source_window
 
+# handle command
 case "$command" in
     show)
 	§window.map fast &>/dev/null
@@ -110,4 +133,5 @@ case "$command" in
 	echo "bashrun: unknown command: $command"
 	exit 1
 esac 
+
 exit 0

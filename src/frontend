@@ -1,6 +1,6 @@
 # -*- shell-script -*-
 
-modeinfo() {
+function modeinfo {
     
     source $BASHRUN_SHARE/utils
     source $BASHRUN_SHARE/globals
@@ -29,7 +29,7 @@ modeinfo() {
     §mode.write_info
 }
 
-source_window() {
+function source_window {
 
     # create the environment §window expects and set wid
 
@@ -45,7 +45,7 @@ source_window() {
     §window.id $wid
 }
 
-launch () {
+function launch {
 
     # launch a one line terminal if this mode is animated
     saved_geometry="$geometry"
@@ -121,12 +121,12 @@ function wait_until {
     return 0
 }
 
-version () {
+function version {
     . $BASHRUN_SHARE/globals 2> /dev/null
     echo "bashrun $BASHRUN_VERSION Copyright (C) 2010 Henning Bekel <h.bekel@googlemail.com>"
 }
 
-usage () {
+function usage {
     echo "Usage: bashrun [option] [[command] [args]...]
 
   Options: 

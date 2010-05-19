@@ -67,7 +67,7 @@ function §handlers.install_completion {
 
 function §handlers.apply {
     
-    # applies matching handlers to BASHRUN_BASHRUN_COMMAND
+    # applies matching handlers to BASHRUN_COMMAND
 
     §debug "trying to match handlers..."
     
@@ -81,7 +81,7 @@ function §handlers.apply {
 	local action="$(§handler.get_action)"
 
 	local result=""
-	# eval if this contains vars (e.g. $PAGER, $BROWSER)
+	# interpolate variables if necessary (e.g. $PAGER, $BROWSER)
 	if [[ $string =~ \$.[a-zA-z0-9_] ]]; then
 	    result="$(§interpolate '$string')"
 	    §debug -v "$string" "->" -v "$result"

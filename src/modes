@@ -10,8 +10,6 @@
 
 §function.clone "§mode.new" "§_mode.new"
 
-BASHRUN_MODE="${BASHRUN_MODE:-terminal}"
-
 function §mode.new { 
 
     §_mode.new "$1"

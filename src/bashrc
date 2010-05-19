@@ -2,56 +2,57 @@
 
 ################################################################################
 #
-# Load and initialize the bashrun engine
+# Load and initialize the bashrun engine.
+# This file needs to be sourced from ~/.bashrc if BASHRUN=1
 #
 ################################################################################
 
-# never source bashrun in console
-if [[ "$TERM" == "linux" ]]; then
-    return
+# never source bashrun from console
+if [[ "$TERM" == "linux" ]]; then    
+    return 1
 fi
 
 # bootstrap install locations
-path=$(which bashrun) 
+path=$(which bashrun 2>/dev/null) 
 prefix=${path/\/bin\/bashrun/}
 share=$prefix/share/bashrun
 
+# source utils and globals
 source $share/utils
 source $share/globals
 source $share/window
 source $share/registry
 
-# register this instance 
+# register this instance (needs to happen early on)
 §registry.add
 
 # setup progress bar
 source $share/progress
 §progress.new "Initializing... [objects]"
 
+# source utilities
 source $share/config
 source $share/plugin
 source $share/remote
 source $share/geometry
-source $share/terminals
 source $share/command
 source $share/readline
 source $share/completion
 
+# source objects
 source $share/modes
+source $share/terminals
 source $share/actions
 source $share/bindings
 source $share/handlers
 source $share/rules
 source $share/bookmarks
 
+# source and initialize the engine
 source $share/engine
+§engine.init
 
-if [[ BASHRUN_DEBUG -eq 1 ]]; then
-    time §engine.init
-else
-    §engine.init
-fi
-
+# cleanup
 unset share
 unset prefix
 unset path
