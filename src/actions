@@ -530,6 +530,9 @@ function §actions.dump {
 	§actions.next
     done
     §actions.seek "$saved"    
+
+    # bashrun completion helper
+    §actions.list > $BASHRUN_CACHE_HOME/actions
 }
 
 ## shortcut functions to §action.bind ##

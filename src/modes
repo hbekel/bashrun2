@@ -154,14 +154,14 @@ function §modes.dump {
     local file="$_OBJECTS_DATA_HOME/${1:-§modes.dump}"
     local mode=''
     local func=''
-    local current=$(§mode.get_name)
+    local current=$(§mode.get_name)    
 
     §_modes.dump "${1:-§modes.dump}"
 
     §modes.seek_start
     while §modes.next?; do
 	mode=$(§mode.get_name)
-
+	
 	func="+mode-$mode-init"
 	if §function.defined? "$func"; then
 	    §function.code "$func" >> $file
@@ -169,4 +169,7 @@ function §modes.dump {
 	§modes.next
     done
     §modes.seek $current
+
+    # bashrun completion helper
+    §modes.list > $BASHRUN_CACHE_HOME/modes
 }
