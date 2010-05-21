@@ -258,10 +258,16 @@ function §engine.idle? {
 
 function §engine.shutdown { 
 
+    local suffix file
+
     # remove this instance from registry
     §registry.remove
 
-    rm $BASHRUN_CACHE_HOME/${BASHRUN_MODE}-ready
+    # remove ready and reset flags, remove mode-info
+    for suffix in ready reset info; do
+	file="$BASHRUN_CACHE_HOME/${BASHRUN_MODE}-$suffix"
+	[[ -f "$file" ]] && rm "$file"
+    done
 
     §debug "exit"
     exit 0
