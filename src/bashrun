@@ -26,9 +26,16 @@ BASHRUN_PREFIX=`which bashrun 2> /dev/null`
 BASHRUN_PREFIX=${BASHRUN_PREFIX/\/bin\/bashrun/}
 
 # setup bashrun directories
-BASHRUN_SHARE="$BASHRUN_PREFIX/share/bashrun"
-BASHRUN_CACHE_HOME="$HOME/.cache/bashrun"
-BASHRUN_DATA_HOME="$HOME/.local/share/bashrun"
+BASHRUN_SHARE=$BASHRUN_PREFIX/share/bashrun
+BASHRUN_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}/bashrun
+BASHRUN_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}/bashrun
+BASHRUN_CACHE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}/bashrun
+BASHRUN_RCFILE=$BASHRUN_CONFIG_HOME/rc
+
+# prepare user configuration if required
+if [[ ! -f $BASHRUN_RCFILE || ! "$(head -n1 $BASHRUN_RCFILE)" =~ BASHRUN_CONFIG_VERSION ]]; then
+    source $BASHRUN_SHARE/upgrade
+fi
 
 # load frontend functions
 source $BASHRUN_SHARE/frontend

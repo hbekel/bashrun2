@@ -266,7 +266,7 @@
     }
     
     +action 'show-help'
-    --description 'Show help for shell builtin'
+    --description 'Show help for bash builtin'
     --input 1
     --core 1
     

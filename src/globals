@@ -12,7 +12,8 @@ BASHRUN_FEEDBACK=${BASHRUN_FEEDBACK:-0}
 BASHRUN_MAJOR_VERSION=0
 BASHRUN_MINOR_VERSION=16
 BASHRUN_BUGFIX_VERSION=0
-BASHRUN_VERSION="${BASHRUN_MAJOR_VERSION}.${BASHRUN_MINOR_VERSION}.${BASHRUN_BUGFIX_VERSION}"
+BASHRUN_RELEASE_VERSION=rc1
+BASHRUN_VERSION="${BASHRUN_MAJOR_VERSION}.${BASHRUN_MINOR_VERSION}.${BASHRUN_BUGFIX_VERSION}-${BASHRUN_RELEASE_VERSION}"
 
 # determine install location
 path=$(which bashrun 2>/dev/null) 
@@ -30,9 +31,6 @@ source $BASHRUN_SHARE/objects
 §objects.cache_home $BASHRUN_CACHE_HOME
 §objects.data_home $BASHRUN_CACHE_HOME
 §objects.namespace "bashrun"
-
-# create user directories
-§prepare_directories
 
 # setup user environment vars
 BROWSER=${BROWSER:-firefox}

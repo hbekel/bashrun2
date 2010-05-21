@@ -1,18 +1,84 @@
 # -*- shell-script -*-
 
 function §upgrade.required? {
-    if [[ -f $BASHRUN_RCFILE ]]; then
-	if ! grep BASHRUN_CONFIG_VERSION $BASHRUN_RCFILE &>/dev/null; then
-	    return 0
+    [[ ! "$(head -n1 $BASHRUN_RCFILE)" =~ BASHRUN_CONFIG_VERSION ]]
+}
+
+function §upgrade.prepare {
+    §upgrade.prepare_directories
+    §upgrade.prepare_rcfile
+}
+
+function §upgrade.prepare_directories {
+    
+    # create XDG directories
+    local dir
+    for dir in 'CONFIG' 'DATA' 'CACHE'; do
+
+	dir="BASHRUN_${dir}_HOME"
+	dir=${!dir}
+	
+	if [[ ! -d $dir && ! -L $dir ]]; then
+	    install -v -d -m 700 $dir
 	fi
+    done
+
+    # create plugin directory
+    dir="$BASHRUN_CONFIG_HOME/plugins"
+    if [[ ! -d $dir && ! -L $dir ]]; then
+	echo "$dir"
+	install -v -d -m 700 $dir
     fi
-    return 1
+}
+
+function §upgrade.prepare_rcfile {
+
+    # install rcfile unless it exists
+    if [[ ! -f $BASHRUN_RCFILE ]]; then
+	: # install default rcfile
+	return 0
+    fi
+    §upgrade.required? && §upgrade
 }
 
 function §upgrade {
-    §upgrade.required? || return 0
+
+	local keys="$BASHRUN_CONFIG_HOME/keys"
+	local keys_exist=0
+
+	# backup old files
+	# mv -v $BASHRUN_RCFILE ${BASHRUN_RCFILE}.backup
+	if [[ -f "$keys" ]]; then
+	    keys_exist=1
+	    # mv -v "$keys" "${keys}.backup"
+	fi
+
+	# install rcfile      
+	source $BASHRUN_SHARE/globals
+	source $BASHRUN_SHARE/utils
+
+	function §window.terminal? { return 1; }
+
+	local docs="http://bashrun.sourceforge.net/upgrade.html"
+	local plural=" has"
+	[[ keys_exist -eq 1 ]] && plural="s have"
+
+	§display_message "Upgrade" "Welcome to bashrun $BASHRUN_VERSION
+
+The configuration file format for bashrun has changed.
+Your old configuration file$plural been backed up to
+
+$(§tilde_path ${BASHRUN_RCFILE}.backup)$(if [[ keys_exist -eq 1 ]]; then echo; §tilde_path ${keys}.backup; fi)
+
+A new default configuration file has been installed to
+
+$(§tilde_path $BASHRUN_RCFILE)
+
+For information of how to convert your old config file to the new 
+format please see 
+
+$docs
+"
 }
 
-
-
-
+§upgrade.prepare

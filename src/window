@@ -345,7 +345,7 @@ function §window.toggle { # [smart] [fast]
     if [[ BASHRUN_WINDOW_MAPPED -eq 0 ]]; then	
 	§window.map
     else
-	if [[ "$smart" == "1" ]]; then
+	if [[ smart -eq 1 ]]; then
 	    if [[ "$(§xdo getwindowfocus)" != "$BASHRUN_WINDOW_ID" ]]; then
 		§window.map $fast
 	    else

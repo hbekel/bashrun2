@@ -199,29 +199,6 @@ function §separator {
     echo
 }
 
-function §prepare_directories {
-
-    # create XDG directories
-    local dir
-    for dir in 'CONFIG' 'DATA' 'CACHE'; do
-
-	dir="BASHRUN_${dir}_HOME"
-	dir=${!dir}
-	
-	if [[ ! -d $dir && ! -L $dir ]]; then
-	    §debug "$dir"
-	    install -d -m 700 $dir
-	fi
-    done
-
-    # create plugin directory
-    dir="$BASHRUN_CONFIG_HOME/plugins"
-    if [[ ! -d $dir && ! -L $dir ]]; then
-	§debug "$dir"
-	install -d -m 700 $dir
-    fi
-}
-
 function §prepare_logfile {
 
     # set to /dev/null if empty
@@ -454,10 +431,16 @@ function §display_message {
 	
     elif which xmessage &>/dev/null; then
 	xmessage "$title: $text" &>/dev/null
-    else
-	local saved="$(§terminal.get_name)"
-	§terminals.seek "default"
-	eval "$(§terminal.get_command) 'echo -e \"Bashrun $title:\n\n$text\n\" | less' &>/dev/null"
-	§terminals.seek "$saved"
+
+    elif which xterm &>/dev/null; then
+	xterm -e bash -c "echo -e \"Bashrun $title:\n\n$text\nPress any key to continue.\"; read -n1"
+    elif which notify-send &>/dev/null; then
+	notify-send -t 0 "$title" "$text" &>/dev/null
     fi
+}
+
+function §tilde_path {
+    local path="$1"
+    path=${path/$HOME/\~}
+    echo "$path"
 }
