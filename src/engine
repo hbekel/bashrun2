@@ -35,8 +35,8 @@ function §engine.init {
     # load/restore configuration
     §configs.restore
 
-    # create completion functions for handlers
-    §handlers.install_completion
+    # initialize handlers (completion and order)
+    §handlers.init
 
     # reset object positions
     §objects.seek_start

@@ -5,6 +5,7 @@
 §class "§handler" "name pattern string action complete fallback:b" ""
 
 BASHRUN_FROM_CMDNFH=0
+BASHRUN_HANDLERS_ORDER=""
 
 ################################################################################
 
@@ -21,48 +22,9 @@ function §handler.fallback? {
     [[ "$(§handler.get_fallback)" == "1" ]]
 }
 
-function §handlers.install_completion {
-
-    local name=""
-    local prefix=""
-    local func=""
-
-    §handlers.seek_start
-    while §handlers.next?; do
-	name="$(§handler.get_name)"
-	prefix=($(§handler.get_complete))
-	if [[ -n prefix ]]; then
-	    if §function.defined? +handler-$name-complete; then
-	    
-		func='function _bashrun___NAME__ {
-
-        		local cur prev
-	        	COMPREPLY=()
-	        	cur="${COMP_WORDS[COMP_CWORD]}"
-		        prev="${COMP_WORDS[COMP_CWORD-1]}"
-		
-		        if [[ ${cur} == * ]]; then		
-		           COMPREPLY=($(compgen -W "$(__COMPGEN__)" ${cur}))
-		        fi
-		        return 0
-	         }'
-		
-		func=${func//__NAME__/$name}
-		func=${func//__COMPGEN__/+handler-$name-complete}
-
-		echo "$func" > $BASHRUN_CACHE_HOME/compfunc
-		source $BASHRUN_CACHE_HOME/compfunc
-		rm $BASHRUN_CACHE_HOME/compfunc		
-	    
-		eval "function $prefix { 
-                        §engine.action run 0 \"$prefix \$@\" 
-                      }"
-		
-		complete -F "_bashrun_$name" "$prefix"
-	    fi	
-	fi
-	§handlers.next
-    done
+function §handlers.init {
+    BASHRUN_HANDLERS_ORDER="$(§handlers.select fallback 0) $(§handlers.select fallback 1)"
+    §handlers.install_completion
 }
 
 function §handlers.apply {
@@ -70,12 +32,12 @@ function §handlers.apply {
     # applies matching handlers to BASHRUN_COMMAND
 
     §debug "trying to match handlers..."
-    
-    §handlers.seek_start
-    while §handlers.next?; do
-	
+
+    local name
+    for name in $BASHRUN_HANDLERS_ORDER; do
+	§handlers.seek "$name"
+
 	local append=1
-	local name="$(§handler.get_name)"
 	local pattern="$(§handler.get_pattern)"
 	local string="$(§handler.get_string)"
 	local action="$(§handler.get_action)"
@@ -176,6 +138,49 @@ function §handlers.apply {
 
 	    §debug "$string"
 	    return
+	fi
+    done
+}
+
+function §handlers.install_completion {
+
+    local name=""
+    local prefix=""
+    local func=""
+
+    §handlers.seek_start
+    while §handlers.next?; do
+	name="$(§handler.get_name)"
+	prefix=($(§handler.get_complete))
+	if [[ -n prefix ]]; then
+	    if §function.defined? +handler-$name-complete; then
+	    
+		func='function _bashrun___NAME__ {
+
+        		local cur prev
+	        	COMPREPLY=()
+	        	cur="${COMP_WORDS[COMP_CWORD]}"
+		        prev="${COMP_WORDS[COMP_CWORD-1]}"
+		
+		        if [[ ${cur} == * ]]; then		
+		           COMPREPLY=($(compgen -W "$(__COMPGEN__)" ${cur}))
+		        fi
+		        return 0
+	         }'
+		
+		func=${func//__NAME__/$name}
+		func=${func//__COMPGEN__/+handler-$name-complete}
+
+		echo "$func" > $BASHRUN_CACHE_HOME/compfunc
+		source $BASHRUN_CACHE_HOME/compfunc
+		rm $BASHRUN_CACHE_HOME/compfunc		
+	    
+		eval "function $prefix { 
+                        §engine.action run 0 \"$prefix \$@\" 
+                      }"
+		
+		complete -F "_bashrun_$name" "$prefix"
+	    fi	
 	fi
 	§handlers.next
     done
