@@ -1,14 +1,66 @@
-=pod
-=head1 SYNOPSIS
-bashrun [option] [command] [args] 
-=head1 DESCRIPTION
-bashrun is an application launcher for X11. It runs an interactive bash
+.\" Process this file with
+.\" groff -man -Tascii bashrun.1
+.\"
+.TH BASHRUN 1 "2010-05-22" "Linux" "User manuals"
+.SH NAME
+\fBbashrun\fP \- X11 application launcher based on bash
+.SH SYNOPSIS
+\fBbashrun\fP [\fIoption\fP] [\fIcommand\fP] [\fIargs\fP] 
+.SH DESCRIPTION
+.PP
+\fBbashrun\fP is an application launcher for X11. It runs an interactive bash
 session in a small terminal window, providing all the common bash
 features like readline line editing, aliases, tab completion and
 history, while adding more features like bookmarks, regexp based
 handlers, dictionary lookups and google search queries.
-
-=head1 OPTIONS
-=head1 COMMANDS
-=head1 ARGUMENTS
-=head1 INVOCATION
+.SH OPTIONS
+.IP \fB--version\fP
+Show version information
+.IP \fB--help\fP
+Show usage information
+.IP \fB--mode\fP\ \fImode\fP
+Select mode to launch or control. In the absence
+of this option, the default mode \fIbashrun\fP is used.
+.SH COMMANDS 
+.IP \fBshow\fP
+Show the terminal window. Maps the window, moves it to the
+current desktop, moves it above other windows and focuses it. This is
+the default command if no command has been specified on the
+commandline.
+.IP \fBhide\fP
+Unmap the terminal window.
+.IP \fBtoggle\fP
+If the window is not mapped, show it. If the window is
+mapped, hide it.
+.IP \fBsmart\fP
+If the window is not mapped, not on the current desktop,
+obscured by other windows or not focused, then show it. If none of
+these conditions apply, hide the window.
+.IP \fBexit\fP
+Terminate the instance using the requested mode.
+.IP \fBrestart\fP
+Restart instance using the requested mode.
+.IP \fBdo\fP\ \fIaction\fP\ \fIcommand\fP
+Remotely invoke \fIaction\fP with
+\fIcommand\fP. If the requested action involves
+.BR su (1),
+the window is shown before invoking the action to allow password entry.
+.IP \fBsu\fP\ \fIcommand\fP
+Remotely invoke the run action with \fIcommand\fP. This is equivalent to \fBdo\fP \fBsu-run\fP \fIcommand\fP.
+.IP \fBwait\fP\ \fIstate\fP
+Wait until the instance is in a certain
+\fIstate\fP. Possible values are:
+.RS
+.IP \fBmap\fP
+Wait until the window is mapped.
+.IP \fBunmap\fP
+Wait until the window is unmapped.
+.IP \fBready\fP 
+Wait until the instance is fully initialized.
+.RE
+.IP \fBwid\fP
+Report the window id of the terminal window on stdout.
+.IP \fBpid\fP
+Report the process id of the bash session on stdout.
+.SH ARGUMENTS
+.SH INVOCATION
