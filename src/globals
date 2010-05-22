@@ -34,6 +34,6 @@ source $BASHRUN_SHARE/objects
 
 # setup user environment vars
 BROWSER=${BROWSER:-firefox}
-PAGER=${PAGER:-less -f}
+PAGER=${PAGER:-less -R}
 DICT=${DICT:-dict}
 

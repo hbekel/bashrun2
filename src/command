@@ -192,6 +192,6 @@ function §command.add_hold {
 }
 
 function §command.add_pager {
-    BASHRUN_COMMAND="$BASHRUN_COMMAND | ${PAGER:-less -f}"
+    BASHRUN_COMMAND="$BASHRUN_COMMAND | ${PAGER}"
     §debug "$BASHRUN_COMMAND"
 }
