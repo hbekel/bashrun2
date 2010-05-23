@@ -33,7 +33,8 @@ BASHRUN_CACHE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}/bashrun
 BASHRUN_RCFILE=$BASHRUN_CONFIG_HOME/rc
 
 # prepare user configuration if required
-if [[ ! -f $BASHRUN_RCFILE || ! "$(head -n1 $BASHRUN_RCFILE)" =~ BASHRUN_CONFIG_VERSION ]]; then
+if [[ ! "$(head -n1 $BASHRUN_RCFILE 2>/dev/null)" =~ BASHRUN_CONFIG_VERSION ]];
+then
     source $BASHRUN_SHARE/upgrade
 fi
 

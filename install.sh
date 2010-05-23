@@ -21,6 +21,7 @@ FILES=(
     completion
     config
     core
+    defaultrc
     engine
     frontend
     geometry

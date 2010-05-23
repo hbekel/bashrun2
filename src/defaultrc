@@ -1,0 +1,317 @@
+###   BASHRUN_CONFIG_VERSION=0.16.0-rc1  ### -*- shell-script -*-
+### DO NOT CHANGE OR MOVE THE ABOVE LINE ###
+
+# This is the user configuration file for bashrun 0.16.0-rc1.
+# Please see bashrun(1) for all the details on configuration.
+
++plugins terminal dropdown
+# These plugins allow bashrun to be used in a regular terminal or as
+# an animated dropdown terminal, e.g. use 'bashrun --mode terminal'.
+# See the files /usr/share/bashrun/plugins/{terminal,dropdown}.rc,
+# copy them to ~/.config/bashrun/plugins/ if you want to adjust them.
+
++configure-modes () {
+
+    +mode bashrun
+      # This is the default mode that provides a terminal in the
+      # form of a run dialog. 
+
+      --terminal "xterm -geometry %g -name bashrun-%m"
+      # Specify the terminal to use for bashrun. Within this string,
+      # %g expands to the first geometry given in --geometry below.
+      # %m expands to the name of this mode. Bashrun expects the name
+      # portion of the WM_CLASS property of the terminal window to be
+      # set to "bashrun-<modename>". For xterm and the *rxvt's, the
+      # "-name" option can be used for this, as seen above.  This
+      # replaces the former XTERM, XTERM_OPTIONS, FGCOLOR and BGCOLOR
+      # settings.
+
+      --geometry '40x1 40x8'
+      # Set the geometry or geometries to use for the terminal
+      # window. If more than one geometry is used, the cycle-size
+      # action (C-l) will allow you to cycle through these geometries.
+      # This replaces the former (SMALL|LARGE)_(COLUMNS|LINES)
+      # settings.
+
+      --completion 'menu-complete complete 8'
+      # Set the readline completion function to use with <Tab>. The
+      # first word of this string specifies the completion to use by
+      # default. The second word, if given, specifies an alternative
+      # completion type to use when the size of the terminal exceeds
+      # the number of lines given in the third word.  This replaces
+      # the former COMPLETION_TYPE, ALTERNATIVE_COMPLETION_TYPE and
+      # COMPLETION_THRESHOLD settings.
+
+      --unmap true
+      # Whether to unmap the window after running a command. Setting
+      # this value to "false" is equivalent to using KEEP_OPEN=yes in
+      # previous versions.
+
+      --feedback true
+      # Whether to show feedback in the form of a progress bar during
+      # startup.
+
+      # --onmap 'transset-df -a 0.75' command to run after the window
+      # has been mapped and focused. This setting replaces the former
+      # POST_MAP_COMMAND.
+
+      --logfile '/dev/tty9'
+      # Set the logfile to redirect command output to. This replaces
+      # the former LOGFILE setting.
+
+    +mode-bashrun-init () {	
+        # This fuction, if defined, will be called for the default
+	# mode "bashrun" during startup. Here you may configure
+	# anything that is specific to this mode only. See bashrun(1)
+	# for alternatives.
+
+	HISTFILE="${XDG_DATA_HOME:-$HOME/.local/share}/bashrun/history"	
+	PS1='>'
+
+	stty -ixon    # disable flow control, allows to bind C-Q
+	stty eof 0201 # prevent C-d on an empty line from exiting
+    }
+
+    # For more options and a detailed description of modes, see
+    # bashrun(1)
+}
+
++configure-terminals () {
+
+    # Configure terminals to launch commands in. In the string given
+    # by --command, %c is replaced with the actual command to run. %g
+    # is replaced by the string given with --geometry. %f ist replaced
+    # by the string given with --font. 
+    #
+    # Note that if you use %g or %f in the command string, the values
+    # of --geometry and --font will be inserted into the string even
+    # if they are empty, so make sure those values are defined if you
+    # use %g or %f.
+
+    # The following terminals are defined by default:
+
+    +terminal default --command "xterm -e bash -c %c"
+    # The default terminal to launch commands in if no other terminal
+    # has been requested by an action or an action rule, see below.
+
+    +terminal notify 
+      --command "xterm -g %g -e bash -c %c"
+      --geometry "113x3+0-0"
+
+    # ^ A small terminal for notifications, used by the default actions
+    # "term-notify" and "su-term-notify".
+
+    # Here's an example of a urxvt terminal with a small font, see the
+    # examples in the rules section below.
+
+    +terminal small
+      --command "urxvt -g %g -fn %f -e bash -c %c"
+      --geometry "160x48"
+      --font "xft:Fixed:size=10"
+}
+
++configure-rules () {
+
+    +rule term-run
+      --add "htop:small"
+
+    +rule term-page
+      --add 'dict' 
+      --add '/^ls/:small'
+
+    +rule su-term-notify
+      --add '/^/etc/rc.d/:notify'
+}
+
++configure-handlers () {
+
+    +handler info
+      --pattern '(.+)\?\?'
+      --string '%1'
+      --action show-info
+
+    +handler manual
+      --pattern '(.+)\?'
+      --string '%1'
+      --action show-manual
+
+    +handler google
+      --pattern '^gg:(.*)'
+      --string  "www.google.com/search?q=%1"
+      --action browse
+
+    +handler browse
+      --pattern 'browse (.*)'
+      --string '%1'
+      --action 'browse'
+      --complete 'browse'
+    
+      +handler-browse-complete () { §bookmarks.list; }
+
+    +handler tlds
+      --pattern '\.(org|net|com|de)$'
+      --action browse
+
+    +handler video
+      --pattern '\.(avi|mpe?g|flv|mp4|wmv|mov)$'
+      --string  'f:mplayer -fs'
+
+    +handler aur
+      --pattern 'aur:(.+)'
+      --string  'aur.archlinux.org/packages.php?K=%1&do_Search=Go'
+      --action browse
+
+    +handler gitk
+      --pattern 'gitk (.+)?'
+      --string '( [[ -n "%1" ]] && cd ~/workspace/%1 && /usr/bin/gitk)'
+      --complete 'gitk'
+      
+      function +handler-gitk-complete { 
+	  for d in ~/workspace/*; do 
+	      [[ -d $d ]] && echo $(basename $d)
+	  done
+      }
+
+    +handler gitg
+      --pattern 'gitg (.+)?'
+      --string '( [[ -n "%1" ]] && cd ~/workspace/%1 && git gui)'
+      --complete 'gitg'
+
+      function +handler-gitg-complete { 
+	  +handler-gitk-complete
+      }      
+
+    +handler gnusto
+      --pattern 'gnusto (.+)'
+      --string "frotz -Z 0 '$HOME/games/zcode/%1'"
+      --complete 'gnusto'
+
+      function +handler-gnusto-complete {
+	  for game in ~/games/zcode/*.z*; do
+	      [[ -f "$game" ]] && echo "$(basename "$game")"
+	  done
+      }
+
+    +handler directory
+      --fallback 1
+      --string "d:kfmclient openProfile filemanagement %1"
+
+    +handler file
+      --fallback 1
+      --string "f:xdg-open %1"
+
+    +handler google-fallback
+      --fallback 1
+      --string  "www.google.com/search?q=%1"
+      --action browse
+}
+
++configure-bookmarks () {
+
+    +bookmark archlinux.org
+    +bookmark bashrun.sourceforge.net
+    +bookmark slashdot.org
+    +bookmark failblog.org
+    +bookmark youtube.com
+    +bookmark myspace.com
+}
+
++configure-actions () {
+      
+    +action run-as
+      --description 'Run command as user (prompts for username)'
+      --depends 'su'
+
+    function +action-run-as {
+	+action-run
+	+user ?
+    }      
+
+    +action kill-to-xclip
+      --description 'Kill whole line and copy to clipboard' 
+      --depends 'xclip'
+
+    function +action-kill-to-xclip { 
+	command "echo \"$(line)\" | xclip"
+	return 0
+    }
+
+    +action yank-from-xclip
+      --description 'Yank clipboard contents' 
+      --input no
+      --depends 'xclip'
+      --bash '4.1'
+
+    function +action-yank-from-xclip {
+ 
+	local text="$(xclip -o)"
+	local size=${#text}
+
+	local pre="${READLINE_LINE:0:$READLINE_POINT}"
+	local post="${READLINE_LINE:$READLINE_POINT}"
+
+	READLINE_LINE="$pre$text$post"
+
+	((READLINE_POINT+=size))
+	return 2
+    }
+
+    +action pastebin
+      --description "Paste command output, copy url and browse paste"
+      --depends 'curlpaste'
+      
+      function +action-pastebin {
+	  # FIXME: error checking
+	  command "$(curlpaste -C '$(command)')"
+	  echo -n "$(command)" | xclip 
+	  +action-browse
+      }
+}
+
++configure-keys () {
+
+    +keymap emacs    
+
+    +bind pass '\ew'
+    +bind abort  '\C-g'
+    +bind quit '\C-q'
+
+    +bind run  '\C-m'
+    +bind run  '\C-j'
+
+    +bind term-run  '\e\C-m'
+    +bind term-page '\e+'
+    +bind term-hold '\eh'
+
+    +bind su-run       '\esu'
+    +bind su-term-run  '\est'
+    +bind su-term-page '\es+'
+    +bind su-term-hold '\esh'
+
+    +bind show-manual  '\e?'
+    +bind show-info    '\e\C-?'
+    +bind show-help    '\e\C-x?'
+
+    +bind browse         '\e\C-b'
+    +bind google-search  '\e\C-g'
+    +bind dict-lookup    '\e\C-d'
+
+    +bind copy-to-clipboard '\ex'
+    +bind filter-clipboard  '\ea'
+
+    +bind bashrun-bindings '\e[11~' F1
+    +bind bashrun-manual   '\e[12~' F2
+    +bind debug            '\e[24~' F12
+
+    +bind cycle-size   '\C-l'
+    +bind resize-up    '\e[1;5A' C-up
+    +bind resize-down  '\e[1;5B' C-down
+    +bind resize-left  '\e[1;5D' C-left
+    +bind resize-right '\e[1;5C' C-rght
+
+    +bind run-as '\eu'
+
+    +bind kill-to-xclip   '\ek'
+    +bind yank-from-xclip '\ey'
+    +bind pastebin '\e\C-p'
+}
