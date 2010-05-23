@@ -2,10 +2,11 @@
 +configure-dropdown-modes() {
 
     +mode dropdown
-      --terminal 'xterm -geometry %g -name bashrun-%m -title bashrun-%m'
+      --terminal 'xterm -geometry %g -name bashrun-%m'
       --geometry '113x20+0+0'
       --animated true
       --unmap false
+      --cmdnfh true
 
     +mode-dropdown-init () {
 

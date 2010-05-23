@@ -5,7 +5,7 @@
 +configure-core-modes () {
 
     +mode bashrun
-      --terminal "xterm -geometry %g -name bashrun-%m -title bashrun-%m"
+      --terminal "xterm -geometry %g -name bashrun-%m"
       --geometry '40x1 40x8'
       --completion 'menu-complete complete 8'
       --unmap true
@@ -21,7 +21,7 @@
     }
 
     +mode terminal
-      --terminal 'xterm -geometry %g -name bashrun-%m -title bashrun-%m'
+      --terminal 'xterm -geometry %g -name bashrun-%m'
       --cmdnfh true
 
     +mode-terminal-init() {
