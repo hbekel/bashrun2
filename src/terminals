@@ -2,11 +2,12 @@
 
 ################################################################################
 
-§class "§terminal" "name command" ""
+§class "§terminal" "name command geometry font" ""
 
 ################################################################################
 
 §function.clone "§terminal.new" "§_terminal.new"
+§function.clone "§terminal.get_command" "§_terminal.get_command"
 
 function §terminal.new { 
 
@@ -14,9 +15,31 @@ function §terminal.new {
     §terminal.set_command "xterm -e bash -c %c"
 }
 
+function §terminal.get_command {
+    local command="$(§_terminal.get_command)"
+    
+    if [[ "$command" =~ [^\\]%(g|f) ]]; then
+        # replace %g and %f with geometry and font
+	local geometry="$(§terminal.get_geometry)"
+	local font="$(§terminal.get_font)"
+	
+	[[ -n "$geometry" ]] && command=${command//\%g/$geometry}
+	[[ -n "$font" ]] && command=${command//\%f/$font}
+    fi
+    echo "$command"
+}
+
 function §terminal.code {
-    echo "+terminal '$(§terminal.get_name)'"
-    echo "  --command '$(§terminal.get_command)'"
+    
+    local name="$(§terminal.get_name)"
+    local command="$(§_terminal.get_command)"
+    local geometry="$(§terminal.get_geometry)"
+    local font="$(§terminal.get_font)"
+
+    echo "+terminal '$name'"
+    echo "  --command '$command'"
+    [[ -n "$geometry" ]] && echo "  --geometry '$geometry'"
+    [[ -n "$font" ]] && echo "  --font '$font'"
     echo
 }
 
