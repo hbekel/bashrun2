@@ -151,6 +151,7 @@ function §command.add_terminal {
 
     §command.get_word
     local terminal=""
+    local terminal_command=""
 
     for terminal in $(§terminals.used); do
 	if [[ "$BASHRUN_COMMAND_WORD" == "$terminal" ]]; then
@@ -172,8 +173,16 @@ function §command.add_terminal {
     # COMMAND goes into "" -> escape double quotes
     BASHRUN_COMMAND=${BASHRUN_COMMAND//\"/\\\"}
 
-    BASHRUN_COMMAND="$(§terminal.get_command) \"$BASHRUN_COMMAND\""
+    # get the terminal command
+    terminal_command="$(§terminal.get_command)"
 
+    if [[ "$terminal_command" =~ [^\\]%c ]]; then
+	# replace "%c" in terminal command with command
+	BASHRUN_COMMAND=${terminal_command/\%c/\"$BASHRUN_COMMAND\"}
+    else
+	# append command to terminal command
+	BASHRUN_COMMAND="$(§terminal.get_command) \"$BASHRUN_COMMAND\""
+    fi
     §debug "$BASHRUN_COMMAND"
 
     return 0

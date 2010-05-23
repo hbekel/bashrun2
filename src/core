@@ -41,11 +41,15 @@
 
 +configure-core-terminals () {
     
-    +terminal default --command "xterm -e bash -c"
-    +terminal notify --command "xterm -g 40x4+0+0 -e bash -c"
+    +terminal default --command "xterm -e bash -c %c"
+    +terminal notify --command "xterm -g 40x4+0+0 -e bash -c %c"
 }
 
-+configure-core-rules () { :; }
++configure-core-rules () {
+    +rule term-page
+      --add 'dict'
+ }
+
 +configure-core-handlers () { :; }
 +configure-core-keys () { :; }
 +configure-core-bookmarks () { :; }
