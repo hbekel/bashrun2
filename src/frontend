@@ -130,7 +130,7 @@ function version {
 }
 
 function usage {
-    echo "Usage: bashrun [option] [[command] [args]...]
+    echo "Usage: bashrun [option] [command] [args]
 
   Options: 
 
@@ -151,6 +151,6 @@ function usage {
 
     su <cmd>       : run <cmd> as root, using bashrun for password entry
     do <act> <cmd> : remotely invoke <action> for <cmd>
-    wait <state>   : wait until bashrun is in <state> ([ready|map|unmap])
+    wait <state>   : wait until bashrun is in <state> ([map|unmap|ready])
 "
 }

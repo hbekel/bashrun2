@@ -24,5 +24,8 @@ rmdir -v $PREFIX/share/bashrun/plugins
 rm -v $PREFIX/share/bashrun/*
 rmdir -v $PREFIX/share/bashrun
 
+BC=/etc/bash_completion.d/bashrun
+[[ -f $BC && -w $BC ]] && rm -v $BC 
+
 echo
-echo "bashrun development version has been uninstalled from $PREFIX"
+echo -e "\e[1;32mbashrun 0.16.0-rc1 has been uninstalled from $PREFIX\e[0m"

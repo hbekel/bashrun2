@@ -1,0 +1,47 @@
+# -*- shell-script -*-
+
+function _bashrun {
+
+    COMPREPLY=()
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local prev="${COMP_WORDS[COMP_CWORD-1]}"
+    local sec="${COMP_WORDS[1]}"
+
+    local options="--mode --help --version"
+    local commands="show hide toggle smart exit restart su do wid pid wait"
+    local states="map unmap ready"
+
+    local modes=( $(<${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/modes) )
+    modes="${modes[@]}"
+
+    local actions=( $(<${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/actions) )
+    actions="${actions[@]}"
+
+    if [[ "$prev" == "bashrun" ]]; then
+	COMPREPLY=( $(compgen -W "$options $commands" -- "${cur}") )
+	return 0
+    fi
+    
+    if [[ "$prev" == "--mode" ]]; then
+	    COMPREPLY=( $(compgen -W "$modes" -- "${cur}") )
+	    return 0
+    fi
+
+    if [[ "$prev" =~ ${modes// /|} ]]; then
+	COMPREPLY=( $(compgen -W "$commands" -- "${cur}") )
+	return 0
+    fi
+
+    if [[ "$prev" =~ su|do ]]; then
+	COMPREPLY=( $(compgen -W "$actions" -- "${cur}") )
+	return 0
+    fi
+
+    if [[ "$prev" == "wait" ]]; then
+	COMPREPLY=( $(compgen -W "$states" -- "${cur}") )
+	return 0
+    fi
+
+    return 0
+}
+complete -F _bashrun bashrun

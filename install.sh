@@ -50,5 +50,12 @@ for file in ${PLUGINS[@]}; do
     install -v -m 644 src/plugins/$file $PREFIX/share/bashrun/plugins
 done
 
+BC=/etc/bash_completion
+BCDIR=/etc/bash_completion.d
+
+if [[ -f $BC && -d $BCDIR && -w $BCDIR ]]; then
+    install -v -m 644 misc/bash_completion $BCDIR/bashrun
+fi
+
 echo
-echo -e "\033[1;32mbashrun development version has been installed in $PREFIX\033[0m"
+echo -e "\e[1;32mbashrun 0.16.0-rc1 has been installed in $PREFIX\e[0m"

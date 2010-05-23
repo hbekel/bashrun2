@@ -78,8 +78,10 @@ fi
 
 launched=0
 if [[ ! "$(xprop -id $wid WM_CLASS 2>/dev/null)" =~ bashrun-$mode ]]; then
-    if [[ "$command" =~ (exit|quit) ]]; then
+    if [[ "$command" =~ ^(exit|quit)$ ]]; then
 	exit 0
+    elif [[ "$command" =~ ^(w|p)id$ ]]; then
+	exit 1
     else
 	launch
 	launched=1

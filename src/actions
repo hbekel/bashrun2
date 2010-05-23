@@ -4,8 +4,8 @@
 
 §class "§action" "name:r description input:b depends bash core:rb" ""
 
-# Warning: if the "core" property changes it's position, the temporary
-# setter in file 'core' needs to be adjusted.
+# Note to self: if the "core" property changes it's position, the
+# temporary setter in file 'core' needs to be adjusted.
 
 §function.clone "§action.new" "§_action.new"
 
