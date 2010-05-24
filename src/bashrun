@@ -35,7 +35,7 @@ BASHRUN_RCFILE=$BASHRUN_CONFIG_HOME/rc
 # prepare user configuration if required
 if [[ ! "$(head -n1 $BASHRUN_RCFILE 2>/dev/null)" =~ BASHRUN_CONFIG_VERSION ]];
 then
-    source $BASHRUN_SHARE/upgrade
+    source $BASHRUN_SHARE/bootstrap
 fi
 
 # load frontend functions

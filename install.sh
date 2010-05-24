@@ -17,6 +17,7 @@ FILES=(
     bashrc
     bindings
     bookmarks
+    bootstrap
     command
     completion
     config
@@ -37,7 +38,6 @@ FILES=(
     remote
     rules
     terminals
-    upgrade
     utils
     window
 )
