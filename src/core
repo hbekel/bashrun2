@@ -42,7 +42,10 @@
 +configure-core-terminals () {
     
     +terminal default --command "xterm -e bash -c %c"
-    +terminal notify --command "xterm -g 40x4+0+0 -e bash -c %c"
+
+    +terminal notify 
+      --command "xterm -g %g -e bash -c %c"
+      --geometry "40x4+0+0"
 }
 
 +configure-core-rules () {

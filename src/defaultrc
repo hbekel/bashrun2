@@ -7,8 +7,10 @@
 +plugins terminal dropdown
 # These plugins allow bashrun to be used in a regular terminal or as
 # an animated dropdown terminal, e.g. use 'bashrun --mode terminal'.
-# See the files /usr/share/bashrun/plugins/{terminal,dropdown}.rc,
-# copy them to ~/.config/bashrun/plugins/ if you want to adjust them.
+# 
+# See the files terminal.rc and dropdown.rc in
+# /usr/share/bashrun/plugins/.  Copy these files to
+# ~/.config/bashrun/plugins/ if you want to adjust them.
 
 +configure-modes () {
 
@@ -24,7 +26,7 @@
       # set to "bashrun-<modename>". For xterm and the *rxvt's, the
       # "-name" option can be used for this, as seen above.  This
       # replaces the former XTERM, XTERM_OPTIONS, FGCOLOR and BGCOLOR
-      # settings.
+      # settings. 
 
       --geometry '40x1 40x8'
       # Set the geometry or geometries to use for the terminal
@@ -51,9 +53,9 @@
       # Whether to show feedback in the form of a progress bar during
       # startup.
 
-      # --onmap 'transset-df -a 0.75' command to run after the window
-      # has been mapped and focused. This setting replaces the former
-      # POST_MAP_COMMAND.
+      # --onmap 'transset-df -a 0.75' 
+      ## A command to run after the window has been mapped and focused. This
+      ## setting replaces the former POST_MAP_COMMAND.
 
       --logfile '/dev/tty9'
       # Set the logfile to redirect command output to. This replaces
@@ -85,10 +87,9 @@
     #
     # Note that if you use %g or %f in the command string, the values
     # of --geometry and --font will be inserted into the string even
-    # if they are empty, so make sure those values are defined if you
-    # use %g or %f.
+    # if they are empty, so make sure those values are defined.
 
-    # The following terminals are defined by default:
+    # The following two terminals are defined by default:
 
     +terminal default --command "xterm -e bash -c %c"
     # The default terminal to launch commands in if no other terminal
@@ -96,12 +97,12 @@
 
     +terminal notify 
       --command "xterm -g %g -e bash -c %c"
-      --geometry "113x3+0-0"
+      --geometry "40x4+0+0"
 
     # ^ A small terminal for notifications, used by the default actions
     # "term-notify" and "su-term-notify".
 
-    # Here's an example of a urxvt terminal with a small font, see the
+    # Here's an example of a urxvt terminal using a small font. See the
     # examples in the rules section below.
 
     +terminal small
@@ -112,15 +113,55 @@
 
 +configure-rules () {
 
+    # Rules can be used to associate actions with specific commands or
+    # commandlines. For actions that run commands in a terminal, a
+    # terminal defined in the section above can also be
+    # associated. The --add option adds one or more command
+    # specifications to a rule, separated by whitespace.
+    #
+    # A command specification can be either the command name itself or
+    # a regular expression that is applied to the complete
+    # commandline. Both may optionally be followed by a colon,
+    # followed by the name of the terminal to use.
+    #
+    # Regular expressions are denoted by enclosing them in '/'. Note
+    # that you don't have to quote literal slashes inside the regular
+    # expression, since the enclosing slashes are used solely to tell
+    # bashrun that it should interpret the contents as a regular
+    # expression.
+    #
+    # This is the equivalent of the RULES array used in previous
+    # versions.
+    #
+    # Some examples:
+
     +rule term-run
-      --add "htop:small"
+      --add "watch top:small"
+      # use the term-run action to always run 'watch' in the default
+      # terminal and 'top' in the 'small' terminal defined above
 
     +rule term-page
       --add 'dict' 
+      # use the term-page action to show the output of 'dict', paged
+      # in the default terminal.
+     
       --add '/^ls/:small'
+      # use the term-page action to show the output of any commandline
+      # beginning with 'ls', paged in the 'small' terminal
 
     +rule su-term-notify
-      --add '/^/etc/rc.d/:notify'
+      --add '/^/etc/rc.d/'
+      # use the su-term-notify action to run any commandline beginning
+      # with '/etc/rc.d' as root and show it's output in the 'notify'
+      # terminal, closing the terminal after two seconds. Note that in
+      # this case, the su-term-notify function already chooses to use
+      # the 'notify' terminal.
+
+    # Finally, if there is a terminal defined by the exact name of the
+    # command, then that terminal is chosen automatically, e.g. if you
+    # have a terminal called "alsamixer", then simply adding
+    # "alsamixer" to the "term-run" rule is equivalent to adding
+    # "alsamixer:alsamixer"
 }
 
 +configure-handlers () {
@@ -129,24 +170,85 @@
       --pattern '(.+)\?\?'
       --string '%1'
       --action show-info
-
+      # E.g. if you type "bash??" then the string "bash" is used as
+      # the commandline to be run with the show-info action, which
+      # pages 'info bash' in the default terminal, unless a rule
+      # indictates to run info with a different action or in a
+      # specific terminal.
+      
     +handler manual
       --pattern '(.+)\?'
       --string '%1'
       --action show-manual
-
-    +handler google
-      --pattern '^gg:(.*)'
-      --string  "www.google.com/search?q=%1"
-      --action browse
+      # Similar to the above, but shows manual pages instead. Note
+      # that the order of handlers is important here: if this handler
+      # were defined before the info handler, then the info handler
+      # would never be reached.      
 
     +handler browse
       --pattern 'browse (.*)'
       --string '%1'
       --action 'browse'
       --complete 'browse'
-    
+
       +handler-browse-complete () { §bookmarks.list; }
+      # the --complete option for this handler installs a function
+      # named "browse", for which the +handler-complete-browse
+      # function is installed to generate the list of possible matches
+      # from bashrun's own bookmarks, see below.
+
+    +handler http
+      --pattern '^(www|https?)'   
+      --action browse
+      # a simple url handler, for lines beginning with http, https or www
+
+    +handler google
+      --pattern '^gg:(.+)'
+      --string  'www.google.com/search?q=%1'
+      --action browse
+      # An example of a Konqueror-style shortcut: if you type
+      # "gg:foo", then the %1 in "www.google.com/search?q=%1" will be
+      # replaced by foo, and the resulting url will be passed to the
+      # browse action, which finally launches "$BROWSER <url>"
+
+    +handler google-lucky
+      --pattern '^ggl:(.+)'
+      --string  'www.google.com/search?q=%1&btnI=I\%27m+Feeling+Lucky'
+      --action browse
+
+    +handler freshmeat-search
+      --pattern '^fm:(.+)'  
+      --string 'freshmeat.net/search/?q=%1&section=projects'
+      --action browse
+
+    +handler sourceforge-project
+      --pattern '^sf:(.+)'  
+      --string 'sourceforge.net/projects/%1/'
+      --action browse
+      
+    +handler sourceforge-website
+      --pattern '^sfw:(.+)' 
+      --string '%1.sourceforge.net/'
+      --action browse
+
+    +handler aur-search
+      --pattern 'aur:(.+)'
+      --string  'aur.archlinux.org/packages.php?K=%1&do_Search=Go'
+      --action browse
+
+    +handler ftp
+      --pattern '^ftp:(.+)' 
+      --string 'ncftp %1'
+      --action term-run
+
+    +handler gimp
+      --pattern '\.jpe?g$'
+      --string 'f!x:gimp'
+
+    +handler command-help
+      --pattern '^\?(.+)'  
+      --string '%1 --help'
+      --action term-page
 
     +handler tlds
       --pattern '\.(org|net|com|de)$'
@@ -156,41 +258,17 @@
       --pattern '\.(avi|mpe?g|flv|mp4|wmv|mov)$'
       --string  'f:mplayer -fs'
 
-    +handler aur
-      --pattern 'aur:(.+)'
-      --string  'aur.archlinux.org/packages.php?K=%1&do_Search=Go'
-      --action browse
-
-    +handler gitk
-      --pattern 'gitk (.+)?'
-      --string '( [[ -n "%1" ]] && cd ~/workspace/%1 && /usr/bin/gitk)'
-      --complete 'gitk'
-      
-      function +handler-gitk-complete { 
-	  for d in ~/workspace/*; do 
-	      [[ -d $d ]] && echo $(basename $d)
-	  done
-      }
-
-    +handler gitg
-      --pattern 'gitg (.+)?'
-      --string '( [[ -n "%1" ]] && cd ~/workspace/%1 && git gui)'
-      --complete 'gitg'
-
-      function +handler-gitg-complete { 
-	  +handler-gitk-complete
-      }      
-
-    +handler gnusto
-      --pattern 'gnusto (.+)'
-      --string "frotz -Z 0 '$HOME/games/zcode/%1'"
-      --complete 'gnusto'
-
-      function +handler-gnusto-complete {
-	  for game in ~/games/zcode/*.z*; do
-	      [[ -f "$game" ]] && echo "$(basename "$game")"
-	  done
-      }
+    # The following handlers are fallback handlers, which means they
+    # are guaranteed to be at the end of the handler list, and will
+    # match any non-executable commandline not yet handled by a
+    # previous handler. The first two of these use a file test
+    # operator prepended to the handler string to check whether the
+    # commandline is a path to a directory or a file,
+    # respectively. See bashrun(1) for details.
+    #
+    # The directory handler is equivalent of the former DIRHANDLER
+    # setting. The 'google-fallback' handler, if present, is
+    # equivalent to using GOOGLE_FALLBACK=yes in previous versions.
 
     +handler directory
       --fallback 1
@@ -208,6 +286,12 @@
 
 +configure-bookmarks () {
 
+    # Add bookmarks. For each bookmark, a function by the same name is
+    # defined that runs the browse action for the bookmark. This means
+    # you can complete bookmarks like regular commands.
+    # Alternatively, use the completing "browse" handler defined
+    # above, e.g. $ browse <tab>
+
     +bookmark archlinux.org
     +bookmark bashrun.sourceforge.net
     +bookmark slashdot.org
@@ -217,6 +301,13 @@
 }
 
 +configure-actions () {
+
+    # You can define and use your own actions here, as well as
+    # redefine the properties and/or behavior of the default
+    # actions. For details on how to write custom actions, see
+    # bashrun(1).
+    #
+    # Some examples:
       
     +action run-as
       --description 'Run command as user (prompts for username)'
@@ -255,20 +346,22 @@
 	((READLINE_POINT+=size))
 	return 2
     }
-
-    +action pastebin
-      --description "Paste command output, copy url and browse paste"
-      --depends 'curlpaste'
-      
-      function +action-pastebin {
-	  # FIXME: error checking
-	  command "$(curlpaste -C '$(command)')"
-	  echo -n "$(command)" | xclip 
-	  +action-browse
-      }
 }
 
 +configure-keys () {
+
+    # Bind keys to actions:
+    # 
+    # +keymap <keymap> 
+    #
+    #   The +keymap directive can be used to change the target keymap
+    #   for subsequent +bind directives.  Possible targets are "emacs",
+    #   "vi-insert" or "vi-command".
+    #
+    # +bind <action> <keyseq> [<keyname>]
+    #
+    #   Bind an <action> to a <keyseq>, optionally supplying a human
+    #   readable <keyname>.
 
     +keymap emacs    
 
@@ -313,5 +406,5 @@
 
     +bind kill-to-xclip   '\ek'
     +bind yank-from-xclip '\ey'
-    +bind pastebin '\e\C-p'
 }
+
