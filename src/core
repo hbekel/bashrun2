@@ -393,7 +393,7 @@
 	    §window.geometry "$next"
 	    §mode.set_current $current	
 	fi
-	tput reset
+	tput clear
 	return 2
     }
 

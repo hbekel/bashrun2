@@ -71,7 +71,7 @@ function §progress.enabled? {
     BASHRUN_PROGRESS_TASK="Busy"
 
     echo -ne '\e[0m'
-    §progress.enabled? && tput reset
+    §progress.enabled? && tput cvvis
 }
 
 §progress.destroy () {
