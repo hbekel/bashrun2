@@ -6,9 +6,11 @@
                 completion unmap:b feedback:b animated:b 
                 onmap onunmap cmdnfh:b logfile current" ""
 
-################################################################################
-
 §function.clone "§mode.new" "§_mode.new"
+§function.clone "§mode.get_geometry" "§_mode.get_geometry"
+§function.clone "§modes.dump" "§_modes.dump"
+
+################################################################################
 
 function §mode.new { 
 
@@ -24,8 +26,6 @@ function §mode.new {
     §mode.set_feedback "0"
     §mode.set_logfile "/dev/null"
 }
-
-§function.clone §mode.get_geometry §_mode.get_geometry
 
 function §mode.get_geometry {
     
@@ -146,8 +146,6 @@ function §mode.code {
 	echo
     fi
 }
-
-§function.clone "§modes.dump" "§_modes.dump"
 
 function §modes.dump {
 

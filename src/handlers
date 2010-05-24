@@ -7,9 +7,10 @@
 BASHRUN_FROM_CMDNFH=0
 BASHRUN_HANDLERS_ORDER=""
 
-################################################################################
-
 §function.clone §handler.new §_handler.new
+§function.clone "§handlers.dump" "§_handlers.dump"
+
+################################################################################
 
 function §handler.new {
     §_handler.new "$1"
@@ -215,8 +216,6 @@ function §handler.code {
 	echo
     fi
 }
-
-§function.clone "§handlers.dump" "§_handlers.dump"
 
 function §handlers.dump {
 

@@ -8,6 +8,7 @@
 # temporary setter in file 'core' needs to be adjusted.
 
 §function.clone "§action.new" "§_action.new"
+§function.clone "§actions.dump" "§_actions.dump"
 
 ################################################################################
 
@@ -512,8 +513,6 @@ function §action.code {
 	§function.code "+action-$name"
     fi
 }
-
-§function.clone "§actions.dump" "§_actions.dump"
 
 function §actions.dump {
 

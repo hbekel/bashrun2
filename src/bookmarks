@@ -3,6 +3,7 @@
 ################################################################################
 
 §class "§bookmark" "name" ""
+
 §function.clone "§bookmark.new" "§_bookmark.new"
 §function.clone "§bookmarks.dump" "§_bookmarks.dump"
 
