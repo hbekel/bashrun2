@@ -9,6 +9,7 @@ BASHRUN_COMMAND_WORD=''
 function §command.unquote {
 
     command="$BASHRUN_COMMAND"
+
     # unquote quoted &;|
     command=${command//\\&/&}
     command=${command//\\|/|}
@@ -39,18 +40,13 @@ function §command.get_line {
 function §command.get_word {
 
     # updates BASHRUN_COMMAND_WORD to contain the first word of the
-    # current command.
+    # current command that does not contain a '='.
 
-    local word="$BASHRUN_COMMAND"
+    local word=""
 
-    word=${word//\\ /<qspace>}
-    if [[ "$word" =~ ([^\ \&\;\|]+) ]]; then
-	word=${BASH_REMATCH[1]}
-    fi
-    word=${word//<qspace>/\\ }
-    word=$(echo $word | sed -r "s/^ +//;s/ +$//")
-    word=$(echo $word | sed -r "s/^\\(+//;s/\\)+$//")
-
+    for word in $BASHRUN_COMMAND; do
+	[[ ! "$word" =~ = ]] && break
+    done 
     BASHRUN_COMMAND_WORD="$word"
 }
 
@@ -64,32 +60,32 @@ function §command.executable? {
     local type=`type -t $word`
 
     if [[ "$type" =~ (alias|keyword|builtin) ]]; then
-	§debug "$word-> $type -> yes"
+	§debug -v "$word" "->" -v "$type" "->" -g "yes"
 	return 0
     fi
 
     if [[ "$type" == "function" ]]; then
 	if §function.exported? $word; then
-	    §debug "$word -> exported $type -> no"
+	    §debug -v "$word" "->" -v "exported $type" "->" -g "yes"
 	    return 0
 	else	    
-	    §debug "$word -> $type -> no"
+	    §debug -v "$word" "->" -v "$type" "->" -r "no"
 	    return 1
 	fi
     fi
 
     if [[ "$type" == "file" ]]; then
-	if [[ `which $word 2> /dev/null` ]]; then
-	    §debug "which: `which $word` -> yes"
+	if which $word &> /dev/null; then
+	    §debug -v "$word" "->" -v "$type" "-> which $word ? ->" -g "yes"
 	    return 0
 	fi
 	if [[ -x $word ]]; then
-	    §debug "+x $word -> yes"
+	    §debug -v "$word" "->" -v "$type" "-> +x $word ? ->" -g "yes"
 	    return 0
 	fi
     fi
 
-    §debug "$word -> no"
+    §debug -v "$word" "->" -r "no"
     return 1
 }
 
@@ -100,13 +96,11 @@ function §command.builtin? {
     §command.get_word
     local word="$BASHRUN_COMMAND_WORD"
 
-    local result=`type $word 2>&1 | head -n1`
-
-    if [[ "$result" =~ builtin ]]; then
-	§debug "$word: yes"
+    if [[ "$(type -t $word)" == "builtin" ]]; then
+	§debug -v "$word" "->" -g yes
 	return 0
     fi
-    §debug "$word: no"
+    §debug -v "$word" "->" -r no
     return 1
 }
 
