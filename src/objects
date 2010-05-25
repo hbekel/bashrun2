@@ -5,9 +5,20 @@
 _OBJECTS_CACHE_HOME='/tmp'
 _OBJECTS_DATA_HOME='/tmp'
 _OBJECTS_NAMESPACE='boop'
+_OBJECTS_SITE="."
 
 _OBJECTS_TYPES=''
 _OBJECTS_FOCUS=''
+
+function §objects.site {
+    
+    local site="$1"
+    if [[ "$site" == '' ]]; then
+	echo "$_OBJECTS_SITE"
+    else
+	_OBJECTS_SITE="$site"
+    fi
+}
 
 function §objects.cache_home {
     
@@ -115,7 +126,7 @@ function §class {
 
     local plusname=${name//§/+}
 
-    cat $BASHRUN_SHARE/object | \
+    cat $_OBJECTS_SITE/object | \
 	sed "s|_OBJECTS_KEYS=()|_OBJECTS_KEYS=($clean_keys)|" | \
 	sed "s|_OBJECTS_INTERFACE_OPTIONS=''|_OBJECTS_INTERFACE_OPTIONS='$interface' |" | \
 	sed "s|_OBJECTS_HAVE_INTERFACE=0|_OBJECTS_HAVE_INTERFACE=$have_interface|" | \
@@ -235,45 +246,3 @@ function ${name}.set_${key} {
 EOF
     ) >> $tmpfile
 }
-
-
-function §object.create_accessors {
-    §object.create_reader "$@"
-    §object.create_writer "$@"
-}
-
-function §objects.complete_id {
-
-    local cur prev opts
-    COMPREPLY=()
-    
-    cur="${COMP_WORDS[COMP_CWORD]}"
-    prev="${COMP_WORDS[COMP_CWORD-1]}"
-    opts="$($(§objects.focus)s.all)"
-    
-    if [[ ${cur} == * ]]; then
-	COMPREPLY=( $(compgen -W "${opts}" ${cur}) )
-    fi
-    return 0
-}
-
-function §objects.complete_type {
-
-    local cur prev opts
-    COMPREPLY=()
-    
-    cur="${COMP_WORDS[COMP_CWORD]}"
-    prev="${COMP_WORDS[COMP_CWORD-1]}"
-    
-    local type
-    for type in $(§objects.types); do
-	if ${type}s.interface?; then
-	    opts="$opts $type"
-	fi
-    done
-    if [[ ${cur} == * ]]; then
-	COMPREPLY=( $(compgen -W "${opts}" ${cur}) )
-    fi
-    return 0
-}
-

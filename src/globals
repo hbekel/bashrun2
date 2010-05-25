@@ -28,6 +28,7 @@ BASHRUN_RCFILE=$BASHRUN_CONFIG_HOME/rc
 
 # initialize object system
 source $BASHRUN_SHARE/objects
+§objects.site $BASHRUN_SHARE
 §objects.cache_home $BASHRUN_CACHE_HOME
 §objects.data_home $BASHRUN_CACHE_HOME
 §objects.namespace "bashrun"

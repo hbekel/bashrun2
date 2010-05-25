@@ -191,7 +191,7 @@
       --action 'browse'
       --complete 'browse'
 
-      +handler-browse-complete () { §bookmarks.list; }
+      +handler-browse-complete () { +bookmarks; }
       # the --complete option for this handler installs a function
       # named "browse", for which the +handler-complete-browse
       # function is installed to generate the list of possible matches

@@ -457,7 +457,7 @@ function §action.list {
     echo "input: $input"
 
     if [[ "$depends" != '' ]]; then
-	echo -e "deps: $(§action.pretty_print_deps)"
+	echo -e "deps: $(§action.print_depends)"
     fi
 
     if [[ "$uses" != '' ]]; then
