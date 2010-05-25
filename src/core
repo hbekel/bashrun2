@@ -111,11 +111,14 @@
 	if [[ BASHRUN_DEBUG -eq 0 ]]; then
 	    BASHRUN_DEBUG=1
 	    §debug "debug mode" -g "enabled"
+	    §window.geometry "80x24"
 	else
+	    §window.geometry "$(§mode.get_geometry $(§mode.get_current))"
 	    §debug "debug mode" -r "disabled"
+	    tput clear
 	    BASHRUN_DEBUG=0
 	fi
-	return 1
+	return 2
     }
     
     +action 'run'

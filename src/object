@@ -17,13 +17,13 @@ _OBJECTS_INTERFACE_OPTIONS=''
 function objects.seek { # args
     
     local matched=0
-    local num_args=$#
     local start=0
     local saved=$_OBJECTS_POSITION
     local next=0
     local i=0
+    local cardinal=${#_OBJECTS[@]}
 
-    if [[ num_args -eq 0 ]]; then
+    if [[ $# -eq 0 ]]; then
 	return 0
     fi
 
@@ -31,14 +31,13 @@ function objects.seek { # args
 	next=1
 	start=$_OBJECTS_NEXT
 	shift
-	(( num_args-=1 ))
     fi
 
-    for ((i=$start; i<=${#_OBJECTS[@]}; i+=${#_OBJECTS_KEYS[@]})); do
+    for (( i=$start; i<=$cardinal; i+=$_OBJECTS_WIDTH )); do
 	matched=0
 	if [[ "${_OBJECTS[$i]}" == "$1" ]]; then
 	    matched=1
-	    if [[ $num_args -eq 2 ]]; then
+	    if [[ $# -eq 2 ]]; then
 		if [[ "${_OBJECTS[$i+1]}" == "$2" ]]; then
 		    matched=1
 		else
