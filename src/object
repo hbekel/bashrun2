@@ -6,7 +6,6 @@ _OBJECTS=()
 _OBJECTS_KEYS=()
 _OBJECTS_WIDTH=${#_OBJECTS_KEYS[@]}
 _OBJECTS_POSITION=0
-_OBJECTS_NEXT=0
 _OBJECTS_SIZE=0
 _OBJECTS_MODIFIED=0
 
@@ -15,24 +14,13 @@ _OBJECTS_INTERFACE_METHODS=''
 _OBJECTS_INTERFACE_OPTIONS=''
 
 function objects.seek { # args
-    
+
     local matched=0
     local start=0
     local saved=$_OBJECTS_POSITION
-    local next=0
-    local i=0
     local cardinal=${#_OBJECTS[@]}
 
-    if [[ $# -eq 0 ]]; then
-	return 0
-    fi
-
-    if [[ "$1" == "--next" ]]; then	
-	next=1
-	start=$_OBJECTS_NEXT
-	shift
-    fi
-
+    local i=0
     for (( i=$start; i<=$cardinal; i+=$_OBJECTS_WIDTH )); do
 	matched=0
 	if [[ "${_OBJECTS[$i]}" == "$1" ]]; then
@@ -52,13 +40,6 @@ function objects.seek { # args
 	fi	
     done
 
-    if [[ next -eq 1 ]]; then 
-	(( _OBJECTS_NEXT = _OBJECTS_POSITION + _OBJECTS_WIDTH ))
-	if [[ _OBJECTS_NEXT -ge ${#_OBJECTS[@]} ]]; then
-	    _OBJECTS_NEXT=0
-	fi
-    fi
-
     if [[ matched -eq 0 ]]; then
 	_OBJECTS_POSITION=$saved
 	return 1
@@ -69,12 +50,10 @@ function objects.seek { # args
 
 function objects.seek_start {
     _OBJECTS_POSITION=0
-    _OBJECTS_NEXT=0
 }
 
 function objects.seek_end {
     (( _OBJECTS_POSITION = (_OBJECTS_SIZE-1) * _OBJECTS_WIDTH ))
-    _OBJECTS_NEXT=0
 }
 
 function objects.next? {
@@ -213,7 +192,6 @@ function objects.dump {
         _OBJECTS_KEYS=(${_OBJECTS_KEYS[@]})
         _OBJECTS_WIDTH=${_OBJECTS_WIDTH}
         _OBJECTS_POSITION=0
-        _OBJECTS_NEXT=0
         _OBJECTS_SIZE=${_OBJECTS_SIZE}
         _OBJECTS_MODIFIED=0
     
@@ -230,7 +208,6 @@ function objects.dump {
         _OBJECTS_KEYS=(${_OBJECTS_KEYS[@]})
         _OBJECTS_WIDTH=${_OBJECTS_WIDTH}
         _OBJECTS_POSITION=0
-        _OBJECTS_NEXT=0
         _OBJECTS_SIZE=${_OBJECTS_SIZE}
         _OBJECTS_MODIFIED=0
     
@@ -253,7 +230,6 @@ function objects.restore {
 function objects.clear {
     _OBJECTS=()
     _OBJECTS_POSITION=0
-    _OBJECTS_NEXT=0
     _OBJECTS_SIZE=0
     _OBJECTS_MODIFIED=1
 }
@@ -423,18 +399,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	    unset -f -- $opt
 	done
     }
-    
-    function +objects {
-	if [[ $# -gt 0 ]]; then
-	    local opt="$1"
-	    shift	
-	    opt="${opt/--/}"
-	    if [[ "$(type -t objects.$opt 2> /dev/null)" == "function" ]]; then
-		objects.$opt "$@"
-	    fi
-	fi
-    }
-    
+        
     function +object {
 
 	declare -a args
@@ -513,6 +478,17 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 
 	COMPREPLY=( $(compgen -W "${opts}" ${cur}) )
         return 0
+    }
+    
+    function +objects {
+	if [[ $# -gt 0 ]]; then
+	    local opt="$1"
+	    shift	
+	    opt="${opt/--/}"
+	    if [[ "$(type -t objects.$opt 2> /dev/null)" == "function" ]]; then
+		objects.$opt "$@"
+	    fi
+	fi
     }
 fi
 

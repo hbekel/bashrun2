@@ -12,41 +12,37 @@ _OBJECTS_FOCUS=''
 
 function §objects.site {
     
-    local site="$1"
-    if [[ "$site" == '' ]]; then
+    if [[ $# -eq 0 ]]; then
 	echo "$_OBJECTS_SITE"
     else
-	_OBJECTS_SITE="$site"
+	_OBJECTS_SITE="$1"
     fi
 }
 
 function §objects.cache_home {
     
-    local cache_home=$1
-    if [[ "$cache_home" == '' ]]; then
+    if [[ $# -eq 0 ]]; then
 	echo "$_OBJECTS_CACHE_HOME"
     else
-	_OBJECTS_CACHE_HOME="$cache_home"
+	_OBJECTS_CACHE_HOME="$1"
     fi
 }
 
 function §objects.data_home {
     
-    local data_home=$1
-    if [[ "$data_home" == '' ]]; then
+    if [[ $# -eq 0 ]]; then
 	echo "$_OBJECTS_DATA_HOME"
     else
-	_OBJECTS_DATA_HOME="$data_home"
+	_OBJECTS_DATA_HOME="$1"
     fi
 }
 
 function §objects.namespace {
     
-    local namespace=$1
-    if [[ "$namespace" == '' ]]; then
+    if [[ $# -eq 0 ]]; then
 	echo "$_OBJECTS_NAMESPACE"
     else
-	_OBJECTS_NAMESPACE="$namespace"
+	_OBJECTS_NAMESPACE="$1"
     fi
 }
 
@@ -56,11 +52,10 @@ function §objects.types {
 
 function §objects.focus {
     
-    local type=$1
-    if [[ "$type" == '' ]]; then
+    if [[ $# -eq 0 ]]; then
 	echo "$_OBJECTS_FOCUS"
     else
-	_OBJECTS_FOCUS="$type"
+	_OBJECTS_FOCUS="$1"
     fi
 }
 
@@ -246,3 +241,4 @@ function ${name}.set_${key} {
 EOF
     ) >> $tmpfile
 }
+

@@ -457,15 +457,6 @@ function §action.code {
     [[ "$depends" != "" ]] && echo "  --depends '$depends'"
     [[ "$bash" != "3.2" ]] && echo "  --bash '$bash'"
     
-    # don't show +action --bind here, may give people the wrong idea
-    # if §action.bound?; then
-    #	§bindings.seek_start
-    #	for id in $(§bindings.select action "$name"); do
-    #	    §bindings.seek --next "$id"
-    #	    §binding.code 1
-    #	done
-    # fi
-
     # function
     if §action.function?; then
 	echo
