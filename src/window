@@ -16,34 +16,26 @@ BASHRUN_WINDOW_HINT_Y=0
 BASHRUN_RESET_TERM="$BASHRUN_CACHE_HOME/${BASHRUN_MODE:-terminal}-reset"
 
 function §window? {
-
-    if [[ "$BASHRUN_WINDOW_ID" != '' ]]; then
-	return 0
-    fi
-    return 1
+    [[ -n "$BASHRUN_WINDOW_ID" ]]
 }
 
 function §window.exists? () {
-    local wid="$1"
-    xwininfo -id $wid &>/dev/null
-    return $?
+    xwininfo -id "$1" &>/dev/null
 }
 
 function §window.mapped? {
     §window? || return 1
-
     [[ BASHRUN_WINDOW_MAPPED -eq 1 ]]
 }
 
 function §window.unmapped? {
     §window? || return 1
-
     [[ BASHRUN_WINDOW_MAPPED -eq 0 ]]
 }
 
 function §window.wait {
 
-    local state=${1:-unmap}
+    local state="${1:-unmap}"
     local name="bashrun-$BASHRUN_MODE"
 
     if [[ "$state" == "map" ]]; then
@@ -64,17 +56,12 @@ function §window.wait {
 
 function §window.terminal? {
     §window? || return 1
-    if [[ "$BASHRUN_WINDOW_ID" == "$WINDOWID" ]]; then
-	return 0
-    fi
-    return 1
+    [[ "$BASHRUN_WINDOW_ID" == "$WINDOWID" ]]
 }
 
 function §window.animate? {
      §window? || return 1
-
-    [[ BASHRUN_WINDOW_ANIMATE -eq 1 ]]
-    return $?
+     [[ BASHRUN_WINDOW_ANIMATE -eq 1 ]]
 }
 function §window.animate {
     BASHRUN_WINDOW_ANIMATE=${1:-1}
@@ -82,7 +69,6 @@ function §window.animate {
 
 function §window.hint? {
     [[ BASHRUN_WINDOW_HINT -eq 1 ]]
-    return $?
 }
 
 function §window.id {
@@ -111,7 +97,7 @@ function §window.update {
 	return 0
     fi
 
-    # complete update
+    # complete update...
 
     local saved="$IFS"
     local line=''
@@ -170,7 +156,6 @@ function §window.update {
     BASHRUN_WINDOW_HEIGHT=$h
     BASHRUN_WINDOW_PIXEL_WIDTH=$pw
     BASHRUN_WINDOW_PIXEL_HEIGHT=$ph
-
     BASHRUN_WINDOW_ANIMATE="$(§mode.get_animated)"
 }
 
@@ -184,7 +169,6 @@ function §window.geometry {
 	if §geometry.size?; then
 	    §window.size --hint $(§geometry.width) $(§geometry.height)
 	fi
-
 
 	if §geometry.position?; then
 	    §window.pos $(§geometry.x $BASHRUN_WINDOW_PIXEL_WIDTH) \
