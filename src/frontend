@@ -62,6 +62,10 @@ function launch {
 	geometry="$(§geometry)"
     fi
 
+    if [[ BASHRUN_DEBUG -eq 1 ]]; then
+	geometry="80x24"
+    fi
+
     # insert geometry and mode into terminal command
     terminal=${terminal//%g/$geometry}
     terminal=${terminal//%m/$mode}
@@ -137,6 +141,7 @@ function usage {
     -v, --version : show version information and exit
     -h, --help    : show this message and exit
     -m, --mode    : select mode to launch/control
+    -d, --debug   : enable debugging on startup
 
   Commands: 
        

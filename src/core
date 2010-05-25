@@ -102,7 +102,7 @@
     }
     
     +action debug
-    --description "Debug messages on/off"
+    --description "Toggle debugging"
     --input 0
     --core 1
     

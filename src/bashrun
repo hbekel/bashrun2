@@ -69,6 +69,10 @@ if [[ $# -gt 0 ]]; then
  	    mode=${2:-bashrun}
  	    shift; shift
  	    ;;
+	-d|--debug)
+	    BASHRUN_DEBUG=1
+	    shift
+	    ;;
     esac
 fi
 
@@ -130,6 +134,7 @@ case "$command" in
 	if [[ launched -eq 0 ]]; then
 	    kill $pid
 	    sleep 1
+	    export BASHRUN_DEBUG
 	    exec bashrun -m $mode	
 	fi
 	;;
@@ -154,5 +159,4 @@ case "$command" in
 	echo "bashrun: unknown command: $command"
 	exit 1
 esac 
-
 exit 0

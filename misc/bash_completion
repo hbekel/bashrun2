@@ -7,14 +7,20 @@ function _bashrun {
     local prev="${COMP_WORDS[COMP_CWORD-1]}"
     local sec="${COMP_WORDS[1]}"
 
-    local options="--mode --help --version"
+    local options="--mode --help --version --debug -m -h -v -d"
     local commands="show hide toggle smart exit restart su do wid pid wait"
     local states="map unmap ready"
 
-    local modes=( $(<${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/modes) )
+    local modes=()
+    local modesfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/modes"
+
+    [[ -f "$modesfile" ]] &&  modes=( $(<$modesfile) )
     modes="${modes[@]}"
 
-    local actions=( $(<${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/actions) )
+    local actions=()
+    local actionsfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/actions"
+
+    [[ -f "$actionsfile" ]] &&  actions=( $(<${actionsfile}) )
     actions="${actions[@]}"
 
     if [[ "$prev" == "bashrun" ]]; then
@@ -22,7 +28,7 @@ function _bashrun {
 	return 0
     fi
     
-    if [[ "$prev" == "--mode" ]]; then
+    if [[ "$prev" =~ \-\-mode|\-m ]]; then
 	    COMPREPLY=( $(compgen -W "$modes" -- "${cur}") )
 	    return 0
     fi
