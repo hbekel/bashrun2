@@ -438,47 +438,6 @@ function §action.print_depends {
     fi
 }
 
-function §action.list {
-
-    if [[ "$1" != "-l" ]]; then
-	echo "$(§action.get_name)"
-	return 0
-    fi
-
-    local name="$(§action.get_name)"
-    local description="$(§action.get_description)"
-    local input="$(§action.get_input)"
-    local depends="$(§action.get_depends)"
-    local uses="$(§action.uses)"
-    
-    # print header
-    §print_header "$name -> $description" "-"
-
-    echo "input: $input"
-
-    if [[ "$depends" != '' ]]; then
-	echo -e "deps: $(§action.print_depends)"
-    fi
-
-    if [[ "$uses" != '' ]]; then
-	echo "uses: $uses"
-    fi
-    echo
-
-    local id=''
-    if §action.bound?; then
-	§bindings.seek_start
-	for id in $(§bindings.select action "$name"); do
-	    §bindings.seek --next "$id"
-	    if §binding.bound?; then
-		echo -ne '\t'
-		echo "$(§ks2kn $(§binding.get_keyseq)) ($(§binding.get_keymap)-mode)"
-	    fi
-	done
-	echo
-    fi
-}
-
 function §action.code {
 
     local name="$(§action.get_name)"
