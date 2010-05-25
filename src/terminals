@@ -67,3 +67,21 @@ function §terminals.used {
     echo " $used "
 }
 
+function §terminal.list {
+    local opt="$1"
+
+    if [[ "$opt" == '-l' ]]; then
+	local key
+	for key in ${_BASHRUN_TERMINALS_KEYS[@]}; do
+	    if [[ "$key" == "command" ]]; then
+		echo "$key: $(§_terminal.get_command)"
+	    else
+		echo "$key: $(§terminal.get $key)"
+	    fi
+	done;
+	echo
+    else
+	echo $(§terminal.id)
+    fi
+}
+

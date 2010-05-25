@@ -22,7 +22,6 @@ function §set? {
 
 function §function.defined? {
     [[ "$(type -t $1 2> /dev/null)" == "function" ]]
-    return $?
 }
 
 function §function.exported? () {

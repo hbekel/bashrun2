@@ -246,7 +246,7 @@ function objects.dump {
 }
 
 function objects.restore {
-    local file=$_ObJeCtS_DATA_HOME/objects.dump
+    local file=$_ObJeCtS_DATA_HOME/${1:-objects.dump}
     [[ -f "$file" ]] && . "$file"
 }
 
@@ -425,7 +425,14 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
     }
     
     function +objects {
-	objects.list "$1"
+	if [[ $# -gt 0 ]]; then
+	    local opt="$1"
+	    shift	
+	    opt="${opt/--/}"
+	    if [[ "$(type -t objects.$opt 2> /dev/null)" == "function" ]]; then
+		objects.$opt "$@"
+	    fi
+	fi
     }
     
     function +object {
