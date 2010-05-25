@@ -22,6 +22,7 @@ source $share/utils
 source $share/globals
 source $share/window
 source $share/registry
+source $share/bootstrap
 
 # register this instance (needs to happen early on)
 §registry.add

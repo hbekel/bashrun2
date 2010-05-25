@@ -32,6 +32,17 @@ BASHRUN_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}/bashrun
 BASHRUN_CACHE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}/bashrun
 BASHRUN_RCFILE=$BASHRUN_CONFIG_HOME/rc
 
+# check for xdotool
+if ! $(type xdotool &>/dev/null); then
+    source $BASHRUN_SHARE/globals
+    source $BASHRUN_SHARE/utils 
+    §display_message "Error: missing xdotool" "Bashrun $BASHRUN_VERSION requires xdotool to be installed on your system.
+
+See http://www.semicomplete.com/projects/xdotool/
+" &>/dev/null
+exit 1
+fi
+
 # prepare user configuration if required
 if [[ ! "$(head -n1 $BASHRUN_RCFILE 2>/dev/null)" =~ BASHRUN_CONFIG_VERSION ]];
 then
