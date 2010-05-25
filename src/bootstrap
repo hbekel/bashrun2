@@ -1,10 +1,10 @@
 # -*- shell-script -*-
 
-function §bootstrap.required? {
+function §bootstrap.upgrade? {
     [[ ! "$(head -n1 $BASHRUN_RCFILE)" =~ BASHRUN_CONFIG_VERSION ]]
 }
 
-function §bootstrap.prepare {
+function §bootstrap {
     §bootstrap.prepare_directories
     §bootstrap.prepare_rcfile
 }
@@ -38,10 +38,10 @@ function §bootstrap.prepare_rcfile {
 	cp -v $BASHRUN_SHARE/defaultrc $BASHRUN_RCFILE
 	return 0
     fi
-    §bootstrap.required? && §bootstrap
+    §bootstrap.upgrade? && §bootstrap.upgrade
 }
 
-function §bootstrap {
+function §bootstrap.upgrade {
 
 	local keys="$BASHRUN_CONFIG_HOME/keys"
 	local keys_exist=0
@@ -83,4 +83,4 @@ $docs
 "
 }
 
-§bootstrap.prepare
+§bootstrap

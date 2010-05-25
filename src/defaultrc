@@ -200,7 +200,8 @@
     +handler http
       --pattern '^(www|https?)'   
       --action browse
-      # a simple url handler, for lines beginning with http, https or www
+      # a simple url handler, for lines beginning with http, https or
+      # www. 
 
     +handler google
       --pattern '^gg:(.+)'
