@@ -23,7 +23,7 @@ function +plugins {
 	if [[ -n "$file" ]]; then
 	    source "$file"
 	else
-	    §display_message "Error" "Can't find plugin \"$name\" in $BASHRUN_CONFIG_HOME/plugins or $BASHRUN_SHARE/plugins"
+	    §message "Error" "Can't find plugin \"$name\" in $BASHRUN_CONFIG_HOME/plugins or $BASHRUN_SHARE/plugins"
 	fi
     done
 }

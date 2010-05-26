@@ -61,37 +61,6 @@ function §interpolate {
     echo "$str"
 }
 
-BASHRUN_XDOTOOL="unknown"
-function §xdo {
-
-    if [[ "$BASHRUN_XDOTOOL" == "unknown" ]]; then
-
-        # assume xdotool is present
-	BASHRUN_XDOTOOL=1
-
-        # check if xdotool available at all
-	if ! which xdotool &>/dev/null; then
-	    BASHRUN_XDOTOOL=0
-
-        # check if >=20090815 (support for set_window)
-	elif (xdotool set_window 2>&1 | grep 'Unknown command' &>/dev/null); then
-	    BASHRUN_XDOTOOL=0
-	fi
-    fi
-    
-    if [[ BASHRUN_XDOTOOL -eq 0 ]]; then
-	§display_message "Error" \
-	    "Bashrun requires xdotool>=20090815\n\nSee http://www.semicomplete.com/projects/xdotool/\n\nExiting..."
-	exit 1
-    fi
-
-    if [[ BASHRUN_DEBUG -eq 1 ]]; then
-	xdotool $@
-    else
-	xdotool $@ 2>/dev/null
-    fi
-}
-
 function §debug {
 
     [[ BASHRUN_DEBUG -eq 0 ]] && return
@@ -397,48 +366,8 @@ function §print_binding {
     fi
 }
 
-function §display_message {
-
-    local title="$1"
-    local text="$2"
-
-    if (which dialog &>/dev/null && \
-	    which xdotool &>/dev/null \
-	    && §window.terminal?) then
-
-	local prev_size="$(§window.size)"
-	§window.size --hint 40 12
-	
-	dialog --no-shadow --title "Bashrun $title" --msgbox "\n$text" 12 40
-	
-	§window.size --hint $prev_size
-	tput reset
-
-    elif which zenity &>/dev/null; then
-	local type="--info"
-	[[ "$title" =~ rror ]] && type="--error"
-	[[ "$title" =~ arning ]] && type="--warning"
-	    
-	zenity $type --title "Bashrun $title" --text "$text" &>/dev/null
-    
-    elif which kdialog &>/dev/null; then
-	local type="--msgbox"
-	[[ "$title" =~ rror ]] && type="--error"
-	[[ "$title" =~ arning ]] && type="--sorry"
-
-	kdialog --title "Bashrun $title" $type "$text" &>/dev/null
-	
-    elif which xmessage &>/dev/null; then
-	xmessage "$title: $text" &>/dev/null
-
-    elif which xterm &>/dev/null; then
-	xterm -e bash -c "echo -e \"Bashrun $title:\n\n$text\nPress any key to continue.\"; read -n1"
-    elif which notify-send &>/dev/null; then
-	notify-send -t 0 "$title" "$text" &>/dev/null
-    fi
-}
-
 function §tilde_path {
+    # replace $HOME with a tilde for printing
     local path="$1"
     path=${path/$HOME/\~}
     echo "$path"

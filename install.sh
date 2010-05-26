@@ -28,6 +28,7 @@ FILES=(
     geometry
     globals
     handlers
+    message
     modes
     object
     objects
@@ -40,6 +41,7 @@ FILES=(
     terminals
     utils
     window
+    xdotool
 )
 
 for file in ${FILES[@]}; do

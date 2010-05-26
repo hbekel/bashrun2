@@ -260,7 +260,7 @@ function §action.available? {
     # check for deps
     for dep in $(§action.get_depends); do
 	if ! `which $dep &> /dev/null`; then
-	    §display_message "Error" "\"$(§action.get_name)\" requires $dep.\n"
+	    §message "Error" "\"$(§action.get_name)\" requires $dep.\n"
 	    result=1
 	fi
     done
@@ -271,7 +271,7 @@ function §action.available? {
     wanted="${wanted//./}"    
 
     if [[ current -lt wanted ]]; then
-	§display_message "Error" "\"$(§action.get_name)\" requires bash>=$(§action.get_bash)." 
+	§message "Error" "\"$(§action.get_name)\" requires bash>=$(§action.get_bash)." 
 	result=1
     fi
 

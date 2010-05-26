@@ -1,0 +1,42 @@
+# -*- shell-script -*-
+
+function §message {
+
+    local title="$1"
+    local text="$2"
+
+    if (§defined? BASHRUN_WINDOW_ID && \
+	§window.terminal? && \
+	which dialog &>/dev/null) then
+
+	local prev_size="$(§window.size)"
+	§window.size --hint 40 12
+	
+	dialog --no-shadow --title "Bashrun $title" --msgbox "\n$text" 12 40
+	
+	§window.size --hint $prev_size
+	tput reset
+
+    elif which zenity &>/dev/null; then
+	local type="--info"
+	[[ "$title" =~ rror ]] && type="--error"
+	[[ "$title" =~ arning ]] && type="--warning"
+	    
+	zenity $type --title "Bashrun $title" --text "$text" &>/dev/null
+    
+    elif which kdialog &>/dev/null; then
+	local type="--msgbox"
+	[[ "$title" =~ rror ]] && type="--error"
+	[[ "$title" =~ arning ]] && type="--sorry"
+
+	kdialog --title "Bashrun $title" $type "$text" &>/dev/null
+	
+    elif which xmessage &>/dev/null; then
+	xmessage "$title: $text" &>/dev/null
+
+    elif which xterm &>/dev/null; then
+	xterm -e bash -c "echo -e \"Bashrun $title:\n\n$text\nPress any key to continue.\"; read -n1"
+    elif which notify-send &>/dev/null; then
+	notify-send -t 0 "$title" "$text" &>/dev/null
+    fi
+}

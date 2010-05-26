@@ -58,14 +58,13 @@ function §bootstrap.upgrade {
 
 	source $BASHRUN_SHARE/globals
 	source $BASHRUN_SHARE/utils
-
-	function §window.terminal? { return 1; }
+	source $BASHRUN_SHARE/message
 
 	local docs="http://bashrun.sourceforge.net/upgrade.html"
 	local plural=" has"
 	[[ keys_exist -eq 1 ]] && plural="s have"
 
-	§display_message "Upgrade" "Welcome to bashrun $BASHRUN_VERSION
+	§message "Upgrade" "Welcome to bashrun $BASHRUN_VERSION
 
 The configuration file format for bashrun has changed.
 Your old configuration file$plural been backed up to

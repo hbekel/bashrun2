@@ -34,6 +34,7 @@ function source_window {
     # create the environment §window expects and set wid
 
     BASHRUN_MODE="$mode"
+    source $BASHRUN_SHARE/xdotool
     source $BASHRUN_SHARE/geometry
     source $BASHRUN_SHARE/window
 
