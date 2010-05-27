@@ -21,8 +21,26 @@
 #
 ######################################################################
 
+# if no arguments are given, attempt to map as fast as possible
+if [[ $# -eq 0 ]]; then    
+
+    widfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/bashrun-wid"
+    if [[ -f "$widfile" ]]; then
+	wid="$(<$widfile)"
+	xdotool windowmap "$wid"
+	xdotool windowfocus "$wid"
+
+	resetflag="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/bashrun-reset"
+	if [[ -f "$resetflag" ]]; then
+	    xdotool key --clearmodifiers Return
+	fi
+	exit 0
+    fi
+fi
+# no existing instance or xdotool is missing -> proceed
+
 # determine the install location
-BASHRUN_PREFIX=`which bashrun 2> /dev/null`
+BASHRUN_PREFIX=`type -p bashrun 2> /dev/null`
 BASHRUN_PREFIX=${BASHRUN_PREFIX/\/bin\/bashrun/}
 
 # setup bashrun directories

@@ -13,6 +13,12 @@ session in a small terminal window, providing all the common bash
 features like readline line editing, aliases, tab completion and
 history, while adding more features like bookmarks, regexp based
 handlers, dictionary lookups and google search queries.
+
+If bashrun is invoked without any arguments, it will try to simply map
+the window of an existing instance running in bashrun mode as fast as
+possible, neglecting any special settings like geometry or animation
+for this mode. If no running instance is found or arguments are given,
+it will proceed as described below.
 .SH OPTIONS
 .IP \fB-d\fP,\ \fB--debug\fP
 Enable debugging on startup

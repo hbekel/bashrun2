@@ -14,7 +14,7 @@
 
     +mode-bashrun-init () {	
 	
-	HISTFILE=.local/share/bashrun/history
+	HISTFILE="${XDG_DATA_HOME:-.local/share}/bashrun/history"
 	PS1='>'
 	stty -ixon
 	stty eof 0201
@@ -87,7 +87,7 @@
     
     +action-abort () {
 	READLINE_LINE=""
-	[[ "$(§mode.get_unmap)" -eq 1 ]] && §window.unmap
+	§window.unmap fast
 	return 1
     }
     
