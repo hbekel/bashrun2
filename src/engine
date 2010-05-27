@@ -194,19 +194,13 @@ function §engine.launch {
 
 function §engine.execute {
 
-    §prepare_logfile
-
-    # execute command
+    # execute command in the background
     if [[ "$BASHRUN_EXECMODE" == "&" ]]; then
+	§prepare_logfile
 	/bin/bash -c "$BASHRUN_COMMAND >> $BASHRUN_LOGFILE 2>&1 &" > /dev/null 2>&1
     else
-	# this can only be a su command...        
-        # map window for password entry
-	§window.map && tput cr
-	
 	/bin/bash -c "$BASHRUN_COMMAND"
-
-	§mode.unmap? && §window.unmap
+	§window.mapped? && §mode.unmap? && §window.unmap
     fi
 }
 

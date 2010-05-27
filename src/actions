@@ -361,12 +361,10 @@ function §action.api.enable {
 
     function executable? {
 	§command.executable?
-	return $?
     }
 
     function builtin? {
 	§command.builtin?
-	return $?
     }
 
     function bookmark? {
@@ -378,7 +376,8 @@ function §action.api.enable {
     function +term { §rules.apply; §command.add_terminal $1; }
     function +hold { §command.add_hold $1; }
     function +pager { §command.add_pager; }    
-    function +user { §command.add_su ${1:-root}; }
+    function +user { +map; §command.add_su ${1:-root}; }
+    function +map { §window.map 1; tput cr; }
 }
 
 function §action.api.disable {
@@ -395,7 +394,8 @@ function §action.api.disable {
 	    +term \
 	    +hold \
 	    +pager \
-	    +user
+	    +user \
+	    +map
 }
 
 function §action.print_depends {

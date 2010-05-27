@@ -127,8 +127,12 @@ function §command.add_su {
 
     # prompt for username
     if [[ "$user" == "?" ]]; then
-	echo -ne 'Username: '
-	read user
+	until [[ -n "$user" && "$user" != "?" ]]; do
+	    tput el
+	    tput cr
+	    echo -ne 'Username: '
+	    read user
+	done
     fi
 
     # run the command itself in the background

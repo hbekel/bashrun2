@@ -30,7 +30,8 @@ function §remote.run {
 
 	§engine.action "$action" "$input" "$command"	
 
-	§action.depends_on? "su" && touch $BASHRUN_RESET_TERM
+	# reset term on next map
+	touch $BASHRUN_RESET_TERM
 
 	# remove command file
 	rm $BASHRUN_REMOTE
