@@ -55,6 +55,9 @@ BASHRUN_RCFILE=$BASHRUN_CONFIG_HOME/rc
 mode="launcher"
 command="show"
 
+# load frontend functions
+source $BASHRUN_SHARE/frontend
+
 # handle --version, --help and --mode options first
 if [[ $# -gt 0 ]]; then
     case "$1" in
@@ -79,14 +82,12 @@ MODEINFO="$BASHRUN_CACHE_HOME/${mode}-info"
 
 if [[ ! -f $MODEINFO ]]; then
 
-    # these tests are skipped if the modeinfo file exists
-
-    # source xdotool
+    # source xdotool and messages
     source $BASHRUN_SHARE/xdotool
+    source $BASHRUN_SHARE/message
 
     # check for xdotool
     if ! §xdotool.available?; then
-	source $BASHRUN_SHARE/message
 	if [[ BASHRUN_XDOTOOL -eq 1 ]]; then
 	    §message "Error" "Please install xdotool." &>/dev/null
 	else
@@ -95,15 +96,15 @@ if [[ ! -f $MODEINFO ]]; then
 	exit 1
     fi
 
-    # bootstrap if rcfile doesn't exist or is from legacy version.
-    if [[ ! "$(head -n1 $BASHRUN_RCFILE 2>/dev/null)" =~ BASHRUN_CONFIG_VERSION ]];
-    then
+    # bootstrap if rcfile doesn't exist, or is from legacy version, or
+    # if .bashrc is not set up
+    if ([[ ! -f $BASHRUN_RCFILE \
+	|| ! "$(head -n1 $BASHRUN_RCFILE 2>/dev/null)" =~ BASHRUN_CONFIG_VERSION ]] \
+	|| ! grep 'BASHRUN -eq 1' $HOME/.bashrc &>/dev/null); then
+
 	source $BASHRUN_SHARE/bootstrap
     fi
 fi
-
-# load frontend functions
-source $BASHRUN_SHARE/frontend
 
 # get info about the requested mode
 if [[ ! -f $MODEINFO ]]; then

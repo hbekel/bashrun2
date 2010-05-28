@@ -143,6 +143,7 @@ function usage {
     -h, --help    : show this message and exit
     -m, --mode    : select mode to launch/control
     -d, --debug   : enable debugging on startup
+    -u, --upgrade : convert existing config files to new format
 
   Commands: 
        

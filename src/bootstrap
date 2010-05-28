@@ -5,11 +5,12 @@ function §bootstrap.upgrade? {
 }
 
 function §bootstrap {
-    §bootstrap.prepare_directories
-    §bootstrap.prepare_rcfile
+    §bootstrap.directories
+    §bootstrap.rcfile
+    §bootstrap.bashrc
 }
 
-function §bootstrap.prepare_directories {
+function §bootstrap.directories {
     
     # create XDG directories
     local dir
@@ -26,19 +27,41 @@ function §bootstrap.prepare_directories {
     # create plugin directory
     dir="$BASHRUN_CONFIG_HOME/plugins"
     if [[ ! -d $dir && ! -L $dir ]]; then
-	echo "$dir"
 	install -v -d -m 700 $dir
     fi
 }
 
-function §bootstrap.prepare_rcfile {
+function §bootstrap.rcfile {
 
     # install rcfile unless it exists
     if [[ ! -f $BASHRUN_RCFILE ]]; then
-	cp -v $BASHRUN_SHARE/defaultrc $BASHRUN_RCFILE
+	install -v -m644 $BASHRUN_SHARE/defaultrc $BASHRUN_RCFILE
 	return 0
     fi
     §bootstrap.upgrade? && §bootstrap.upgrade
+}
+
+function §bootstrap.bashrc {
+
+    if [[ -f $HOME/.bashrc ]]; then
+	if ! grep 'BASHRUN -eq 1' $HOME/.bashrc &>/dev/null; then
+	    printf "\n# bashrun init hook\n[[ BASHRUN -eq 1 ]] && . $BASHRUN_SHARE/bashrc" >> $HOME/.bashrc
+	    §message "Info" "The following line has been appended to your ~/.bashrc:
+
+[[ BASHRUN -eq 1 ]] &amp;&amp; . $BASHRUN_SHARE/bashrc
+
+This line is required to initialize the bashrun engine. Please see bashrun(1) for details.
+" 2>/dev/null
+	fi
+    else
+	echo "
+[[ # Check for an interactive session
+[ -z "$PS1" ] && return
+
+# bashrun init hook
+[[ BASHRUN -eq 1 ]] && . $BASHRUN_SHARE/bashrc
+" > $HOME/.bashrc
+    fi
 }
 
 function §bootstrap.upgrade {
@@ -54,7 +77,7 @@ function §bootstrap.upgrade {
 	fi
 
 	# install default rcfile
-	cp -v $BASHRUN_SHARE/defaultrc $BASHRUN_RCFILE
+	install -v -m644 $BASHRUN_SHARE/defaultrc $BASHRUN_RCFILE
 
 	source $BASHRUN_SHARE/globals
 	source $BASHRUN_SHARE/utils
@@ -75,10 +98,8 @@ A new default configuration file has been installed to
 
 $(§tilde_path $BASHRUN_RCFILE)
 
-For information of how to convert your old config file to the new 
-format please see 
-
-$docs
+To convert your old config file to the new format, please quit bashrun
+(C-q) and run bashrun --upgrade.
 "
 }
 

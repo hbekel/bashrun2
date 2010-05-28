@@ -5,7 +5,7 @@ function §message {
     local title="$1"
     local text="$2"
 
-    if (§defined? BASHRUN_WINDOW_ID && \
+    if ( [[ -n BASHRUN_WINDOW_ID ]] && \
 	§window.terminal? && \
 	type -p dialog &>/dev/null) then
 
@@ -21,7 +21,7 @@ function §message {
 	local type="--info"
 	[[ "$title" =~ rror ]] && type="--error"
 	[[ "$title" =~ arning ]] && type="--warning"
-	    
+
 	zenity $type --title "Bashrun $title" --text "$text" &>/dev/null
     
     elif type -p kdialog &>/dev/null; then
