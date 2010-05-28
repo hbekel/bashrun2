@@ -42,23 +42,23 @@ function §bootstrap.rcfile {
 }
 
 function §bootstrap.bashrc {
-
+    
+    local comment="# Required for bashrun, see bashrun(1)"
     if [[ -f $HOME/.bashrc ]]; then
 	if ! grep 'BASHRUN -eq 1' $HOME/.bashrc &>/dev/null; then
-	    printf "\n# bashrun init hook\n[[ BASHRUN -eq 1 ]] && . $BASHRUN_SHARE/bashrc" >> $HOME/.bashrc
-	    §message "Info" "The following line has been appended to your ~/.bashrc:
+	    printf "\n$comment\n[[ BASHRUN -eq 1 ]] && . $BASHRUN_SHARE/bashrc" >> $HOME/.bashrc
+	    §message "Information" "The following line has been appended to your ~/.bashrc:
 
-[[ BASHRUN -eq 1 ]] &amp;&amp; . $BASHRUN_SHARE/bashrc
+[[ BASHRUN -eq 1 ]] && . $BASHRUN_SHARE/bashrc
 
-This line is required to initialize the bashrun engine. Please see bashrun(1) for details.
-" 2>/dev/null
+This line is required to initialize the bashrun engine. Please see bashrun(1) for details." 2>/dev/null
 	fi
     else
 	echo "
 [[ # Check for an interactive session
 [ -z "$PS1" ] && return
 
-# bashrun init hook
+$comment
 [[ BASHRUN -eq 1 ]] && . $BASHRUN_SHARE/bashrc
 " > $HOME/.bashrc
     fi
@@ -87,10 +87,9 @@ function §bootstrap.upgrade {
 	local plural=" has"
 	[[ keys_exist -eq 1 ]] && plural="s have"
 
-	§message "Upgrade" "Welcome to bashrun $BASHRUN_VERSION
+	§message "Upgrade information" "Welcome to Bashrun $BASHRUN_VERSION!
 
-The configuration file format for bashrun has changed.
-Your old configuration file$plural been backed up to
+The configuration file format for bashrun has changed. Your old configuration file$plural been backed up to
 
 $(§tilde_path ${BASHRUN_RCFILE}.backup)$(if [[ keys_exist -eq 1 ]]; then echo; §tilde_path ${keys}.backup; fi)
 
@@ -98,9 +97,7 @@ A new default configuration file has been installed to
 
 $(§tilde_path $BASHRUN_RCFILE)
 
-To convert your old config file to the new format, please quit bashrun
-(C-q) and run bashrun --upgrade.
-"
+Use bashrun --upgrade to convert your old configuration files to the new format."
 }
 
 §bootstrap

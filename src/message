@@ -1,22 +1,45 @@
 # -*- shell-script -*-
 
 function §message {
-
+    
     local title="$1"
     local text="$2"
 
-    if ( [[ -n BASHRUN_WINDOW_ID ]] && \
-	§window.terminal? && \
-	type -p dialog &>/dev/null) then
+    local term=""
+    local height=24
+    
+    height=${text//[^$'\n']}/}
+    height=${#height}
+    (( height += 1 ))
+    
+    if type dialog &>/dev/null; then		
 
-	local prev_size="$(§window.size)"
-	§window.size --hint 40 12
-	
-	dialog --no-shadow --title "Bashrun $title" --msgbox "\n$text" 12 40
-	
-	§window.size --hint $prev_size
-	tput reset
+	text="\n${text//$'\n'/\\n}\n"
+	(( height += 5 ))
 
+	if (type §window.terminal? &>/dev/null && §window.terminal?); then
+	    
+	    local prev_size="$(§window.size)"
+	    §window.size --hint 40 $height
+	    
+	    dialog --no-shadow --title " Bashrun - $title " --msgbox "$text" $height 40
+	    
+	    §window.size --hint $prev_size
+	    tput clear
+	    return 0
+	fi	    
+	
+	for term in urxvt xterm rxvt mrxvt; do
+	    if type $term &>/dev/null; then  
+		$term -g 80x$height -e dialog --no-shadow --title " Bashrun - $title " --msgbox "$text" $height 80
+		return 0
+	    fi
+	done
+    fi
+    
+    if type xmessage &>/dev/null; then
+	xmessage "$title: $text" &>/dev/null
+	
     elif type -p zenity &>/dev/null; then
 	local type="--info"
 	[[ "$title" =~ rror ]] && type="--error"
@@ -30,13 +53,12 @@ function §message {
 	[[ "$title" =~ arning ]] && type="--sorry"
 
 	kdialog --title "Bashrun $title" $type "$text" &>/dev/null
-	
-    elif type -p xmessage &>/dev/null; then
-	xmessage "$title: $text" &>/dev/null
 
-    elif type -p xterm &>/dev/null; then
-	xterm -e bash -c "echo -e \"Bashrun $title:\n\n$text\nPress any key to continue.\"; read -n1"
     elif type -p notify-send &>/dev/null; then
 	notify-send -t 0 "$title" "$text" &>/dev/null
+
+    else
+	echo -e "\x07"
+	echo -e "Bashrun $title:\n\n$text"
     fi
 }
