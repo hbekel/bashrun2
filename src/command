@@ -75,8 +75,8 @@ function §command.executable? {
     fi
 
     if [[ "$type" == "file" ]]; then
-	if which $word &> /dev/null; then
-	    §debug -v "$word" "->" -v "$type" "-> which $word ? ->" -g "yes"
+	if type -p $word &> /dev/null; then
+	    §debug -v "$word" "->" -v "$type" "-> type -p $word ? ->" -g "yes"
 	    return 0
 	fi
 	if [[ -x $word ]]; then

@@ -13,7 +13,7 @@ function §xdotool.available? {
 	BASHRUN_XDOTOOL=0
 	
         # check if xdotool is available
-	if ! which xdotool &>/dev/null; then
+	if ! type -p xdotool &>/dev/null; then
 	    BASHRUN_XDOTOOL=1
 	    return 1
 	fi

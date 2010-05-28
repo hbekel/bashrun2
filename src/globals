@@ -16,7 +16,7 @@ BASHRUN_RELEASE_VERSION=rc1
 BASHRUN_VERSION="${BASHRUN_MAJOR_VERSION}.${BASHRUN_MINOR_VERSION}.${BASHRUN_BUGFIX_VERSION}-${BASHRUN_RELEASE_VERSION}"
 
 # determine install location
-path=$(which bashrun 2>/dev/null) 
+path=$(type -p bashrun 2>/dev/null) 
 BASHRUN_PREFIX=${path/\/bin\/bashrun/} && unset path
 
 # setup paths

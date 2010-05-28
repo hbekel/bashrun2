@@ -259,7 +259,7 @@ function §action.available? {
 
     # check for deps
     for dep in $(§action.get_depends); do
-	if ! `which $dep &> /dev/null`; then
+	if ! `type -p $dep &> /dev/null`; then
 	    §message "Error" "\"$(§action.get_name)\" requires $dep.\n"
 	    result=1
 	fi
@@ -414,7 +414,7 @@ function §action.print_depends {
     if [[ "$depends" != '' || "$bash" != "3.2" ]]; then
 	
 	for dep in $depends; do
-	    if `which $dep &> /dev/null`; then
+	    if `type -p $dep &> /dev/null`; then
 		found="$g"
 	    else
 		found="$r"
