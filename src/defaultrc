@@ -1,4 +1,4 @@
-###   BASHRUN_CONFIG_VERSION=1.0.0-rc1  ### -*- shell-script -*-
+###   BASHRUN_CONFIG_VERSION=1.0.0-rc1   ### -*- shell-script -*-
 ### DO NOT CHANGE OR MOVE THE ABOVE LINE ###
 
 # This is the user configuration file for bashrun 1.0.0-rc1.
@@ -24,9 +24,9 @@
       # %m expands to the name of this mode. Bashrun expects the name
       # portion of the WM_CLASS property of the terminal window to be
       # set to "bashrun-<modename>". For xterm and the *rxvt's, the
-      # "-name" option can be used for this, as seen above.  This
+      # "-name" option can be used for this, as seen above. This
       # replaces the former XTERM, XTERM_OPTIONS, FGCOLOR and BGCOLOR
-      # settings. 
+      # settings.
 
       --geometry '40x1 40x8'
       # Set the geometry or geometries to use for the terminal
@@ -36,7 +36,7 @@
       # settings.
 
       --completion 'menu-complete complete 8'
-      # Set the readline completion function to use with <Tab>. The
+      # Set the readline completion function to use with tab. The
       # first word of this string specifies the completion to use by
       # default. The second word, if given, specifies an alternative
       # completion type to use when the size of the terminal exceeds
@@ -102,8 +102,9 @@
     # ^ A small terminal for notifications, used by the default actions
     # "term-notify" and "su-term-notify".
 
-    # Here's an example of a urxvt terminal using a small font. See the
-    # examples in the rules section below.
+    # Here's an example of a urxvt terminal using a small font. See
+    # the +configure-rules function below for an example of how to use
+    # it.
 
     +terminal small
       --command "urxvt -g %g -fn %f -e bash -c %c"
@@ -137,17 +138,17 @@
 
     +rule term-run
       --add "watch top:small"
-      # use the term-run action to always run 'watch' in the default
+      # the term-run action is used to run 'watch' in the default
       # terminal and 'top' in the 'small' terminal defined above
 
     +rule term-page
       --add 'dict' 
-      # use the term-page action to show the output of 'dict', paged
-      # in the default terminal.
+      # the the term-page action is uesed to show the output of
+      # 'dict', paged in the default terminal.
      
       --add '/^ls/:small'
-      # use the term-page action to show the output of any commandline
-      # beginning with 'ls', paged in the 'small' terminal
+      # the term-page action is used to show the output of any
+      # commandline beginning with 'ls' paged in the 'small' terminal.
 
     +rule su-term-notify
       --add '/^/etc/rc.d/'
@@ -165,6 +166,33 @@
 }
 
 +configure-handlers () {
+
+    # Handlers provide a way to handle non-executable commandlines in
+    # a special way and thus extend bashrun's functionality. If the
+    # commandline entered into bashrun is not executable (i.e. it's
+    # not an exported function, an alias or an executable) then an
+    # attempt is made to successively match the commandline against
+    # each of the handlers defined here.
+    #
+    # If the regular expression given in --pattern matches the
+    # commandline, then the file test pattern given in --test can
+    # optionally be applied first. If no test was given or if the
+    # supplied test succeeds, then either the value of --string will
+    # be used as the command to execute, with the commandline itself
+    # passed as the argument, or, if the regexp contains
+    # subexpressions within parenthesis, an attempt will be made to
+    # substitute the occurence of %[1-9] in the value of --string with
+    # the contents of the corresponding subexpression match. In this
+    # case, the modified handler string is used as the commandline
+    # without adding further arguments.
+    #
+    # The --action option may be used to delegate the resulting string
+    # to a specific action for further processing instead of simply
+    # trying to execute it.
+    #
+    # In addition, handlers provide a simple interface to programmable
+    # completion. The command word to complete can be supplied via the
+    # --complete option
 
     +handler info
       --pattern '(.+)\?\?'
@@ -188,20 +216,27 @@
     +handler browse
       --pattern 'browse (.*)'
       --string '%1'
-      --action 'browse'
+      --action browse
       --complete 'browse'
 
       +handler-browse-complete () { +bookmarks --list; }
       # the --complete option for this handler installs a function
       # named "browse", for which the +handler-complete-browse
-      # function is installed to generate the list of possible matches
-      # from bashrun's own bookmarks, see below.
+      # function is used to generate the list of possible matches from
+      # bashrun's bookmarks. Thus you can just type "browse " and hit
+      # tab to get at your bookmarks.
 
     +handler http
       --pattern '^(www|https?)'   
       --action browse
-      # a simple url handler, for lines beginning with http, https or
-      # www. 
+      # A simple url handler, for lines beginning with http, https or
+      # www.
+
+    +handler tlds
+      --pattern '\.(org|net|com|de)$'
+      --action browse
+      # Another url handler that matches the end of the commandline,
+      # looking for a common toplevel domain.
 
     +handler google
       --pattern '^gg:(.+)'
@@ -240,24 +275,31 @@
     +handler ftp
       --pattern '^ftp:(.+)' 
       --string 'ncftp %1'
-      --action term-run
+      --action term-run 
 
     +handler gimp
       --pattern '\.jpe?g$'
       --string 'f!x:gimp'
+      # This handler implements a file association by matching any
+      # commandline ending in .jpg or .jpeg. It then tests whether the
+      # commandline is a path to a file that is not executable by
+      # applying the file test pattern "f!x".  If the test succeeds,
+      # the file is opened in gimp.
+      #
+      # For a more universal solution to file associations, see the
+      # "file" fallback handler below.
+
+    +handler video
+      --pattern '\.(avi|mpe?g|flv|mp4|wmv|mov)$'
+      --string  'f:mplayer -fs'
+      # Another file association to open video files in fullscreen
+      # mplayer.
 
     +handler command-help
       --pattern '^\?(.+)'  
       --string '%1 --help'
       --action term-page
-
-    +handler tlds
-      --pattern '\.(org|net|com|de)$'
-      --action browse
-
-    +handler video
-      --pattern '\.(avi|mpe?g|flv|mp4|wmv|mov)$'
-      --string  'f:mplayer -fs'
+      # E.g. ?bash pages "bash --help" in a terminal
 
     # The following handlers are fallback handlers, which means they
     # are guaranteed to be at the end of the handler list, and will
@@ -274,15 +316,19 @@
     +handler directory
       --fallback 1
       --string "d:kfmclient openProfile filemanagement %1"
+      # Open directories in konqueror, using the file management
+      # profile.
 
     +handler file
       --fallback 1
-      --string "f:xdg-open %1"
+      --string "f!x:xdg-open %1"
+      # handle files universally with xdg-open, see xdg-open(1)
 
-    +handler google-fallback
-      --fallback 1
-      --string  "www.google.com/search?q=%1"
-      --action browse
+    ## search any non-executable line using google:
+    # +handler google-fallback
+    #  --fallback 1
+    #  --string  "www.google.com/search?q=%1"
+    #  --action browse
 }
 
 +configure-bookmarks () {
@@ -290,23 +336,19 @@
     # Add bookmarks. For each bookmark, a function by the same name is
     # defined that runs the browse action for the bookmark. This means
     # you can complete bookmarks like regular commands.
-    # Alternatively, use the completing "browse" handler defined
-    # above, e.g. $ browse <tab>
+    # Alternatively, use the completion of the "browse" handler
+    # defined above.
 
-    +bookmark archlinux.org
     +bookmark bashrun.sourceforge.net
-    +bookmark slashdot.org
-    +bookmark failblog.org
-    +bookmark youtube.com
-    +bookmark myspace.com
+    +bookmark archlinux.org
 }
 
 +configure-actions () {
 
     # You can define and use your own actions here, as well as
-    # redefine the properties and/or behavior of the default
-    # actions. For details on how to write custom actions, see
-    # bashrun(1).
+    # redefine the properties and/or behavior of the buitin default
+    # actions. For details on how to write custom actions or change
+    # defaults, see bashrun(1).
     #
     # Some examples:
       

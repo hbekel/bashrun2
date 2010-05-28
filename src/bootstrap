@@ -5,9 +5,12 @@ function §bootstrap.upgrade? {
 }
 
 function §bootstrap {
+
     §bootstrap.directories
-    §bootstrap.rcfile
     §bootstrap.bashrc
+    §bootstrap.rcfile 
+
+    §bootstrap.upgrade? && §bootstrap.prepare_upgrade
 }
 
 function §bootstrap.directories {
@@ -38,7 +41,6 @@ function §bootstrap.rcfile {
 	install -v -m644 $BASHRUN_SHARE/defaultrc $BASHRUN_RCFILE
 	return 0
     fi
-    §bootstrap.upgrade? && §bootstrap.upgrade
 }
 
 function §bootstrap.bashrc {
@@ -46,7 +48,7 @@ function §bootstrap.bashrc {
     local comment="# Required for bashrun, see bashrun(1)"
     if [[ -f $HOME/.bashrc ]]; then
 	if ! grep 'BASHRUN -eq 1' $HOME/.bashrc &>/dev/null; then
-	    printf "\n$comment\n[[ BASHRUN -eq 1 ]] && . $BASHRUN_SHARE/bashrc" >> $HOME/.bashrc
+	    printf "\n$comment\n[[ BASHRUN -eq 1 ]] && . $BASHRUN_SHARE/bashrc\n" >> $HOME/.bashrc
 	    §message "Information" "The following line has been appended to your ~/.bashrc:
 
 [[ BASHRUN -eq 1 ]] && . $BASHRUN_SHARE/bashrc
@@ -64,16 +66,18 @@ $comment
     fi
 }
 
-function §bootstrap.upgrade {
+function §bootstrap.prepare_upgrade {
 
 	local keys="$BASHRUN_CONFIG_HOME/keys"
+	local backupdir="$BASHRUN_CONFIG_HOME/backup"
 	local keys_exist=0
 
 	# backup old files
-	mv -v $BASHRUN_RCFILE ${BASHRUN_RCFILE}.backup
+	install -v -d -m 700 $backupdir
+	mv -v $BASHRUN_RCFILE $backupdir
 	if [[ -f "$keys" ]]; then
 	    keys_exist=1
-	    mv -v "$keys" "${keys}.backup"
+	    mv -v $keys $backupdir
 	fi
 
 	# install default rcfile
@@ -87,17 +91,14 @@ function §bootstrap.upgrade {
 	local plural=" has"
 	[[ keys_exist -eq 1 ]] && plural="s have"
 
+	[[ "$1" == "--quiet" ]] && return 0
+
 	§message "Upgrade information" "Welcome to Bashrun $BASHRUN_VERSION!
 
-The configuration file format for bashrun has changed. Your old configuration file$plural been backed up to
+The configuration file format for bashrun has changed. Your old configuration file$plural been backed up to $(§tilde_path $backupdir)/.
 
-$(§tilde_path ${BASHRUN_RCFILE}.backup)$(if [[ keys_exist -eq 1 ]]; then echo; §tilde_path ${keys}.backup; fi)
+A new default configuration file has been installed to $(§tilde_path $BASHRUN_RCFILE). It contains instructions on how to convert your old configuration files to the new format.
 
-A new default configuration file has been installed to
-
-$(§tilde_path $BASHRUN_RCFILE)
-
-Use bashrun --upgrade to convert your old configuration files to the new format."
+"
 }
-
 §bootstrap

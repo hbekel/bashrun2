@@ -143,7 +143,6 @@ function usage {
     -h, --help    : show this message and exit
     -m, --mode    : select mode to launch/control
     -d, --debug   : enable debugging on startup
-    -u, --upgrade : convert existing config files to new format
 
   Commands: 
        
@@ -159,5 +158,10 @@ function usage {
     su <cmd>       : run <cmd> as root, using bashrun for password entry
     do <act> <cmd> : remotely invoke <action> for <cmd>
     wait <state>   : wait until bashrun is in <state> ([map|unmap|ready])
+
+  Press F1 in bashrun to list the current keybindings.
+
+  For more information, see bashrun(1) or visit http://bashrun.sourceforge.net
 "
+
 }

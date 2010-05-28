@@ -96,8 +96,10 @@ if [[ ! -f $MODEINFO ]]; then
 	exit 1
     fi
 
-    # bootstrap if rcfile doesn't exist, or is from legacy version, or
-    # if .bashrc is not set up
+    # bootstrap if a) rcfile doesn't exist
+    #              b) rcfile is from a legacy version
+    #              c) .bashrc is not set up
+    
     if ([[ ! -f $BASHRUN_RCFILE \
 	|| ! "$(head -n1 $BASHRUN_RCFILE 2>/dev/null)" =~ BASHRUN_CONFIG_VERSION ]] \
 	|| ! grep 'BASHRUN -eq 1' $HOME/.bashrc &>/dev/null); then
