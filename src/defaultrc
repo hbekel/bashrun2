@@ -14,9 +14,9 @@
 
 +configure-modes () {
 
-    +mode bashrun
-      # This is the default mode that provides a terminal in the
-      # form of a run dialog. 
+    +mode launcher
+      # This is the default "launcher" mode that provides a terminal
+      # in the fashion of a run dialog.
 
       --terminal "xterm -geometry %g -name bashrun-%m"
       # Specify the terminal to use for bashrun. Within this string,
@@ -61,7 +61,7 @@
       # Set the logfile to redirect command output to. This replaces
       # the former LOGFILE setting.
 
-    +mode-bashrun-init () {	
+    +mode-launcher-init () {	
         # This fuction, if defined, will be called for the default
 	# mode "bashrun" during startup. Here you may configure
 	# anything that is specific to this mode only. See bashrun(1)

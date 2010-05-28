@@ -4,7 +4,7 @@
 
 +configure-core-modes () {
 
-    +mode bashrun
+    +mode launcher
       --terminal "xterm -geometry %g -name bashrun-%m"
       --geometry '40x1 40x8'
       --completion 'menu-complete complete 8'
@@ -12,7 +12,7 @@
       --feedback true
       --logfile '/dev/null'
 
-    +mode-bashrun-init () {	
+    +mode-launcher-init () {	
 	
 	HISTFILE="${XDG_DATA_HOME:-.local/share}/bashrun/history"
 	PS1='>'

@@ -21,23 +21,24 @@
 #
 ######################################################################
 
-# if no arguments are given, attempt to map as fast as possible
+# if no arguments are given, attempt to map an existing launcher as
+# fast as possible
 if [[ $# -eq 0 ]]; then    
 
-    widfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/bashrun-wid"
+    widfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/launcher-wid"
     if [[ -f "$widfile" ]]; then
 	wid="$(<$widfile)"
 	xdotool windowmap "$wid"
 	xdotool windowfocus "$wid"
 
-	resetflag="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/bashrun-reset"
+	resetflag="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/launcher-reset"
 	if [[ -f "$resetflag" ]]; then
 	    xdotool key --clearmodifiers Return
 	fi
 	exit 0
     fi
 fi
-# no existing instance or xdotool is missing -> proceed
+# no existing instance or xdotool is missing -> proceed...
 
 # determine the install location
 BASHRUN_PREFIX=`type -p bashrun 2> /dev/null`
@@ -51,7 +52,7 @@ BASHRUN_CACHE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}/bashrun
 BASHRUN_RCFILE=$BASHRUN_CONFIG_HOME/rc
 
 # default mode and command
-mode="bashrun"
+mode="launcher"
 command="show"
 
 # handle --version, --help and --mode options first
@@ -64,7 +65,7 @@ if [[ $# -gt 0 ]]; then
  	    usage && exit 0
  	    ;;    
 	-m|--mode)
- 	    mode=${2:-bashrun}
+ 	    mode=${2:-launcher}
  	    shift; shift
  	    ;;
 	-d|--debug)
