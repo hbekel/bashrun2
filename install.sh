@@ -60,5 +60,7 @@ if [[ -f $BC && -d $BCDIR && -w $BCDIR ]]; then
     install -v -m 644 misc/bash_completion $BCDIR/bashrun
 fi
 
+install -v -m 644 -D doc/bashrun.1 $PREFIX/share/man/man1/bashrun.1
+
 echo
-echo -e "\e[1;32mbashrun 0.16.0-rc1 has been installed in $PREFIX\e[0m"
+echo -e "\e[1;32mBashrun 1.0.0-rc1 has been installed in $PREFIX\e[0m"

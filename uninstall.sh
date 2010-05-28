@@ -8,9 +8,9 @@ fi
 
 if [[ ! -f $PREFIX/bin/bashrun ]]; then
 
-    echo "bashrun does not seem to be installed in $PREFIX. If you have
+    echo "Bashrun does not seem to be installed in $PREFIX. If you have
 previously installed bashrun under a prefix other than $PREFIX,
-please use the --prefix option to specify it.
+please use the --prefix option to uninstall the previous installation.
 "
     exit 1
 fi
@@ -27,5 +27,7 @@ rmdir -v $PREFIX/share/bashrun
 BC=/etc/bash_completion.d/bashrun
 [[ -f $BC && -w $BC ]] && rm -v $BC 
 
+rm -v $PREFIX/share/man/man1/bashrun.1
+
 echo
-echo -e "\e[1;32mbashrun 0.16.0-rc1 has been uninstalled from $PREFIX\e[0m"
+echo -e "\e[1;32mBashrun 1.0.0-rc1 has been uninstalled from $PREFIX\e[0m"

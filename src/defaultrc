@@ -1,7 +1,7 @@
-###   BASHRUN_CONFIG_VERSION=0.16.0-rc1  ### -*- shell-script -*-
+###   BASHRUN_CONFIG_VERSION=1.0.0-rc1  ### -*- shell-script -*-
 ### DO NOT CHANGE OR MOVE THE ABOVE LINE ###
 
-# This is the user configuration file for bashrun 0.16.0-rc1.
+# This is the user configuration file for bashrun 1.0.0-rc1.
 # Please see bashrun(1) for all the details on configuration.
 
 +plugins terminal dropdown
@@ -394,7 +394,10 @@
     +bind filter-clipboard  '\ea'
 
     +bind bashrun-bindings '\e[11~' F1
+    +bind bashrun-bindings '\eOP'  F1
+
     +bind bashrun-manual   '\e[12~' F2
+    +bind bashrun-manual   '\eOQ' F2
     +bind debug            '\e[24~' F12
 
     +bind cycle-size   '\C-l'
