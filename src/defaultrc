@@ -192,7 +192,9 @@
     #
     # In addition, handlers provide a simple interface to programmable
     # completion. The command word to complete can be supplied via the
-    # --complete option
+    # --complete option, and a function called
+    # +handler-<handlername>-complete can be defined to generate a
+    # list of strings to complete against.
 
     +handler info
       --pattern '(.+)\?\?'
@@ -279,7 +281,8 @@
 
     +handler gimp
       --pattern '\.jpe?g$'
-      --string 'f!x:gimp'
+      --test 'f!x'
+      --string 'gimp'
       # This handler implements a file association by matching any
       # commandline ending in .jpg or .jpeg. It then tests whether the
       # commandline is a path to a file that is not executable by
@@ -291,7 +294,8 @@
 
     +handler video
       --pattern '\.(avi|mpe?g|flv|mp4|wmv|mov)$'
-      --string  'f:mplayer -fs'
+      --test 'f'
+      --string 'mplayer -fs'
       # Another file association to open video files in fullscreen
       # mplayer.
 
@@ -315,13 +319,15 @@
 
     +handler directory
       --fallback 1
-      --string "d:kfmclient openProfile filemanagement %1"
+      --test 'd'
+      --string "kfmclient openProfile filemanagement %1"
       # Open directories in konqueror, using the file management
       # profile.
 
     +handler file
       --fallback 1
-      --string "f!x:xdg-open %1"
+      --test 'f!x'
+      --string "xdg-open %1"
       # handle files universally with xdg-open, see xdg-open(1)
 
     ## search any non-executable line using google:

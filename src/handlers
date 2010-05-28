@@ -2,12 +2,12 @@
 
 ################################################################################
 
-§class "§handler" "name pattern string action complete fallback:b" ""
+§class "§handler" "name pattern test string action complete fallback:b" ""
 
 BASHRUN_FROM_CMDNFH=0
 BASHRUN_HANDLERS_ORDER=""
 
-§function.clone §handler.new §_handler.new
+§function.clone "§handler.new" "§_handler.new"
 §function.clone "§handlers.dump" "§_handlers.dump"
 
 ################################################################################
@@ -64,39 +64,48 @@ function §handlers.apply {
 		fi		    
 	    fi
 
-	    # check for file test prefix
-	    if [[ "$string" =~ ^([abcdefghkprstuwxOGLSN!]+): ]]; then
-		local tests="${BASH_REMATCH[1]}"
-		string="${string/$tests:/}"
+	    local tests="$(§handler.get_test)"
+	    if [[ -n "$tests" ]]; then 
+		if [[ "$tests" =~ [abcdefghkprstuwxOGLSN!] ]]; then
 
-		# perform tests
-		local test=""
-		local success=0
-		local k=0
-		for(( k=0; k<${#tests}; k++ )); do
-		    local CHAR=${tests:$k:1}
-		    if [[ "$CHAR" == "!" ]]; then
-			test="!"
-			continue
-		    else
-			test="$test -$CHAR"
-			if eval "test $test $BASHRUN_COMMAND_WORD"; then
-			    §debug "test $test $BASHRUN_COMMAND_WORD -> success"
-			    success=1
+        	    # run tests...
+		    local test=""
+		    local success=0
+		    local k=0
+		    for(( k=0; k<${#tests}; k++ )); do
+			local CHAR=${tests:$k:1}
+			if [[ "$CHAR" == "!" ]]; then
+			    test="!"
+			    continue
 			else
-			    §debug "test $test $BASHRUN_COMMAND_WORD -> FAIL"
-			    success=0
-			    break
-			fi			
-			test=""
-		    fi
-		done
+			    test="$test -$CHAR"
+			    test="${test/ /}"
+			    if eval "test $test $BASHRUN_COMMAND_WORD"; then
+				§debug -v "test $test $BASHRUN_COMMAND_WORD" "->" -g "succeeds"
+				success=1
+			    else
+				§debug fail -v "test $test $BASHRUN_COMMAND_WORD" "->" -r "fails" 
+				success=0
+				break
+			    fi			
+			    test=""
+			fi
+		    done
+		else
+		    tests="${tests//!/}"
+		    tests="${tests//[abcdefghkprstuwxOGLSN]/}"
+		    §debug fail -v "$tests" "-> no such file test(s), skipping handler" -y "$name"
+		    success=0
+		fi
+		
 		if [[ ! success -eq 1 ]]; then
 		    §debug "not handled"
 		    §handlers.next
 		    continue
 		fi
 	    fi
+
+	    # subpattern substitution
 
 	    if [[ "$string" =~ %[0-9] ]]; then
 
@@ -189,14 +198,14 @@ function §handlers.install_completion {
 
 function §handler.code {
 
-    local name=$(§handler.get_name)
-    local pattern=$(§handler.get_pattern)
-    local string=$(§handler.get_string)
-    local action=$(§handler.get_action)
-    local complete=$(§handler.get_complete)
-    local fallback=$(§handler.get_fallback)
+    local name="$(§handler.get_name)"
+    local pattern="$(§handler.get_pattern)"
+    local test="$(§handler.get_test)"
+    local string="$(§handler.get_string)"
+    local action="$(§handler.get_action)"
+    local complete="$(§handler.get_complete)"
+    local fallback="$(§handler.get_fallback)"
 
-    name=${name//\'/\\\'}
     pattern=${pattern//\'/\\\'}
     string=${string//\"/\\\"}
     string=${string//\$/\\\$}
@@ -205,6 +214,7 @@ function §handler.code {
     echo
     echo "+handler '$name'"
     [[ "$pattern" != '(.+)' ]] && echo "  --pattern '$pattern'" 
+    [[ -n "$test" ]] && echo "  --test '$test'" 
     [[ "$string" != '%1' ]] && echo "  --string '$string'"
     [[ -n "$complete" ]] && echo "  --complete '$complete'"
     [[ -n "$action" ]] && echo "  --action '$action'"
