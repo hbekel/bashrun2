@@ -317,7 +317,8 @@
     --core 1
     
     function +action-browse {
-	command "$BROWSER '$(command)'"
+	local url; printf -v url '%q' "$(command)"
+	command "$BROWSER $url"
 	return 0
     }
     
@@ -327,7 +328,8 @@
     --core 1
     
     function +action-google-search {
-	command "$BROWSER 'http://www.google.com/search?q=$(line)'"
+	local url; printf -v url '%q' "http://www.google.com/search?q=$(line)"
+	command "$BROWSER $url" 
 	return 0
     }
     
