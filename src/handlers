@@ -118,8 +118,6 @@ function §handlers.apply {
 		    local match=${BASH_REMATCH[$i]}
 		    §debug "subexpression matched:" -v "$match" "->" -v "%$i"
 		    string="${string//%$i/$match}"
-		    
-		    §debug "$string"
 		    export append=0
 		done
 	        # fail if unmatched $n's remain in handler string
@@ -137,6 +135,8 @@ function §handlers.apply {
 		BASHRUN_COMMAND="$string"
 	    fi
 
+	    [[ -n "$string" ]] && §debug "result:" -v "$string"
+
 	    if [[ -n "$action" ]]; then
 		local saved="$(§action.get_name)"
 		if §actions.seek "$action"; then
@@ -145,8 +145,6 @@ function §handlers.apply {
 		    fi
 		fi
 	    fi
-
-	    [[ -n "$string" ]] && §debug -v "$string"
 	    return
 	fi
     done

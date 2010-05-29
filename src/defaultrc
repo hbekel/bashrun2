@@ -416,7 +416,7 @@
 
     function +action-run-as {
 	+action-run
-	+user ?
+	user --prompt
     }      
 
     +action kill-to-xclip

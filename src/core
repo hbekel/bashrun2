@@ -53,12 +53,7 @@
       --add 'dict'
  }
 
-+configure-core-handlers () { 
-    +handler internal
-      --pattern '^(\+|§)'
-      --action pass
- }
-
++configure-core-handlers () { :; }
 +configure-core-keys () { :; }
 +configure-core-bookmarks () { :; }
 
@@ -83,7 +78,10 @@
     --input 0
     --core 1
 
-    +action-pass () { $BASHRUN_COMMAND; return 2; }
+    +action-pass () { 
+	$BASHRUN_COMMAND
+	return 2 
+    }
 
     +action 'abort'
     --description 'Abort (unmap window)'
@@ -91,7 +89,7 @@
     --core 1
     
     +action-abort () {
-	READLINE_LINE=""
+	§bash4 && READLINE_LINE=""
 	§window.unmap fast
 	return 1
     }
@@ -133,8 +131,8 @@
     
     +action-run () 
     { 
-	! executable? && +handlers;
-	+rules;
+	! executable? && handlers
+	rules
 	return 0
     }
     
@@ -145,9 +143,8 @@
     
     +action-term-run () 
     { 
-	! executable? && +handlers;
-	+rules;
-	+term;
+	action run
+	terminal;
 	return 0
     }
     
@@ -158,10 +155,10 @@
     
     +action-term-page () 
     { 
-	! executable? && +handlers;	
-	+pager;
-	+rules;
-	+term;
+	! executable? && handlers	
+	pager
+	rules
+	terminal
 	return 0
     }
     
@@ -172,9 +169,9 @@
     
     +action-term-hold () 
     { 
-	! executable? && +handlers;
-	+hold
-	+term;
+	! executable? && handlers;
+	hold
+	terminal
 	return 0
     }
 
@@ -185,9 +182,9 @@
 
     +action-term-notify () 
     { 
-	! executable? && +handlers;
-	+hold 2
-	+term notify
+	! executable? && handlers
+	hold 2
+	terminal notify
 	return 0
     }
     
@@ -199,8 +196,8 @@
     
     +action-su-run () 
     { 
-	+action-run;
-	+user root;
+	action run
+	user root
 	return 0
     }
     
@@ -212,8 +209,8 @@
     
     +action-su-term-run () 
     { 
-	+action-term-run;
-	+user root;
+	action term-run
+	user root
 	return 0
     }
     
@@ -225,8 +222,8 @@
     
     +action-su-term-page () 
     { 
-	+action-term-page;
-	+user root;
+	action term-page
+	user root
 	return 0
     }
     
@@ -238,8 +235,8 @@
     
     +action-su-term-hold () 
     { 
-	+action-term-hold;
-	+user root;
+	action term-hold
+	user root
 	return 0
     }
 
@@ -251,8 +248,8 @@
     
     +action-su-term-notify () 
     { 
-	+action-term-notify
-	+user root
+	action term-notify
+	user root
 	return 0
     }
     
@@ -264,7 +261,7 @@
     
     +action-show-manual () {
 	command "man $(word)"
-	+term
+	terminal
 	return 0
     }
     
@@ -276,7 +273,7 @@
     
     function +action-show-info {
 	command "info $(word)"
-	+term
+	terminal
 	return 0
     }
     
@@ -288,13 +285,12 @@
     function +action-show-help {
 	if builtin?; then
 	    command "help $(word)"
-	    +pager
+	    pager
+	    terminal
 	else
 	    debug "$(word): not a builtin, showing manual"
-	    +action-show-manual
-	    return 0
+	    action show-manual
 	fi	    
-	+term
 	return 0
     }
 
@@ -333,8 +329,12 @@
     --core 1
     
     function +action-google-search {
-	local url; printf -v url '%q' "http://www.google.com/search?q=$(line)"
-	command "$BROWSER $url" 
+
+	local url 
+	printf -v url '%q' "http://www.google.com/search?q=$(command)"
+	command "$url" 
+
+	action browse
 	return 0
     }
     
@@ -344,9 +344,8 @@
     --core 1
     
     function +action-dict-lookup {
-	command "$DICT $(line)"
-	+rules
-	+term
+	command "$DICT $(command)"
+	action term-page
 	return 0
     }
     
@@ -357,8 +356,8 @@
     --core 1
     
     function +action-bashrun-manual {
-	command "man bashrun"
-	+action-term-run
+	command "bashrun"
+	action show-manual
 	return 0
     }
 
@@ -377,8 +376,8 @@
 	    §print_bindings > $tmpfile
 	    §bindings.modified 0
 	fi
-	command "less $tmpfile"
-	+action-term-run
+	command "cat $tmpfile"
+	action term-page
 	return 0
     }
 

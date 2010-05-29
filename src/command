@@ -126,8 +126,8 @@ function §command.add_su {
     BASHRUN_COMMAND=${BASHRUN_COMMAND//\'/\\\'}
 
     # prompt for username
-    if [[ "$user" == "?" ]]; then
-	until [[ -n "$user" && "$user" != "?" ]]; do
+    if [[ "$user" == "--prompt" ]]; then
+	until [[ -n "$user" && "$user" != "--prompt" ]]; do
 	    tput el
 	    tput cr
 	    echo -ne 'Username: '
