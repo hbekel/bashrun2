@@ -53,7 +53,12 @@
       --add 'dict'
  }
 
-+configure-core-handlers () { :; }
++configure-core-handlers () { 
+    +handler internal
+      --pattern '^(\+|§)'
+      --action pass
+ }
+
 +configure-core-keys () { :; }
 +configure-core-bookmarks () { :; }
 
@@ -78,7 +83,7 @@
     --input 0
     --core 1
 
-    +action-pass () { $BASHRUN_COMMAND; }
+    +action-pass () { $BASHRUN_COMMAND; return 2; }
 
     +action 'abort'
     --description 'Abort (unmap window)'

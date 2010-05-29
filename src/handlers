@@ -146,7 +146,7 @@ function §handlers.apply {
 		fi
 	    fi
 
-	    §debug "$string"
+	    [[ -n "$string" ]] && §debug -v "$string"
 	    return
 	fi
     done

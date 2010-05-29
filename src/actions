@@ -334,13 +334,17 @@ function §action.run {
     # disable action debugging
     BASHRUN_DEBUG_ACTION=0
 
-    local res=""
-    [[ retval -eq 0 ]] && res="-c launch"
-    [[ retval -eq 1 ]] && res="-y abort (all done)"
-    [[ retval -eq 2 ]] && res="-y abort (all done, don't unmap)"
-    §debug -v "$action" "returns" -v "$retval" "->" $res
+    if [[ BASHRUN_ACTION_RETURN_VALUE -eq -1 ]]; then
+	BASHRUN_ACTION_RETURN_VALUE="$retval"
+	
+	local res=""
+	[[ retval -eq 0 ]] && res="-c launch"
+	[[ retval -eq 1 ]] && res="-y abort (all done)"
+	[[ retval -eq 2 ]] && res="-y abort (all done, don't unmap)"
+	§debug -y "+action-$action" "returned" -v "$retval" "->" $res
+    fi
 
-    return $retval
+    return 0
 }
 
 function §action.api.enable {

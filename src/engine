@@ -7,6 +7,7 @@ BASHRUN_EXECMODE=''
 BASHRUN_ENGINE_BUSY=0
 BASHRUN_LOGFILE=${BASHRUN_LOGFILE:-/dev/null}
 BASHRUN_CMD_NOT_FOUND_HANDLE=0
+BASHRUN_ACTION_RETURN_VALUE=-1
 
 ################################################################################
 
@@ -176,11 +177,13 @@ function §engine.launch {
 	fi
 	
 	if §action.function?; then
+
 	    §action.run
-	    status=$?
-	    if [[ status -ne 0 ]]; then
-		[[ status -eq 1 ]] && §engine.reset 
-		[[ status -eq 2 ]] && §engine.reset 0
+	    retval=$BASHRUN_ACTION_RETURN_VALUE
+
+	    if [[ retval -ne 0 ]]; then
+		[[ retval -eq 1 ]] && §engine.reset 
+		[[ retval -eq 2 ]] && §engine.reset 0
 		return 0
 	    fi
 	fi
@@ -207,6 +210,9 @@ function §engine.execute {
 function §engine.reset {
 
     local unmap=${1:-1}
+
+    # reset action return value
+    BASHRUN_ACTION_RETURN_VALUE=-1
 
     # reset rules
     BASHRUN_RULES_APPLIED=0
