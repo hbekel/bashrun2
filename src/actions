@@ -381,7 +381,7 @@ function §action.api.enable {
     function terminal { §rules.apply; §command.add_terminal $1; }
     function hold { §command.add_hold $1; }
     function pager { §command.add_pager; }    
-    function user { +map; §command.add_su ${1:-root}; }
+    function user { map; §command.add_su ${1:-root}; }
     function map { §window.map; tput cr; }
 }
 
