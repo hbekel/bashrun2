@@ -1,7 +1,32 @@
 # -*- shell-script -*-
 
-function modeinfo {
+function bootstrap {
+
+    source $BASHRUN_SHARE/xdotool
+    source $BASHRUN_SHARE/message
+
+    # check for xdotool
+    if ! §xdotool.available?; then
+	if [[ BASHRUN_XDOTOOL -eq 1 ]]; then
+	    §message "Error" "Please install xdotool." &>/dev/null
+	else
+	    §message "Error" "Please install xdotool>=1.20100416.2809." &>/dev/null
+	fi
+	exit 1
+    fi
+
+    # bootstrap if a) rcfile doesn't exist
+    #              b) rcfile is from a legacy version
+    #              c) .bashrc is not set up
     
+    if ([[ ! -f $BASHRUN_RCFILE \
+	|| ! "$(head -n1 $BASHRUN_RCFILE 2>/dev/null)" =~ BASHRUN_CONFIG_VERSION ]] \
+	|| ! grep 'BASHRUN -eq 1' $HOME/.bashrc &>/dev/null); then
+
+	source $BASHRUN_SHARE/bootstrap
+    fi
+
+    # create modeinfo
     source $BASHRUN_SHARE/utils
     source $BASHRUN_SHARE/globals
     source $BASHRUN_SHARE/config

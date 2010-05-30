@@ -78,44 +78,12 @@ if [[ $# -gt 0 ]]; then
     esac
 fi
 
+# bootstrap and get info about the current mode
 MODEINFO="$BASHRUN_CACHE_HOME/${mode}-info"
-
-if [[ ! -f $MODEINFO ]]; then
-
-    # source xdotool and messages
-    source $BASHRUN_SHARE/xdotool
-    source $BASHRUN_SHARE/message
-
-    # check for xdotool
-    if ! §xdotool.available?; then
-	if [[ BASHRUN_XDOTOOL -eq 1 ]]; then
-	    §message "Error" "Please install xdotool." &>/dev/null
-	else
-	    §message "Error" "Please install xdotool>=1.20100416.2809." &>/dev/null
-	fi
-	exit 1
-    fi
-
-    # bootstrap if a) rcfile doesn't exist
-    #              b) rcfile is from a legacy version
-    #              c) .bashrc is not set up
-    
-    if ([[ ! -f $BASHRUN_RCFILE \
-	|| ! "$(head -n1 $BASHRUN_RCFILE 2>/dev/null)" =~ BASHRUN_CONFIG_VERSION ]] \
-	|| ! grep 'BASHRUN -eq 1' $HOME/.bashrc &>/dev/null); then
-
-	source $BASHRUN_SHARE/bootstrap
-    fi
-fi
-
-# get info about the requested mode
-if [[ ! -f $MODEINFO ]]; then
-    # create a modeinfo file
-    modeinfo
-fi
+[[ ! -f $MODEINFO ]] && bootstrap
 source $MODEINFO
 
-# get command argument 
+# get command argument
 if [[ $# -gt 0 ]]; then
     command="$1"
     command=${command/--/}
