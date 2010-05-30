@@ -188,7 +188,7 @@ function §engine.launch {
 	    fi
 	fi
     fi
-    §debug "$BASHRUN_COMMAND"
+    §debug "executing" -v "$BASHRUN_COMMAND $BASHRUN_EXECMODE"
     
     §engine.execute
     §engine.reset

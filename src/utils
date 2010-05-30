@@ -77,7 +77,7 @@ function §debug {
     local n="\033[0m"    # none
     local d="$b"         # default
     local v="$w"         # variable
-    
+
     local col=""
 
     # print function name
@@ -122,12 +122,12 @@ function §debug {
 
     for str in "$@"; do
 	
-	if [[ "$str" =~ ^-([a-z])$ ]]; then # color
-	    col="${BASH_REMATCH[1]}"
+	if [[ "${str:0:1}" == "-" && "$str" != "->" ]]; then # color option
+	    col="${str:1:1}"
 	    echo -ne "${!col}" >&2
 	    requested=1
 
-	elif [[ ! "$str" =~ ^[0-9] && $(§defined? "$str") ]]; then # variable
+	elif §defined? "$str"; then # variable
 	    if §defined? "$str"; then
 		echo -ne "$d$str$b$v " >&2 # name
 		echo -n  "${!str} "    >&2 #value 

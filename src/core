@@ -155,7 +155,7 @@
     
     +action-term-page () 
     { 
-	! executable? && handlers	
+	! executable? && handlers
 	pager
 	rules
 	terminal
@@ -169,7 +169,7 @@
     
     +action-term-hold () 
     { 
-	! executable? && handlers;
+	! executable? && handlers
 	hold
 	terminal
 	return 0
@@ -287,11 +287,11 @@
 	    command "help $(word)"
 	    pager
 	    terminal
+	    return 0
 	else
 	    debug "$(word): not a builtin, showing manual"
 	    action show-manual
 	fi	    
-	return 0
     }
 
     +action copy-to-clipboard
@@ -358,7 +358,6 @@
     function +action-bashrun-manual {
 	command "bashrun"
 	action show-manual
-	return 0
     }
 
     +action 'bashrun-bindings'
