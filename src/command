@@ -187,6 +187,7 @@ function §command.add_terminal {
 }
 
 function §command.add_hold {
+
     local seconds=${1:-0}
     local method='read -n1'
     [[ seconds -gt 0 ]] && method="sleep $seconds"
@@ -194,11 +195,20 @@ function §command.add_hold {
     if [[ "$BASHRUN_COMMAND" =~ ^\(.+?\)$ ]]; then
 	BASHRUN_COMMAND=${BASH_REMATCH[1]}
     fi
-    BASHRUN_COMMAND="tput civis; (${BASHRUN_COMMAND}); $method";
-    §debug "$BASHRUN_COMMAND"
+    
+    if [[ ! "$BASHRUN_COMMAND" =~ \#__HOLD__$ ]]; then
+	BASHRUN_COMMAND="tput civis; (${BASHRUN_COMMAND}); $method #__HOLD__";
+	§debug "$BASHRUN_COMMAND"
+    else
+	§debug "already using hold:" -v "$BASHRUN_COMMAND"
+    fi
 }
 
 function §command.add_pager {
-    BASHRUN_COMMAND="$BASHRUN_COMMAND | ${PAGER}"
-    §debug "$BASHRUN_COMMAND"
+    if [[ ! "$BASHRUN_COMMAND" =~ \#__PAGER__$ ]]; then
+	BASHRUN_COMMAND="$BASHRUN_COMMAND | ${PAGER} #__PAGER__"
+	§debug "$BASHRUN_COMMAND"
+    else
+	§debug "already using pager:" -v "$BASHRUN_COMMAND"
+    fi
 }
