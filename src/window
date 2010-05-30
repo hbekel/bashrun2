@@ -266,15 +266,16 @@ function §window.map {
     §window? || return 1
     [[ $# -eq 0 ]] && §window.update
     
-    # parse geometry for this mode 
-    §geometry.parse "$(§mode.get_geometry 0)"
-
     # map the window
     §xdotool windowmap $BASHRUN_WINDOW_ID
+
+    # parse geometry for this mode 
+    §geometry.parse "$(§mode.get_geometry 0)"
     
     # apply position
     if §geometry.position?; then
-	§window.pos "$(§geometry.x)" "$(§geometry.y)"
+	§window.pos "$(§geometry.x $BASHRUN_WINDOW_PIXEL_WIDTH)" \
+	    "$(§geometry.y $BASHRUN_WINDOW_PIXEL_HEIGHT)"
     fi
 
     # move to the current desktop if required

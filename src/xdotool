@@ -40,10 +40,11 @@ function §xdotool.available? {
 }
 
 function §xdotool {
-    
-    if [[ BASHRUN_DEBUG -eq 1 ]]; then
-	xdotool $@
-    else
-	xdotool $@ 2>/dev/null
+    if §xdotool.available?; then
+	if [[ BASHRUN_DEBUG -eq 1 ]]; then
+	    xdotool $@
+	else
+	    xdotool $@ 2>/dev/null
+	fi
     fi
 }

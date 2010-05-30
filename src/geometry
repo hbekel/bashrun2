@@ -6,8 +6,8 @@ declare BASHRUN_GEOMETRY_WIDTH=0 BASHRUN_GEOMETRY_HEIGHT=0 \
 
 [[ "$(xdpyinfo | grep dimensions:)" =~ ([0-9]+)x([0-9]+) ]]
 
-declare -i DISPLAY_WIDTH=${BASH_REMATCH[1]}
-declare -i DISPLAY_HEIGHT=${BASH_REMATCH[2]}
+BASHRUN_DISPLAY_WIDTH=${BASH_REMATCH[1]}
+BASHRUN_DISPLAY_HEIGHT=${BASH_REMATCH[2]}
 
 function §geometry.parse {
 
@@ -78,11 +78,11 @@ function §geometry.height {
 }
 
 function §geometry.x {
-    §geometry.calc_point $BASHRUN_GEOMETRY_XOFF $DISPLAY_WIDTH $1
+    §geometry.calc_point $BASHRUN_GEOMETRY_XOFF $BASHRUN_DISPLAY_WIDTH $1
 }
 
 function §geometry.y {
-    §geometry.calc_point $BASHRUN_GEOMETRY_YOFF $DISPLAY_HEIGHT $1
+    §geometry.calc_point $BASHRUN_GEOMETRY_YOFF $BASHRUN_DISPLAY_HEIGHT $1
 }
 
 function §geometry.calc_point {
@@ -94,7 +94,7 @@ function §geometry.calc_point {
     if [[ "$spec" =~ ^(\+|-) ]]; then
 	
 	local sign=${BASH_REMATCH[1]}
-	local value=${1/$sign/}
+	local value=${spec/$sign/}
 	
 	if [[ "$sign" == "+" ]]; then
 	    echo $value
