@@ -8,9 +8,14 @@ function bootstrap {
     # check for xdotool
     if ! §xdotool.available?; then
 	if [[ BASHRUN_XDOTOOL -eq 1 ]]; then
-	    §message "Error" "Please install xdotool." &>/dev/null
+	    §message "Error - Xdotool not found" \
+		"Bashrun requires xdotool, available from
+
+                 http://semicomplete.com/projects/xdotool" &>/dev/null
 	else
-	    §message "Error" "Please install xdotool>=1.20100416.2809." &>/dev/null
+	    §message "Error - xdotool version too old" \
+		"Please upgrade to xdotool 1.20100416.2809 or later." \
+		&>/dev/null
 	fi
 	exit 1
     fi

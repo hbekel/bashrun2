@@ -49,11 +49,14 @@ function §bootstrap.bashrc {
     if [[ -f $HOME/.bashrc ]]; then
 	if ! grep 'BASHRUN -eq 1' $HOME/.bashrc &>/dev/null; then
 	    printf "\n$comment\n[[ BASHRUN -eq 1 ]] && . $BASHRUN_SHARE/bashrc\n" >> $HOME/.bashrc
-	    §message "Information" "The following line has been appended to your ~/.bashrc:
+	    §message "Information" \
+		"The following line has been appended to your ~/.bashrc:
 
-[[ BASHRUN -eq 1 ]] && . $BASHRUN_SHARE/bashrc
+                 [[ BASHRUN -eq 1 ]] && . $BASHRUN_SHARE/bashrc
 
-This line is required to initialize the bashrun engine. Please see bashrun(1) for details." 2>/dev/null
+                 This line is required to initialize the bashrun engine. 
+                 See bashrun(1) for details." 2>/dev/null
+
 	fi
     else
 	echo "
@@ -93,12 +96,16 @@ function §bootstrap.prepare_upgrade {
 
 	[[ "$1" == "--quiet" ]] && return 0
 
-	§message "Upgrade information" "Welcome to Bashrun $BASHRUN_VERSION!
+	§message "Upgrade information" \
+	    "Welcome to Bashrun $BASHRUN_VERSION!
 
-The configuration file format for bashrun has changed. Your old configuration file$plural been backed up to $(§tilde_path $backupdir)/.
+	    The configuration file format for bashrun has
+	    changed. Your old configuration file$plural been backed up
+	    to $(§tilde_path $backupdir)/.
 
-A new default configuration file has been installed to $(§tilde_path $BASHRUN_RCFILE). It contains instructions on how to convert your old configuration files to the new format.
-
-"
-}
+	    A new default configuration file has been installed to
+            $(§tilde_path $BASHRUN_RCFILE). It contains detailed
+            instructions on how to convert your old configuration
+            files to the new format."  
+} 
 §bootstrap

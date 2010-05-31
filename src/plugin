@@ -23,7 +23,13 @@ function +plugins {
 	if [[ -n "$file" ]]; then
 	    source "$file"
 	else
-	    §message "Error" "Can't find plugin \"$name\" in $BASHRUN_CONFIG_HOME/plugins or $BASHRUN_SHARE/plugins"
+	    if §window.terminal?; then
+		§message "Error" \
+		    "Plugin \"$name\" not found: no such file(s):
+
+                     $(§tilde_path $BASHRUN_CONFIG_HOME/plugins)/$name.rc \n 
+                     $BASHRUN_SHARE/plugins/$name.rc"
+	    fi
 	fi
     done
 }

@@ -1,64 +1,187 @@
 # -*- shell-script -*-
 
+function §message.init {
+    local method
+    for method in dialog xmessage zenity kdialog notify-send echo; do
+	if type $method &>/dev/null; then
+	    BASHRUN_MESSAGE_METHOD=$method
+	    break
+	fi
+    done
+}
+§message.init
+
+function §message.wrap {
+
+    local input width chunk ifs p word 
+    declare -a chunks
+    declare -i i k
+
+    width=72
+    if [[ "$1" =~ ^[0-9]+$ ]]; then
+	width="$1"
+	shift
+    fi
+    input="$1"
+
+    # split input into chunks at \n\n
+    input=${input//$'\n'$'\n'/__SePaRaToR__}
+    input=${input//$'\n'/ }
+    input=${input//__SePaRaToR__/$'\n'}
+    ifs=$IFS; IFS=$'\n'; chunks=( $input ); IFS=$ifs
+
+    for (( i=0; i<${#chunks[@]}; i++ )); do
+	chunk="${chunks[i]}"
+	
+	# echo "chunk $i: '$chunk'" >&2
+
+	# strip newlines from chunk
+	chunk="${chunk//$'\n'/ }"
+
+	p=(); k=0
+	for word in $chunk; do
+	    if [[ "$word" == "\n" ]]; then
+		p[k]+="\n"
+		k+=1
+	    else
+		if [[ $(( ${#p[k]} + ${#word} ))  -lt $width ]]; then
+		    if [[ -z "${p[k]}" ]]; then
+			p[k]+="$word"
+		    else
+			p[k]+=" $word"
+		    fi
+		else
+		    k+=1
+		    p[k]+=$'\n'"$word"
+		fi
+	    fi
+	done
+
+	if [[ i -eq 0 ]]; then 
+	    echo "${p[@]}"
+	else
+	    echo 
+	    echo "${p[@]}"
+	fi
+    done    
+}
+
 function §message {
     
     local title="$1"
-    local text="$2"
+    shift
 
-    local term=""
-    local height=24
+    local text=""
+    local method="$BASHRUN_MESSAGE_METHOD"
     
-    height=${text//[^$'\n']}/}
-    height=${#height}
-    (( height += 1 ))
-    
-    if type dialog &>/dev/null; then		
+    # prepare text depending on method
+    case "$method" in 
+	dialog|xmessage|kdialog|echo)
+	    # prewrap text to 76 columns 
+	    # (80 - 4 (dialog border and margin))
+	    text="$(§message.wrap 76 "$@")"
+	    ;;
+	zenity|notify-send)
+            # split input into chunks at \n\n
+	    text="$1"
+	    text="$(echo "$text" | sed 's/^ *//g')"
+	    text=${text//$'\n'$'\n'/__SePaRaToR__}
+	    text=${text//$'\n'/ }
+	    text=${text//__SePaRaToR__/$'\n\n'}	    
+    esac
+    text="${text//\\n /\\n}"
 
-	text="\n${text//$'\n'/\\n}\n"
-	(( height += 5 ))
+    # xmessage and notify-send don't interpret \n
+    if [[ "$method" =~ xmessage|notify-send ]]; then
+	text="${text//\\n/$'\n'}"
+    fi
 
-	if (type §window.terminal? &>/dev/null && §window.terminal?); then
+    case "$method" in
+
+	dialog)
+	    declare -i height=0
+	    local dialog=""
+	    local tmp=""
+
+	    # find height by counting literal newline characters
+	    tmp="${text//[^$'\n']}/}"
+            height=${#tmp}
+
+	    # add number of \n's to height
+	    tmp="${text//\\n/}"
+	    (( height += ((${#text} - ${#tmp}) / 2) ))
+
+	    # encode newlines for dialog
+	    text="${text//$'\n'/\\n}"
+
+	    # escape literal double quotes
+	    text="${text//\"/\\\"}"
+
+	    # add leading and closing blank lines
+	    text="\n${text}\n"
+            
+            # adjust height (2 lines above + 3 lines in dialog)
+	    (( height += 5 )) 
+
+	    # construct dialog
+	    dialog="dialog --no-shadow "
+	    dialog+="--title \" Bashrun - $title \" "
+	    dialog+="--msgbox \"$text\" $height 80"
+
+	    if (type §window.terminal? &>/dev/null && §window.terminal?); then
+		# we're inside bashrun, so we just use it's terminal
+		
+		# remember previous size
+		local prev_size="$(§window.size)"
+
+		# resize to 80 x height
+		§window.size --hint 80 $height
 	    
-	    local prev_size="$(§window.size)"
-	    §window.size --hint 40 $height
-	    
-	    dialog --no-shadow --title " Bashrun - $title " --msgbox "$text" $height 40
-	    
-	    §window.size --hint $prev_size
-	    tput clear
-	    return 0
-	fi	    
-	
-	for term in urxvt xterm rxvt mrxvt; do
-	    if type $term &>/dev/null; then  
-		$term -g 80x$height -e dialog --no-shadow --title " Bashrun - $title " --msgbox "$text" $height 80
-		return 0
+		# run dialog here
+		eval "$dialog"
+
+		# reset window size and clear
+		§window.size --hint $prev_size
+		tput clear
+
+	    else	    
+		# we're outside of bashrun, so we need a terminal
+		local term=""
+		for term in urxvt xterm rxvt mrxvt; do
+		    if type $term &>/dev/null; then  
+			$term -g 80x$height+0+0 -e bash -c "$dialog"
+			break
+		    fi
+		done
 	    fi
-	done
-    fi
-    
-    if type xmessage &>/dev/null; then
-	xmessage "$title: $text" &>/dev/null
+	    ;;
+	xmessage)
+	    xmessage "Bashrun $title:"$'\n\n'"$text" &>/dev/null
+	    ;;
 	
-    elif type -p zenity &>/dev/null; then
-	local type="--info"
-	[[ "$title" =~ rror ]] && type="--error"
-	[[ "$title" =~ arning ]] && type="--warning"
+	zenity)
+	    local type="--info"
+	    [[ "$title" =~ rror ]] && type="--error"
+	    [[ "$title" =~ arning ]] && type="--warning"
 
-	zenity $type --title "Bashrun $title" --text "$text" &>/dev/null
-    
-    elif type -p kdialog &>/dev/null; then
-	local type="--msgbox"
-	[[ "$title" =~ rror ]] && type="--error"
-	[[ "$title" =~ arning ]] && type="--sorry"
+	    zenity $type --title "Bashrun $title" --text "$text" &>/dev/null
+	    ;;
+	
+	kdialog)
+	    local type="--msgbox"
+	    [[ "$title" =~ rror ]] && type="--error"
+	    [[ "$title" =~ arning ]] && type="--sorry"
 
-	kdialog --title "Bashrun $title" $type "$text" &>/dev/null
+	    kdialog --title "Bashrun $title" $type "$text"$'\n' &>/dev/null
+	    ;;
 
-    elif type -p notify-send &>/dev/null; then
-	notify-send -t 0 "$title" "$text" &>/dev/null
+	notify-send)
+	    notify-send -t 0 "$title" "$text" &>/dev/null
+	    ;;
 
-    else
-	echo -e "\x07"
-	echo -e "Bashrun $title:\n\n$text"
-    fi
+	echo)	    	    
+	    echo -n -e "\x07"
+	    echo -e "Bashrun $title:\n\n$text"
+    esac
 }
+
