@@ -138,19 +138,19 @@ case "$command" in
 	    exec bashrun -m $mode	
 	fi
 	;;
-    su|--su)
+    su)
 	remote su-run $@
 	;;
     do)
 	remote $@
 	;;
     wait)
-	state=${1:-unmap}
+	state=${1:-unmapped}
 	case "$state" in
 	    ready)
 		wait_until "[[ -f $BASHRUN_CACHE_HOME/${mode}-ready ]]"
 		;;
-	    map|unmap)
+	    mapped|unmapped)
 		§window.wait $state
 		;;	    
 	esac

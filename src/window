@@ -35,19 +35,19 @@ function §window.unmapped? {
 
 function §window.wait {
 
-    local state="${1:-unmap}"
+    local state="${1:-unmapped}"
     local name="bashrun-$BASHRUN_MODE"
 
-    if [[ "$state" == "map" ]]; then
+    if [[ "$state" == "mapped" ]]; then
 	while sleep 0.1; do
-	    if [[ ! "$(xdotool search --onlyvisible --name $name 2> /dev/null)" == '' ]]; then
+	    if [[ ! "$(xdotool search --onlyvisible --classname $name 2> /dev/null)" == '' ]]; then
 		break
 	    fi
 	done
 
-    elif [[ "$state" == "unmap" ]]; then
+    elif [[ "$state" == "unmapped" ]]; then
 	while sleep 0.1; do
-	    if [[ "$(xdotool search --onlyvisible --name $name 2> /dev/null)" == '' ]]; then
+	    if [[ "$(xdotool search --onlyvisible --classname $name 2> /dev/null)" == '' ]]; then
 		break
 	    fi
 	done

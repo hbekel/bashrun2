@@ -200,7 +200,7 @@ function usage {
 
     su <cmd>       : run <cmd> as root, using bashrun for password entry
     do <act> <cmd> : remotely invoke <action> for <cmd>
-    wait <state>   : wait until bashrun is in <state> ([map|unmap|ready])
+    wait <state>   : wait until bashrun is in <state> ([mapped|unmapped|ready])
 
   Press F1 in bashrun to list the current keybindings.
 
