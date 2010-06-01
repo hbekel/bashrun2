@@ -43,8 +43,21 @@ function bootstrap {
     source $BASHRUN_SHARE/window
     source $BASHRUN_SHARE/modes
     source $BASHRUN_SHARE/core 
-    source $BASHRUN_RCFILE 
+    
+    if ! §syntax? "$BASHRUN_RCFILE"; then
+	errors="$(<$BASHRUN_CACHE_HOME/errors)"
+	errors="${errors//$'\n'/\\n}"
+	§message "Syntax Errors" \
+	    "The configuration file contains syntax errors:
 
+             $errors
+
+             Aborting. Please fix and retry."
+	exit 1
+    else
+	source $BASHRUN_RCFILE
+    fi
+    
     # load mode config
     §configs.restore_core "modes" &>/dev/null
     §configs.collect_user_configs "modes"

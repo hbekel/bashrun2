@@ -271,6 +271,10 @@ function §engine.shutdown {
 	[[ -f "$file" ]] && rm "$file"
     done
 
+    # remove plugin check and errors file
+    rm "$BASHRUN_PLUGINS_CHECKED" &>/dev/null
+    rm "$BASHRUN_CACHE_HOME/errors" &>/dev/null    
+
     §debug "exit"
     exit 0
 }    

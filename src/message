@@ -126,6 +126,9 @@ function §message {
 	    # escape literal double quotes
 	    text="${text//\"/\\\"}"
 
+	    # escape literal backticks
+	    text="${text//\`/\\\`}"
+
 	    # add leading and closing blank lines
 	    text="\n${text}\n"
             

@@ -46,6 +46,16 @@ function §function.clone {
     fi
 }
 
+function §syntax? {
+    local file="$1"
+    local errors="$BASHRUN_CACHE_HOME/errors"
+
+    bash -n "$1" &> $errors
+    errors="$(<$errors)"
+    
+    [[ -z "$errors" ]]
+}
+
 function §interpolate {
     local str="$1"
     local var=""
@@ -127,11 +137,6 @@ function §debug {
 	    echo -ne "${!col}" >&2
 	    requested=1
 
-	elif §defined? "$str"; then # variable
-	    if §defined? "$str"; then
-		echo -ne "$d$str$b$v " >&2 # name
-		echo -n  "${!str} "    >&2 #value 
-	    fi
 	else
 	    [[ requested -eq 0 ]] && echo -ne "$d" >&2 
 	    echo -n "$str " >&2

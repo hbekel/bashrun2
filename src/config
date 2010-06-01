@@ -48,8 +48,7 @@ function §config.get_dumpname { # $wanted
 }
 
 function §config.get_final_dumpname {
-    [[ "§(config.get_names)" =~ ([^\ ])$ ]]
-    echo "$(§config.get_dumpname "${BASH_REMATCH[1]}")"
+    §config.get_dumpname "user"
 }
 
 function §config.get_rcname { # $wanted
