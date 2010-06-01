@@ -116,6 +116,7 @@ function launch {
 
     # launch terminal
     BASHRUN=1 \
+	BASHRUN_FRONTEND=1 \
 	BASHRUN_MODE="$mode" \
 	BASHRUN_FEEDBACK="$feedback" \
 	BASHRUN_DEBUG=$BASHRUN_DEBUG \

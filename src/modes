@@ -77,8 +77,8 @@ function §mode.init {
     # init completion
     §completion.init
 
-    # dump modeinfo for frontend
-    §mode.write_info
+    # dump modeinfo for frontend if required
+    [[ BASHRUN_FRONTEND -eq 1 ]] && §mode.write_info
 }
 
 function §mode.write_info {

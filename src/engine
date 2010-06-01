@@ -81,7 +81,9 @@ function §engine.init {
     
     §progress.reset
 
-    touch $BASHRUN_CACHE_HOME/${BASHRUN_MODE}-ready
+    if [[ BASHRUN_FRONTEND -eq 1 ]]; then
+	touch $BASHRUN_CACHE_HOME/${BASHRUN_MODE}-ready
+    fi
 
     §engine.idle
 }

@@ -27,7 +27,8 @@ source $share/message
 source $share/bootstrap
 
 # register this instance (needs to happen early on)
-§registry.add
+# unless we're not launched by the frontend...
+[[ BASHRUN_FRONTEND -eq 1 ]] && §registry.add
 
 # setup progress bar
 source $share/progress
