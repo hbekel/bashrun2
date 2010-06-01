@@ -3,6 +3,7 @@
 ################################################################################
 
 BASHRUN_PROGRESS_PERCENT=0
+BASHRUN_PROGRESS_ACTIVE=0
 BASHRUN_PROGRESS_TASK="Busy"
 BASHRUN_PROGRESS_LINE=""
 
@@ -10,11 +11,15 @@ function §progress.enabled? {
     [[ BASHRUN_DEBUG -eq 0 && BASHRUN_FEEDBACK -eq 1 && §window.terminal? ]]
 }
 
+function §progress.active? {
+    [[ BASHRUN_PROGRESS_ACTIVE -eq 1 ]]
+}
+
 §progress.new () {
     BASHRUN_PROGRESS_TASK="${1:-Progress}"
     BASHRUN_PROGRESS_PERCENT=${2:-0}
+    BASHRUN_PROGRESS_ACTIVE=1
 
-    §progress.enabled? && tput civis
     §progress.update "$BASHRUN_PROGRESS_PERCENT"
 }
 
@@ -48,6 +53,8 @@ function §progress.enabled? {
 
     §progress.enabled? || return
 
+    tput civis
+
     local l=$(( COLUMNS * BASHRUN_PROGRESS_PERCENT / 100 ))
     local i=0
     local char=""
@@ -69,6 +76,7 @@ function §progress.enabled? {
 
     BASHRUN_PROGRESS_PERCENT=0
     BASHRUN_PROGRESS_TASK="Busy"
+    BASHRUN_PROGRESS_ACTIVE=0
 
     echo -ne '\e[0m'
     §progress.enabled? && tput cvvis

@@ -27,7 +27,7 @@ function +plugins {
 		§message "Error" \
 		    "Plugin \"$name\" not found: no such file(s):
 
-                     $(§tilde_path $BASHRUN_CONFIG_HOME/plugins)/$name.rc \n 
+                     $(§tilde_path $BASHRUN_CONFIG_HOME/plugins)/$name.rc\n
                      $BASHRUN_SHARE/plugins/$name.rc"
 	    fi
 	fi

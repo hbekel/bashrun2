@@ -33,9 +33,17 @@ function §message.wrap {
     for (( i=0; i<${#chunks[@]}; i++ )); do
 	chunk="${chunks[i]}"
 	
-	# echo "chunk $i: '$chunk'" >&2
+	# allow \n's to be inserted in between two words,
+	# e.g "foo\nbar", or at the end of a word (i.e. line)
+	while [[ "$chunk" =~ ([^\ ])\\n ]]; do	    
+	    chunk="${chunk//[^ ]\\n/${BASH_REMATCH[1]} \n }"
+	done
 
-	# strip newlines from chunk
+	while [[ "$chunk" =~ ([^\ ])\\n([^\ ]) ]]; do	    
+	    chunk="${chunk//[^ ]\\n[^ ]/${BASH_REMATCH[1]} \n ${BASH_REMATCH[2]}}"
+	done
+
+	# strip literal newlines from chunk
 	chunk="${chunk//$'\n'/ }"
 
 	p=(); k=0
@@ -92,6 +100,7 @@ function §message {
     text="${text//\\n /\\n}"
 
     # xmessage and notify-send don't interpret \n
+    # replace them with literal newlines
     if [[ "$method" =~ xmessage|notify-send ]]; then
 	text="${text//\\n/$'\n'}"
     fi
@@ -107,7 +116,7 @@ function §message {
 	    tmp="${text//[^$'\n']}/}"
             height=${#tmp}
 
-	    # add number of \n's to height
+	    # add number of escaped newlines (\n) to height
 	    tmp="${text//\\n/}"
 	    (( height += ((${#text} - ${#tmp}) / 2) ))
 

@@ -260,7 +260,7 @@ function §action.available? {
     # check for deps
     for dep in $(§action.get_depends); do
 	if ! `type -p $dep &> /dev/null`; then
-	    §message "Error" "\"$(§action.get_name)\" requires $dep.\n"
+	    §message "Error" "\"$(§action.get_name)\" requires $dep."
 	    result=1
 	fi
     done
