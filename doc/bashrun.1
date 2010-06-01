@@ -3,24 +3,77 @@
 .\"
 .TH BASHRUN 1 "2010-05-22" "Linux" "User manuals"
 .SH NAME
-\fBbashrun\fP \- X11 application launcher based on bash
+\fBbashrun\fP \- launch applications from interactive bash sessions
 .SH SYNOPSIS
-\fBbashrun\fP [\fIoption\fP] [\fIcommand\fP] [\fIargs\fP] 
+\fBbashrun\fP [\fIoption\fP] [\fIcommand\fP [\fIargs\fP]] 
 .SH DESCRIPTION
 .PP
-\fBbashrun\fP is an application launcher for X11. It runs an interactive bash
-session in a small terminal window, providing all the common bash
-features like readline line editing, aliases, tab completion and
-history, while adding more features like bookmarks, regexp based
-handlers, dictionary lookups and google search queries.
+\fBbashrun\fP provides application launching and terminal window
+management capabilities to interactive bash sessions, suitable for use
+in a graphical user environment.
 
-If bashrun is invoked without any arguments, it will try to simply map
-the window of an existing instance running in the default
-\fIlauncher\fP mode as fast as possible, neglecting any special
-settings like geometry or animation for this mode. If no running
-instance is found or arguments are given, it will proceed as described
-below.
-.SH OPTIONS
+In its default setup, \fBbashrun\fP creates an interactive bash
+session running in a small \fBxterm\fP(1) terminal window, thus providing a simple
+run dialog (\fIlauncher\fP mode). It can also be used from a regular
+terminal session, allowing the user to seamlessly launch both
+graphical and terminal applications from the command line
+(\fIterminal\fP mode).
+.SH OVERVIEW
+Bashrun is composed out of a set of user configurable \fBobjects\fP
+that control different aspects of application launching and terminal
+management:
+
+\fBMode\fP objects, such as the default \fIlauncher\fP and
+\fIterminal\fP modes described above, control the appearance and
+behavior of the terminal hosting the bashrun session.
+
+\fBAction\fP objects implement special ways of treating user input,
+such as launching a command in a terminal or looking up words in a
+dictionary client, and can be bound to key sequences.
+
+\fBTerminal\fP objects allow the user to specify different terminal
+command lines to be used for launching console applications
+with. 
+
+\fBRule\fP objects associate \fBactions\fP and \fBterminals\fP with
+specific commands, e.g. to automatically launch certain commands in a
+specific \fBterminal\fP. Optional support for regular expressions
+allows for fine grained command matching.
+
+\fPHandler\fP objects provide a flexible mechanism for rewriting
+non-executable commands, using regular expression matching,
+substitution and file test operators, thus offering a way to implement
+things like file associations or web shortcuts. They also provide a
+simple interface to programmable completion.
+
+A \fBplugin\fP system is provided to allow flexible inclusion
+and distribution of user created configuration objects.
+
+.SH COMMAND LINE INTERFACE
+The \fBbashrun\fP executable provides a command line interface to
+bashrun sessions and can be used to create, select and control bashrun
+sessions running in different \fBmodes\fP. It can manage a single
+bashrun session for each \fBmode\fP object defined in the
+configuration file. See \fBINVOCATION\fP below for alternatives.
+
+Modes are selected by the \fB-m\fP or \fB\--mode\fP option. If no \fBmode\fP
+is specified, the default \fBmode\fP \fIlauncher\fP is used.
+
+If no session is currently running in the selected \fBmode\fP, then a
+session is started in the selected \fBmode\fP and a \fBcommand\fP
+given is applied to the newly created session, unless the
+\fBcommand\fP is either \fIexit\fP, \fIwid\fP or \fIpid\fP. If no
+\fBcommand\fP is specified, the default \fBcommand\fP \fIshow\fP is
+used.
+
+Note that if neither a \fBmode\fP or \fBcommand\fP is specified,
+i.e. \fBbashrun\fP is invoked without any arguments, it will attempt
+to map the window of an existing \fIlauncher\fP session as fast as
+possible, neglecting any special settings like geometry or animation
+for this \fBmode\fP. If no existing session is found or arguments are
+given on the command line, the frontend will process \fBoptions\fP and
+\fBcommands\fP as described below.
+.SS OPTIONS
 .IP \fB-d\fP,\ \fB--debug\fP
 Enable debugging on startup
 .IP \fB-h\fP,\ \fB--help\fP
@@ -30,15 +83,11 @@ Select mode to launch or control. In the absence
 of this option, the default mode \fIlauncher\fP is used.
 .IP \fB-v\fP,\ \fB--version\fP
 Show version information
-.SH COMMANDS 
-If no instance is currently running in the mode specified with
-\fB--mode\fP, then an instance is launched in the requested mode and
-the command is applied to the newly launched instance, unless the
-command is either \fBexit\fP, \fBwid\fP or \fBpid\fP. If no command is
-specified, the command defaults to \fBshow\fP.
+.SS COMMANDS 
 .IP \fBshow\fP
-Show the terminal window. Maps the window, moves it to the
-current desktop, moves it above other windows and focuses it.
+Show the terminal window. Maps the window, moves it to the current
+desktop, moves it above other windows and focuses it. This is the
+default command if no command has been specified.
 .IP \fBhide\fP
 Unmap the terminal window.
 .IP \fBtoggle\fP
@@ -58,18 +107,19 @@ Remotely invoke \fIaction\fP with
 .BR su (1),
 the window is shown before invoking the action to allow password entry.
 .IP \fBsu\fP\ \fIcommand\fP
-Remotely invoke the \fBsu-run\fP action with \fIcommand\fP. This is
-the equivalent to \fBdo\fP \fBsu-run\fP \fIcommand\fP.
+Remotely invoke the \fIsu-run\fP action with \fIcommand\fP. This is
+the equivalent to \fBdo\fP \fIsu-run\fP \fIcommand\fP.
 .IP \fBwait\fP\ \fIstate\fP
 Wait until the instance is in a certain
 \fIstate\fP. Possible values are:
 .RS
-.IP \fBmap\fP
+.IP \fImapped\fP
 Wait until the window is mapped.
-.IP \fBunmap\fP
+.IP \fIunmapped\fP
 Wait until the window is unmapped.
-.IP \fBready\fP 
-Wait until the instance is fully initialized.
+.IP \fIready\fP 
+Wait until the session is fully initialized and ready to be used with
+the \fBdo\fP or \fBsu\FP \fBcommands\fP.
 .RE
 .IP \fBwid\fP
 Report the window id of the terminal window.
