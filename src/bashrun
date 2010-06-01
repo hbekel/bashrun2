@@ -87,11 +87,33 @@ MODEINFO="$BASHRUN_CACHE_HOME/${mode}-info"
 [[ ! -f $MODEINFO ]] && bootstrap
 source $MODEINFO
 
-# get command argument
-if [[ $# -gt 0 ]]; then
+# get command argument, if any
+if [[ $# -gt 0 && "$1" != "--" ]]; then
     command="$1"
     command=${command/--/}
     shift
+fi
+
+# get arguments and possible terminal options (after "--")
+declare -a args
+termopts=""
+
+if [[ $# -gt 0 ]]; then
+    target="args"    
+    for arg in "$@"; do
+
+	if [[ "$arg" == "--" ]]; then
+	    target="term"
+	    continue
+	fi
+
+	if [[ "$target" == "args" ]]; then
+	    args[${#args[@]}]="$arg"
+	else
+	    termopts+=" $arg"
+	fi
+    done
+    termopts=${termopts/ /}
 fi
 
 # launch a new instance if necessary
@@ -143,13 +165,26 @@ case "$command" in
 	fi
 	;;
     su)
-	remote su-run $@
+	if [[ ${#args[@]} -gt 0 ]]; then
+	    remote su-run ${args[@]}
+	else
+	    echo "bashrun: error: command \`su' requires at least one argument: <cmd>" >&2
+	    exit 1
+	fi
 	;;
     do)
-	remote $@
+	if [[ ${args[@]} -gt 1 ]]; then
+	    remote ${args[@]}
+	else
+	    echo "bashrun: error: command \`do' requires at least two arguments: <action> <cmd>" >&2
+	    exit 1
+	fi
 	;;
     wait)
-	state=${1:-unmapped}
+	state="unmapped"
+	if [[ -n "${args[0]}" ]]; then
+	    state="${args[0]}"
+	fi
 	case "$state" in
 	    ready)
 		wait_until "[[ -f $BASHRUN_CACHE_HOME/${mode}-ready ]]"
@@ -158,7 +193,7 @@ case "$command" in
 		§window.wait $state
 		;;	    
 	esac
-	;;
+	;; 
     *)
 	echo "bashrun: unknown command: $command"
 	exit 1

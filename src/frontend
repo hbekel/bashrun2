@@ -133,7 +133,7 @@ function launch {
 	BASHRUN_MODE="$mode" \
 	BASHRUN_FEEDBACK="$feedback" \
 	BASHRUN_DEBUG=$BASHRUN_DEBUG \
-	$terminal $fix &    
+	$terminal $termopts $fix &    
 
     # wait for the new instance to register and get it's window id and pid
     widfile="$BASHRUN_CACHE_HOME/${mode}-wid"
