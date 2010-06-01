@@ -1,6 +1,6 @@
 # -*- shell-script -*-
 
-BASHRUN_PLUGIN_DIRS="$BASHRUN_CONFIG_HOME/plugins $BASHRUN_SHARE/plugins"
+BASHRUN_PLUGIN_DIRS="$BASHRUN_CONFIG_HOME/plugins $BASHRUN_CONFIG_DIRS/plugins"
 BASHRUN_PLUGINS_CHECKED="$BASHRUN_CACHE_HOME/plugins-checked"
 
 function §plugin.find {
@@ -13,7 +13,6 @@ function §plugin.find {
 	file="$dir/${wanted}.rc"
 	[[ -f "$file" ]] && echo "$file"
     done
-    echo ""
 }
 
 function §plugin.check {
@@ -52,10 +51,14 @@ function +plugins {
 
                          Skipping plugin \"$name\"..."
 		else
+		    §debug "using plugin" -c "$(§tilde_path $file)"
 		    source "$file"
 		fi
 	    else
-		§plugin.check "$file" && source "$file"
+		if §plugin.check "$file"; then
+		    §debug "using plugin" -c "$(§tilde_path $file)"
+		    source "$file"
+		fi
 	    fi
 	else
 	    if §window.terminal?; then
@@ -63,7 +66,7 @@ function +plugins {
 		    "Plugin \"$name\" not found: no such file(s):
 
                      $(§tilde_path $BASHRUN_CONFIG_HOME/plugins)/$name.rc\n
-                     $BASHRUN_SHARE/plugins/$name.rc"
+                     $BASHRUN_CONFIG_DIRS/plugins/$name.rc"
 	    fi
 	fi
     done

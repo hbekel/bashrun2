@@ -1,23 +1,16 @@
 # -*- shell-script -*-
 
-function §bootstrap.upgrade? {
-    [[ ! "$(head -n1 $BASHRUN_RCFILE)" =~ BASHRUN_CONFIG_VERSION ]]
-}
-
 function §bootstrap {
 
     §bootstrap.directories
     §bootstrap.bashrc
-    §bootstrap.rcfile 
-
-    §bootstrap.upgrade? && §bootstrap.prepare_upgrade
 }
 
 function §bootstrap.directories {
     
     # create XDG directories
     local dir
-    for dir in 'CONFIG' 'DATA' 'CACHE'; do
+    for dir in DATA CACHE; do
 
 	dir="BASHRUN_${dir}_HOME"
 	dir=${!dir}
@@ -26,21 +19,6 @@ function §bootstrap.directories {
 	    install -v -d -m 700 $dir
 	fi
     done
-
-    # create plugin directory
-    dir="$BASHRUN_CONFIG_HOME/plugins"
-    if [[ ! -d $dir && ! -L $dir ]]; then
-	install -v -d -m 700 $dir
-    fi
-}
-
-function §bootstrap.rcfile {
-
-    # install rcfile unless it exists
-    if [[ ! -f $BASHRUN_RCFILE ]]; then
-	install -v -m644 $BASHRUN_SHARE/defaultrc $BASHRUN_RCFILE
-	return 0
-    fi
 }
 
 function §bootstrap.bashrc {
@@ -69,43 +47,4 @@ $comment
     fi
 }
 
-function §bootstrap.prepare_upgrade {
-
-	local keys="$BASHRUN_CONFIG_HOME/keys"
-	local backupdir="$BASHRUN_CONFIG_HOME/backup"
-	local keys_exist=0
-
-	# backup old files
-	install -v -d -m 700 $backupdir
-	mv -v $BASHRUN_RCFILE $backupdir
-	if [[ -f "$keys" ]]; then
-	    keys_exist=1
-	    mv -v $keys $backupdir
-	fi
-
-	# install default rcfile
-	install -v -m644 $BASHRUN_SHARE/defaultrc $BASHRUN_RCFILE
-
-	source $BASHRUN_SHARE/globals
-	source $BASHRUN_SHARE/utils
-	source $BASHRUN_SHARE/message
-
-	local docs="http://bashrun.sourceforge.net/upgrade.html"
-	local plural=" has"
-	[[ keys_exist -eq 1 ]] && plural="s have"
-
-	[[ "$1" == "--quiet" ]] && return 0
-
-	§message "Upgrade information" \
-	    "Welcome to Bashrun $BASHRUN_VERSION!
-
-	    The configuration file format for bashrun has
-	    changed. Your old configuration file$plural been backed up
-	    to $(§tilde_path $backupdir)/.
-
-	    A new default configuration file has been installed to
-            $(§tilde_path $BASHRUN_RCFILE). It contains detailed
-            instructions on how to convert your old configuration
-            files to the new format."  
-} 
 §bootstrap

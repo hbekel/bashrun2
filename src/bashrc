@@ -11,52 +11,55 @@
 if [[ "$TERM" == "linux" ]]; then    
     return 1
 fi
-
 # bootstrap install locations
 path=$(type -p bashrun 2>/dev/null) 
 prefix=${path/\/bin\/bashrun/}
-share=$prefix/share/bashrun
 
-# source utils and globals
-source $share/utils
-source $share/globals
-source $share/window
-source $share/registry
-source $share/xdotool
-source $share/message
-source $share/bootstrap
+# source global variables
+source $prefix/share/bashrun/globals
+unset path prefix
+
+# initialize object system
+source $BASHRUN_SHARE/objects
+§objects.site $BASHRUN_SHARE
+§objects.cache_home $BASHRUN_CACHE_HOME
+§objects.data_home $BASHRUN_CACHE_HOME
+§objects.namespace "bashrun"
+
+# source utilities 
+source $BASHRUN_SHARE/utils
+source $BASHRUN_SHARE/window
+source $BASHRUN_SHARE/registry
+source $BASHRUN_SHARE/xdotool
+source $BASHRUN_SHARE/message
+source $BASHRUN_SHARE/bootstrap
 
 # register this instance (needs to happen early on)
 # unless we're not launched by the frontend...
 [[ BASHRUN_FRONTEND -eq 1 ]] && §registry.add
 
 # setup progress bar
-source $share/progress
+source $BASHRUN_SHARE/progress
 §progress.new "Initializing... [objects]"
 
-# source utilities
-source $share/config
-source $share/plugin
-source $share/remote
-source $share/geometry
-source $share/command
-source $share/readline
-source $share/completion
+# continue sourcing utilities
+source $BASHRUN_SHARE/config
+source $BASHRUN_SHARE/plugin
+source $BASHRUN_SHARE/remote
+source $BASHRUN_SHARE/geometry
+source $BASHRUN_SHARE/command
+source $BASHRUN_SHARE/readline
+source $BASHRUN_SHARE/completion
 
 # source objects
-source $share/modes
-source $share/terminals
-source $share/actions
-source $share/bindings
-source $share/handlers
-source $share/rules
-source $share/bookmarks
+source $BASHRUN_SHARE/modes
+source $BASHRUN_SHARE/terminals
+source $BASHRUN_SHARE/actions
+source $BASHRUN_SHARE/bindings
+source $BASHRUN_SHARE/handlers
+source $BASHRUN_SHARE/rules
+source $BASHRUN_SHARE/bookmarks
 
 # source and initialize the engine
-source $share/engine
+source $BASHRUN_SHARE/engine
 §engine.init
-
-# cleanup
-unset share
-unset prefix
-unset path

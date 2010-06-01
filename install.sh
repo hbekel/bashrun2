@@ -10,7 +10,15 @@ install -v -d $PREFIX/bin
 install -v -m 755 src/bashrun $PREFIX/bin
 
 install -v -d $PREFIX/share/bashrun
-install -v -d $PREFIX/share/bashrun/plugins
+
+install -v -d ${XDG_CONFIG_DIRS:-/etc/xdg}/bashrun/plugins
+
+install -v -m 644 -D etc/bashrun.rc ${XDG_CONFIG_DIRS:-/etc/xdg}/bashrun/bashrun.rc
+
+PLUGINS=(terminal.rc dropdown.rc)
+for file in ${PLUGINS[@]}; do
+    install -v -m 644 etc/plugins/$file ${XDG_CONFIG_DIRS:-/etc/xdg}/bashrun/plugins
+done
 
 FILES=(
     actions
@@ -22,7 +30,6 @@ FILES=(
     completion
     config
     core
-    defaultrc
     engine
     frontend
     geometry
@@ -48,11 +55,6 @@ for file in ${FILES[@]}; do
     install -v -m 644 src/$file $PREFIX/share/bashrun
 done
 
-PLUGINS=(terminal.rc dropdown.rc)
-for file in ${PLUGINS[@]}; do
-    install -v -m 644 src/plugins/$file $PREFIX/share/bashrun/plugins
-done
-
 BC=/etc/bash_completion
 BCDIR=/etc/bash_completion.d
 
@@ -60,7 +62,7 @@ if [[ -f $BC && -d $BCDIR && -w $BCDIR ]]; then
     install -v -m 644 misc/bash_completion $BCDIR/bashrun
 fi
 
-install -v -m 644 -D doc/bashrun.1 $PREFIX/share/man/man1/bashrun.1
+install -v -m 644 -D man/bashrun.1 $PREFIX/share/man/man1/bashrun.1
 
 echo
 echo -e "\e[1;32mBashrun 1.0.0-rc1 has been installed in $PREFIX\e[0m"

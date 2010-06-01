@@ -18,8 +18,7 @@ fi
 rm -v $PREFIX/bin/bashrun
 rmdir -v $PREFIX/bin
 
-rm -v $PREFIX/share/bashrun/plugins/*
-rmdir -v $PREFIX/share/bashrun/plugins
+rm -r -v ${XDG_CONFIG_DIRS:-/etc/xdg}/bashrun/
 
 rm -v $PREFIX/share/bashrun/*
 rmdir -v $PREFIX/share/bashrun

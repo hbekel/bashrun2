@@ -13,10 +13,10 @@ management capabilities to interactive bash sessions, suitable for use
 in a graphical user environment.
 
 In its default setup, \fBbashrun\fP creates an interactive bash
-session running in a small \fBxterm\fP(1) terminal window, thus providing a simple
-run dialog (\fIlauncher\fP mode). It can also be used from a regular
-terminal session, allowing the user to seamlessly launch both
-graphical and terminal applications from the command line
+session running in a small \fBxterm\fP(1) terminal window, thus
+providing a simple run dialog (\fIlauncher\fP mode). It can also be
+used from a regular terminal session, allowing the user to seamlessly
+launch both graphical and terminal applications from the command line
 (\fIterminal\fP mode).
 .SH OVERVIEW
 Bashrun is composed out of a set of user configurable \fBobjects\fP
@@ -56,8 +56,9 @@ sessions running in different \fBmodes\fP. It can manage a single
 bashrun session for each \fBmode\fP object defined in the
 configuration file. See \fBINVOCATION\fP below for alternatives.
 
-Modes are selected by the \fB-m\fP or \fB\--mode\fP option. If no \fBmode\fP
-is specified, the default \fBmode\fP \fIlauncher\fP is used.
+Modes are selected by the \fB-m\fP or \fB\--mode\fP option. If no
+\fBmode\fP is specified, the default \fBmode\fP \fIlauncher\fP is
+used.
 
 If no session is currently running in the selected \fBmode\fP, then a
 session is started in the selected \fBmode\fP and a \fBcommand\fP
@@ -101,14 +102,14 @@ these conditions apply, hide the window.
 Terminate instance.
 .IP \fBrestart\fP
 Restart instance.
-.IP \fBdo\fP\ \fIaction\fP\ \fIcommand\fP
+.IP \fBdo\fP\ \fIaction\fP\ \fIshell-command\fP
 Remotely invoke \fIaction\fP with
-\fIcommand\fP. If the requested action involves
+\fIshell-command\fP. If the requested action involves
 .BR su (1),
 the window is shown before invoking the action to allow password entry.
-.IP \fBsu\fP\ \fIcommand\fP
-Remotely invoke the \fIsu-run\fP action with \fIcommand\fP. This is
-the equivalent to \fBdo\fP \fIsu-run\fP \fIcommand\fP.
+.IP \fBsu\fP\ \fIshell-command\fP
+Remotely invoke the \fIsu-run\fP action with \fIshell-command\fP. This is
+the equivalent to \fBdo\fP \fIsu-run\fP \fIshell-command\fP.
 .IP \fBwait\fP\ \fIstate\fP
 Wait until the instance is in a certain
 \fIstate\fP. Possible values are:

@@ -17,6 +17,8 @@ function §engine.init {
 
     §separator "bashrun $BASHRUN_VERSION"
 
+    §debug "using" -c "$(§tilde_path $BASHRUN_RCFILE)"
+
     §progress.update +10 "Initializing... [window]"
 
     # set wid to terminal $WINDOWID
