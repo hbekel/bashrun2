@@ -51,24 +51,24 @@ function §progress.active? {
 
 §progress.draw () {
 
-    §progress.enabled? || return
+    §progress.enabled? || return 1
 
     tput civis
 
     local l=$(( COLUMNS * BASHRUN_PROGRESS_PERCENT / 100 ))
     local i=0
     local char=""
-    echo -ne '\e[0G'
-    echo -ne '\e[1m'
+    echo -ne '\e[0G' >&2
+    echo -ne '\e[1m' >&2
     for ((i=0; i<${#BASHRUN_PROGRESS_LINE}; i++)); do
 	if [[ i -lt l ]]; then	    
-	    echo -ne '\e[33m'
-	    echo -ne '\e[44m'
+	    echo -ne '\e[33m' >&2
+	    echo -ne '\e[44m' >&2
 	else
-	    echo -ne '\e[34m'
-	    echo -ne '\e[40m'
+	    echo -ne '\e[34m' >&2
+	    echo -ne '\e[40m' >&2
 	fi
-	echo -n "${BASHRUN_PROGRESS_LINE:$i:1}"
+	echo -n "${BASHRUN_PROGRESS_LINE:$i:1}" >&2
     done
 }
     
@@ -78,7 +78,7 @@ function §progress.active? {
     BASHRUN_PROGRESS_TASK="Busy"
     BASHRUN_PROGRESS_ACTIVE=0
 
-    echo -ne '\e[0m'
+    echo -ne '\e[0m' >&2
     §progress.enabled? && tput cvvis
 }
 

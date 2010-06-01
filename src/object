@@ -131,6 +131,10 @@ function objects.interface? {
     [[ _OBJECTS_HAVE_INTERFACE -eq 0 ]] && return 1
 }
 
+function objects.size {
+    echo "$_OBJECTS_SIZE"
+}
+
 function objects.empty? {
     [[ _OBJECTS_SIZE -eq 0 ]]
 }

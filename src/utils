@@ -269,8 +269,9 @@ function §print_bindings {
     local id=""
     local bindings=""
     local keymap=""
-
     local covered=""
+
+    echo -e "${w}Bashrun Keybindings${n}\n"
 
     for keymap in emacs vi-insert vi-command; do
 	bindings="$(§bound_and_sorted $keymap)"
