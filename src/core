@@ -14,7 +14,7 @@
 
     +mode-launcher-init () {	
 	
-	HISTFILE="${XDG_DATA_HOME:-.local/share}/bashrun/history"
+	HISTFILE="$(§xdg data-home bashrun/history)"
 	PS1='>'
 	stty -ixon
 	stty eof 0201

@@ -1,0 +1,93 @@
+# -*- shell-script -*-
+
+§xdg () {    
+    local test type query wanted
+    declare -a dirs=()
+    declare -i found=1
+    declare -i i=0
+
+    if [[ "${1:0:1}" == "-" ]]; then
+	test="$1"; shift
+    fi
+    type="$1"
+    query="$2"
+   
+    case "$type" in
+	data-home)
+	    dirs=( $(§xdg_dirs DATA_HOME) )
+	    ;;
+	config-home)
+	    dirs=( $(§xdg_dirs CONFIG_HOME) )
+	    ;;
+	cache-home)
+	    dirs=( $(§xdg_dirs CACHE_HOME) )
+	    ;;
+	data-dirs)
+	    dirs=( $(§xdg_dirs DATA_DIRS) )
+	    ;;
+	config-dirs)
+	    dirs=( $(§xdg_dirs CONFIG_DIRS) )
+	    ;;
+	data)
+	    dirs=( $(§xdg_dirs DATA_HOME DATA_DIRS) )
+	    ;;
+	config)
+	    dirs=( $(§xdg_dirs CONFIG_HOME CONFIG_DIRS) )
+    esac
+
+    for (( i=0; i<${#dirs[@]}; i++ )); do
+	    
+	wanted="${dirs[i]}"	    
+	[[ -n "$query" ]] && wanted+="/$query"
+	wanted="${wanted//\/\//\/}" 
+
+	if [[ -z "$test" ]]; then
+	    echo "$wanted"
+	    found=0
+	    continue
+
+	elif eval "[[ $test '$wanted' ]]"; then
+	    echo "$wanted"
+	    found=0
+	    break
+	fi
+    done
+    return $found
+}
+
+§xdg_dirs () {
+    local dirs=""
+ 
+    for type in "$@"; do
+
+	case "$type" in
+
+	    DATA_HOME)
+		dirs+="${XDG_DATA_HOME:-$HOME/.local/share} "
+		;;
+	    CONFIG_HOME)
+		dirs+="${XDG_CONFIG_HOME:-$HOME/.config} "
+		;;
+	    CACHE_HOME)
+		dirs+="${XDG_CACHE_HOME:-$HOME/.cache} "
+		;;
+	    DATA_DIRS)
+		if [[ -z "$XDG_DATA_DIRS" ]]; then
+		    dirs+="/usr/local/share /usr/share "		
+		else
+		    dirs+="${XDG_DATA_DIRS//:/ }"		    
+		    dirs+=" "
+		fi
+		;;
+	    CONFIG_DIRS)
+		if [[ -z "$XDG_CONFIG_DIRS" ]]; then
+		    dirs+="/etc/xdg "
+		else
+		    dirs+="${XDG_CONFIG_DIRS//:/ } "
+		    dirs+=" "
+		fi
+	esac
+    done
+    echo "$dirs"
+}
+

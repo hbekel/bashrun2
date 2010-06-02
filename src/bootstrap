@@ -8,7 +8,7 @@ function §bootstrap {
 
 function §bootstrap.directories {
     
-    # create XDG directories
+    # create data and cache directories
     local dir
     for dir in DATA CACHE; do
 
