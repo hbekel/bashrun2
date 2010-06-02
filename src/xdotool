@@ -3,7 +3,7 @@
 BASHRUN_XDOTOOL="unknown" 
 # 0 -> available
 # 1 -> not available
-# 2 -> wrong version (<20090815)
+# 2 -> wrong version
 
 function §xdotool.available? {
 
@@ -19,21 +19,20 @@ function §xdotool.available? {
 	fi
 
         # check if xdotool>=1.20100227 (where --version was added)
-	if ! xdotool --version &>/dev/null; then
+	if ! xdotool --version &>/dev/null; then	    
 	    BASHRUN_XDOTOOL=2
 	    return 2
 	fi
 
 	# check if xdotool>=1.20100416 (buggy versions before that)
-	[[ "$(xdotool --version)" =~ ([0-9]+)\.([0-9]+) ]]
-	declare -i major="${BASH_REMATCH[1]}"
-	declare -i minor="${BASH_REMATCH[2]}"
+	[[ "$(xdotool --version)" =~ ([0-9.]+) ]]
 
-	if [[ major -eq 1 ]]; then
-	    if [[ minor -lt 20100416 ]]; then 
-		BASHRUN_XDOTOOL=2
-		return 2
-	    fi
+	local version="${BASH_REMATCH[1]}"
+	version="${version//\./}"
+	
+	if [[ "$version" -lt 1201004162809 ]]; then 
+	    BASHRUN_XDOTOOL=2
+	    return 2
 	fi
     fi
     return 0
