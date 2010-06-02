@@ -2,13 +2,8 @@
 
 ################################################################################
 
-# determine install location
-path=$(type -p bashrun 2>/dev/null) 
-BASHRUN_PREFIX=${path/\/bin\/bashrun/} && unset path
-unset path
-
 # setup paths
-BASHRUN_SHARE=$BASHRUN_PREFIX/share/bashrun
+BASHRUN_SHARE=__PREFIX__/share/bashrun
 BASHRUN_CONFIG_DIRS=${XDG_CONFIG_DIRS:-/etc/xdg}/bashrun
 BASHRUN_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}/bashrun
 BASHRUN_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}/bashrun

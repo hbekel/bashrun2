@@ -40,12 +40,8 @@ if [[ $# -eq 0 ]]; then
 fi
 # no existing instance or xdotool is missing -> proceed...
 
-# determine install location
-path=$(type -p bashrun 2>/dev/null) 
-prefix=${path/\/bin\/bashrun/} && unset path
-
 # source global variables
-source $prefix/share/bashrun/globals
+source __PREFIX__/share/bashrun/globals
 
 # bootstrap if CACHE_HOME doesn't exist
 if [[ ! -e $BASHRUN_CACHE_HOME ]]; then

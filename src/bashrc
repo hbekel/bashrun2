@@ -11,13 +11,9 @@
 if [[ "$TERM" == "linux" ]]; then    
     return 1
 fi
-# bootstrap install locations
-path=$(type -p bashrun 2>/dev/null) 
-prefix=${path/\/bin\/bashrun/}
 
 # source global variables
-source $prefix/share/bashrun/globals
-unset path prefix
+source __PREFIX__/share/bashrun/globals
 
 # initialize object system
 source $BASHRUN_SHARE/objects

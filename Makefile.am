@@ -1,4 +1,4 @@
-SUBDIRS = src man etc
+SUBDIRS = src etc man
 EXTRA_DIST = etc/bashrun.rc \
 etc/plugins/dropdown.rc	\
 etc/plugins/terminal.rc \
