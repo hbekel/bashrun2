@@ -1,7 +1,10 @@
-###   BASHRUN_CONFIG_VERSION=1.0.0-rc1   ### -*- shell-script -*-
-### DO NOT CHANGE OR MOVE THE ABOVE LINE ###
-
-# This is the user configuration file for bashrun 1.0.0-rc1.
+### Bashrun 1.0.0-rc1 config ### -*- shell-script -*-
+#
+# This is the system-wide configuration file for Bashrun.
+#
+# User configuration files go into ~/.config/bashrun, or
+# $XDG_CONFIG_HOME/bashrun if $XDG_CONFIG_HOME has been modified.
+#
 # Please see bashrun(1) for all the details on configuration.
 
 +plugins terminal dropdown
@@ -54,16 +57,16 @@
       # startup.
 
       # --onmap 'transset-df -a 0.75' 
-      ## A command to run after the window has been mapped and focused. This
-      ## setting replaces the former POST_MAP_COMMAND.
+      # A command to run after the window has been mapped and focused. This
+      # setting replaces the former POST_MAP_COMMAND.
 
-      --logfile '/dev/tty9'
+      --logfile '/dev/null'
       # Set the logfile to redirect command output to. This replaces
       # the former LOGFILE setting.
 
     +mode-launcher-init () {	
         # This fuction, if defined, will be called for the default
-	# mode "bashrun" during startup. Here you may configure
+	# mode "launcher" during startup. Here you may configure
 	# anything that is specific to this mode only. See bashrun(1)
 	# for alternatives.
 
@@ -81,9 +84,15 @@
 +configure-terminals () {
 
     # Configure terminals to launch commands in. In the string given
-    # by --command, %c is replaced with the actual command to run. %g
-    # is replaced by the string given with --geometry. %f ist replaced
-    # by the string given with --font. 
+    # by --command, %* is replaced with the actual command to run. If
+    # %@ is used instead, the command is quoted to appear as a single
+    # word before being inserted. Consequtive @'s after %@ add another
+    # level of quoting, e.g. %@@ quotes two times, %@@@ quotes three
+    # times, and so on. If neither %* or %@ is given, the command is
+    # appended to the --command string without further quoting.
+    #
+    # %g is replaced by the string given with --geometry. %f ist
+    # replaced by the string given with --font.
     #
     # Note that if you use %g or %f in the command string, the values
     # of --geometry and --font will be inserted into the string even
@@ -91,25 +100,26 @@
 
     # The following two terminals are defined by default:
 
-    +terminal default --command "xterm -e bash -c %c"
+    +terminal default --command "xterm -e bash -c %@"
     # The default terminal to launch commands in if no other terminal
     # has been requested by an action or an action rule, see below.
 
     +terminal notify 
-      --command "xterm -g %g -e bash -c %c"
+      --command "xterm -g %g -e bash -c %@"
       --geometry "40x4+0+0"
 
     # ^ A small terminal for notifications, used by the default actions
     # "term-notify" and "su-term-notify".
 
-    # Here's an example of a urxvt terminal using a small font. See
-    # the +configure-rules function below for an example of how to use
-    # it.
-
+    # Here's an example of a urxvt terminal using a small font:
+      
     +terminal small
-      --command "urxvt -g %g -fn %f -e bash -c %c"
+      --command "urxvt -g %g -fn %f -e bash -c %@"
       --geometry "160x48"
       --font "xft:Fixed:size=10"
+
+    # See the +configure-rules function below for an example of how to
+    # associate it with a specific command...
 }
 
 +configure-rules () {

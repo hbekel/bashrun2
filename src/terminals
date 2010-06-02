@@ -2,7 +2,7 @@
 
 ################################################################################
 
-§class "§terminal" "name command geometry font" ""
+§class "§terminal" "name command geometry font terminal" ""
 
 ################################################################################
 
@@ -12,12 +12,25 @@
 function §terminal.new { 
 
     §_terminal.new "$1"
-    §terminal.set_command "xterm -e bash -c %c"
+    §terminal.set_command "xterm -e bash -c %@"
 }
 
 function §terminal.get_command {
-    local command="$(§_terminal.get_command)"
     
+    local name="$(§terminal.get_name)"
+    local terminal="$(§terminal.get_terminal)"
+
+    if [[ -n "$terminal" ]]; then
+	# try to seek the terminal referenced by
+	# --terminal... 
+	if ! §terminals.seek "$terminal"; then
+	    # not found, so we seek back to the original one
+	    §terminals.seek "$name"
+	fi
+    fi
+    
+    local command="$(§_terminal.get_command)"
+
     if [[ "$command" =~ [^\\]%(g|f) ]]; then
         # replace %g and %f with geometry and font
 	local geometry="$(§terminal.get_geometry)"

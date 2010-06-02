@@ -56,6 +56,21 @@ function §syntax? {
     [[ -z "$errors" ]]
 }
 
+function §quote { 
+    declare -i times=1 i=0
+    local varname=""
+
+    if [[ "$1" =~ [0-9]+ ]]; then
+	times=$1
+	shift
+    fi
+    for varname in "$@"; do
+	for (( i=0; i<$times; i++ )); do
+	    eval "printf -v $varname '%q' \"\$$varname\""
+	done
+    done
+}
+
 function §interpolate {
     local str="$1"
     local var=""

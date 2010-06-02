@@ -89,20 +89,17 @@ function §mode.write_info {
     local onmap="$(§mode.get_onmap)"
     local onunmap="$(§mode.get_onunmap)"
 
-    # escape double quotes 
-    terminal=${terminal//\"/\\\"}
-    onmap=${onmap//\"/\\\"}
-    onunmap=${onunmap//\"/\\\"}
+    §quote terminal onmap onunmap
 
-
-    echo "pid=$$
+    echo "# mode info
+          pid=$$
           wid=$WINDOWID
-	  terminal=\"$(§mode.get_terminal)\"
+	  terminal=$terminal
           geometry=$(§mode.get_geometry 0)
           feedback=$(§mode.get_feedback)
           animated=$(§mode.get_animated)
-          onmap=\"$(§mode.get_onmap)\"
-          onunmap=\"$(§mode.get_onunmap)\"" > $file
+          onmap=$onmap
+          onunmap=$onunmap" > $file
 }
 
 function §mode.reset {

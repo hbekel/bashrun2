@@ -151,6 +151,7 @@ function §command.add_terminal {
     §command.get_word
     local terminal=""
     local terminal_command=""
+    local method=""
 
     for terminal in $(§terminals.used); do
 	if [[ "$BASHRUN_COMMAND_WORD" == "$terminal" ]]; then
@@ -172,12 +173,20 @@ function §command.add_terminal {
     # get the terminal command
     terminal_command="$(§terminal.get_command)"
 
-    # quote the command
-    printf -v BASHRUN_COMMAND %q "$BASHRUN_COMMAND"
+    # %* insert command split into words
+    # %@ insert command as a single word (one level of quoting)
+    # %@@, %@@@, ... add two, three, etc. levels of quoting
+    if [[ "$terminal_command" =~ [^\\]%((@|\*)+) ]]; then
+	method="${BASH_REMATCH[1]}"
+	
+	if [[ "$method" =~ @ ]]; then
+		§quote ${#method} BASHRUN_COMMAND
+	fi
 
-    if [[ "$terminal_command" =~ [^\\]%c ]]; then
-	# replace %c in terminal command with command
-	BASHRUN_COMMAND=${terminal_command/\%c/$BASHRUN_COMMAND}
+	# insert command into terminal command 
+	# FIXME: this doesn't work for escaped %'s
+	BASHRUN_COMMAND=${terminal_command/\%$method/$BASHRUN_COMMAND}
+
     else
 	# append command to terminal command
 	BASHRUN_COMMAND="$(§terminal.get_command) $BASHRUN_COMMAND"

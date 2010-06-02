@@ -41,10 +41,10 @@
 
 +configure-core-terminals () {
     
-    +terminal default --command "xterm -e bash -c %c"
+    +terminal default --command "xterm -e bash -c %@"
 
     +terminal notify 
-      --command "xterm -g %g -e bash -c %c"
+      --command "xterm -g %g -e bash -c %@"
       --geometry "40x4+0+0"
 }
 
