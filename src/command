@@ -122,9 +122,6 @@ function §command.add_su {
 	return 0
     fi
 
-    # COMMAND goes into su -c '' -> escape single quotes
-    BASHRUN_COMMAND=${BASHRUN_COMMAND//\'/\\\'}
-
     # prompt for username
     if [[ "$user" == "--prompt" ]]; then
 	until [[ -n "$user" && "$user" != "--prompt" ]]; do
@@ -136,11 +133,15 @@ function §command.add_su {
     fi
 
     # run the command itself in the background
-    if [[ ! "$BASHRUN_COMMAND" =~ \&\ *$ ]]; then
-	
-	BASHRUN_COMMAND="su $user -c '$BASHRUN_COMMAND &> /dev/null &'"
-    fi
-    # run the su part (passwort entry) in foreground 
+    BASHRUN_COMMAND="$BASHRUN_COMMAND &> /dev/null &"
+
+    # quote the command
+    printf -v BASHRUN_COMMAND %q "$BASHRUN_COMMAND"
+
+    # prefix with su command
+    BASHRUN_COMMAND="su $user -c $BASHRUN_COMMAND"
+
+    # run the su command in foreground for password entry
     BASHRUN_EXECMODE="" 
     §debug "$BASHRUN_COMMAND"
 }
@@ -168,18 +169,18 @@ function §command.add_terminal {
 	§terminals.seek 'default'
     fi
 
-    # COMMAND goes into "" -> escape double quotes
-    BASHRUN_COMMAND=${BASHRUN_COMMAND//\"/\\\"}
-
     # get the terminal command
     terminal_command="$(§terminal.get_command)"
 
+    # quote the command
+    printf -v BASHRUN_COMMAND %q "$BASHRUN_COMMAND"
+
     if [[ "$terminal_command" =~ [^\\]%c ]]; then
-	# replace "%c" in terminal command with command
-	BASHRUN_COMMAND=${terminal_command/\%c/\"$BASHRUN_COMMAND\"}
+	# replace %c in terminal command with command
+	BASHRUN_COMMAND=${terminal_command/\%c/$BASHRUN_COMMAND}
     else
 	# append command to terminal command
-	BASHRUN_COMMAND="$(§terminal.get_command) \"$BASHRUN_COMMAND\""
+	BASHRUN_COMMAND="$(§terminal.get_command) $BASHRUN_COMMAND"
     fi
     §debug "$BASHRUN_COMMAND"
 

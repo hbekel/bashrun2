@@ -201,12 +201,11 @@ function §engine.launch {
 
 function §engine.execute {
 
-    # execute command in the background
     if [[ "$BASHRUN_EXECMODE" == "&" ]]; then
 	§prepare_logfile
-	/bin/bash -c "$BASHRUN_COMMAND >> $BASHRUN_LOGFILE 2>&1 &" > /dev/null 2>&1
+	bash -c "$BASHRUN_COMMAND >> $BASHRUN_LOGFILE 2>&1 &" > /dev/null 2>&1
     else
-	/bin/bash -c "$BASHRUN_COMMAND"
+	bash -c "$BASHRUN_COMMAND"
 	§window.mapped? && §mode.unmap? && §window.unmap
     fi
 }
