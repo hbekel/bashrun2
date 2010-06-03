@@ -1,22 +1,22 @@
 # -*- shell-script -*-
 
-BASHRUN_WINDOW_ID=""
-BASHRUN_WINDOW_POS_X=0
-BASHRUN_WINDOW_POS_Y=0
-BASHRUN_WINDOW_WIDTH=$COLUMNS
-BASHRUN_WINDOW_HEIGHT=$LINES
-BASHRUN_WINDOW_PIXEL_WIDTH=$COLUMNS
-BASHRUN_WINDOW_PIXEL_HEIGHT=$LINES
-BASHRUN_WINDOW_MAPPED=1
-BASHRUN_WINDOW_ANIMATE=0
-BASHRUN_WINDOW_HINT=0
-BASHRUN_WINDOW_HINT_X=0
-BASHRUN_WINDOW_HINT_Y=0
+bashrun_window_id=""
+bashrun_window_pos_x=0
+bashrun_window_pos_y=0
+bashrun_window_width=$COLUMNS
+bashrun_window_height=$LINES
+bashrun_window_pixel_width=$COLUMNS
+bashrun_window_pixel_height=$LINES
+bashrun_window_mapped=1
+bashrun_window_animate=0
+bashrun_window_hint=0
+bashrun_window_hint_x=0
+bashrun_window_hint_y=0
 
-BASHRUN_RESET_TERM="$BASHRUN_CACHE_HOME/${BASHRUN_MODE:-terminal}-reset"
+bashrun_reset_term="$bashrun_cache_home/${BASHRUN_MODE:-terminal}-reset"
 
 function §window? {
-    [[ -n "$BASHRUN_WINDOW_ID" ]]
+    [[ -n "$bashrun_window_id" ]]
 }
 
 function §window.exists? () {
@@ -25,12 +25,12 @@ function §window.exists? () {
 
 function §window.mapped? {
     §window? || return 1
-    [[ BASHRUN_WINDOW_MAPPED -eq 1 ]]
+    [[ bashrun_window_mapped -eq 1 ]]
 }
 
 function §window.unmapped? {
     §window? || return 1
-    [[ BASHRUN_WINDOW_MAPPED -eq 0 ]]
+    [[ bashrun_window_mapped -eq 0 ]]
 }
 
 function §window.wait {
@@ -56,30 +56,30 @@ function §window.wait {
 
 function §window.terminal? {
     §window? || return 1
-    [[ "$BASHRUN_WINDOW_ID" == "$WINDOWID" ]]
+    [[ "$bashrun_window_id" == "$WINDOWID" ]]
 }
 
 function §window.animate? {
      §window? || return 1
-     [[ BASHRUN_WINDOW_ANIMATE -eq 1 ]]
+     [[ bashrun_window_animate -eq 1 ]]
 }
 function §window.animate {
-    BASHRUN_WINDOW_ANIMATE=${1:-1}
+    bashrun_window_animate=${1:-1}
 }
 
 function §window.hint? {
-    [[ BASHRUN_WINDOW_HINT -eq 1 ]]
+    [[ bashrun_window_hint -eq 1 ]]
 }
 
 function §window.id {
     
     if [[ $# -eq 0 ]]; then
-	echo $BASHRUN_WINDOW_ID
+	echo $bashrun_window_id
     elif [[ $# -eq 1 ]]; then
-	BASHRUN_WINDOW_ID=$1	    
+	bashrun_window_id=$1	    
 	§window.update
     else
-	BASHRUN_WINDOW_ID=$1	    
+	bashrun_window_id=$1	    
 	§window.update 1
     fi
     return 0
@@ -89,10 +89,10 @@ function §window.update {
 
     if [[ $# -eq 1 ]]; then
 	# fast update, mapping state only
-	if [[ "$(xwininfo -id $BASHRUN_WINDOW_ID)" =~ "IsViewable" ]]; then
-	    BASHRUN_WINDOW_MAPPED=1
+	if [[ "$(xwininfo -id $bashrun_window_id)" =~ "IsViewable" ]]; then
+	    bashrun_window_mapped=1
 	else
-	    BASHRUN_WINDOW_MAPPED=0
+	    bashrun_window_mapped=0
 	fi
 	return 0
     fi
@@ -104,7 +104,7 @@ function §window.update {
     local x y w h pw ph
 
     IFS=$'\n'
-    for line in $(xwininfo -all -id $BASHRUN_WINDOW_ID); do
+    for line in $(xwininfo -all -id $bashrun_window_id); do
 
 	if [[ "$line" =~ "Width: "([0-9]+) ]]; then
 	    (( pw+=${BASH_REMATCH[1]} ))
@@ -134,29 +134,29 @@ function §window.update {
 	fi
 
 	if [[ "$line" =~ "Map State: "(.+) ]]; then
-	    [[ ${BASH_REMATCH[1]} == 'IsUnMapped' ]] && BASHRUN_WINDOW_MAPPED=0
-	    [[ ${BASH_REMATCH[1]} == 'IsViewable' ]] && BASHRUN_WINDOW_MAPPED=1
+	    [[ ${BASH_REMATCH[1]} == 'IsUnMapped' ]] && bashrun_window_mapped=0
+	    [[ ${BASH_REMATCH[1]} == 'IsViewable' ]] && bashrun_window_mapped=1
 	fi
 
 	if [[ "$line" =~ ([xy])\ resize\ increment:\ ([0-9]+) ]]; then
-	    BASHRUN_WINDOW_HINT=1
+	    bashrun_window_hint=1
 	    if [[ "${BASH_REMATCH[1]}" == "x" ]]; then
-		BASHRUN_WINDOW_HINT_X="${BASH_REMATCH[2]}"
+		bashrun_window_hint_x="${BASH_REMATCH[2]}"
 		
 	    elif [[ "${BASH_REMATCH[1]}" == "y" ]]; then
-		BASHRUN_WINDOW_HINT_Y="${BASH_REMATCH[2]}"
+		bashrun_window_hint_y="${BASH_REMATCH[2]}"
 	    fi
 	fi
     done
     IFS="$saved"
 
-    BASHRUN_WINDOW_POS_X=$x
-    BASHRUN_WINDOW_POS_Y=$y
-    BASHRUN_WINDOW_WIDTH=$w
-    BASHRUN_WINDOW_HEIGHT=$h
-    BASHRUN_WINDOW_PIXEL_WIDTH=$pw
-    BASHRUN_WINDOW_PIXEL_HEIGHT=$ph
-    BASHRUN_WINDOW_ANIMATE="$(§mode.get_animated)"
+    bashrun_window_pos_x=$x
+    bashrun_window_pos_y=$y
+    bashrun_window_width=$w
+    bashrun_window_height=$h
+    bashrun_window_pixel_width=$pw
+    bashrun_window_pixel_height=$ph
+    bashrun_window_animate="$(§mode.get_animated)"
 }
 
 function §window.geometry {
@@ -171,8 +171,8 @@ function §window.geometry {
 	fi
 
 	if §geometry.position?; then
-	    §window.pos $(§geometry.x $BASHRUN_WINDOW_PIXEL_WIDTH) \
-		$(§geometry.y $BASHRUN_WINDOW_PIXEL_HEIGHT)	
+	    §window.pos $(§geometry.x $bashrun_window_pixel_width) \
+		$(§geometry.y $bashrun_window_pixel_height)	
 	fi
     fi
 }
@@ -181,7 +181,7 @@ function §window.pos {
     
     if [[ $# -eq 0 ]]; then
 	§window.update
-	echo $BASHRUN_WINDOW_POS_X $BASHRUN_WINDOW_POS_Y
+	echo $bashrun_window_pos_x $bashrun_window_pos_y
     else
 	§window? || return 1
 	
@@ -193,9 +193,9 @@ function §window.pos {
 	    y=${BASH_REMATCH[2]}
 	fi
 	
-	§xdotool windowmove $BASHRUN_WINDOW_ID $x $y 
-	BASHRUN_WINDOW_POS_X=$x
-	BASHRUN_WINDOW_POS_Y=$y
+	§xdotool windowmove $bashrun_window_id $x $y 
+	bashrun_window_pos_x=$x
+	bashrun_window_pos_y=$y
     fi
     return 0
 }
@@ -203,21 +203,21 @@ function §window.pos {
 function §window.resize {
     case $1 in
 	up)
-            (( BASHRUN_WINDOW_HEIGHT-=1 ))
+            (( bashrun_window_height-=1 ))
 	    ;;
 	down)
-            (( BASHRUN_WINDOW_HEIGHT+=1 ))
+            (( bashrun_window_height+=1 ))
 	    ;;
 	left)
-            (( BASHRUN_WINDOW_WIDTH-=1 ))
+            (( bashrun_window_width-=1 ))
 	    ;;
 	right)
-            (( BASHRUN_WINDOW_WIDTH+=1 ))
+            (( bashrun_window_width+=1 ))
 	    ;;
     esac
-    [[ BASHRUN_WINDOW_HEIGHT -lt 1 ]] && BASHRUN_WINDOW_HEIGHT=1
-    [[ BASHRUN_WINDOW_WIDTH -lt 1 ]] && BASHRUN_WINDOW_WIDTH=1
-    §window.size --hint $BASHRUN_WINDOW_WIDTH $BASHRUN_WINDOW_HEIGHT
+    [[ bashrun_window_height -lt 1 ]] && bashrun_window_height=1
+    [[ bashrun_window_width -lt 1 ]] && bashrun_window_width=1
+    §window.size --hint $bashrun_window_width $bashrun_window_height
 }
 
 function §window.size {
@@ -225,7 +225,7 @@ function §window.size {
     # get window size
     if [[ $# -eq 0 ]]; then
 	§window.update
-	echo $BASHRUN_WINDOW_WIDTH $BASHRUN_WINDOW_HEIGHT
+	echo $bashrun_window_width $bashrun_window_height
 	return 0;
     fi
 
@@ -244,16 +244,16 @@ function §window.size {
 	if [[ "$width" =~ ([0-9]+)x([0-9]+) ]]; then
 	    local w=${BASH_REMATCH[1]}
 	    local h=${BASH_REMATCH[2]}
-	    §xdotool windowsize $hint $BASHRUN_WINDOW_ID $w $h
-	    BASHRUN_WINDOW_WIDTH=$w
-	    BASHRUN_WINDOW_HEIGHT=$h
+	    §xdotool windowsize $hint $bashrun_window_id $w $h
+	    bashrun_window_width=$w
+	    bashrun_window_height=$h
 	fi
     fi
 
     if [[ $# -eq 2 ]]; then
-	§xdotool windowsize $hint $BASHRUN_WINDOW_ID $1 $2
-	BASHRUN_WINDOW_WIDTH=$1
-	BASHRUN_WINDOW_HEIGHT=$2
+	§xdotool windowsize $hint $bashrun_window_id $1 $2
+	bashrun_window_width=$1
+	bashrun_window_height=$2
     fi 
         
     # apply completion threshold if necessary
@@ -267,38 +267,38 @@ function §window.map {
     [[ $# -eq 0 ]] && §window.update
     
     # map the window
-    §xdotool windowmap $BASHRUN_WINDOW_ID
+    §xdotool windowmap $bashrun_window_id
 
     # parse geometry for this mode 
     §geometry.parse "$(§mode.get_geometry 0)"
     
     # apply position
     if §geometry.position?; then
-	§window.pos "$(§geometry.x $BASHRUN_WINDOW_PIXEL_WIDTH)" \
-	    "$(§geometry.y $BASHRUN_WINDOW_PIXEL_HEIGHT)"
+	§window.pos "$(§geometry.x $bashrun_window_pixel_width)" \
+	    "$(§geometry.y $bashrun_window_pixel_height)"
     fi
 
     # move to the current desktop if required
-    if [[ "$(§xdotool get_desktop_for_window $BASHRUN_WINDOW_ID)" != "-1" ]]; then
-	§xdotool set_desktop_for_window $BASHRUN_WINDOW_ID $(§xdotool get_desktop)
+    if [[ "$(§xdotool get_desktop_for_window $bashrun_window_id)" != "-1" ]]; then
+	§xdotool set_desktop_for_window $bashrun_window_id $(§xdotool get_desktop)
     fi
 
     # focus
-    §xdotool windowactivate $BASHRUN_WINDOW_ID
-    §xdotool windowfocus $BASHRUN_WINDOW_ID	
+    §xdotool windowactivate $bashrun_window_id
+    §xdotool windowfocus $bashrun_window_id	
 
     # reset term if neccessary (previous remote su invocation)
-    if [[ -f "$BASHRUN_RESET_TERM" ]]; then
+    if [[ -f "$bashrun_reset_term" ]]; then
 	§xdotool key --clearmodifiers Return
     fi
 
     # call user supplied onmap handler
     $(§mode.get_onmap)
     
-    if [[ BASHRUN_WINDOW_ANIMATE -eq 1 ]]; then
+    if [[ bashrun_window_animate -eq 1 ]]; then
 	§window.expand
     fi    
-    BASHRUN_WINDOW_MAPPED=1
+    bashrun_window_mapped=1
     return 0
 }
 
@@ -307,15 +307,15 @@ function §window.unmap {
     §window? || return 1
     [[ $# -eq 0 ]] && §window.update
 
-    if [[ BASHRUN_WINDOW_ANIMATE -eq 1 ]]; then
+    if [[ bashrun_window_animate -eq 1 ]]; then
 	§window.collapse
     fi
-    §xdotool windowunmap $BASHRUN_WINDOW_ID
+    §xdotool windowunmap $bashrun_window_id
 
     # call user supplied onunmap handler    
     $(§mode.get_onunmap)
 
-    BASHRUN_WINDOW_MAPPED=0
+    bashrun_window_mapped=0
     return 0
 }
 
@@ -327,11 +327,11 @@ function §window.toggle { # [smart] [fast]
     §window? || return 1
     §window.update $fast
 
-    if [[ BASHRUN_WINDOW_MAPPED -eq 0 ]]; then	
+    if [[ bashrun_window_mapped -eq 0 ]]; then	
 	§window.map
     else
 	if [[ smart -eq 1 ]]; then
-	    if [[ "$(§xdotool getwindowfocus)" != "$BASHRUN_WINDOW_ID" ]]; then
+	    if [[ "$(§xdotool getwindowfocus)" != "$bashrun_window_id" ]]; then
 		§window.map $fast
 	    else
 		§window.unmap $fast
@@ -350,11 +350,11 @@ function §window.toggle_smart {
 function §window.collapse {
 
     local i=0
-    for (( i=$BASHRUN_WINDOW_HEIGHT; i>1; i-- )); do
-	(( BASHRUN_WINDOW_HEIGHT-=1 ))
-	§xdotool windowsize --usehints $BASHRUN_WINDOW_ID \
-	    $BASHRUN_WINDOW_WIDTH \
-	    $BASHRUN_WINDOW_HEIGHT
+    for (( i=$bashrun_window_height; i>1; i-- )); do
+	(( bashrun_window_height-=1 ))
+	§xdotool windowsize --usehints $bashrun_window_id \
+	    $bashrun_window_width \
+	    $bashrun_window_height
     done
 }
 
@@ -362,14 +362,14 @@ function §window.expand {
 
     local max_height="$(§geometry.height)"
 
-    [[ BASHRUN_WINDOW_HEIGHT -ge max_height ]] && return 1
+    [[ bashrun_window_height -ge max_height ]] && return 1
 
     local i=0
     for (( i=1; i<=max_height-1; i++ )); do
-	(( BASHRUN_WINDOW_HEIGHT+=1 ))
-	§xdotool windowsize --usehints $BASHRUN_WINDOW_ID \
-	    $BASHRUN_WINDOW_WIDTH \
-	    $BASHRUN_WINDOW_HEIGHT
+	(( bashrun_window_height+=1 ))
+	§xdotool windowsize --usehints $bashrun_window_id \
+	    $bashrun_window_width \
+	    $bashrun_window_height
     done
 }
 

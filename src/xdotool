@@ -1,26 +1,26 @@
 # -*- shell-script -*-
 
-BASHRUN_XDOTOOL="unknown" 
+bashrun_xdotool="unknown" 
 # 0 -> available
 # 1 -> not available
 # 2 -> wrong version
 
 function §xdotool.available? {
 
-    if [[ "$BASHRUN_XDOTOOL" == "unknown" ]]; then
+    if [[ "$bashrun_xdotool" == "unknown" ]]; then
 
         # assume xdotool is available
-	BASHRUN_XDOTOOL=0
+	bashrun_xdotool=0
 	
         # check if xdotool is available
 	if ! type -p xdotool &>/dev/null; then
-	    BASHRUN_XDOTOOL=1
+	    bashrun_xdotool=1
 	    return 1
 	fi
 
         # check if xdotool>=1.20100227 (where --version was added)
 	if ! xdotool --version &>/dev/null; then	    
-	    BASHRUN_XDOTOOL=2
+	    bashrun_xdotool=2
 	    return 2
 	fi
 
@@ -31,7 +31,7 @@ function §xdotool.available? {
 	version="${version//\./}"
 	
 	if [[ "$version" -lt 1201004162809 ]]; then 
-	    BASHRUN_XDOTOOL=2
+	    bashrun_xdotool=2
 	    return 2
 	fi
     fi

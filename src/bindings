@@ -8,10 +8,10 @@
 
 bind '"\C-x00": accept-line'
 
-BASHRUN_BINDINGS_NEXT_CHAR=20                     # next char to bind
-BASHRUN_BINDINGS_BLACKLIST=" 34 39 127 "                         
+bashrun_bindings_next_char=20                     # next char to bind
+bashrun_bindings_blacklist=" 34 39 127 "                         
 
-BASHRUN_KEYMAP='emacs' # will be initialized in engine.init
+bashrun_keymap='emacs' # will be initialized in engine.init
 
 §function.clone "§bindings.dump" "§_bindings.dump"
 §function.clone "§internals.dump" "§_internals.dump"
@@ -51,7 +51,7 @@ function §bindings.dump {
 
     §_bindings.dump "${1:-§bindings.dump}"
 
-    echo "BASHRUN_BINDINGS_NEXT_CHAR=$BASHRUN_BINDINGS_NEXT_CHAR" >> $file
+    echo "bashrun_bindings_next_char=$bashrun_bindings_next_char" >> $file
 
     §internals.dump "${1:-§bindings.dump}" append
     §keynames.dump "${1:-§bindings.dump}" append

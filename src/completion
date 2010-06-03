@@ -2,7 +2,7 @@
 
 ################################################################################
 
-BASHRUN_COMPLETION=''
+bashrun_completion=''
 
 function §completion.init {
     §completion.set $(§mode.get_completion)
@@ -19,11 +19,11 @@ function §completion.set {
 	return $?
     fi
 
-    if [[ "$BASHRUN_COMPLETION" == "$ctype" ]]; then
+    if [[ "$bashrun_completion" == "$ctype" ]]; then
 	return 0
     fi
 
-    if [[ "$BASHRUN_COMPLETION" == "quiet-complete" ]]; then
+    if [[ "$bashrun_completion" == "quiet-complete" ]]; then
 	
         # if we're changing from quiet-complete, reset readline
         # settings to user's initial settings
@@ -50,7 +50,7 @@ function §completion.set {
 	    §debug "unknown completion type:" -v "$ctype"
 	    ;;
     esac
-    BASHRUN_COMPLETION="$ctype"
+    bashrun_completion="$ctype"
     §debug -v "$ctype"
 }
 
@@ -61,15 +61,15 @@ function §completion.apply_threshold {
     local threshold="$3"
 
     declare -i t=$threshold
-    §debug -v $t -ge -v $BASHRUN_WINDOW_HEIGHT "?"
+    §debug -v $t -ge -v $bashrun_window_height "?"
 
-    if [[ $BASHRUN_WINDOW_HEIGHT -ge $t ]]; then
+    if [[ $bashrun_window_height -ge $t ]]; then
 	§completion.set "$atype"
     else
 	§completion.set "$ctype"
     fi
 
-    if [[ BASHRUN_WINDOW_HEIGHT -gt 1 ]]; then
+    if [[ bashrun_window_height -gt 1 ]]; then
 	bind 'set horizontal-scroll-mode off'
     else
 	bind 'set horizontal-scroll-mode on'

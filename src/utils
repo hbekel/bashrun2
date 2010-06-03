@@ -2,7 +2,7 @@
 
 ################################################################################
 
-BASHRUN_DEBUG_ACTION=0
+bashrun_debug_action=0
 
 function §bash3 {
     [[ ${BASH_VERSINFO[0]} -eq 3 ]]
@@ -48,7 +48,7 @@ function §function.clone {
 
 function §syntax? {
     local file="$1"
-    local errors="$BASHRUN_CACHE_HOME/errors"
+    local errors="$bashrun_cache_home/errors"
 
     bash -n "$1" &> $errors
     errors="$(<$errors)"
@@ -172,7 +172,7 @@ function §debug {
 	    col=$g
 	    ;;
     esac
-    if [[ BASHRUN_DEBUG_ACTION -eq 1 ]]; then
+    if [[ bashrun_debug_action -eq 1 ]]; then
 	echo -ne "$col$_from$n $d" >&2
     else
 	echo -ne "$col$_func$n $d" >&2
@@ -226,20 +226,20 @@ function §separator {
 function §prepare_logfile {
 
     # set to /dev/null if empty
-    if [[ "$BASHRUN_LOGFILE" == "" ]]; then 
-	BASHRUN_LOGFILE="/dev/null"
+    if [[ "$bashrun_logfile" == "" ]]; then 
+	bashrun_logfile="/dev/null"
     fi
  
     # touch unless exists
-    if [[ ! -e "$BASHRUN_LOGFILE" ]]; then
-	§debug "creating logfile $BASHRUN_LOGFILE"
-	touch "$BASHRUN_LOGFILE"
+    if [[ ! -e "$bashrun_logfile" ]]; then
+	§debug "creating logfile $bashrun_logfile"
+	touch "$bashrun_logfile"
     fi
 
     # revert to /dev/null unless writable
-    if [[ ! -w "$BASHRUN_LOGFILE" ]]; then
-	§debug "logfile $BASHRUN_LOGFILE is not writeable"
-	BASHRUN_LOGFILE="/dev/null"
+    if [[ ! -w "$bashrun_logfile" ]]; then
+	§debug "logfile $bashrun_logfile is not writeable"
+	bashrun_logfile="/dev/null"
     fi
 }
 
@@ -282,21 +282,6 @@ function §print_line {
     for((i=0; i<$width; i++)); do
 	echo -n $char
     done
-    echo
-}
-
-function §print_header {
-    
-    local title="$1"
-
-    # remove the namespace prefix
-    local prefix="$(echo $_OBJECTS_NAMESPACE | tr "[:lower:]" "[:upper:]")"
-    title=${title/${prefix}_/}
-
-    local char=${2:-#}
-    §print_line '' "$char"
-    §print_line "$title" "$char" '-1'
-    §print_line '' "$char"
     echo
 }
 

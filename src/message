@@ -4,7 +4,7 @@ function §message.init {
     local method
     for method in dialog xmessage zenity kdialog notify-send echo; do
 	if type $method &>/dev/null; then
-	    BASHRUN_MESSAGE_METHOD=$method
+	    bashrun_message_method=$method
 	    break
 	fi
     done
@@ -80,7 +80,7 @@ function §message {
     shift
 
     local text=""
-    local method="$BASHRUN_MESSAGE_METHOD"
+    local method="$bashrun_message_method"
     
     # prepare text depending on method
     case "$method" in 

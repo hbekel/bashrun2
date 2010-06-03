@@ -115,9 +115,8 @@ function §class {
 	return 0
     fi
 
-    local NAME="$(§objects.namespace)_$name"
+    declare -u NAME="$(§objects.namespace)_$name"
     NAME=${NAME//§/}
-    NAME=$(echo $NAME | tr "[:lower:]" "[:upper:]")
 
     local plusname=${name//§/+}
 

@@ -2,13 +2,13 @@
 
 ################################################################################
 
-BASHRUN_COMMAND=''
-BASHRUN_COMMAND_LINE=''
-BASHRUN_COMMAND_WORD=''
+bashrun_command=''
+bashrun_command_line=''
+bashrun_command_word=''
 
 function §command.unquote {
 
-    command="$BASHRUN_COMMAND"
+    command="$bashrun_command"
 
     # unquote quoted &;|
     command=${command//\\&/&}
@@ -17,11 +17,11 @@ function §command.unquote {
     command=${command//&&/ && }
     command=${command//||/ || }
 
-    BASHRUN_COMMAND=$command
+    bashrun_command=$command
 }
 
 function §command.get_line {
-    # updates BASHRUN_COMMAND_LINE to contain the complete and
+    # updates bashrun_command_line to contain the complete and
     # verbatim line entered by the user.
     
     local command_line=''
@@ -29,34 +29,34 @@ function §command.get_line {
     unset HISTTIMEFORMAT
 
     [[ $(history 1) =~ \ +[0-9]+?\ +(.+?) ]]
-    BASHRUN_COMMAND_LINE=${BASH_REMATCH[1]}
+    bashrun_command_line=${BASH_REMATCH[1]}
     
     if [[ "$histtimeformat" != "" ]]; then
 	HISTTIMEFORMAT=$histtimeformat
     fi
-    echo "$BASHRUN_COMMAND_LINE"
+    echo "$bashrun_command_line"
 }
 
 function §command.get_word {
 
-    # updates BASHRUN_COMMAND_WORD to contain the first word of the
+    # updates bashrun_command_word to contain the first word of the
     # current command that does not contain a '='.
 
     local word=""
 
-    for word in $BASHRUN_COMMAND; do
+    for word in $bashrun_command; do
 	[[ ! "$word" =~ = ]] && break
     done 
-    BASHRUN_COMMAND_WORD="$word"
+    bashrun_command_word="$word"
 }
 
 function §command.executable? {
     
-    # check if BASHRUN_COMMAND_WORD is executable
+    # check if bashrun_command_word is executable
 
     §command.get_word
 
-    local word="$BASHRUN_COMMAND_WORD"
+    local word="$bashrun_command_word"
     local type=`type -t $word`
 
     if [[ "$type" =~ (alias|keyword|builtin) ]]; then
@@ -91,10 +91,10 @@ function §command.executable? {
 
 function §command.builtin? {
 
-    # check if BASHRUN_COMMAND_WORD is a shell builtin command
+    # check if bashrun_command_word is a shell builtin command
 
     §command.get_word
-    local word="$BASHRUN_COMMAND_WORD"
+    local word="$bashrun_command_word"
 
     if [[ "$(type -t $word)" == "builtin" ]]; then
 	§debug -v "$word" "->" -g yes
@@ -117,7 +117,7 @@ function §command.add_su {
     local user=${1:-root}
 
     # don't wrap in su -c '' twice...
-    if [[ "$BASHRUN_COMMAND" =~ ^su\  ]]; then
+    if [[ "$bashrun_command" =~ ^su\  ]]; then
 	§debug "already using su"
 	return 0
     fi
@@ -133,17 +133,17 @@ function §command.add_su {
     fi
 
     # run the command itself in the background
-    BASHRUN_COMMAND="$BASHRUN_COMMAND &> /dev/null &"
+    bashrun_command="$bashrun_command &> /dev/null &"
 
     # quote the command
-    printf -v BASHRUN_COMMAND %q "$BASHRUN_COMMAND"
+    printf -v bashrun_command %q "$bashrun_command"
 
     # prefix with su command
-    BASHRUN_COMMAND="su $user -c $BASHRUN_COMMAND"
+    bashrun_command="su $user -c $bashrun_command"
 
     # run the su command in foreground for password entry
-    BASHRUN_EXECMODE="" 
-    §debug "$BASHRUN_COMMAND"
+    bashrun_execmode="" 
+    §debug "$bashrun_command"
 }
 
 function §command.add_terminal {
@@ -154,7 +154,7 @@ function §command.add_terminal {
     local method=""
 
     for terminal in $(§terminals.used); do
-	if [[ "$BASHRUN_COMMAND_WORD" == "$terminal" ]]; then
+	if [[ "$bashrun_command_word" == "$terminal" ]]; then
 	    §debug "already using" -v "$terminal"
 	    return 1
 	fi
@@ -180,17 +180,17 @@ function §command.add_terminal {
 	method="${BASH_REMATCH[1]}"
 	
 	if [[ "$method" =~ @ ]]; then
-		§quote ${#method} BASHRUN_COMMAND
+		§quote ${#method} bashrun_command
 	fi
 
 	# insert command into terminal command 
-	BASHRUN_COMMAND="$(§replace "$terminal_command" "%$method" "$BASHRUN_COMMAND")"
+	bashrun_command="$(§replace "$terminal_command" "%$method" "$bashrun_command")"
 
     else
 	# append command to terminal command
-	BASHRUN_COMMAND="$(§terminal.get_command) $BASHRUN_COMMAND"
+	bashrun_command="$(§terminal.get_command) $bashrun_command"
     fi
-    §debug "$BASHRUN_COMMAND"
+    §debug "$bashrun_command"
 
     return 0
 }
@@ -201,23 +201,23 @@ function §command.add_hold {
     local method='read -n1'
     [[ seconds -gt 0 ]] && method="sleep $seconds"
 
-    if [[ "$BASHRUN_COMMAND" =~ ^\(.+?\)$ ]]; then
-	BASHRUN_COMMAND=${BASH_REMATCH[1]}
+    if [[ "$bashrun_command" =~ ^\(.+?\)$ ]]; then
+	bashrun_command=${BASH_REMATCH[1]}
     fi
     
-    if [[ ! "$BASHRUN_COMMAND" =~ \#__HOLD__$ ]]; then
-	BASHRUN_COMMAND="tput civis; (${BASHRUN_COMMAND}); $method #__HOLD__";
-	§debug "$BASHRUN_COMMAND"
+    if [[ ! "$bashrun_command" =~ \#__HOLD__$ ]]; then
+	bashrun_command="tput civis; (${bashrun_command}); $method #__HOLD__";
+	§debug "$bashrun_command"
     else
-	§debug "already using hold:" -v "$BASHRUN_COMMAND"
+	§debug "already using hold:" -v "$bashrun_command"
     fi
 }
 
 function §command.add_pager {
-    if [[ ! "$BASHRUN_COMMAND" =~ \#__PAGER__$ ]]; then
-	BASHRUN_COMMAND="$BASHRUN_COMMAND | ${PAGER} #__PAGER__"
-	§debug "$BASHRUN_COMMAND"
+    if [[ ! "$bashrun_command" =~ \#__PAGER__$ ]]; then
+	bashrun_command="$bashrun_command | ${PAGER} #__PAGER__"
+	§debug "$bashrun_command"
     else
-	§debug "already using pager:" -v "$BASHRUN_COMMAND"
+	§debug "already using pager:" -v "$bashrun_command"
     fi
 }

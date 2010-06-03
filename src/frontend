@@ -3,28 +3,28 @@
 function create_modeinfo {
 
     # initialize object system
-    source $BASHRUN_SHARE/objects
-    §objects.site $BASHRUN_SHARE
-    §objects.cache_home $BASHRUN_CACHE_HOME
-    §objects.data_home $BASHRUN_CACHE_HOME
+    source $bashrun_site/objects
+    §objects.site $bashrun_site
+    §objects.cache_home $bashrun_cache_home
+    §objects.data_home $bashrun_cache_home
     §objects.namespace "bashrun"
     
-    source $BASHRUN_SHARE/utils
-    source $BASHRUN_SHARE/message
-    source $BASHRUN_SHARE/xdotool
-    source $BASHRUN_SHARE/config
-    source $BASHRUN_SHARE/plugin
-    source $BASHRUN_SHARE/geometry
-    source $BASHRUN_SHARE/registry
-    source $BASHRUN_SHARE/progress
-    source $BASHRUN_SHARE/terminals
-    source $BASHRUN_SHARE/window
-    source $BASHRUN_SHARE/modes
-    source $BASHRUN_SHARE/core 
+    source $bashrun_site/utils
+    source $bashrun_site/message
+    source $bashrun_site/xdotool
+    source $bashrun_site/config
+    source $bashrun_site/plugin
+    source $bashrun_site/geometry
+    source $bashrun_site/registry
+    source $bashrun_site/progress
+    source $bashrun_site/terminals
+    source $bashrun_site/window
+    source $bashrun_site/modes
+    source $bashrun_site/core 
 
     # check for xdotool
     if ! §xdotool.available?; then
-	if [[ BASHRUN_XDOTOOL -eq 1 ]]; then
+	if [[ bashrun_xdotool -eq 1 ]]; then
 	    §message "Error - Xdotool not found" \
 		"Bashrun requires xdotool, available from
 
@@ -38,8 +38,8 @@ function create_modeinfo {
     fi
     
     # check rcfile syntax
-    if ! §syntax? "$BASHRUN_RCFILE"; then
-	errors="$(<$BASHRUN_CACHE_HOME/errors)"
+    if ! §syntax? "$bashrun_rcfile"; then
+	errors="$(<$bashrun_cache_home/errors)"
 	errors="${errors//$'\n'/\\n}"
 	§message "Syntax Errors" \
 	    "The configuration file contains syntax errors:
@@ -49,8 +49,8 @@ function create_modeinfo {
              Aborting. Please fix and retry."
 	exit 1
     else
-	§debug "using" -c "$(§tilde_path $BASHRUN_RCFILE)"
-	source $BASHRUN_RCFILE
+	§debug "using" -c "$(§tilde_path $bashrun_rcfile)"
+	source $bashrun_rcfile
     fi
     
     # load modes from configuration file
@@ -72,11 +72,11 @@ function source_window {
     # create the environment §window expects and set wid
 
     BASHRUN_MODE="$mode"
-    source $BASHRUN_SHARE/xdotool
-    source $BASHRUN_SHARE/geometry
-    source $BASHRUN_SHARE/window
+    source $bashrun_site/xdotool
+    source $bashrun_site/geometry
+    source $bashrun_site/window
 
-    BASHRUN_WINDOW_ANIMATE="$animated"
+    bashrun_window_animate="$animated"
     function §mode.get_animated { echo $animated; }
     function §mode.get_geometry { echo $geometry; }    
     function §mode.get_onmap { echo $onmap; }    
@@ -91,7 +91,7 @@ function launch {
     saved_geometry="$geometry"
 
     if [[ animated -eq 1 ]]; then
-	source $BASHRUN_SHARE/geometry
+	source $bashrun_site/geometry
 	
 	§geometry.parse $geometry
     	§geometry.height 1
@@ -131,11 +131,11 @@ function launch {
 	$terminal $termopts $fix &    
 
     # wait for the new instance to register and get it's window id and pid
-    widfile="$BASHRUN_CACHE_HOME/${mode}-wid"
+    widfile="$bashrun_cache_home/${mode}-wid"
     wait_until "[[ -f $widfile ]]"
     wid="$(<$widfile)"
     
-    pidfile="$BASHRUN_CACHE_HOME/${mode}-pid"
+    pidfile="$bashrun_cache_home/${mode}-pid"
     wait_until "[[ -f $pidfile ]]"
     pid="$(<$pidfile)"
 
@@ -148,13 +148,13 @@ function launch {
 function remote {
 
     # wait until a newly started instance is ready
-    if wait_until "[[ -f $BASHRUN_CACHE_HOME/${mode}-ready ]]"; then
+    if wait_until "[[ -f $bashrun_cache_home/${mode}-ready ]]"; then
 	
         # put "<action> <cmd>" in the "remote" file
-	echo $@ > $BASHRUN_DATA_HOME/remote
+	echo $@ > $bashrun_data_home/remote
 
         # send SIGUSR1 to bashrun to pick it up (see §remote)
-	kill -USR1 "$(<$BASHRUN_CACHE_HOME/${mode}-pid)"
+	kill -USR1 "$(<$bashrun_cache_home/${mode}-pid)"
     else
 	echo "bashrun: error: bashrun-$mode not ready"
 	return 1
@@ -182,8 +182,8 @@ function wait_until {
 }
 
 function version {
-    . $BASHRUN_SHARE/globals 2> /dev/null
-    echo "bashrun $BASHRUN_VERSION Copyright (C) 2010 Henning Bekel <h.bekel@googlemail.com>"
+    . $bashrun_site/globals 2> /dev/null
+    echo "bashrun $bashrun_version Copyright (C) 2010 Henning Bekel <h.bekel@googlemail.com>"
 }
 
 function usage {

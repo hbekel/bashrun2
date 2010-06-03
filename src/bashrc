@@ -16,46 +16,46 @@ fi
 source __PREFIX__/share/bashrun/globals
 
 # initialize object system
-source $BASHRUN_SHARE/objects
-§objects.site $BASHRUN_SHARE
-§objects.cache_home $BASHRUN_CACHE_HOME
-§objects.data_home $BASHRUN_CACHE_HOME
+source $bashrun_site/objects
+§objects.site $bashrun_site
+§objects.cache_home $bashrun_cache_home
+§objects.data_home $bashrun_cache_home
 §objects.namespace "bashrun"
 
 # source utilities 
-source $BASHRUN_SHARE/utils
-source $BASHRUN_SHARE/window
-source $BASHRUN_SHARE/registry
-source $BASHRUN_SHARE/xdotool
-source $BASHRUN_SHARE/message
-source $BASHRUN_SHARE/bootstrap
+source $bashrun_site/utils
+source $bashrun_site/window
+source $bashrun_site/registry
+source $bashrun_site/xdotool
+source $bashrun_site/message
+source $bashrun_site/bootstrap
 
 # register this instance (needs to happen early on)
 # unless we're not launched by the frontend...
 [[ BASHRUN_FRONTEND -eq 1 ]] && §registry.add
 
 # setup progress bar
-source $BASHRUN_SHARE/progress
+source $bashrun_site/progress
 §progress.new "Initializing... [objects]"
 
 # continue sourcing utilities
-source $BASHRUN_SHARE/config
-source $BASHRUN_SHARE/plugin
-source $BASHRUN_SHARE/remote
-source $BASHRUN_SHARE/geometry
-source $BASHRUN_SHARE/command
-source $BASHRUN_SHARE/readline
-source $BASHRUN_SHARE/completion
+source $bashrun_site/config
+source $bashrun_site/plugin
+source $bashrun_site/remote
+source $bashrun_site/geometry
+source $bashrun_site/command
+source $bashrun_site/readline
+source $bashrun_site/completion
 
 # source objects
-source $BASHRUN_SHARE/modes
-source $BASHRUN_SHARE/terminals
-source $BASHRUN_SHARE/actions
-source $BASHRUN_SHARE/bindings
-source $BASHRUN_SHARE/handlers
-source $BASHRUN_SHARE/rules
-source $BASHRUN_SHARE/bookmarks
+source $bashrun_site/modes
+source $bashrun_site/terminals
+source $bashrun_site/actions
+source $bashrun_site/bindings
+source $bashrun_site/handlers
+source $bashrun_site/rules
+source $bashrun_site/bookmarks
 
 # source and initialize the engine
-source $BASHRUN_SHARE/engine
+source $bashrun_site/engine
 §engine.init

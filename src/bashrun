@@ -44,8 +44,8 @@ fi
 source __PREFIX__/share/bashrun/globals
 
 # bootstrap if CACHE_HOME doesn't exist
-if [[ ! -e $BASHRUN_CACHE_HOME ]]; then
-    source $BASHRUN_SHARE/bootstrap
+if [[ ! -e $bashrun_cache_home ]]; then
+    source $bashrun_site/bootstrap
 fi
 
 # default mode and command
@@ -53,7 +53,7 @@ mode="launcher"
 command="show"
 
 # load frontend functions
-source $BASHRUN_SHARE/frontend
+source $bashrun_site/frontend
 
 # handle --version, --help and --mode options first
 if [[ $# -gt 0 ]]; then
@@ -76,7 +76,7 @@ if [[ $# -gt 0 ]]; then
 fi
 
 # get info about the current mode
-MODEINFO="$BASHRUN_CACHE_HOME/${mode}-info"
+MODEINFO="$bashrun_cache_home/${mode}-info"
 [[ ! -f $MODEINFO ]] && create_modeinfo
 source $MODEINFO
 
@@ -180,7 +180,7 @@ case "$command" in
 	fi
 	case "$state" in
 	    ready)
-		wait_until "[[ -f $BASHRUN_CACHE_HOME/${mode}-ready ]]"
+		wait_until "[[ -f $bashrun_cache_home/${mode}-ready ]]"
 		;;
 	    mapped|unmapped)
 		§window.wait $state

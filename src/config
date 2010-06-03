@@ -69,7 +69,7 @@ function §config.changed? { # $name
 
     local name="$1"
     local state="$2"
-    local rcfile="$BASHRUN_CACHE_HOME/$(§config.get_rcname "$name")"
+    local rcfile="$bashrun_cache_home/$(§config.get_rcname "$name")"
     local function="$(§config.get_funcname "$name")"
 
     if [[ "$state" == "reconfiguring" ]]; then
@@ -95,8 +95,8 @@ function §config.get_funcname { # $wanted
 
 function §configs.restore {
 
-    source $BASHRUN_SHARE/core
-    source $BASHRUN_RCFILE
+    source $bashrun_site/core
+    source $bashrun_rcfile
 
     §configs.restore_core
     §configs.collect_user_configs
@@ -127,7 +127,7 @@ function §config.restore {
 	    # restore the previous dump unless reconfiguring	    
 	    if [[ "$state" == "restoring" ]]; then
 		§debug "restoring " -v "$restore"
-		. "$BASHRUN_CACHE_HOME/$restore"
+		. "$bashrun_cache_home/$restore"
 	    fi
 
 	    state="reconfiguring" # we're reconfiguring from now on...
@@ -146,7 +146,7 @@ function §config.restore {
 	    §debug "caching" -v "$(§config.get_rcname "$name")"
 
 	    §function.code "$(§config.get_funcname "$name")" > \
-		$BASHRUN_CACHE_HOME/$(§config.get_rcname "$name")
+		$bashrun_cache_home/$(§config.get_rcname "$name")
 	
 	else
 	    §debug -y "$(§config.get_funcname "$name")" "->" -c "cached..."
@@ -156,7 +156,7 @@ function §config.restore {
     
     if [[ "$state" == "restoring" ]]; then
 	§debug -c "restore" -v "$(§config.get_final_dumpname)"
-	. "$BASHRUN_CACHE_HOME/$(§config.get_final_dumpname)"
+	. "$bashrun_cache_home/$(§config.get_final_dumpname)"
     fi	    
 }
 
@@ -175,7 +175,7 @@ function §configs.restore_core {
 	    type="${BASH_REMATCH[1]}"
 	    dumpfile="$type-core.dump"	    
 
-	    if [[ ! -f $BASHRUN_CACHE_HOME/$dumpfile ]]; then
+	    if [[ ! -f $bashrun_cache_home/$dumpfile ]]; then
 		§debug -y "core" -c "$type" "->" -v "$dumpfile"
 		$function
 		§$type.dump $dumpfile

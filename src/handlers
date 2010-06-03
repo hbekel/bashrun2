@@ -4,8 +4,8 @@
 
 §class "§handler" "name pattern test string action complete fallback:b" ""
 
-BASHRUN_FROM_CMDNFH=0
-BASHRUN_HANDLERS_ORDER=""
+bashrun_from_cmdnfh=0
+bashrun_handlers_order=""
 
 §function.clone "§handler.new" "§_handler.new"
 §function.clone "§handlers.dump" "§_handlers.dump"
@@ -24,18 +24,18 @@ function §handler.fallback? {
 }
 
 function §handlers.init {
-    BASHRUN_HANDLERS_ORDER="$(§handlers.select fallback 0) $(§handlers.select fallback 1)"
+    bashrun_handlers_order="$(§handlers.select fallback 0) $(§handlers.select fallback 1)"
     §handlers.install_completion
 }
 
 function §handlers.apply {
     
-    # applies matching handlers to BASHRUN_COMMAND
+    # applies matching handlers to bashrun_command
 
     §debug "trying to match handlers..."
 
     local name
-    for name in $BASHRUN_HANDLERS_ORDER; do
+    for name in $bashrun_handlers_order; do
 	§handlers.seek "$name"
 
 	local append=1
@@ -51,15 +51,15 @@ function §handlers.apply {
 	    string="$result"
 	fi
 
-	if [[ "$BASHRUN_COMMAND" =~ $pattern ]]; then	    
+	if [[ "$bashrun_command" =~ $pattern ]]; then	    
 
-	    §debug -v "$BASHRUN_COMMAND" "matches" -v "$pattern" "->" -y "$name"
+	    §debug -v "$bashrun_command" "matches" -v "$pattern" "->" -y "$name"
 
-	    if [[ BASHRUN_FROM_CMDNFH -eq 1 ]]; then
+	    if [[ bashrun_from_cmdnfh -eq 1 ]]; then
 		if §handler.last? && §handler.fallback?; then
 		    §debug "skipping fallback (command_not_found_handle active)"
 		    §command.get_word
-		    echo "bash: $BASHRUN_COMMAND_WORD: command not found"
+		    echo "bash: $bashrun_command_word: command not found"
 		    return 0
 		fi		    
 	    fi
@@ -80,11 +80,11 @@ function §handlers.apply {
 			else
 			    test="$test -$CHAR"
 			    test="${test/ /}"
-			    if eval "test $test $BASHRUN_COMMAND_WORD"; then
-				§debug -v "test $test $BASHRUN_COMMAND_WORD" "->" -g "succeeds"
+			    if eval "test $test $bashrun_command_word"; then
+				§debug -v "test $test $bashrun_command_word" "->" -g "succeeds"
 				success=1
 			    else
-				§debug fail -v "test $test $BASHRUN_COMMAND_WORD" "->" -r "fails" 
+				§debug fail -v "test $test $bashrun_command_word" "->" -r "fails" 
 				success=0
 				break
 			    fi			
@@ -110,7 +110,7 @@ function §handlers.apply {
 	    if [[ "$string" =~ %[0-9] ]]; then
 
 	        # rewrite handler if subpatterns match
-		[[ "$BASHRUN_COMMAND" =~ $pattern ]]
+		[[ "$bashrun_command" =~ $pattern ]]
 
 		local i=0
 		for (( i=1; i<${#BASH_REMATCH[*]}; i++ )); do
@@ -130,9 +130,9 @@ function §handlers.apply {
 	    fi
 
 	    if [[ append -eq 1 ]]; then
-		[[ -n "$string" ]] && BASHRUN_COMMAND="$string $BASHRUN_COMMAND"
+		[[ -n "$string" ]] && bashrun_command="$string $bashrun_command"
 	    else
-		BASHRUN_COMMAND="$string"
+		bashrun_command="$string"
 	    fi
 
 	    [[ -n "$string" ]] && §debug "result:" -v "$string"
@@ -179,9 +179,9 @@ function §handlers.install_completion {
 		func=${func//__NAME__/$name}
 		func=${func//__COMPGEN__/+handler-$name-complete}
 
-		echo "$func" > $BASHRUN_CACHE_HOME/compfunc
-		source $BASHRUN_CACHE_HOME/compfunc
-		rm $BASHRUN_CACHE_HOME/compfunc		
+		echo "$func" > $bashrun_cache_home/compfunc
+		source $bashrun_cache_home/compfunc
+		rm $bashrun_cache_home/compfunc		
 	    
 		eval "function $prefix { 
                         §engine.action run 0 \"$prefix \$@\" 

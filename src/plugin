@@ -1,7 +1,7 @@
 # -*- shell-script -*-
 
-BASHRUN_PLUGIN_DIRS="$BASHRUN_CONFIG_HOME/plugins $BASHRUN_CONFIG_DIRS/plugins"
-BASHRUN_PLUGINS_CHECKED="$BASHRUN_CACHE_HOME/plugins-checked"
+bashrun_plugin_dirs="$bashrun_config_home/plugins $bashrun_config_dirs/plugins"
+bashrun_plugins_checked="$bashrun_cache_home/plugins-checked"
 
 function §plugin.find {
 
@@ -9,7 +9,7 @@ function §plugin.find {
     local dir=""
     local file=""
 
-    for dir in $BASHRUN_PLUGIN_DIRS; do
+    for dir in $bashrun_plugin_dirs; do
 	file="$dir/${wanted}.rc"
 	[[ -f "$file" ]] && echo "$file"
     done
@@ -24,13 +24,13 @@ function §plugin.check {
     retval=$?
     
     if ! §plugin.checked? "$file"; then
-	echo "$file" >> $BASHRUN_PLUGINS_CHECKED
+	echo "$file" >> $bashrun_plugins_checked
     fi
     return $retval
 }
 
 function §plugin.checked? {
-    grep "$1" "$BASHRUN_PLUGINS_CHECKED" &>/dev/null
+    grep "$1" "$bashrun_plugins_checked" &>/dev/null
 }
 
 function +plugins { 
@@ -42,7 +42,7 @@ function +plugins {
 	if [[ -n "$file" ]]; then
 	    if ! §plugin.checked? "$file"; then
 		if ! §plugin.check "$file"; then
-		    errors="$(<$BASHRUN_CACHE_HOME/errors)"
+		    errors="$(<$bashrun_cache_home/errors)"
 		    errors="${errors//$'\n'/\\n}"
 		    §message "Syntax Errors" \
 			"The plugin file $(§tilde_path $file) contains syntax errors:
@@ -65,8 +65,8 @@ function +plugins {
 		§message "Error" \
 		    "Plugin \"$name\" not found: no such file(s):
 
-                     $(§tilde_path $BASHRUN_CONFIG_HOME/plugins)/$name.rc\n
-                     $BASHRUN_CONFIG_DIRS/plugins/$name.rc"
+                     $(§tilde_path $bashrun_config_home/plugins)/$name.rc\n
+                     $bashrun_config_dirs/plugins/$name.rc"
 	    fi
 	fi
     done

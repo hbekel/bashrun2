@@ -2,12 +2,12 @@
 
 ################################################################################
 
-BASHRUN_ACTION=''
-BASHRUN_EXECMODE=''
-BASHRUN_ENGINE_BUSY=0
-BASHRUN_LOGFILE=${BASHRUN_LOGFILE:-/dev/null}
-BASHRUN_CMD_NOT_FOUND_HANDLE=0
-BASHRUN_ACTION_RETURN_VALUE=-1
+bashrun_action=''
+bashrun_execmode=''
+bashrun_engine_busy=0
+bashrun_logfile=${bashrun_logfile:-/dev/null}
+bashrun_cmd_not_found_handle=0
+bashrun_action_return_value=-1
 
 ################################################################################
 
@@ -15,9 +15,9 @@ function §engine.init {
     
     §engine.busy
 
-    §separator "bashrun $BASHRUN_VERSION"
+    §separator "bashrun $bashrun_version"
 
-    §debug "using" -c "$(§tilde_path $BASHRUN_RCFILE)"
+    §debug "using" -c "$(§tilde_path $bashrun_rcfile)"
 
     §progress.update +10 "Initializing... [window]"
 
@@ -30,8 +30,8 @@ function §engine.init {
     §readline.get_bindings
 
     # initialize keymap
-    BASHRUN_KEYMAP="$(§readline.get_setting keymap)"
-    §debug "initial keymap set to" -v $BASHRUN_KEYMAP
+    bashrun_keymap="$(§readline.get_setting keymap)"
+    §debug "initial keymap set to" -v $bashrun_keymap
 
     §progress.update +1
         
@@ -51,14 +51,14 @@ function §engine.init {
     PROMPT_COMMAND="trap DEBUG; shopt -s extdebug;$PROMPT_COMMAND"
 
     # init exec mode
-    BASHRUN_EXECMODE='&'
+    bashrun_execmode='&'
 
     # install command_not_found_handle for bash>=4 -> handle
     if §bash4; then
 	function command_not_found_handle {
 	    if [[ "$(§mode.get_cmdnfh)" == "1" ]]; then
 		if §engine.idle?; then
-		    BASHRUN_FROM_CMDNFH=1 §engine.action run 0 "$*"
+		    bashrun_from_cmdnfh=1 §engine.action run 0 "$*"
 		    return 0
 		fi
 	    fi
@@ -79,7 +79,7 @@ function §engine.init {
     §progress.reset
 
     if [[ BASHRUN_FRONTEND -eq 1 ]]; then
-	touch $BASHRUN_CACHE_HOME/${BASHRUN_MODE}-ready
+	touch $bashrun_cache_home/${BASHRUN_MODE}-ready
     fi
 
     §engine.idle
@@ -96,9 +96,9 @@ function §engine.action {
     if §actions.seek $action; then
 
 	§engine.busy
-	BASHRUN_RULES_APPLIED=0
+	bashrun_rules_applied=0
 
-	BASHRUN_ACTION=$action
+	bashrun_action=$action
 
 	# overrides
 	[[ -z "$input" ]] && input=$(§action.get_input)
@@ -126,30 +126,30 @@ function §engine.action {
 function §engine.trap {
     
     # the verbatim command line entered
-    BASHRUN_COMMAND_LINE=$(§command.get_line)
+    bashrun_command_line=$(§command.get_line)
 
     # the command about to be executed,
     # as expanded by the shell
-    BASHRUN_COMMAND="$BASH_COMMAND"
+    bashrun_command="$BASH_COMMAND"
     
     # assume execmode background
-    BASHRUN_EXECMODE="&"
+    bashrun_execmode="&"
 
     # remove quotes (;|&)
     §command.unquote
 
     # pass through trap builtin
-    if [[ "$BASHRUN_COMMAND" =~ ^trap ]]; then
+    if [[ "$bashrun_command" =~ ^trap ]]; then
 	§debug -v "trap" -c "removed"
 	§engine.busy? && §engine.reset 
 	return 0
     fi
 
     # pass through exit builtin
-    [[ "$BASHRUN_COMMAND" =~ ^exit ]] && return 0
+    [[ "$bashrun_command" =~ ^exit ]] && return 0
 
-    §debug "line   :" -v "$BASHRUN_COMMAND_LINE"
-    §debug "command:" -v "$BASHRUN_COMMAND"
+    §debug "line   :" -v "$bashrun_command_line"
+    §debug "command:" -v "$bashrun_command"
 
     §engine.launch
 
@@ -164,11 +164,11 @@ function §engine.launch {
     # command override
     if [[ "$command" != '' ]]; then
 	§debug -c override -v "$command"
-	BASHRUN_COMMAND="$command"
-	BASHRUN_COMMAND_LINE="$command"
+	bashrun_command="$command"
+	bashrun_command_line="$command"
     fi
     
-    if §actions.seek "$BASHRUN_ACTION"; then
+    if §actions.seek "$bashrun_action"; then
 
 	if ! §action.available?; then
 	    §engine.reset 0
@@ -178,7 +178,7 @@ function §engine.launch {
 	if §action.function?; then
 
 	    §action.run
-	    retval=$BASHRUN_ACTION_RETURN_VALUE
+	    retval=$bashrun_action_return_value
 
 	    if [[ retval -ne 0 ]]; then
 		[[ retval -eq 1 ]] && §engine.reset 
@@ -187,7 +187,7 @@ function §engine.launch {
 	    fi
 	fi
     fi
-    §debug "executing" -v "$BASHRUN_COMMAND $BASHRUN_EXECMODE"
+    §debug "executing" -v "$bashrun_command $bashrun_execmode"
     
     §engine.execute
     §engine.reset
@@ -196,11 +196,11 @@ function §engine.launch {
 
 function §engine.execute {
 
-    if [[ "$BASHRUN_EXECMODE" == "&" ]]; then
+    if [[ "$bashrun_execmode" == "&" ]]; then
 	§prepare_logfile
-	bash -c "$BASHRUN_COMMAND >> $BASHRUN_LOGFILE 2>&1 &" > /dev/null 2>&1
+	bash -c "$bashrun_command >> $bashrun_logfile 2>&1 &" > /dev/null 2>&1
     else
-	bash -c "$BASHRUN_COMMAND"
+	bash -c "$bashrun_command"
 	§window.mapped? && §mode.unmap? && §window.unmap
     fi
 }
@@ -210,10 +210,10 @@ function §engine.reset {
     local unmap=${1:-1}
 
     # reset action return value
-    BASHRUN_ACTION_RETURN_VALUE=-1
+    bashrun_action_return_value=-1
 
     # reset rules
-    BASHRUN_RULES_APPLIED=0
+    bashrun_rules_applied=0
 
     # reset terminal
     §terminals.seek default
@@ -224,8 +224,8 @@ function §engine.reset {
     # unmap the window if requested/necessary
     if [[ unmap -eq 1 ]]; then 
 	if §mode.unmap?; then
-	    if [[ -f "$BASHRUN_RESET_TERM" ]]; then
-		rm $BASHRUN_RESET_TERM
+	    if [[ -f "$bashrun_reset_term" ]]; then
+		rm $bashrun_reset_term
 	    else
 		§window.unmap
 	    fi
@@ -245,19 +245,19 @@ function §engine.reload {
 }
 
 function §engine.busy {
-    BASHRUN_ENGINE_BUSY=1
+    bashrun_engine_busy=1
 }
 
 function §engine.busy? {
-    [[ "$BASHRUN_ENGINE_BUSY" == "1" ]]
+    [[ "$bashrun_engine_busy" == "1" ]]
 }
 
 function §engine.idle {
-    BASHRUN_ENGINE_BUSY=0
+    bashrun_engine_busy=0
 }
 
 function §engine.idle? {
-    [[ "$BASHRUN_ENGINE_BUSY" == "0" ]]
+    [[ "$bashrun_engine_busy" == "0" ]]
 }
 
 function §engine.shutdown { 
@@ -269,13 +269,13 @@ function §engine.shutdown {
 
     # remove ready and reset flags, remove mode-info
     for suffix in ready reset info; do
-	file="$BASHRUN_CACHE_HOME/${BASHRUN_MODE}-$suffix"
+	file="$bashrun_cache_home/${BASHRUN_MODE}-$suffix"
 	[[ -f "$file" ]] && rm "$file"
     done
 
     # remove plugin check and errors file
-    rm "$BASHRUN_PLUGINS_CHECKED" &>/dev/null
-    rm "$BASHRUN_CACHE_HOME/errors" &>/dev/null    
+    rm "$bashrun_plugins_checked" &>/dev/null
+    rm "$bashrun_cache_home/errors" &>/dev/null    
 
     §debug "exit"
     exit 0

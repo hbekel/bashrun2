@@ -35,14 +35,14 @@ function §action.bind {
     local input="$(§action.get_input)"
 
     local keyseq="$1"
-    local keymap="${2:-$BASHRUN_KEYMAP}"
+    local keymap="${2:-$bashrun_keymap}"
     local keyname="${3:-$(§ks2kn $keyseq)}"
 
     local bind=''
     local enter='\C-x00'
     local char=''
 
-    BASHRUN_KEYMAP="$keymap"
+    bashrun_keymap="$keymap"
 
     # if "pass", bind keyseq directly to accept-line (readline) and return
     if [[ "$action" == "pass" ]]; then
@@ -85,9 +85,9 @@ function §action.bind {
     if [[ "$(§internal.get_char)" == "new" ]]; then
 	
         # no previous internal binding, get next invalid character to bind to
-	char=$(printf "%.2X" $BASHRUN_BINDINGS_NEXT_CHAR)
+	char=$(printf "%.2X" $bashrun_bindings_next_char)
 
-	if [[ BASHRUN_BINDINGS_NEXT_CHAR -gt 0x7f ]]; then
+	if [[ bashrun_bindings_next_char -gt 0x7f ]]; then
 	    §debug warn "maximum number of internal keyseqs reached, skipping..."
 	    return 1
 	fi
@@ -105,9 +105,9 @@ function §action.bind {
 	§internal.set_char "$char"
 	
 	# next free char
-	((BASHRUN_BINDINGS_NEXT_CHAR+=1))
-	until [[ ! "$BASHRUN_BINDINGS_BLACKLIST" =~ \ $BASHRUN_BINDINGS_NEXT_CHAR\  ]]; do
-	    ((BASHRUN_BINDINGS_NEXT_CHAR+=1))
+	((bashrun_bindings_next_char+=1))
+	until [[ ! "$bashrun_bindings_blacklist" =~ \ $bashrun_bindings_next_char\  ]]; do
+	    ((bashrun_bindings_next_char+=1))
 	done
     else
 	# there's already an internal character bound, use it
@@ -149,12 +149,12 @@ function §action.unbind {
     
     local action="$(§action.get_name)"
     local keyseq="$1"
-    local keymap="${2:-$BASHRUN_KEYMAP}"
+    local keymap="${2:-$bashrun_keymap}"
     local unbind=''
     local found=0
     local id=''
 
-    BASHRUN_KEYMAP="$keymap"
+    bashrun_keymap="$keymap"
 
     if [[ "$keyseq" == '' ]]; then
         # find the next bound binding
@@ -193,12 +193,12 @@ function §action.unbind {
 function §action.rebind {
 
     local action="$(§action.get_name)"
-    local keymap="${1:-$BASHRUN_KEYMAP}"
+    local keymap="${1:-$bashrun_keymap}"
     local keyseq=''
     local found=0
     local id=''
 
-    BASHRUN_KEYMAP="$keymap"
+    bashrun_keymap="$keymap"
 
     # find the next unbound binding
     for id in $(§bindings.select action $action); do
@@ -314,7 +314,7 @@ function §action.run {
     local command="$1"
 
     if [[ "$command" != '' ]]; then
-	BASHRUN_COMMAND="$command"
+	bashrun_command="$command"
     fi
 
     §separator "+action-$action"
@@ -325,17 +325,17 @@ function §action.run {
     §action.api.enable
 
     # enable action debugging
-    BASHRUN_DEBUG_ACTION=1
+    bashrun_debug_action=1
 
     # run the action function
     +action-$action "$@"
     retval=$?
 
     # disable action debugging
-    BASHRUN_DEBUG_ACTION=0
+    bashrun_debug_action=0
 
-    if [[ BASHRUN_ACTION_RETURN_VALUE -eq -1 ]]; then
-	BASHRUN_ACTION_RETURN_VALUE="$retval"
+    if [[ bashrun_action_return_value -eq -1 ]]; then
+	bashrun_action_return_value="$retval"
 	
 	local res=""
 	[[ retval -eq 0 ]] && res="-c launch"
@@ -351,17 +351,17 @@ function §action.api.enable {
 
     function command {
 	if [[ "$#" == "0" ]]; then
-	    echo "$BASHRUN_COMMAND"
+	    echo "$bashrun_command"
 	else
-	    BASHRUN_COMMAND="$@"
-	    §debug "$BASHRUN_COMMAND"
+	    bashrun_command="$@"
+	    §debug "$bashrun_command"
 	fi
     }
     function word { 
 	§command.get_word; 
-	echo "$BASHRUN_COMMAND_WORD";
+	echo "$bashrun_command_word";
     }
-    function line { echo "$BASHRUN_COMMAND_LINE"; }
+    function line { echo "$bashrun_command_line"; }
 
     function executable? {
 	§command.executable?
@@ -486,7 +486,7 @@ function §actions.dump {
     §actions.seek "$saved"    
 
     # bashrun completion helper
-    §actions.list > $BASHRUN_CACHE_HOME/actions
+    §actions.list > $bashrun_cache_home/actions
 }
 
 ## shortcut functions to §action.bind ##
@@ -498,7 +498,7 @@ function +bind () {
     local keyname="${3:-$(§ks2kn $keyseq)}"
 
     if §actions.seek "$action"; then
-	§action.bind "$keyseq" "$BASHRUN_KEYMAP" "$keyname"
+	§action.bind "$keyseq" "$bashrun_keymap" "$keyname"
     else
 	§debug fail "no such action:" -v $action
 	return 1
@@ -511,7 +511,7 @@ function +unbind () {
     local keyseq="$2"
 
     if §actions.seek "$action"; then
-	§action.unbind "$keyseq" "$BASHRUN_KEYMAP"
+	§action.unbind "$keyseq" "$bashrun_keymap"
     else
 	§debug fail "no such action:" -v $action
 	return 1
@@ -523,7 +523,7 @@ function +rebind () {
     local action="$1"
 
     if §actions.seek "$action"; then
-	§action.rebind "$BASHRUN_KEYMAP"
+	§action.rebind "$bashrun_keymap"
     else
 	§debug fail "no such action:" -v $action
 	return 1
@@ -534,10 +534,10 @@ function +keymap () {
     local keymap="$1"
     if [[ ! "$keymap" =~ (emacs|vi-insert|vi-command) ]]; then
 	§debug fail "must be one of 'emacs', 'vi-insert' or 'vi-command'"
-	§debug warn "keymap remains set to" -v $BASHRUN_KEYMAP
+	§debug warn "keymap remains set to" -v $bashrun_keymap
 	return 1
     fi
-    BASHRUN_KEYMAP="$keymap"
+    bashrun_keymap="$keymap"
 }
 
 function §keymaps.complete {

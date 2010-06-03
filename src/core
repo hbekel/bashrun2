@@ -70,7 +70,7 @@
 	[[ "$input" =~ ^([Yy]es|[Tt]rue|[Oo]n|1)$ ]] && value=1;
 	[[ "$input" =~ ^([Nn]o|[Ff]alse|[Oo]ff|0)$ ]] && value=0;
 
-	_BASHRUN_ACTIONS[${_BASHRUN_ACTIONS_POSITION}+5]="$1"
+	_bashrun_actionS[${_bashrun_actionS_POSITION}+5]="$1"
     }
 
     +action 'pass'
@@ -79,7 +79,7 @@
     --core 1
 
     +action-pass () { 
-	$BASHRUN_COMMAND
+	$bashrun_command
 	return 2 
     }
 
@@ -367,7 +367,7 @@
     
     function +action-bashrun-bindings {
 
-	local tmpfile=$BASHRUN_CACHE_HOME/keybindings
+	local tmpfile=$bashrun_cache_home/keybindings
 	if [[ ! -f "$tmpfile" ]]; then
 	    §print_bindings > $tmpfile
 

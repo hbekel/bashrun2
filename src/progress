@@ -2,38 +2,38 @@
 
 ################################################################################
 
-BASHRUN_PROGRESS_PERCENT=0
-BASHRUN_PROGRESS_ACTIVE=0
-BASHRUN_PROGRESS_TASK="Busy"
-BASHRUN_PROGRESS_LINE=""
+bashrun_progress_percent=0
+bashrun_progress_active=0
+bashrun_progress_task="Busy"
+bashrun_progress_line=""
 
 function §progress.enabled? {
     [[ BASHRUN_DEBUG -eq 0 && BASHRUN_FEEDBACK -eq 1 && §window.terminal? ]]
 }
 
 function §progress.active? {
-    [[ BASHRUN_PROGRESS_ACTIVE -eq 1 ]]
+    [[ bashrun_progress_active -eq 1 ]]
 }
 
 §progress.new () {
-    BASHRUN_PROGRESS_TASK="${1:-Progress}"
-    BASHRUN_PROGRESS_PERCENT=${2:-0}
-    BASHRUN_PROGRESS_ACTIVE=1
+    bashrun_progress_task="${1:-Progress}"
+    bashrun_progress_percent=${2:-0}
+    bashrun_progress_active=1
 
-    §progress.update "$BASHRUN_PROGRESS_PERCENT"
+    §progress.update "$bashrun_progress_percent"
 }
 
 §progress.update () {
 
     local value="$1"
     if [[ "${value:0:1}" == "+" ]]; then
-	((BASHRUN_PROGRESS_PERCENT+=${value:1}))
+	((bashrun_progress_percent+=${value:1}))
     else
-	BASHRUN_PROGRESS_PERCENT="$value"
+	bashrun_progress_percent="$value"
     fi
 
     if [[ $# -eq 2 ]]; then
-	BASHRUN_PROGRESS_TASK="$2"
+	bashrun_progress_task="$2"
     fi
     §progress.update_line
     §progress.draw
@@ -42,11 +42,11 @@ function §progress.active? {
 §progress.update_line () {
 
     local i=0
-    BASHRUN_PROGRESS_LINE="$BASHRUN_PROGRESS_TASK"
-    for ((i=0; i<$COLUMNS-${#BASHRUN_PROGRESS_TASK}-${#BASHRUN_PROGRESS_PERCENT}-4; i++)); do
-	BASHRUN_PROGRESS_LINE="$BASHRUN_PROGRESS_LINE "
+    bashrun_progress_line="$bashrun_progress_task"
+    for ((i=0; i<$COLUMNS-${#bashrun_progress_task}-${#bashrun_progress_percent}-4; i++)); do
+	bashrun_progress_line="$bashrun_progress_line "
     done
-    BASHRUN_PROGRESS_LINE="$BASHRUN_PROGRESS_LINE [$BASHRUN_PROGRESS_PERCENT%]"
+    bashrun_progress_line="$bashrun_progress_line [$bashrun_progress_percent%]"
 }
 
 §progress.draw () {
@@ -55,12 +55,12 @@ function §progress.active? {
 
     tput civis
 
-    local l=$(( COLUMNS * BASHRUN_PROGRESS_PERCENT / 100 ))
+    local l=$(( COLUMNS * bashrun_progress_percent / 100 ))
     local i=0
     local char=""
     echo -ne '\e[0G' >&2
     echo -ne '\e[1m' >&2
-    for ((i=0; i<${#BASHRUN_PROGRESS_LINE}; i++)); do
+    for ((i=0; i<${#bashrun_progress_line}; i++)); do
 	if [[ i -lt l ]]; then	    
 	    echo -ne '\e[33m' >&2
 	    echo -ne '\e[44m' >&2
@@ -68,15 +68,15 @@ function §progress.active? {
 	    echo -ne '\e[34m' >&2
 	    echo -ne '\e[40m' >&2
 	fi
-	echo -n "${BASHRUN_PROGRESS_LINE:$i:1}" >&2
+	echo -n "${bashrun_progress_line:$i:1}" >&2
     done
 }
     
 §progress.reset () {
 
-    BASHRUN_PROGRESS_PERCENT=0
-    BASHRUN_PROGRESS_TASK="Busy"
-    BASHRUN_PROGRESS_ACTIVE=0
+    bashrun_progress_percent=0
+    bashrun_progress_task="Busy"
+    bashrun_progress_active=0
 
     echo -ne '\e[0m' >&2
     §progress.enabled? && tput cvvis
@@ -84,7 +84,7 @@ function §progress.active? {
 
 §progress.destroy () {
    
-    unset BASHRUN_PROGRESS_PERCENT BASHRUN_PROGRESS_TASK BASHRUN_PROGRESS_LINE
+    unset bashrun_progress_percent bashrun_progress_task bashrun_progress_line
     unset -f \
 	§progress.enabled? \
 	§progress.new \

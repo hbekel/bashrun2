@@ -1,41 +1,41 @@
 # -*- shell-script -*-
 
-declare BASHRUN_GEOMETRY_WIDTH=0 BASHRUN_GEOMETRY_HEIGHT=0 \
-    BASHRUN_GEOMETRY_XOFF=0 BASHRUN_GEOMETRY_YOFF=0 \
-    BASHRUN_GEOMETRY_HAS_SIZE=0 BASHRUN_GEOMETRY_HAS_POSITION=0 \
+declare bashrun_geometry_width=0 bashrun_geometry_height=0 \
+    bashrun_geometry_xoff=0 bashrun_geometry_yoff=0 \
+    bashrun_geometry_has_size=0 bashrun_geometry_has_position=0 \
 
 [[ "$(xdpyinfo | grep dimensions:)" =~ ([0-9]+)x([0-9]+) ]]
 
-BASHRUN_DISPLAY_WIDTH=${BASH_REMATCH[1]}
-BASHRUN_DISPLAY_HEIGHT=${BASH_REMATCH[2]}
+bashrun_display_width=${BASH_REMATCH[1]}
+bashrun_display_height=${BASH_REMATCH[2]}
 
 function §geometry.parse {
 
-    BASHRUN_GEOMETRY_HAS_SIZE=0
-    BASHRUN_GEOMETRY_HAS_POSITION=0
+    bashrun_geometry_has_size=0
+    bashrun_geometry_has_position=0
 
     if [[ "$1" =~ ^(([0-9]+)x([0-9]+))?(([+-][0-9]+)([+-][0-9]+))?$ ]]; then
 
 	if [[ "${BASH_REMATCH[1]}" != '' ]]; then
 	    
 	    if echo "${BASH_REMATCH[1]}" | grep x &> /dev/null; then
-		BASHRUN_GEOMETRY_HAS_SIZE=1
-		BASHRUN_GEOMETRY_WIDTH=${BASH_REMATCH[2]}
-		BASHRUN_GEOMETRY_HEIGHT=${BASH_REMATCH[3]}
+		bashrun_geometry_has_size=1
+		bashrun_geometry_width=${BASH_REMATCH[2]}
+		bashrun_geometry_height=${BASH_REMATCH[3]}
 	    else
-		BASHRUN_GEOMETRY_HAS_POSITION=1
-		BASHRUN_GEOMETRY_XOFF=${BASH_REMATCH[5]}
-		BASHRUN_GEOMETRY_YOFF=${BASH_REMATCH[6]}
+		bashrun_geometry_has_position=1
+		bashrun_geometry_xoff=${BASH_REMATCH[5]}
+		bashrun_geometry_yoff=${BASH_REMATCH[6]}
 	    fi
 	else
-	    BASHRUN_GEOMETRY_HAS_SIZE=0
-	    BASHRUN_GEOMETRY_HAS_POSITION=0
+	    bashrun_geometry_has_size=0
+	    bashrun_geometry_has_position=0
 	fi
 
 	if [[ "${BASH_REMATCH[4]}" != '' ]]; then
-	    BASHRUN_GEOMETRY_HAS_POSITION=1
-	    BASHRUN_GEOMETRY_XOFF=${BASH_REMATCH[5]}
-	    BASHRUN_GEOMETRY_YOFF=${BASH_REMATCH[6]}
+	    bashrun_geometry_has_position=1
+	    bashrun_geometry_xoff=${BASH_REMATCH[5]}
+	    bashrun_geometry_yoff=${BASH_REMATCH[6]}
 	fi
 
     else
@@ -46,43 +46,43 @@ function §geometry.parse {
 }
 
 function §geometry.size? {
-    [[ BASHRUN_GEOMETRY_HAS_SIZE -eq 1 ]]
+    [[ bashrun_geometry_has_size -eq 1 ]]
     return $?
 }
 
 function §geometry.position? {
-    [[ BASHRUN_GEOMETRY_HAS_POSITION -eq 1 ]]
+    [[ bashrun_geometry_has_position -eq 1 ]]
     return $?
 }
 
 function §geometry.width { 
     if [[ $# -eq 0 ]]; then
 	if §geometry.size?; then
-	    echo $BASHRUN_GEOMETRY_WIDTH
+	    echo $bashrun_geometry_width
 	fi
     else
-	BASHRUN_GEOMETRY_WIDTH="$1"
-	BASHRUN_GEOMETRY_HAS_SIZE=1
+	bashrun_geometry_width="$1"
+	bashrun_geometry_has_size=1
     fi
 }
 
 function §geometry.height {
     if [[ $# -eq 0 ]]; then
 	if §geometry.size?; then
-	    echo $BASHRUN_GEOMETRY_HEIGHT
+	    echo $bashrun_geometry_height
 	fi
     else
-	BASHRUN_GEOMETRY_HEIGHT="$1"
-	BASHRUN_GEOMETRY_HAS_SIZE=1
+	bashrun_geometry_height="$1"
+	bashrun_geometry_has_size=1
     fi
 }
 
 function §geometry.x {
-    §geometry.calc_point $BASHRUN_GEOMETRY_XOFF $BASHRUN_DISPLAY_WIDTH $1
+    §geometry.calc_point $bashrun_geometry_xoff $bashrun_display_width $1
 }
 
 function §geometry.y {
-    §geometry.calc_point $BASHRUN_GEOMETRY_YOFF $BASHRUN_DISPLAY_HEIGHT $1
+    §geometry.calc_point $bashrun_geometry_yoff $bashrun_display_height $1
 }
 
 function §geometry.calc_point {
@@ -106,8 +106,8 @@ function §geometry.calc_point {
 }
 
 function §geometry {
-    §geometry.size? && echo -n "${BASHRUN_GEOMETRY_WIDTH}x${BASHRUN_GEOMETRY_HEIGHT}"
-    §geometry.position? && echo -n "${BASHRUN_GEOMETRY_XOFF}${BASHRUN_GEOMETRY_YOFF}"
+    §geometry.size? && echo -n "${bashrun_geometry_width}x${bashrun_geometry_height}"
+    §geometry.position? && echo -n "${bashrun_geometry_xoff}${bashrun_geometry_yoff}"
     [[ §geometry.size? || §geometry.position? ]] && echo
 }
 

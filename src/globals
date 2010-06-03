@@ -2,19 +2,6 @@
 
 ################################################################################
 
-# load xdg basedir utility
-source __PREFIX__/share/bashrun/xdgbase
-
-# setup paths
-BASHRUN_SHARE=__PREFIX__/share/bashrun
-BASHRUN_CONFIG_DIRS="$(§xdg config-dirs bashrun)"
-BASHRUN_CONFIG_HOME="$(§xdg config-home bashrun)"
-BASHRUN_DATA_HOME="$(§xdg data-home bashrun)"
-BASHRUN_CACHE_HOME="$(§xdg cache-home bashrun)"
-
-# setup rcfile
-BASHRUN_RCFILE="$(§xdg -e config bashrun/bashrun.rc)"
-
 # setup bashrun environment vars
 BASHRUN=0
 BASHRUN_MODE=${BASHRUN_MODE:-terminal}
@@ -22,18 +9,31 @@ BASHRUN_DEBUG=${BASHRUN_DEBUG:-0}
 BASHRUN_FEEDBACK=${BASHRUN_FEEDBACK:-0}
 BASHRUN_FRONTEND=${BASHRUN_FRONTEND:-0}
 
-# define version info
-BASHRUN_MAJOR_VERSION=1
-BASHRUN_MINOR_VERSION=0
-BASHRUN_BUGFIX_VERSION=0
-BASHRUN_RELEASE_VERSION=rc1
-
-# create version string
-BASHRUN_VERSION="${BASHRUN_MAJOR_VERSION}.${BASHRUN_MINOR_VERSION}.${BASHRUN_BUGFIX_VERSION}"
-[[ -n $BASHRUN_RELEASE_VERSION ]] && BASHRUN_VERSION="$BASHRUN_VERSION-${BASHRUN_RELEASE_VERSION}"
-
-# setup user environment vars
+# setup user environment vars used by bashrun
 BROWSER=${BROWSER:-firefox}
 PAGER=${PAGER:-less -R}
 DICT=${DICT:-dict}
+
+# load xdg basedir utility
+source __PREFIX__/share/bashrun/xdgbase
+
+# setup paths
+bashrun_site=__PREFIX__/share/bashrun
+bashrun_config_dirs="$(§xdg config-dirs bashrun)"
+bashrun_config_home="$(§xdg config-home bashrun)"
+bashrun_data_home="$(§xdg data-home bashrun)"
+bashrun_cache_home="$(§xdg cache-home bashrun)"
+
+# setup rcfile
+bashrun_rcfile="$(§xdg -e config bashrun/bashrun.rc)"
+
+# define version info
+bashrun_major_version=1
+bashrun_minor_version=0
+bashrun_bugfix_version=0
+bashrun_release_version=rc1
+
+# create version string
+bashrun_version="${bashrun_major_version}.${bashrun_minor_version}.${bashrun_bugfix_version}"
+[[ -n $bashrun_release_version ]] && bashrun_version="$bashrun_version-${bashrun_release_version}"
 

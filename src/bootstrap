@@ -10,9 +10,9 @@ function §bootstrap.directories {
     
     # create data and cache directories
     local dir
-    for dir in DATA CACHE; do
+    for dir in data cache; do
 
-	dir="BASHRUN_${dir}_HOME"
+	dir="bashrun_${dir}_home"
 	dir=${!dir}
 	
 	if [[ ! -d $dir && ! -L $dir ]]; then
@@ -26,11 +26,11 @@ function §bootstrap.bashrc {
     local comment="# Required for bashrun, see bashrun(1)"
     if [[ -f $HOME/.bashrc ]]; then
 	if ! grep 'BASHRUN -eq 1' $HOME/.bashrc &>/dev/null; then
-	    printf "\n$comment\n[[ BASHRUN -eq 1 ]] && . $BASHRUN_SHARE/bashrc\n" >> $HOME/.bashrc
+	    printf "\n$comment\n[[ BASHRUN -eq 1 ]] && . $bashrun_site/bashrc\n" >> $HOME/.bashrc
 	    §message "Information" \
 		"The following line has been appended to your ~/.bashrc:
 
-                 [[ BASHRUN -eq 1 ]] && . $BASHRUN_SHARE/bashrc
+                 [[ BASHRUN -eq 1 ]] && . $bashrun_site/bashrc
 
                  This line is required to initialize the bashrun engine. 
                  See bashrun(1) for details." 2>/dev/null
@@ -42,7 +42,7 @@ function §bootstrap.bashrc {
 [ -z "$PS1" ] && return
 
 $comment
-[[ BASHRUN -eq 1 ]] && . $BASHRUN_SHARE/bashrc
+[[ BASHRUN -eq 1 ]] && . $bashrun_site/bashrc
 " > $HOME/.bashrc
     fi
 }

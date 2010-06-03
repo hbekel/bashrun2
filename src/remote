@@ -2,7 +2,7 @@
 
 ################################################################################
 
-BASHRUN_REMOTE=$BASHRUN_DATA_HOME/remote
+bashrun_remote=$bashrun_data_home/remote
 
 ################################################################################
 
@@ -13,9 +13,9 @@ function §remote.run {
     local input
     local command
 
-    if [[ -f $BASHRUN_REMOTE ]]; then
+    if [[ -f $bashrun_remote ]]; then
 	
-	words=($(<$BASHRUN_REMOTE))
+	words=($(<$bashrun_remote))
 	action=${words[0]}	
 	input=0
 
@@ -31,13 +31,13 @@ function §remote.run {
 	§engine.action "$action" "$input" "$command"	
 
 	# reset term on next map
-	touch $BASHRUN_RESET_TERM
+	touch $bashrun_reset_term
 
 	# remove command file
-	rm $BASHRUN_REMOTE
+	rm $bashrun_remote
 
     else
-	§debug warn "no command pending in" -v "$BASHRUN_REMOTE"
+	§debug warn "no command pending in" -v "$bashrun_remote"
 	return 1
     fi
 }
