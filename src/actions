@@ -363,6 +363,8 @@ function §action.api.enable {
     }
     function line { echo "$bashrun_command_line"; }
 
+    function quote-command { §quote bashrun_command; }
+
     function executable? {
 	§command.executable?
     }

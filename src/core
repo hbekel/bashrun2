@@ -318,8 +318,8 @@
     --core 1
     
     function +action-browse {
-	local url; printf -v url '%q' "$(command)"
-	command "$BROWSER $url"
+	quote-command
+	command "$BROWSER $(command)"
 	return 0
     }
     
