@@ -330,10 +330,7 @@
     
     function +action-google-search {
 
-	local url 
-	printf -v url '%q' "http://www.google.com/search?q=$(command)"
-	command "$url" 
-
+	command "http://www.google.com/search?q=$(command)"
 	action browse
 	return 0
     }
