@@ -5,15 +5,19 @@
 # User configuration files go into ~/.config/bashrun, or
 # $XDG_CONFIG_HOME/bashrun if $XDG_CONFIG_HOME has been modified.
 #
+# Changes to this file require a restart of bashrun.
+#
 # Please see bashrun(1) for all the details on configuration.
 
 +plugins terminal dropdown
-# These plugins allow bashrun to be used in a regular terminal or as
-# an animated dropdown terminal, e.g. use 'bashrun --mode terminal'.
+# The "+plugin" directive can be used to load plugins. The plugins
+# "terminal" and "dropdown" are distributed with bashrun and allow it
+# to be used in a regular terminal or as an animated dropdown
+# terminal, e.g. use 'bashrun --mode terminal'.
 # 
 # See the files terminal.rc and dropdown.rc in
-# /usr/share/bashrun/plugins/.  Copy these files to
-# ~/.config/bashrun/plugins/ if you want to adjust them.
+# /etc/xdg/bashrun/plugins/.  Copy them to ~/.config/bashrun/plugins/
+# if you want to adjust them.
 
 +configure-modes () {
 
@@ -24,17 +28,20 @@
       --terminal "xterm -geometry %g -name bashrun-%m"
       # Specify the terminal to use for bashrun. Within this string,
       # %g expands to the first geometry given in --geometry below.
-      # %m expands to the name of this mode. Bashrun expects the name
-      # portion of the WM_CLASS property of the terminal window to be
-      # set to "bashrun-<modename>". For xterm and the *rxvt's, the
-      # "-name" option can be used for this, as seen above. This
-      # replaces the former XTERM, XTERM_OPTIONS, FGCOLOR and BGCOLOR
-      # settings.
+      # %m expands to the name of this mode. For xterm and the
+      # *rxvt's, the "-name" option can be used to set the name
+      # portion of the WM_CLASS window property, as seen above. A
+      # window manager may then match windows depending on the window
+      # name.
+      #
+      # This setting replaces the former XTERM, XTERM_OPTIONS, FGCOLOR
+      # and BGCOLOR settings.
 
       --geometry '40x1 40x8'
       # Set the geometry or geometries to use for the terminal
       # window. If more than one geometry is used, the cycle-size
       # action (C-l) will allow you to cycle through these geometries.
+      #
       # This replaces the former (SMALL|LARGE)_(COLUMNS|LINES)
       # settings.
 
@@ -43,9 +50,10 @@
       # first word of this string specifies the completion to use by
       # default. The second word, if given, specifies an alternative
       # completion type to use when the size of the terminal exceeds
-      # the number of lines given in the third word.  This replaces
-      # the former COMPLETION_TYPE, ALTERNATIVE_COMPLETION_TYPE and
-      # COMPLETION_THRESHOLD settings.
+      # the number of lines given in the third word.  
+      #
+      # This replaces the former COMPLETION_TYPE,
+      # ALTERNATIVE_COMPLETION_TYPE and COMPLETION_THRESHOLD settings.
 
       --unmap true
       # Whether to unmap the window after running a command. Setting
@@ -56,26 +64,28 @@
       # Whether to show feedback in the form of a progress bar during
       # startup.
 
-      # --onmap 'transset-df -a 0.75' 
-      # A command to run after the window has been mapped and focused. This
-      # setting replaces the former POST_MAP_COMMAND.
+      # --onmap 'transset-df -a 0.75'       
+      # A command to run after the window has been mapped and
+      # focused. 
+      #
+      # This setting replaces the former POST_MAP_COMMAND.
 
       --logfile '/dev/null'
       # Set the logfile to redirect command output to. This replaces
       # the former LOGFILE setting.
 
-    +mode-launcher-init () {	
-        # This fuction, if defined, will be called for the default
-	# mode "launcher" during startup. Here you may configure
-	# anything that is specific to this mode only. See bashrun(1)
-	# for alternatives.
+      function +mode-launcher-init {	
+          # This fuction, if defined, will be called for the default
+	  # mode "launcher" during startup. Here you may configure
+	  # anything that is specific to this mode only. See
+	  # bashrun(1) for alternatives.
 
-	HISTFILE="${XDG_DATA_HOME:-$HOME/.local/share}/bashrun/history"	
-	PS1='>'
+	  HISTFILE="${XDG_DATA_HOME:-$HOME/.local/share}/bashrun/history"	
+	  PS1='>'
 
-	stty -ixon    # disable flow control, allows to bind C-Q
-	stty eof 0201 # prevent C-d on an empty line from exiting
-    }
+	  stty -ixon    # disable flow control, allows to bind C-Q
+	  stty eof 0201 # prevent C-d on an empty line from exiting	  
+      }
 
     # For more options and a detailed description of modes, see
     # bashrun(1)
@@ -84,25 +94,42 @@
 +configure-terminals () {
 
     # Configure terminals to launch commands in. In the string given
-    # by --command, %* is replaced with the actual command to run. If
-    # %@ is used instead, the command is quoted to appear as a single
-    # word before being inserted. Consequtive @'s after %@ add another
-    # level of quoting, e.g. %@@ quotes two times, %@@@ quotes three
-    # times, and so on. If neither %* or %@ is given, the command is
-    # appended to the --command string without further quoting.
+    # by --command, the following strings have special meaning:
     #
-    # %g is replaced by the string given with --geometry. %f ist
-    # replaced by the string given with --font.
+    #    %* : replaced with the actual command to run. 
+    #    %@ : replaced with the actual command to run, quoted to
+    #         appear as a single argument.
+    #      
+    #         Consequtive @'s add another level of quoting, e.g. %@@
+    #         quotes two times, %@@@ quotes three times, and so on.
     #
-    # Note that if you use %g or %f in the command string, the values
-    # of --geometry and --font will be inserted into the string even
-    # if they are empty, so make sure those values are defined.
-
-    # The following two terminals are defined by default:
+    #    %g : replaced with the string given by --geometry.
+    #    %f : replaced with the string given by --font.
+    #
+    # If neither %* or %@ is given, the command is appended without
+    # quoting.
+    
+    
+    # The following two default terminals, named "default" and
+    # "notify", are always defined:
 
     +terminal default --command "xterm -e bash -c %@"
     # The default terminal to launch commands in if no other terminal
-    # has been requested by an action or an action rule, see below.
+    # has been requested by an action or an action rule.
+    #
+    # Some examples for common terminals:
+    #
+    # +terminal default --command "rxvt -e bash -c %@"
+    # +terminal default --command "urxvt -e bash -c %@"
+    # +terminal default --command "mrxvt -e bash -c %@"
+    # +terminal default --command "xterm -e bash -c %@"
+    # +terminal default --command "aterm -e bash -c %@"
+    # +terminal default --command "Eterm -e bash -c %@"
+    # +terminal default --command "Terminal -x bash -c %@"
+    # +terminal default --command "roxterm -e bash -c %@"
+    # +terminal default --command "konsole  -e bash -c %@"
+    # +terminal default --command 'gnome-terminal -e bash\ -c\ %@@'
+    # +terminal default --command "terminator -x bash -c %@"    
 
     +terminal notify 
       --command "xterm -g %g -e bash -c %@"
@@ -125,21 +152,20 @@
 +configure-rules () {
 
     # Rules can be used to associate actions with specific commands or
-    # commandlines. For actions that run commands in a terminal, a
+    # command lines. For actions that run commands in a terminal, a
     # terminal defined in the section above can also be
     # associated. The --add option adds one or more command
     # specifications to a rule, separated by whitespace.
     #
-    # A command specification can be either the command name itself or
-    # a regular expression that is applied to the complete
-    # commandline. Both may optionally be followed by a colon,
-    # followed by the name of the terminal to use.
+    # A command specification can be either the executable name of a
+    # program or a regular expression, which is applied to the
+    # complete commandline. Both may optionally be followed by a colon
+    # (':'), followed by the name of the terminal to use.
     #
     # Regular expressions are denoted by enclosing them in '/'. Note
     # that you don't have to quote literal slashes inside the regular
-    # expression, since the enclosing slashes are used solely to tell
-    # bashrun that it should interpret the contents as a regular
-    # expression.
+    # expression, since the enclosing slashes are used solely to
+    # denote a regular expression to bashrun.
     #
     # This is the equivalent of the RULES array used in previous
     # versions.
@@ -152,21 +178,26 @@
       # terminal and 'top' in the 'small' terminal defined above
 
     +rule term-page
-      --add 'dict' 
-      # the the term-page action is uesed to show the output of
-      # 'dict', paged in the default terminal.
+      --add "dict" 
+      # the the term-page action is used to show the output of the
+      # "dict" program, paged in the default terminal. If you want to
+      # use a different dict client, set the DICT environment variable
+      # to the executable name of the client, e.g. DICT=kdict. Doing
+      # this is similar to using the DICT_CLIENT setting in previous
+      # versions.
      
       --add '/^ls/:small'
       # the term-page action is used to show the output of any
-      # commandline beginning with 'ls' paged in the 'small' terminal.
+      # commandline beginning with "ls" paged in the "small" terminal
+      # defined above.
 
     +rule su-term-notify
       --add '/^/etc/rc.d/'
-      # use the su-term-notify action to run any commandline beginning
-      # with '/etc/rc.d' as root and show it's output in the 'notify'
-      # terminal, closing the terminal after two seconds. Note that in
-      # this case, the su-term-notify function already chooses to use
-      # the 'notify' terminal.
+      # the su-term-notify action is used here to run any commandline
+      # beginning with '/etc/rc.d' as root and show it's output in the
+      # 'notify' terminal, closing the terminal after two
+      # seconds. Note that in this case, the su-term-notify function
+      # already chooses to use the 'notify' terminal by default.
 
     # Finally, if there is a terminal defined by the exact name of the
     # command, then that terminal is chosen automatically, e.g. if you
@@ -177,58 +208,6 @@
 
 +configure-handlers () {
 
-    # Handler setup:
-    # 
-    #   Reorder handlers 
-    #
-    #     If --fallback is true, move handlers to the end of the chain.
-    #     Fallback handlers will end up at the end of the chain in the
-    #     order they are defined in this configuration function.
-    #
-    #   Setup completion
-    #
-    #     If --complete is given, create a stub function using the
-    #     word given as the function name, so that the word can be
-    #     completed to from an empty commandline.
-    #
-    #       If a function by the name +handler-<handlername>-complete
-    #       is defined, install a completion function for the word
-    #       given in --complete that uses the output of the supplied
-    #       function to dynamically retrieve a list of words to
-    #       complete against.
-    #  
-    #       If no such function is defined, install default completion
-    #       for the word given in --complete.
-    #
-    # Handler processing:
-    #   
-    #   Match the line against the regular expression in --pattern
-    #
-    #     Perform one or more optional tests using the 'test' builtin.
-    #     A string of test characters, corresponding to the option
-    #     characters of the options to the test builtin, can be given
-    #     in --test. Prefixing a test character with '!' negates the
-    #     test.  Tests are performed in the order in which they appear
-    #     in --test. If one of these tests fails, testing is aborted
-    #     and the overall --test fails.
-    #
-    #       Rewrite the string depending on its contents:
-    #         
-    #         If the string contains back references (%[0-9]), replace
-    #         them with the string matching the corresponding
-    #         subpatterns
-    #
-    #         If the string contains no back references, append the
-    #         line to the string, separating them with a space
-    #         character.
-    #
-    #     If an --action has been specified, run the action on the
-    #     resulting string
-    #
-    #     If no --action has been specified, assume that the string now
-    #     constitutes an executable commandline, and launch it in the
-    #     background, detached from the bashrun shell.
-    #
     # Handlers provide a way to handle non-executable commandlines in
     # a special way and thus extend bashrun's functionality. If the
     # commandline entered into bashrun is not executable (i.e. it's
@@ -237,16 +216,16 @@
     # each of the handlers defined here.
     #
     # If the regular expression given in --pattern matches the
-    # commandline, then the file test pattern given in --test can
-    # optionally be applied first. If no test was given or if the
-    # supplied test succeeds, then either the value of --string will
-    # be used as the command to execute, with the commandline itself
-    # passed as the argument, or, if the regexp contains
-    # subexpressions within parenthesis, an attempt will be made to
-    # substitute the occurence of %[1-9] in the value of --string with
-    # the contents of the corresponding subexpression match. In this
-    # case, the modified handler string is used as the commandline
-    # without adding further arguments.
+    # commandline, then the file test pattern given in --test is
+    # applied first, if any. If no test was given or if the supplied
+    # test succeeds, then either the value of --string will be used as
+    # the command to execute, with the commandline itself passed as
+    # the argument, or, if the regexp contains subexpressions within
+    # parenthesis, an attempt will be made to substitute the occurence
+    # of %[1-9] in the value of --string with the contents of the
+    # corresponding subexpression match. In this case, the modified
+    # handler string is used as the commandline without adding further
+    # arguments.
     #
     # The --action option may be used to delegate the resulting string
     # to a specific action for further processing instead of simply
@@ -255,18 +234,17 @@
     # In addition, handlers provide a simple interface to programmable
     # completion. The command word to complete can be supplied via the
     # --complete option, and a function called
-    # +handler-<handlername>-complete can be defined to generate a
-    # list of strings to complete against.
+    # +handler-<handler>-complete can be defined to generate a list of
+    # strings to complete against.
 
     +handler info
       --pattern '(.+)\?\?'
       --string '%1'
       --action show-info
-      # E.g. if you type "bash??" then the string "bash" is used as
-      # the commandline to be run with the show-info action, which
-      # pages 'info bash' in the default terminal, unless a rule
-      # indictates to run info with a different action or in a
-      # specific terminal.
+      # E.g. if run "bash??" then the string "bash" is used as the
+      # commandline to be run with the show-info action, which pages
+      # "info bash" in the default terminal, unless a rule indicates
+      # to run "info" in a specific terminal.
       
     +handler manual
       --pattern '(.+)\?'
@@ -274,8 +252,8 @@
       --action show-manual
       # Similar to the above, but shows manual pages instead. Note
       # that the order of handlers is important here: if this handler
-      # were defined before the info handler, then the info handler
-      # would never be reached.      
+      # was defined before the info handler, then the info handler
+      # would never be reached.
 
     +handler browse
       --pattern 'browse (.*)'
@@ -297,7 +275,7 @@
       # www.
 
     +handler tlds
-      --pattern '\.(org|net|com|de)$'
+      --pattern '\.(org|net|com)$'
       --action browse
       # Another url handler that matches the end of the commandline,
       # looking for a common toplevel domain.
@@ -308,7 +286,7 @@
       --action browse
       # An example of a Konqueror-style shortcut: if you type
       # "gg:foo", then the %1 in "www.google.com/search?q=%1" will be
-      # replaced by foo, and the resulting url will be passed to the
+      # replaced with "foo", and the resulting url will be passed to the
       # browse action, which finally launches "$BROWSER <url>"
 
     +handler google-lucky
@@ -371,13 +349,12 @@
     # are guaranteed to be at the end of the handler list, and will
     # match any non-executable commandline not yet handled by a
     # previous handler. The first two of these use a file test
-    # operator prepended to the handler string to check whether the
-    # commandline is a path to a directory or a file,
-    # respectively. See bashrun(1) for details.
+    # operator given in --test to check whether the commandline is a
+    # path to a directory or a file, respectively.
     #
-    # The directory handler is equivalent of the former DIRHANDLER
-    # setting. The 'google-fallback' handler, if present, is
-    # equivalent to using GOOGLE_FALLBACK=yes in previous versions.
+    # The "directory" handler is the equivalent of the former
+    # DIRHANDLER setting. The "google-fallback" handler, if present,
+    # is equivalent to using GOOGLE_FALLBACK=yes in previous versions.
 
     +handler directory
       --fallback 1
@@ -392,7 +369,7 @@
       --string "xdg-open %1"
       # handle files universally with xdg-open, see xdg-open(1)
 
-    ## search any non-executable line using google:
+    ## google any non-executable line not yet handled:
     # +handler google-fallback
     #  --fallback 1
     #  --string  "www.google.com/search?q=%1"
@@ -416,7 +393,7 @@
     # You can define and use your own actions here, as well as
     # redefine the properties and/or behavior of the buitin default
     # actions. For details on how to write custom actions or change
-    # defaults, see bashrun(1).
+    # default actions, see bashrun(1).
     #
     # Some examples:
       
@@ -424,19 +401,19 @@
       --description 'Run command as user (prompts for username)'
       --depends 'su'
 
-    function +action-run-as {
-	+action-run
-	user --prompt
-    }      
+      function +action-run-as {
+	  +action-run
+	  user --prompt
+      }      
 
     +action kill-to-xclip
       --description 'Kill whole line and copy to clipboard' 
       --depends 'xclip'
 
-    function +action-kill-to-xclip { 
-	command "echo \"$(line)\" | xclip"
-	return 0
-    }
+      function +action-kill-to-xclip { 
+	  command "echo \"$(line)\" | xclip"
+	  return 0
+      }
 
     +action yank-from-xclip
       --description 'Yank clipboard contents' 
@@ -444,24 +421,34 @@
       --depends 'xclip'
       --bash '4.1'
 
-    function +action-yank-from-xclip {
+       function +action-yank-from-xclip {
  
-	local text="$(xclip -o)"
-	local size=${#text}
+	   local text="$(xclip -o)"
+	   local size=${#text}
+	   
+	   local pre="${READLINE_LINE:0:$READLINE_POINT}"
+	   local post="${READLINE_LINE:$READLINE_POINT}"
+	   
+	   READLINE_LINE="$pre$text$post"
+	   
+	   ((READLINE_POINT+=size))
+	   return 2
+       }
 
-	local pre="${READLINE_LINE:0:$READLINE_POINT}"
-	local post="${READLINE_LINE:$READLINE_POINT}"
+    +action pastebin
+      --description "Pastebin command output and browse"
+      --depends 'wgetpaste cut'
+      
+      function +action-pastebin {
 
-	READLINE_LINE="$pre$text$post"
-
-	((READLINE_POINT+=size))
-	return 2
-    }
+	  command "$($(command) | wgetpaste - | cut -d ' ' -f7)"
+	  +action-browse
+      }
 }
 
 +configure-keys () {
 
-    # Bind keys to actions:
+    # Bind actions to key sequences:
     # 
     # +keymap <keymap> 
     #
@@ -473,6 +460,9 @@
     #
     #   Bind an <action> to a <keyseq>, optionally supplying a human
     #   readable <keyname>.
+    #
+    #   See readine(1) on how to specify key sequences. In short,
+    #   '\ex' means Alt-x and '\C-x' means Control-x.
 
     +keymap emacs    
 
@@ -520,5 +510,6 @@
 
     +bind kill-to-xclip   '\ek'
     +bind yank-from-xclip '\ey'
+    +bind pastebin '\e\C-p'
 }
 
