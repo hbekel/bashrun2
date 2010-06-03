@@ -39,17 +39,13 @@ function §terminal.get_command {
 
     if [[ -z "$cooked" ]]; then
 	if [[ "$command" =~ [^\\]%(g|f) ]]; then
-        # replace %g and %f with geometry and font
+            
+            # replace %g and %f with geometry and font
 	    local geometry="$(§terminal.get_geometry)"
 	    local font="$(§terminal.get_font)"
 	
-	    if [[ -n "$geometry" ]]; then
-		time command="$(§replace "$command" "%g" "$geometry")"
-	    fi
-	    
-	    if [[ -n "$font" ]]; then
-		time command="$(§replace "$command" "%f" "$font")"
-	    fi
+	    command="$(§replace "$command" "%g" "$geometry")"
+	    command="$(§replace "$command" "%f" "$font")"
 	fi
 	§terminal.set_cooked "$command"
 	echo "$command"
