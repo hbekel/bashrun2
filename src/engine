@@ -38,18 +38,13 @@ function §engine.init {
     # load/restore configuration
     §configs.restore
 
-    # initialize handlers (completion and order)
-    §handlers.init
+    # initialize objects
+    §objects.init
 
     # reset object positions
     §objects.seek_start
 
     §progress.update 100 "Initializing... [engine]"
-
-    # initialize mode passed from env
-    §modes.seek "$BASHRUN_MODE";
-    §debug "calling" -v "§mode.init" "for" -v "$(§mode.get_name)"
-    §mode.init
 
     # enable extdebug and prepare escape from trap
     # (bashdb bugs out if extdebug is set directly from a startup file)
@@ -241,6 +236,12 @@ function §engine.reset {
     §debug -c "reset"
 
     §separator
+}
+
+function §engine.reload {
+    §engine.reset
+    §objects.clear
+    §engine.init
 }
 
 function §engine.busy {

@@ -86,6 +86,42 @@ function §interpolate {
     echo "$str"
 }
 
+function §replace {
+
+    # §replace 'foo %b bar \%baz' %b quux
+    # -> "foo quux bar %baz"
+
+    local string="$1"
+    local prefix="${2:0:1}"
+    local pattern="${2:1}"
+    local replacement="$3"
+
+    local result="" char="" prev="" next=""
+    declare -i i=0 k=0 slen=${#string} plen=${#pattern}
+
+    for ((i=0; i < slen; i++)); do
+	char="${string:$i:1}"
+	k=i+1; next="${string:$k:1}"
+	if [[ "$char" == "$prefix" ]]; then
+	    if [[ "$prev" != '\' ]]; then
+		k=i+1
+		if [[ "${string:$k:$plen}" == "$pattern" ]]; then
+		    result+="$replacement"
+		    i+=plen
+		    prev=""
+		    continue
+		fi
+	    fi
+	fi
+	
+	if ! [[ "$char" == '\' && "$next" == "$prefix" ]]; then
+	    result+="$char"	    
+	fi
+	prev="$char"
+    done
+    echo "$result"
+}
+
 function §debug {
 
     [[ BASHRUN_DEBUG -eq 0 ]] && return

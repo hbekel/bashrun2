@@ -67,8 +67,8 @@
 	local value=0;
 
 	[[ -n "$input" ]] && value=1;
-	[[ "$input" =~ ^([Yy]es|[Tt]rue|1)$ ]] && value=1;
-	[[ "$input" =~ ^([Nn]o|[Ff]alse|0)$ ]] && value=0;
+	[[ "$input" =~ ^([Yy]es|[Tt]rue|[Oo]n|1)$ ]] && value=1;
+	[[ "$input" =~ ^([Nn]o|[Ff]alse|[Oo]ff|0)$ ]] && value=0;
 
 	_BASHRUN_ACTIONS[${_BASHRUN_ACTIONS_POSITION}+5]="$1"
     }
@@ -93,7 +93,7 @@
 	§window.unmap fast
 	return 1
     }
-    
+        
     +action 'quit'
     --description 'Exit bashrun'
     --input 0

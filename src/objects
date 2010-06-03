@@ -163,6 +163,13 @@ function §objects.list {
     ${_OBJECTS_FOCUS}s.list 
 }
 
+function §objects.init {
+    local type=""
+    for type in $_OBJECTS_TYPES; do
+	eval "${type}s.init"
+    done
+}
+
 function §objects.dump {
     local type=""
     for type in $_OBJECTS_TYPES; do
@@ -232,8 +239,8 @@ function ${name}.set_${key} {
      local value=0;
 
      [[ -n "\$input" ]] && value=1;
-     [[ "\$input" =~ ^([Yy]es|[Tt]rue|1)\$ ]] && value=1;
-     [[ "\$input" =~ ^([Nn]o|[Ff]alse|0)\$ ]] && value=0;
+     [[ "\$input" =~ ^([Yy]es|[Tt]rue|[Oo]n|1)\$ ]] && value=1;
+     [[ "\$input" =~ ^([Nn]o|[Ff]alse|[Oo]ff|0)\$ ]] && value=0;
 
     _${NAME}S[\$_${NAME}S_POSITION+$field]=\$value;
     _${NAME}S_MODIFIED=1;

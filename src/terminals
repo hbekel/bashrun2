@@ -2,7 +2,7 @@
 
 ################################################################################
 
-§class "§terminal" "name command geometry font terminal" ""
+§class "§terminal" "name command cooked geometry font terminal" ""
 
 ################################################################################
 
@@ -13,6 +13,11 @@ function §terminal.new {
 
     §_terminal.new "$1"
     §terminal.set_command "xterm -e bash -c %@"
+}
+
+function §terminal.init {
+   §terminal.set_cooked ""
+   §terminal.get_command &>/dev/null
 }
 
 function §terminal.get_command {
@@ -30,16 +35,27 @@ function §terminal.get_command {
     fi
     
     local command="$(§_terminal.get_command)"
+    local cooked="$(§terminal.get_cooked)"
 
-    if [[ "$command" =~ [^\\]%(g|f) ]]; then
+    if [[ -z "$cooked" ]]; then
+	if [[ "$command" =~ [^\\]%(g|f) ]]; then
         # replace %g and %f with geometry and font
-	local geometry="$(§terminal.get_geometry)"
-	local font="$(§terminal.get_font)"
+	    local geometry="$(§terminal.get_geometry)"
+	    local font="$(§terminal.get_font)"
 	
-	[[ -n "$geometry" ]] && command=${command//\%g/$geometry}
-	[[ -n "$font" ]] && command=${command//\%f/$font}
+	    if [[ -n "$geometry" ]]; then
+		time command="$(§replace "$command" "%g" "$geometry")"
+	    fi
+	    
+	    if [[ -n "$font" ]]; then
+		time command="$(§replace "$command" "%f" "$font")"
+	    fi
+	fi
+	§terminal.set_cooked "$command"
+	echo "$command"
+    else
+	echo "$cooked"
     fi
-    echo "$command"
 }
 
 function §terminal.code {

@@ -52,6 +52,11 @@ function §mode.unmap? {
     [[ "$(§mode.get_unmap)" == "1" && BASHRUN_DEBUG -eq 0 ]]
 }
 
+function §modes.init {
+    §modes.seek "$BASHRUN_MODE";
+    §mode.init
+}
+
 function §mode.init {
 
     local name="$(§mode.get_name)"

@@ -184,8 +184,7 @@ function §command.add_terminal {
 	fi
 
 	# insert command into terminal command 
-	# FIXME: this doesn't work for escaped %'s
-	BASHRUN_COMMAND=${terminal_command/\%$method/$BASHRUN_COMMAND}
+	BASHRUN_COMMAND="$(§replace "$terminal_command" "%$method" "$BASHRUN_COMMAND")"
 
     else
 	# append command to terminal command
