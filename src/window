@@ -13,8 +13,6 @@ bashrun_window_hint=0
 bashrun_window_hint_x=0
 bashrun_window_hint_y=0
 
-bashrun_reset_term="$bashrun_cache_home/${BASHRUN_MODE:-terminal}-reset"
-
 function §window? {
     [[ -n "$bashrun_window_id" ]]
 }
@@ -269,9 +267,13 @@ function §window.map {
     # map the window
     §xdotool windowmap $bashrun_window_id
 
-    # parse geometry for this mode 
-    §geometry.parse "$(§mode.get_geometry 0)"
-    
+    # parse geometry for this mode or use debug geometry
+    if [[ BASHRUN_DEBUG -eq 0 ]]; then
+	§geometry.parse "$(§mode.get_geometry 0)"
+    else
+	§geometry.parse "80x24"
+    fi
+
     # apply position
     if §geometry.position?; then
 	§window.pos "$(§geometry.x $bashrun_window_pixel_width)" \
@@ -292,11 +294,6 @@ function §window.map {
     # focus
     §xdotool windowactivate $bashrun_window_id
     §xdotool windowfocus $bashrun_window_id	
-
-    # reset term if neccessary (previous remote su invocation)
-    if [[ -f "$bashrun_reset_term" ]]; then
-	§xdotool key --clearmodifiers Return
-    fi
 
     # call user supplied onmap handler
     $(§mode.get_onmap)

@@ -12,6 +12,7 @@ function §remote.run {
     local action
     local input
     local command
+    local stty
 
     if [[ -f $bashrun_remote ]]; then
 	
@@ -26,12 +27,24 @@ function §remote.run {
 
 	§actions.seek "$action"	
 
-	§action.depends_on? "su" && stty echo cooked -cbreak
+	if §action.depends_on? "su"; then 	    
+	    # save the current tty settings
+	    stty="$(stty -g)"
+	    
+	    # prepare tty for su password entry
+	    stty echo cooked -cbreak	    
+	fi
 
 	§engine.action "$action" "$input" "$command"	
 
-	# reset term on next map
-	touch $bashrun_reset_term
+	if §action.depends_on? "su"; then 	    
+	    # reset tty settings
+	    stty "$stty"
+	fi
+
+	# since readline didn't get an accept-line,
+	# we need to force a redisplay of the prompt
+	kill -WINCH $$
 
 	# remove command file
 	rm $bashrun_remote

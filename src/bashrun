@@ -24,17 +24,11 @@
 # if no arguments are given, attempt to map an existing launcher as
 # fast as possible
 if [[ $# -eq 0 ]]; then    
-
     widfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/launcher-wid"
     if [[ -f "$widfile" ]]; then
 	wid="$(<$widfile)"
 	xdotool windowmap "$wid"
 	xdotool windowfocus "$wid"
-
-	resetflag="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/launcher-reset"
-	if [[ -f "$resetflag" ]]; then
-	    xdotool key --clearmodifiers Return
-	fi
 	exit 0
     fi
 fi

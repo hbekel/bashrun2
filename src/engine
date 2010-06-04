@@ -11,7 +11,6 @@ bashrun_cmd_not_found_handle=0
 bashrun_action_return_value=-1
 
 # FIXME: move handling of flag files to functions
-bashrun_reset_term="$bashrun_cache_home/${BASHRUN_MODE}-reset"
 bashrun_ready="$bashrun_cache_home/${BASHRUN_MODE}-ready"
 
 ################################################################################
@@ -235,11 +234,7 @@ function §engine.reset {
     # unmap the window if requested/necessary
     if [[ unmap -eq 1 ]]; then 
 	if §mode.unmap?; then
-	    if [[ -f "$bashrun_reset_term" ]]; then
-		rm $bashrun_reset_term
-	    else
-		§window.unmap
-	    fi
+	    §window.unmap
 	fi
     fi
     §engine.idle
@@ -261,7 +256,6 @@ function §engine.reload {
     §objects.clear    
     §engine.init
 
-    touch $bashrun_reset_term    
     §window.map
     
     [[ BASHRUN_DEBUG -eq 0 ]] && tput reset
@@ -292,8 +286,8 @@ function §engine.shutdown {
     # remove this instance from registry
     §registry.remove
 
-    # remove ready and reset flags, remove mode-info
-    for suffix in ready reset info; do
+    # remove ready flag, remove mode-info
+    for suffix in ready info; do
 	file="$bashrun_cache_home/${BASHRUN_MODE}-$suffix"
 	[[ -f "$file" ]] && rm "$file"
     done
