@@ -193,47 +193,35 @@ function objects.init {
 
 function objects.dump {
     
+    local dumpfile="$_ObJeCtS_DATA_HOME/${1:-objects.dump}"
+
     if objects.empty?; then
-	touch $_ObJeCtS_DATA_HOME/${1:-objects.dump}
+	touch $dumpfile
 	return 0
     fi
 
     local data="$(printf "%q " "${_OBJECTS[@]}")"
 
+    local dump="
+        _OBJECTS_KEYS=(${_OBJECTS_KEYS[@]})
+        _OBJECTS_WIDTH=${_OBJECTS_WIDTH}
+        _OBJECTS_POSITION=0
+        _OBJECTS_SIZE=${_OBJECTS_SIZE}
+        _OBJECTS_MODIFIED=0
+    
+        _OBJECTS_HAVE_INTERFACE=${_OBJECTS_HAVE_INTERFACE}
+        _OBJECTS_INTERFACE_METHODS='${_OBJECTS_INTERFACE_METHODS}'
+        _OBJECTS_INTERFACE_OPTIONS='${_OBJECTS_INTERFACE_OPTIONS}'
+        _OBJECTS_INTERFACE_OPTIONS_FOUND=()
+
+        _OBJECTS=($data)
+        "
+
     if [[ "$2" == "append" ]]; then
-
-	echo "
-        _OBJECTS_KEYS=(${_OBJECTS_KEYS[@]})
-        _OBJECTS_WIDTH=${_OBJECTS_WIDTH}
-        _OBJECTS_POSITION=0
-        _OBJECTS_SIZE=${_OBJECTS_SIZE}
-        _OBJECTS_MODIFIED=0
-    
-        _OBJECTS_HAVE_INTERFACE=${_OBJECTS_HAVE_INTERFACE}
-        _OBJECTS_INTERFACE_METHODS='${_OBJECTS_INTERFACE_METHODS}'
-        _OBJECTS_INTERFACE_OPTIONS='${_OBJECTS_INTERFACE_OPTIONS}'
-        _OBJECTS_INTERFACE_OPTIONS_FOUND=()
-
-        _OBJECTS=($data)
-        " >> $_ObJeCtS_DATA_HOME/${1:-objects.dump}
-
+        echo "$dump" >> $dumpfile
     else
-	echo "
-        _OBJECTS_KEYS=(${_OBJECTS_KEYS[@]})
-        _OBJECTS_WIDTH=${_OBJECTS_WIDTH}
-        _OBJECTS_POSITION=0
-        _OBJECTS_SIZE=${_OBJECTS_SIZE}
-        _OBJECTS_MODIFIED=0
-    
-        _OBJECTS_HAVE_INTERFACE=${_OBJECTS_HAVE_INTERFACE}
-        _OBJECTS_INTERFACE_METHODS='${_OBJECTS_INTERFACE_METHODS}'
-        _OBJECTS_INTERFACE_OPTIONS='${_OBJECTS_INTERFACE_OPTIONS}'
-        _OBJECTS_INTERFACE_OPTIONS_FOUND=()
-
-        _OBJECTS=($data)
-        " > $_ObJeCtS_DATA_HOME/${1:-objects.dump}
+        echo "$dump" > $dumpfile
     fi
-
 }
 
 function objects.restore {
@@ -418,7 +406,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
     function +object {
 
 	declare -a args
-	declare remove name arg next 
+	declare remove arg next 
 	
         # remove a previous type's interface
 	remove="${_ObJeCtS_FOCUS}s.ui.disable"
@@ -441,10 +429,12 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	fi
 
         # parse arguments and call ui functions	
+
+	# check if the first argument is the object's name
 	if [[ "$1" =~ ^[^\-] ]]; then 
-	    name="$1"
+	    # seek to the named object or create it
+	    objects.seek "$1" || object.new "$1"
 	    shift
-	    objects.seek "$name" || object.new "$name"
 	fi
 
 	args=("$@")
