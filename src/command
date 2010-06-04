@@ -153,21 +153,15 @@ function §command.add_terminal {
     local terminal_command=""
     local method=""
 
-    for terminal in $(§terminals.used); do
-	if [[ "$bashrun_command_word" == "$terminal" ]]; then
-	    §debug "already using" -v "$terminal"
-	    return 1
-	fi
-    done
+    if [[ " $bashrun_terminals_used " =~ \ $bashrun_command_word\  ]]; then
+     	    §debug "already using" -v "$bashrun_command_word"
+     	    return 1
+    fi	
 
     if [[ $# -eq 1 ]]; then
 	if ! §terminals.seek "$1"; then
 	    terminals.seek 'default'
 	fi
-    fi
-
-    if [[ "$(§terminal.get_name)" == "bashrun" ]]; then
-	§terminals.seek 'default'
     fi
 
     # get the terminal command
