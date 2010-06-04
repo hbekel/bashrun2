@@ -468,6 +468,7 @@
 
     +bind pass '\ew'
     +bind abort  '\C-g'
+    +bind reload  '\er'
     +bind quit '\C-q'
 
     +bind run  '\C-m'

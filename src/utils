@@ -299,7 +299,7 @@ function §print_bindings {
 
     # display order of core actions, | denotes a newline
     local order="bashrun-bindings bashrun-manual debug | 
-                 pass abort quit |
+                 pass abort reload quit |
                  run term-run term-page term-hold | 
                  su-run su-term-run su-term-page su-term-hold |
                  show-manual show-info show-help |

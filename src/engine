@@ -5,9 +5,14 @@
 bashrun_action=''
 bashrun_execmode=''
 bashrun_engine_busy=0
+bashrun_engine_reload=0
 bashrun_logfile=${bashrun_logfile:-/dev/null}
 bashrun_cmd_not_found_handle=0
 bashrun_action_return_value=-1
+
+# FIXME: move handling of flag files to functions
+bashrun_reset_term="$bashrun_cache_home/${BASHRUN_MODE}-reset"
+bashrun_ready="$bashrun_cache_home/${BASHRUN_MODE}-ready"
 
 ################################################################################
 
@@ -15,7 +20,7 @@ function §engine.init {
     
     §engine.busy
 
-    §separator "bashrun $bashrun_version"
+    §separator "Bashrun $bashrun_version"
 
     §debug "using" -c "$(§tilde_path $bashrun_rcfile)"
 
@@ -81,11 +86,14 @@ function §engine.init {
     
     §progress.reset
 
-    if [[ BASHRUN_FRONTEND -eq 1 ]]; then
-	touch $bashrun_cache_home/${BASHRUN_MODE}-ready
-    fi
+    # reset the reload flag
+    bashrun_engine_reload=0
 
     §engine.idle
+
+    if [[ BASHRUN_FRONTEND -eq 1 ]]; then
+	touch $bashrun_ready
+    fi
 }
 
 function §engine.action {
@@ -235,16 +243,30 @@ function §engine.reset {
 	fi
     fi
     §engine.idle
-
+    
     §debug -c "reset"
 
     §separator
+    
+    [[ bashrun_engine_reload -eq 1 ]] && §engine.reload
 }
 
 function §engine.reload {
-    §engine.reset
-    §objects.clear
+
+    §separator "reloading engine..."
+    §window.map
+
+    rm $bashrun_ready &>/dev/null
+
+    §objects.clear    
     §engine.init
+
+    touch $bashrun_reset_term    
+    §window.map
+    
+    [[ BASHRUN_DEBUG -eq 0 ]] && tput reset
+    
+    §separator "engine reloaded"
 }
 
 function §engine.busy {

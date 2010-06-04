@@ -278,6 +278,12 @@ function §window.map {
 	    "$(§geometry.y $bashrun_window_pixel_height)"
     fi
 
+    # apply size
+    if §geometry.size?; then
+	§window.size --hint "$(§geometry.width)" \
+	    "$(§geometry.height)"
+    fi
+
     # move to the current desktop if required
     if [[ "$(§xdotool get_desktop_for_window $bashrun_window_id)" != "-1" ]]; then
 	§xdotool set_desktop_for_window $bashrun_window_id $(§xdotool get_desktop)
