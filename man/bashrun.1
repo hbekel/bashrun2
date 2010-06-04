@@ -67,13 +67,13 @@ given is applied to the newly created session, unless the
 \fBcommand\fP is specified, the default \fBcommand\fP \fIshow\fP is
 used.
 
-Note that if neither a \fBmode\fP or \fBcommand\fP is specified,
-i.e. \fBbashrun\fP is invoked without any arguments, it will attempt
-to map the window of an existing \fIlauncher\fP session as fast as
-possible, neglecting any special settings like geometry or animation
-for this \fBmode\fP. If no existing session is found or arguments are
-given on the command line, the frontend will process \fBoptions\fP and
-\fBcommands\fP as described below.
+Note that if neither an \fBoption\fP, \fBmode\fP or \fBcommand\fP is
+specified, \fBbashrun\fP will attempt to map the window of an existing
+\fIlauncher\fP session as fast as possible, neglecting any special
+settings like geometry or animation for this \fBmode\fP. If no
+existing session is found or arguments are given on the command line,
+the frontend will process \fBoptions\fP and \fBcommands\fP as
+described below.
 .SS OPTIONS
 .IP \fB-d\fP,\ \fB--debug\fP
 Enable debugging on startup
@@ -92,21 +92,22 @@ default command if no command has been specified.
 .IP \fBhide\fP
 Unmap the terminal window.
 .IP \fBtoggle\fP
-If the window is not mapped, show it. If the window is
-mapped, hide it.
+If the terminal window is not mapped, show it. If the terminal window
+is mapped, hide it.
 .IP \fBsmart\fP
-If the window is not mapped, not on the current desktop,
+If the terminal window is not mapped, not on the current desktop,
 obscured by other windows or not focused, then show it. If none of
-these conditions apply, hide the window.
+these conditions apply, hide the terminal window.
 .IP \fBexit\fP
-Terminate instance.
+Terminate the bashrun session.
 .IP \fBrestart\fP
-Restart instance.
-.IP \fBdo\fP\ \fIaction\fP\ \fIshell-command\fP
+Terminate an existing bashrun session and start a new one.
+.IP \fBdo\fP\ \fIaction\fP\ [\fIshell-command\fP]
 Remotely invoke \fIaction\fP with
 \fIshell-command\fP. If the requested action involves
 .BR su (1),
-the window is shown before invoking the action to allow password entry.
+the terminal window is shown before invoking the action to allow
+password entry.
 .IP \fBsu\fP\ \fIshell-command\fP
 Remotely invoke the \fIsu-run\fP action with \fIshell-command\fP. This is
 the equivalent to \fBdo\fP \fIsu-run\fP \fIshell-command\fP.

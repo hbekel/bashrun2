@@ -161,15 +161,17 @@ case "$command" in
 	if [[ ${#args[@]} -gt 0 ]]; then
 	    remote su-run ${args[@]}
 	else
-	    echo "bashrun: error: command \`su' requires at least one argument: <cmd>" >&2
+	    echo "bashrun: error: command \`su' requires at least " \
+		"one argument: <cmd>" >&2
 	    exit 1
 	fi
 	;;
     do)
-	if [[ ${args[@]} -gt 1 ]]; then
+	if [[ ${#args[@]} -gt 0 ]]; then
 	    remote ${args[@]}
 	else
-	    echo "bashrun: error: command \`do' requires at least two arguments: <action> <cmd>" >&2
+	    echo "bashrun: error: command \`do' requires at least " \
+		"one argument: <action> [<cmd>]" >&2
 	    exit 1
 	fi
 	;;

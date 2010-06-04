@@ -151,7 +151,7 @@ function remote {
     if wait_until "[[ -f $bashrun_cache_home/${mode}-ready ]]"; then
 	
         # put "<action> <cmd>" in the "remote" file
-	echo $@ > $bashrun_data_home/remote
+	echo $@ > $bashrun_data_home/$mode-remote
 
         # send SIGUSR1 to bashrun to pick it up (see §remote)
 	kill -USR1 "$(<$bashrun_cache_home/${mode}-pid)"
@@ -207,9 +207,9 @@ function usage {
     wid       : print window id
     pid       : print pid of bashrun session
 
-    su <cmd>       : run <cmd> as root, using bashrun for password entry
-    do <act> <cmd> : remotely invoke <action> for <cmd>
-    wait <state>   : wait until bashrun is in <state> ([mapped|unmapped|ready])
+    su <cmd>         : run <cmd> as root, using bashrun for password entry
+    do <act> [<cmd>] : remotely invoke <action> [<cmd>]
+    wait <state>     : wait until bashrun is in <state> (mapped|unmapped|ready)
 
   Press F1 in bashrun to list the current keybindings.
 

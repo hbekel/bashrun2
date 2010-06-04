@@ -44,6 +44,9 @@ function §engine.init {
     # reset object positions
     §objects.seek_start
 
+    # seek back to the current mode
+    §modes.seek "$BASHRUN_MODE";
+
     §progress.update 100 "Initializing... [engine]"
 
     # enable extdebug and prepare escape from trap
