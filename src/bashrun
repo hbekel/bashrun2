@@ -27,8 +27,7 @@ if [[ $# -eq 0 ]]; then
     widfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/launcher-wid"
     if [[ -f "$widfile" ]]; then
 	wid="$(<$widfile)"
-	xdotool windowmap "$wid"
-	xdotool windowfocus "$wid"
+	brwctl $wid show
 	exit 0
     fi
 fi
@@ -169,20 +168,6 @@ case "$command" in
 	    exit 1
 	fi
 	;;
-    wait)
-	state="unmapped"
-	if [[ -n "${args[0]}" ]]; then
-	    state="${args[0]}"
-	fi
-	case "$state" in
-	    ready)
-		wait_until "[[ -f $bashrun_cache_home/${mode}-ready ]]"
-		;;
-	    mapped|unmapped)
-		§window.wait $state
-		;;	    
-	esac
-	;; 
     *)
 	echo "bashrun: unknown command: $command"
 	exit 1

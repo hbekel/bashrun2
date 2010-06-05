@@ -22,21 +22,6 @@ function create_modeinfo {
     source $bashrun_site/modes
     source $bashrun_site/core 
 
-    # check for xdotool
-    if ! §xdotool.available?; then
-	if [[ bashrun_xdotool -eq 1 ]]; then
-	    §message "Error - Xdotool not found" \
-		"Bashrun requires xdotool, available from
-
-                 http://semicomplete.com/projects/xdotool" &>/dev/null
-	else
-	    §message "Error - xdotool version too old" \
-		"Please upgrade to xdotool 1.20100416.2809 or later." \
-		&>/dev/null
-	fi
-	exit 1
-    fi
-    
     # check rcfile syntax
     if ! §syntax? "$bashrun_rcfile"; then
 	errors="$(<$bashrun_cache_home/errors)"
@@ -209,7 +194,6 @@ function usage {
 
     su <cmd>         : run <cmd> as root, using bashrun for password entry
     do <act> [<cmd>] : remotely invoke <action> [<cmd>]
-    wait <state>     : wait until bashrun is in <state> (mapped|unmapped|ready)
 
   Press F1 in bashrun to list the current keybindings.
 

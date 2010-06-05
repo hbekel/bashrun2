@@ -31,27 +31,6 @@ function §window.unmapped? {
     [[ bashrun_window_mapped -eq 0 ]]
 }
 
-function §window.wait {
-
-    local state="${1:-unmapped}"
-    local name="bashrun-$BASHRUN_MODE"
-
-    if [[ "$state" == "mapped" ]]; then
-	while sleep 0.1; do
-	    if [[ ! "$(xdotool search --onlyvisible --classname $name 2> /dev/null)" == '' ]]; then
-		break
-	    fi
-	done
-
-    elif [[ "$state" == "unmapped" ]]; then
-	while sleep 0.1; do
-	    if [[ "$(xdotool search --onlyvisible --classname $name 2> /dev/null)" == '' ]]; then
-		break
-	    fi
-	done
-    fi
-}
-
 function §window.terminal? {
     §window? || return 1
     [[ "$bashrun_window_id" == "$WINDOWID" ]]
@@ -191,7 +170,7 @@ function §window.pos {
 	    y=${BASH_REMATCH[2]}
 	fi
 	
-	§xdotool windowmove $bashrun_window_id $x $y 
+	brwctl $bashrun_window_id pos $x $y 
 	bashrun_window_pos_x=$x
 	bashrun_window_pos_y=$y
     fi
@@ -229,12 +208,12 @@ function §window.size {
 
     §window? || return 1
 
-    # resize from the outside using §xdotool (using xterms/urxvt's
+    # resize from the outside using brwctl (using xterms/urxvt's
     # escape sequences is unreliable, causing random freezes)
 
-    local hint=""
+    local hint="size"
     if [[ "$1" == "--hint" ]]; then
-	hint="--usehints"
+	hint="sizeh"
 	shift
     fi
 
@@ -242,14 +221,14 @@ function §window.size {
 	if [[ "$width" =~ ([0-9]+)x([0-9]+) ]]; then
 	    local w=${BASH_REMATCH[1]}
 	    local h=${BASH_REMATCH[2]}
-	    §xdotool windowsize $hint $bashrun_window_id $w $h
+	    brwctl $bashrun_window_id hint $w $h
 	    bashrun_window_width=$w
 	    bashrun_window_height=$h
 	fi
     fi
 
     if [[ $# -eq 2 ]]; then
-	§xdotool windowsize $hint $bashrun_window_id $1 $2
+	brwctl $bashrun_window_id $hint $1 $2
 	bashrun_window_width=$1
 	bashrun_window_height=$2
     fi 
@@ -265,7 +244,7 @@ function §window.map {
     [[ $# -eq 0 ]] && §window.update
     
     # map the window
-    §xdotool windowmap $bashrun_window_id
+    brwctl $bashrun_window_id show
 
     # parse geometry for this mode or use debug geometry
     if [[ BASHRUN_DEBUG -eq 0 ]]; then
@@ -286,15 +265,6 @@ function §window.map {
 	    "$(§geometry.height)"
     fi
 
-    # move to the current desktop if required
-    if [[ "$(§xdotool get_desktop_for_window $bashrun_window_id)" != "-1" ]]; then
-	§xdotool set_desktop_for_window $bashrun_window_id $(§xdotool get_desktop)
-    fi
-
-    # focus
-    §xdotool windowactivate $bashrun_window_id
-    §xdotool windowfocus $bashrun_window_id	
-
     # call user supplied onmap handler
     $(§mode.get_onmap)
     
@@ -313,7 +283,7 @@ function §window.unmap {
     if [[ bashrun_window_animate -eq 1 ]]; then
 	§window.collapse
     fi
-    §xdotool windowunmap $bashrun_window_id
+    brwctl $bashrun_window_id unmap
 
     # call user supplied onunmap handler    
     $(§mode.get_onunmap)
@@ -334,10 +304,10 @@ function §window.toggle { # [smart] [fast]
 	§window.map
     else
 	if [[ smart -eq 1 ]]; then
-	    if [[ "$(§xdotool getwindowfocus)" != "$bashrun_window_id" ]]; then
-		§window.map $fast
-	    else
+	    if brwctl $bashrun_window_id focus?; then
 		§window.unmap $fast
+	    else
+		§window.map $fast
 	    fi
 	else
 	    §window.unmap $fast
@@ -355,7 +325,7 @@ function §window.collapse {
     local i=0
     for (( i=$bashrun_window_height; i>1; i-- )); do
 	(( bashrun_window_height-=1 ))
-	§xdotool windowsize --usehints $bashrun_window_id \
+	brwctl $bashrun_window_id sizeh \
 	    $bashrun_window_width \
 	    $bashrun_window_height
     done
@@ -370,7 +340,7 @@ function §window.expand {
     local i=0
     for (( i=1; i<=max_height-1; i++ )); do
 	(( bashrun_window_height+=1 ))
-	§xdotool windowsize --usehints $bashrun_window_id \
+	brwctl $bashrun_window_id sizeh \
 	    $bashrun_window_width \
 	    $bashrun_window_height
     done

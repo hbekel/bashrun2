@@ -7,6 +7,13 @@ AM_INIT_AUTOMAKE(bashrun, 1.0.0-rc1)
 
 # Checks for programs.
 AC_PROG_SED
+AC_PROG_CC
+
+# Checks for libraries.
+AC_CHECK_LIB(X11, XOpenDisplay,
+  LIBS="$LIBS -lX11",
+  AC_MSG_ERROR([Could not find XOpenDisplay in -lX11.])
+)
 
 # Create Makefiles
 AC_OUTPUT(Makefile src/Makefile etc/Makefile man/Makefile)
