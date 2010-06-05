@@ -167,6 +167,7 @@ function §objects.init {
     for type in $_OBJECTS_TYPES; do
 	eval "${type}s.init"
     done
+    §objects.seek_start
 }
 
 function §objects.dump {

@@ -51,12 +51,12 @@ function +plugins {
 
                          Skipping plugin \"$name\"..."
 		else
-		    §debug "using plugin" -c "$(§tilde_path $file)"
+		    §debug -v "$name" "->" -c "$(§tilde_path $file)"
 		    source "$file"
 		fi
 	    else
 		if §plugin.check "$file"; then
-		    §debug "using plugin" -c "$(§tilde_path $file)"
+		    §debug -v "$name" "->" -c "$(§tilde_path $file)"
 		    source "$file"
 		fi
 	    fi

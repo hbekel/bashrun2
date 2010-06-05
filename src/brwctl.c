@@ -55,7 +55,7 @@ int main(int argc, char **argv)
   /* check if the window exists... */
   error_handler = XSetErrorHandler(bad_window);
   XGetGeometry(dpy, win, &root, &x, &y, &width, &height, &bw, &depth);
-  XSync(dpy, False);
+  XFlush(dpy);
   (void)XSetErrorHandler(error_handler);
   
   for (i=1; i<argc; i++) {

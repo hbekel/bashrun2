@@ -35,6 +35,8 @@ function §handlers.apply {
     §debug "trying to match handlers..."
 
     local name
+    local handled=0
+
     for name in $bashrun_handlers_order; do
 	§handlers.seek "$name"
 
@@ -146,8 +148,16 @@ function §handlers.apply {
 		fi
 	    fi
 	    return
+	    handled=1
 	fi
     done
+
+    # run bookmark funtion unless already handled
+    if [[ handled -eq 0 ]]; then
+	if §command.bookmark?; then
+	    $bashrun_command
+	fi
+    fi
 }
 
 function §handlers.install_completion {

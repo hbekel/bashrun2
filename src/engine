@@ -21,7 +21,7 @@ function §engine.init {
 
     §separator "Bashrun $bashrun_version"
 
-    §debug "using" -c "$(§tilde_path $bashrun_rcfile)"
+    §debug -v "rcfile" "->" -c "$(§tilde_path $bashrun_rcfile)"
 
     §progress.update +10 "Initializing... [window]"
 
@@ -29,13 +29,11 @@ function §engine.init {
     §window.id $WINDOWID
 
     # get current readline bindings
-    §debug "getting current readline settings and bindings..."
     §readline.get_settings
     §readline.get_bindings
 
     # initialize keymap
     bashrun_keymap="$(§readline.get_setting keymap)"
-    §debug "initial keymap set to" -v $bashrun_keymap
 
     §progress.update +1
         
@@ -44,9 +42,6 @@ function §engine.init {
 
     # initialize objects
     §objects.init
-
-    # reset object positions
-    §objects.seek_start
 
     # seek back to the current mode
     §modes.seek "$BASHRUN_MODE";

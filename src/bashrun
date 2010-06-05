@@ -25,11 +25,7 @@
 # fast as possible
 if [[ $# -eq 0 ]]; then    
     widfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/launcher-wid"
-    if [[ -f "$widfile" ]]; then
-	wid="$(<$widfile)"
-	brwctl $wid show
-	exit 0
-    fi
+    [[ -f "$widfile" ]] && brwctl "$(<$widfile)" show && exit 0
 fi
 # no existing instance or xdotool is missing -> proceed...
 
