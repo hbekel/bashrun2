@@ -26,7 +26,6 @@ source $bashrun_site/objects
 source $bashrun_site/utils
 source $bashrun_site/window
 source $bashrun_site/registry
-source $bashrun_site/xdotool
 source $bashrun_site/message
 source $bashrun_site/bootstrap
 

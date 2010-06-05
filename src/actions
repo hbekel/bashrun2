@@ -550,5 +550,5 @@ function §keymaps.complete {
     return 0
 }
 
-complete -o default -F §actions.complete_names +bind +unbind +rebind
+complete -o default -F §action.complete_names +bind +unbind +rebind
 complete -o default -F §keymaps.complete +keymap

@@ -27,12 +27,12 @@ if [[ $# -eq 0 ]]; then
     widfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/launcher-wid"
     [[ -f "$widfile" ]] && brwctl "$(<$widfile)" show && exit 0
 fi
-# no existing instance or xdotool is missing -> proceed...
+# no existing bashrun session -> proceed...
 
-# source global variables
+# setup global variables
 source __PREFIX__/share/bashrun/globals
 
-# bootstrap if CACHE_HOME doesn't exist
+# bootstrap if cache home doesn't exist
 if [[ ! -e $bashrun_cache_home ]]; then
     source $bashrun_site/bootstrap
 fi

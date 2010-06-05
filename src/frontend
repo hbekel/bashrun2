@@ -11,7 +11,6 @@ function create_modeinfo {
     
     source $bashrun_site/utils
     source $bashrun_site/message
-    source $bashrun_site/xdotool
     source $bashrun_site/config
     source $bashrun_site/plugin
     source $bashrun_site/geometry
@@ -57,7 +56,6 @@ function source_window {
     # create the environment §window expects and set wid
 
     BASHRUN_MODE="$mode"
-    source $bashrun_site/xdotool
     source $bashrun_site/geometry
     source $bashrun_site/window
 

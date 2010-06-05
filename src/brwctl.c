@@ -1,6 +1,3 @@
-/* xwinctrl.c 
-Usage: xwinctrl <wid> <command> <args>
-*/
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/Xresource.h>
@@ -46,7 +43,7 @@ int main(int argc, char **argv)
   root = XDefaultRootWindow(dpy);
   
   if (argc < 2) {
-    fprintf(stderr, "Usage: xwinctrl <wid> [<cmd> [<args>]...]\n");
+    fprintf(stderr, "Usage: brwctl <wid> [<cmd> [<args>]...]\n");
     exit(1);
   }
 

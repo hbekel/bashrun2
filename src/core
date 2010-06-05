@@ -79,7 +79,6 @@
       --core 1
 
       function +action-reload {
-	  READLINE_LINE=""
 	  bashrun_engine_reload=1
 	  return 2
       }
