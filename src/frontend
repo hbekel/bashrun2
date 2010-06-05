@@ -151,7 +151,6 @@ function wait_until {
     # wait until code returns success,
     # bail out after 3 secs (30*0.1)
     # e.g. wait_until "[[ -f some_file ]]"
-    #      wait_until "§window.mapped?"
 
     local code=${1:-:}
     local attempts=30

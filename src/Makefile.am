@@ -1,5 +1,6 @@
 bin_PROGRAMS = brwctl
 brwctl_SOURCES = brwctl.c
+AM_CFLAGS = -Wall
 
 bin_SCRIPTS = bashrun
 sitedir = $(datadir)/@PACKAGE@

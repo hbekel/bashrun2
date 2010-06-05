@@ -14,19 +14,19 @@ Usage: xwinctrl <wid> <command> <args>
 #define _NET_WM_STATE_ADD           1    /* add/set property */
 #define _NET_WM_STATE_TOGGLE        2    /* toggle property  */
 
-int map();
-int unmap();
-int raise();
-int focus();
-int has_focus();
-int activate();
-int current();
-int show();
-int hide();
-int pos(int, int);
-int size(int, int, int);
-int message(char*, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long);
-unsigned char *property(Window, Atom, long*, Atom*, int*);
+static int map();
+static int unmap();
+static int raise();
+static int focus();
+static int has_focus();
+static int activate();
+static int current();
+static int show();
+static int pos(int, int);
+static int size(int, int, int);
+static int message(char*, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long);
+static unsigned char *property(Window, Atom, long*, Atom*, int*);
+static int bad_window(Display*, XErrorEvent*);
 
 Display *dpy;
 Window win;
@@ -35,8 +35,10 @@ Window root;
 int main(int argc, char **argv)
 { 
   char *cmd;
-  int i=0, x=0, y=0, width=0, height=0, hint=0;
-
+  int x=0, y=0;
+  unsigned int width=0, height=0, bw=0, depth=0, i=0;
+  XErrorHandler error_handler;
+  
   if (NULL==(dpy=XOpenDisplay(NULL))) {
     perror(argv[0]);
     exit(1);
@@ -49,6 +51,12 @@ int main(int argc, char **argv)
   }
 
   win = (Window)strtol(argv[1], NULL, 0);
+  
+  /* check if the window exists... */
+  error_handler = XSetErrorHandler(bad_window);
+  XGetGeometry(dpy, win, &root, &x, &y, &width, &height, &bw, &depth);
+  XSync(dpy, False);
+  (void)XSetErrorHandler(error_handler);
   
   for (i=1; i<argc; i++) {
     cmd = argv[i];    
@@ -120,51 +128,51 @@ int main(int argc, char **argv)
   exit(0);
 }
 
-int map() {
+static int map() {
   int r;
   r = XMapWindow(dpy, win);
   XFlush(dpy);
   return r;
 }
 
-int unmap() {
+static int unmap() {
   int r;
   r = XUnmapWindow(dpy, win);
   XFlush(dpy);
   return r;
 }
 
-int raise() {
+static int raise() {
   int r;
   r = XRaiseWindow(dpy, win);
   XFlush(dpy);
   return r;
 }
 
-int focus() {
+static int focus() {
   int r;
-  XSetInputFocus(dpy, win, RevertToParent, CurrentTime);
+  r = XSetInputFocus(dpy, win, RevertToParent, CurrentTime);
   XFlush(dpy);
   return r;
 }
 
-int has_focus() {
+static int has_focus() {
   Window focus_return;
   int revert_to_return;
   XGetInputFocus(dpy, &focus_return, &revert_to_return);
   return (win == (Window)focus_return) ? 1 : 0;
 }
 
-int activate() {
+static int activate() {
   int r;
   r = message("_NET_ACTIVE_WINDOW", 2L, 0, 0, 0, 0);
   return r;
 }
 
-int current() {
-  long nitems;
+static int current() {
+  long nitems=0;
   Atom type;
-  int size;
+  int size=0;
   long desktop;
   unsigned char *data;
 
@@ -181,15 +189,16 @@ int current() {
   return message("_NET_WM_DESKTOP", desktop, 2L, 0, 0, 0);
 }
 
-int show() {
+static int show() {
   map();
   current();
   raise();
   focus();
   activate();
+  return 0;
 }
 
-int pos(int x, int y) {
+static int pos(int x, int y) {
   XWindowChanges c;
   int r;
 
@@ -200,12 +209,12 @@ int pos(int x, int y) {
   return r;
 }
 
-int size(int width, int height, int hint) {
+static int size(int width, int height, int hint) {
 
   XWindowChanges c;
   XSizeHints hints; 
   long ret;
-  int flags;
+  int flags=0;
   int r;
   
   memset(&hints, 0, sizeof(hints));
@@ -239,7 +248,7 @@ int size(int width, int height, int hint) {
   return r;
 }
 
-int message(char *msg, 
+static int message(char *msg, 
 	    unsigned long data0, 
 	    unsigned long data1, 
 	    unsigned long data2, 
@@ -266,7 +275,7 @@ int message(char *msg,
     return r;
 }
 
-unsigned char *property(Window w, Atom atom, long *nitems, 
+static unsigned char *property(Window w, Atom atom, long *nitems, 
 			Atom *type, int *size) {
 
   Atom actual_type;
@@ -301,4 +310,8 @@ unsigned char *property(Window w, Atom atom, long *nitems,
   *size = actual_format;
 
   return property;
+}
+
+static int bad_window(Display *d, XErrorEvent *e) {
+  exit(1);
 }

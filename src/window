@@ -18,7 +18,7 @@ function §window? {
 }
 
 function §window.exists? () {
-    xwininfo -id "$1" &>/dev/null
+    brwctl "$1"
 }
 
 function §window.mapped? {

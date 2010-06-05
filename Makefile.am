@@ -32,4 +32,4 @@ src/rules \
 src/terminals \
 src/utils \
 src/window \
-src/xdotool
+src/xdgbase
