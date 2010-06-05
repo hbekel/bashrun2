@@ -7,12 +7,13 @@
 #include <unistd.h>
 #include <string.h>
 
-#define _NET_WM_STATE_REMOVE        0    /* remove/unset property */
-#define _NET_WM_STATE_ADD           1    /* add/set property */
-#define _NET_WM_STATE_TOGGLE        2    /* toggle property  */
+#define _NET_WM_STATE_REMOVE 0
+#define _NET_WM_STATE_ADD 1
+#define _NET_WM_STATE_TOGGLE 2
 
 static int map();
 static int unmap();
+static int is_mapped();
 static int raise();
 static int focus();
 static int has_focus();
@@ -63,6 +64,9 @@ int main(int argc, char **argv)
   
     if (strcmp(cmd, "unmap") == 0)
       unmap();
+
+    if (strcmp(cmd, "mapped?") == 0)
+      is_mapped();
 
     if (strcmp(cmd, "hide") == 0)
       unmap();
@@ -137,6 +141,12 @@ static int unmap() {
   r = XUnmapWindow(dpy, win);
   XFlush(dpy);
   return r;
+}
+
+static int is_mapped() {
+    XWindowAttributes a;
+    XGetWindowAttributes(dpy, win, &a);
+    exit(a.map_state == IsUnmapped ? 1 : 0);
 }
 
 static int raise() {

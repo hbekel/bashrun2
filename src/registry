@@ -7,16 +7,6 @@ function §registry.add {
     local widfile="$bashrun_cache_home/${BASHRUN_MODE:-terminal}-wid"
     local pidfile="$bashrun_cache_home/${BASHRUN_MODE:-terminal}-pid"
     
-    # remove stale wid and pid files
-    if [[ -f "$widfile" ]]; then	
-	if ! §window.exists? "$(<$widfile)"; then
-	    rm "$widfile"
-	    rm "$pidfile"
-	else
-	    return 1
-	fi
-    fi
-
     if [[ ! -f "$pidfile" ]]; then	
 	echo "$$" > "$pidfile"
     fi
@@ -29,6 +19,7 @@ function §registry.add {
 }
 
 function §registry.remove {
+
     local widfile="$bashrun_cache_home/${BASHRUN_MODE:-terminal}-wid"
     local pidfile="$bashrun_cache_home/${BASHRUN_MODE:-terminal}-pid"
 
@@ -42,23 +33,4 @@ function §registry.remove {
 
 }
 
-function §registry.request {
-    local mode="${1:-terminal}"
-    local widfile="$bashrun_cache_home/${mode}-wid"
-
-    if [[ ! -f "$widfile" ]]; then
-	echo "new"
-	return 1
-    else
-	local wid="$(<$widfile)"
-	if ! §window.exists? "$wid"; then
-	    rm "$widfile"
-	    echo "new"
-	    return 1
-	else
-	    echo "$(<$widfile)"
-	    return 0
-	fi
-    fi
-}
 

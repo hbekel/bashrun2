@@ -7,7 +7,7 @@
 #
 ################################################################################
 
-# never source bashrun from console
+# never source bashrun in console
 if [[ "$TERM" == "linux" ]]; then    
     return 1
 fi
