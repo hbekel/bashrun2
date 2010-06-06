@@ -1,6 +1,6 @@
-### Bashrun 1.0.0-rc1 config ### -*- shell-script -*-
+### bashrun 1.0.0-rc1 configuration ### -*- shell-script -*-
 #
-# This is the system-wide configuration file for Bashrun.
+# This is the system-wide configuration file for bashrun.
 #
 # User configuration files go into ~/.config/bashrun, or
 # $XDG_CONFIG_HOME/bashrun if $XDG_CONFIG_HOME has been modified.
@@ -10,7 +10,7 @@
 # Please see bashrun(1) for all the details on configuration.
 
 +plugins terminal dropdown
-# The "+plugin" directive can be used to load plugins. The plugins
+# The "+plugins" directive can be used to load plugins. The plugins
 # "terminal" and "dropdown" are distributed with bashrun and allow it
 # to be used in a regular terminal or as an animated dropdown
 # terminal, e.g. use 'bashrun --mode terminal'.
@@ -25,7 +25,7 @@
       # This is the default "launcher" mode that provides a terminal
       # in the fashion of a run dialog.
 
-      --terminal "xterm -geometry %g -name bashrun-%m"
+      --terminal "xterm -name bashrun-%m -geometry %g -fg grey -bg black"
       # Specify the terminal to use for bashrun. Within this string,
       # %g expands to the first geometry given in --geometry below.
       # %m expands to the name of this mode. For xterm and the
@@ -40,7 +40,8 @@
       --geometry '40x1 40x8'
       # Set the geometry or geometries to use for the terminal
       # window. If more than one geometry is used, the cycle-size
-      # action (C-l) will allow you to cycle through these geometries.
+      # action (Ctrl-l) will allow you to cycle through these
+      # geometries.
       #
       # This replaces the former (SMALL|LARGE)_(COLUMNS|LINES)
       # settings.
@@ -49,8 +50,9 @@
       # Set the readline completion function to use with tab. The
       # first word of this string specifies the completion to use by
       # default. The second word, if given, specifies an alternative
-      # completion type to use when the size of the terminal exceeds
-      # the number of lines given in the third word.  
+      # completion type to use when the size of the terminal is
+      # greater or equal to the number of lines given in the third
+      # word.
       #
       # This replaces the former COMPLETION_TYPE,
       # ALTERNATIVE_COMPLETION_TYPE and COMPLETION_THRESHOLD settings.
@@ -117,7 +119,7 @@
     # The default terminal to launch commands in if no other terminal
     # has been requested by an action or an action rule.
     #
-    # Some examples for common terminals:
+    # Some examples on how to run shell commands in common terminals:
     #
     # +terminal default --command "rxvt -e bash -c %@"
     # +terminal default --command "urxvt -e bash -c %@"
@@ -134,17 +136,15 @@
     +terminal notify 
       --command "xterm -g %g -e bash -c %@"
       --geometry "40x4+0+0"
-
-    # ^ A small terminal for notifications, used by the default actions
-    # "term-notify" and "su-term-notify".
-
-    # Here's an example of a urxvt terminal using a small font:
+      # ^ A small terminal for notifications, used by the default actions
+      # "term-notify" and "su-term-notify".
       
     +terminal small
       --command "urxvt -g %g -fn %f -e bash -c %@"
       --geometry "160x48"
       --font "xft:Fixed:size=10"
-
+      # An example of urxvt with a small font.
+      
     # See the +configure-rules function below for an example of how to
     # associate it with a specific command...
 }
@@ -242,9 +242,9 @@
       --string '%1'
       --action show-info
       # E.g. if run "bash??" then the string "bash" is used as the
-      # commandline to be run with the show-info action, which pages
+      # commandline to be used with the show-info action, which pages
       # "info bash" in the default terminal, unless a rule indicates
-      # to run "info" in a specific terminal.
+      # to run the "info" program in a specific terminal.
       
     +handler manual
       --pattern '(.+)\?'
@@ -258,7 +258,7 @@
     +handler browse
       --pattern 'browse (.*)'
       --string '%1'
-      --action browse
+      --action 'browse'
       --complete 'browse'
 
       +handler-browse-complete () { +bookmarks --list; }
@@ -345,26 +345,22 @@
       --action term-page
       # E.g. ?bash pages "bash --help" in a terminal
 
-    # The following handlers are fallback handlers, which means they
+    # The remaining handlers are fallback handlers, which means they
     # are guaranteed to be at the end of the handler list, and will
     # match any non-executable commandline not yet handled by a
     # previous handler. The first two of these use a file test
     # operator given in --test to check whether the commandline is a
     # path to a directory or a file, respectively.
-    #
-    # The "directory" handler is the equivalent of the former
-    # DIRHANDLER setting. The "google-fallback" handler, if present,
-    # is equivalent to using GOOGLE_FALLBACK=yes in previous versions.
-
+    
     +handler directory
-      --fallback 1
+      --fallback true
       --test 'd'
       --string "kfmclient openProfile filemanagement %1"
       # Open directories in konqueror, using the file management
       # profile.
 
     +handler file
-      --fallback 1
+      --fallback true
       --test 'f!x'
       --string "xdg-open %1"
       # handle files universally with xdg-open, see xdg-open(1)
@@ -374,6 +370,10 @@
     #  --fallback 1
     #  --string  "www.google.com/search?q=%1"
     #  --action browse
+
+    # The "directory" handler is the equivalent of the former
+    # DIRHANDLER setting. The "google-fallback" handler, if present,
+    # is equivalent to using GOOGLE_FALLBACK=yes in previous versions.
 }
 
 +configure-bookmarks () {
@@ -381,7 +381,7 @@
     # Add bookmarks. For each bookmark, a function by the same name is
     # defined that runs the browse action for the bookmark. This means
     # you can complete bookmarks like regular commands.
-    # Alternatively, use the completion of the "browse" handler
+    # Alternatively use the completion of the "browse" handler
     # defined above.
 
     +bookmark bashrun.sourceforge.net
@@ -424,14 +424,14 @@
        function +action-yank-from-xclip {
  
 	   local text="$(xclip -o)"
-	   local size=${#text}
+	   declare -i size=${#text}
 	   
 	   local pre="${READLINE_LINE:0:$READLINE_POINT}"
 	   local post="${READLINE_LINE:$READLINE_POINT}"
 	   
 	   READLINE_LINE="$pre$text$post"
 	   
-	   ((READLINE_POINT+=size))
+	   (( READLINE_POINT += size ))
 	   return 2
        }
 

@@ -169,7 +169,7 @@ function version {
 }
 
 function usage {
-    echo "Usage: bashrun [option] [command] [args]
+    echo "Usage: bashrun [option] [command [arg...]] [-- termopts]
 
   Options: 
 
@@ -184,10 +184,11 @@ function usage {
     hide      : hide window 
     toggle    : hide if visible, show if hidden
     smart     : move window up front if not focused/visible, hide otherwise  
-    restart   : restart bashrun 
-    quit,exit : terminate bashrun
     wid       : print window id
     pid       : print pid of bashrun session
+    reload    : reload configuration
+    restart   : restart bashrun 
+    quit,exit : terminate bashrun
 
     su <cmd>         : run <cmd> as root, using bashrun for password entry
     do <act> [<cmd>] : remotely invoke <action> [<cmd>]

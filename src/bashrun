@@ -135,17 +135,6 @@ case "$command" in
     pid)
 	echo $pid
 	;;
-    exit|quit)
-	kill $pid
-	;;
-    restart)
-	if [[ launched -eq 0 ]]; then
-	    kill $pid
-	    sleep 1
-	    export BASHRUN_DEBUG
-	    exec bashrun -m $mode	
-	fi
-	;;
     su)
 	if [[ ${#args[@]} -gt 0 ]]; then
 	    remote su-run ${args[@]}
@@ -163,6 +152,20 @@ case "$command" in
 		"one argument: <action> [<cmd>]" >&2
 	    exit 1
 	fi
+	;;
+    reload)
+	[[ launched -eq 0 ]] && remote reload
+	;;
+    restart)
+	if [[ launched -eq 0 ]]; then
+	    kill $pid
+	    sleep 1
+	    export BASHRUN_DEBUG
+	    exec bashrun -m $mode	
+	fi
+	;;
+    exit|quit)
+	kill $pid
 	;;
     *)
 	echo "bashrun: unknown command: $command"
