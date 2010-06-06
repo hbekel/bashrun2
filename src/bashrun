@@ -101,7 +101,7 @@ fi
 # launch a new instance if necessary
 
 launched=0
-if [[ ! "$(xprop -id $wid WM_CLASS 2>/dev/null)" =~ bashrun-$mode ]]; then
+if [[ ! "$(brwctl $wid class? 2>/dev/null)" =~ bashrun-$mode ]]; then
     if [[ "$command" =~ ^(exit|quit)$ ]]; then
 	exit 0
     elif [[ "$command" =~ ^(w|p)id$ ]]; then

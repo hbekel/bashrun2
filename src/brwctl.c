@@ -22,6 +22,7 @@ static int current();
 static int show();
 static int pos(int, int);
 static int size(int, int, int);
+static int get_class();
 static int message(char*, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long);
 static unsigned char *property(Window, Atom, long*, Atom*, int*);
 static int bad_window(Display*, XErrorEvent*);
@@ -58,6 +59,9 @@ int main(int argc, char **argv)
   
   for (i=1; i<argc; i++) {
     cmd = argv[i];    
+
+    if (strcmp(cmd, "class?") == 0)
+      get_class();
 
     if (strcmp(cmd, "map") == 0)
       map();
@@ -280,6 +284,15 @@ static int message(char *msg,
     
     r = XSendEvent(dpy, root, False, mask, &event);
     return r;
+}
+
+static int get_class() {
+  XClassHint *class = XAllocClassHint();
+  XGetClassHint(dpy, win, class);
+  
+  printf("%s %s\n", class->res_name, class->res_class);
+  XFree(class);
+  exit(0);
 }
 
 static unsigned char *property(Window w, Atom atom, long *nitems, 

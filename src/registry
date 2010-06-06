@@ -4,8 +4,20 @@
 
 function §registry.add {
 
-    local widfile="$bashrun_cache_home/${BASHRUN_MODE:-terminal}-wid"
-    local pidfile="$bashrun_cache_home/${BASHRUN_MODE:-terminal}-pid"
+    local mode="$BASHRUN_MODE"
+    local widfile="$bashrun_cache_home/${mode}-wid"
+    local pidfile="$bashrun_cache_home/${mode}-pid"
+    
+    # remove stale wid and pid files
+    if [[ -f "$widfile" ]]; then	
+	if [[ ! "$(brwctl "$(<$widfile)" class? 2>/dev/null)" =~ bashrun-$mode ]];
+	then
+	    rm "$widfile"
+	    rm "$pidfile"
+	else
+	    return 1
+	fi
+    fi 
     
     if [[ ! -f "$pidfile" ]]; then	
 	echo "$$" > "$pidfile"
