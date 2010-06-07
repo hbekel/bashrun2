@@ -15,6 +15,11 @@ fi
 # source global variables
 source __PREFIX__/share/bashrun/globals
 
+# when launched by the frontend, source the user's ~/.bashrc
+if [[ BASHRUN_FRONTEND -eq 1 && -f "$HOME/.bashrc" ]]; then
+    source "$HOME/.bashrc"
+fi
+
 # initialize object system
 source $bashrun_site/objects
 §objects.site $bashrun_site

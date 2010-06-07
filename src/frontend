@@ -95,14 +95,14 @@ function launch {
 
     if [[ "$t" == "xterm" ]]; then
 	# enable meta keybindings
-	fix='-xrm XTerm**metaSendsEscape:True '
+	termfix='-xrm XTerm**metaSendsEscape:True '
 
     elif [[ "$t" =~ urxvtc? ]]; then
 	# enable ctrl-arrow keys
-	fix='-keysym.Control-Up "\033[1;5A" '
-	fix+='-keysym.Control-Down "\033[1;5B" '
-	fix+='-keysym.Control-Left "\033[1;5D" '
-	fix+='-keysym.Control-Right "\033[1;5C"'
+	termfix='-keysym.Control-Up "\033[1;5A" '
+	termfix+='-keysym.Control-Down "\033[1;5B" '
+	termfix+='-keysym.Control-Left "\033[1;5D" '
+	termfix+='-keysym.Control-Right "\033[1;5C"'
     fi
 
     # launch terminal
@@ -111,7 +111,8 @@ function launch {
 	BASHRUN_MODE="$mode" \
 	BASHRUN_FEEDBACK="$feedback" \
 	BASHRUN_DEBUG=$BASHRUN_DEBUG \
-	$terminal $termopts $fix &    
+	$terminal $termopts $termfix -e bash \
+	--rcfile __PREFIX__/share/bashrun/bashrc &    
 
     # wait for the new instance to register and get it's window id and pid
     widfile="$bashrun_cache_home/${mode}-wid"

@@ -116,57 +116,68 @@ Reload configuration files.
 Exit the bashrun session and start a new one.
 .IP \fBexit\fP
 Exit the bashrun session.
-.SH HANDLERS
-     Handler setup:
+.SH BUGS
+Please report any bugs you may find using the email address
+below. Comments, suggestions, feedback of any kind is appreciated.
+.SH AUTHOR
+Henning Bekel <h.bekel at googlemail dot com> (english and german)
+.SH "SEE ALSO"
+.BR bash (1)
+.BR readline (3)
+.BR Xorg (1)
+.BR xterm (1)
+.BR stty (1)
+
+     \" Handler setup:
      
-       1. Reorder handlers 
+     \"   1. Reorder handlers 
     
-         If --fallback is true, move handlers to the end of the chain.
-         Fallback handlers will end up at the end of the chain in the
-         order they are defined in this configuration file.
+     \"     If --fallback is true, move handlers to the end of the chain.
+     \"     Fallback handlers will end up at the end of the chain in the
+     \"     order they are defined in this configuration file.
     
-       2. Setup completion
+     \"   2. Setup completion
     
-         If --complete is given, create a stub function using the
-         word given as the function name, so that the word can be
-         completed to from an empty commandline.
+     \"     If --complete is given, create a stub function using the
+     \"     word given as the function name, so that the word can be
+     \"     completed to from an empty commandline.
     
-           If a function by the name +handler-<handlername>-complete
-           is defined, install a completion function for the word
-           given in --complete that uses the output of the supplied
-           function to dynamically retrieve a list of words to
-           complete against.
+     \"       If a function by the name +handler-<handlername>-complete
+     \"       is defined, install a completion function for the word
+     \"       given in --complete that uses the output of the supplied
+     \"       function to dynamically retrieve a list of words to
+     \"       complete against.
       
-           If no such function is defined, install default completion
-           for the word given in --complete.
+     \"       If no such function is defined, install default completion
+     \"       for the word given in --complete.
     
-     Handler processing:
+     \" Handler processing:
        
-       Match the line against the regular expression in --pattern
+     \"   Match the line against the regular expression in --pattern
     
-         Perform one or more optional tests using the 'test' builtin.
-         A string of test characters, corresponding to the option
-         characters of the options to the test builtin, can be given
-         in --test. Prefixing a test character with '!' negates the
-         test.  Tests are performed in the order in which they appear
-         in --test. If one of these tests fails, testing is aborted
-         and the test as a whole fails.
+     \"     Perform one or more optional tests using the 'test' builtin.
+     \"     A string of test characters, corresponding to the option
+     \"     characters of the options to the test builtin, can be given
+     \"     in --test. Prefixing a test character with '!' negates the
+     \"     test.  Tests are performed in the order in which they appear
+     \"     in --test. If one of these tests fails, testing is aborted
+     \"     and the test as a whole fails.
     
-           Rewrite the string depending on its contents:
+     \"       Rewrite the string depending on its contents:
              
-             If the string contains back references (%[0-9]), replace
-             them with the string matching the corresponding
-             subpatterns
+     \"         If the string contains back references (%[0-9]), replace
+     \"         them with the string matching the corresponding
+     \"         subpatterns
     
-             If the string contains no back references, append the
-             line to the string, separating them with a space
-             character.
+     \"         If the string contains no back references, append the
+     \"         line to the string, separating them with a space
+     \"         character.
     
-         If an --action has been specified, run the action on the
-         resulting string
+     \"     If an --action has been specified, run the action on the
+     \"     resulting string
     
-         If no --action has been specified, assume that the string now
-         constitutes an executable commandline, and launch it in the
-         background, detached from the bashrun shell.
+     \"     If no --action has been specified, assume that the string now
+     \"     constitutes an executable commandline, and launch it in the
+     \"     background, detached from the bashrun shell.
     
 

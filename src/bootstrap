@@ -1,11 +1,5 @@
 # -*- shell-script -*-
 
-function §bootstrap {
-
-    §bootstrap.directories
-    §bootstrap.bashrc
-}
-
 function §bootstrap.directories {
     
     # create data and cache directories
@@ -21,30 +15,4 @@ function §bootstrap.directories {
     done
 }
 
-function §bootstrap.bashrc {
-    
-    local comment="# Required for bashrun, see bashrun(1)"
-    if [[ -f $HOME/.bashrc ]]; then
-	if ! grep 'BASHRUN -eq 1' $HOME/.bashrc &>/dev/null; then
-	    printf "\n$comment\n[[ BASHRUN -eq 1 ]] && . $bashrun_site/bashrc\n" >> $HOME/.bashrc
-	    §message "Information" \
-		"The following line has been appended to your ~/.bashrc:
-
-                 [[ BASHRUN -eq 1 ]] && . $bashrun_site/bashrc
-
-                 This line is required to initialize the bashrun engine. 
-                 See bashrun(1) for details." 2>/dev/null
-
-	fi
-    else
-	echo "
-[[ # Check for an interactive session
-[ -z "$PS1" ] && return
-
-$comment
-[[ BASHRUN -eq 1 ]] && . $bashrun_site/bashrc
-" > $HOME/.bashrc
-    fi
-}
-
-§bootstrap
+§bootstrap.directories
