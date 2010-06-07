@@ -203,9 +203,6 @@ function §window.size {
 function §window.map {
 
     [[ $# -eq 0 ]] && §window.update
-    
-    # map the window
-    brwctl $bashrun_window_id show
 
     # parse geometry for this mode or use debug geometry
     if [[ BASHRUN_DEBUG -eq 0 ]]; then
@@ -213,6 +210,10 @@ function §window.map {
     else
 	§geometry.parse "80x24"
     fi
+    local saved_geometry="$(§geometry)"
+
+    # map the window
+    brwctl $bashrun_window_id show
 
     # apply position
     if §geometry.position?; then
@@ -223,14 +224,18 @@ function §window.map {
 
     # apply size
     if §geometry.size?; then
+	if [[ "$(§mode.get_animated)" == "1" ]]; then	    
+	    §geometry.height 1
+	fi
 	§window.size --hint "$(§geometry.width)" \
 	    "$(§geometry.height)"
-    fi
+    fi    
 
     # call user supplied onmap handler
     $(§mode.get_onmap)
     
-    if [[ bashrun_window_animate -eq 1 ]]; then
+    if [[ "$(§mode.get_animated)" == "1" ]]; then
+	§geometry.parse "$saved_geometry"
 	§window.expand
     fi    
     bashrun_window_mapped=1
@@ -241,7 +246,7 @@ function §window.unmap {
 
     [[ $# -eq 0 ]] && §window.update
 
-    if [[ bashrun_window_animate -eq 1 ]]; then
+    if [[ "$(§mode.get_animated)" == "1" ]]; then
 	§window.collapse
     fi
     brwctl $bashrun_window_id unmap
@@ -294,12 +299,12 @@ function §window.collapse {
 function §window.expand {
 
     local max_height="$(§geometry.height)"
-
+    
     [[ bashrun_window_height -ge max_height ]] && return 1
 
     local i=0
     for (( i=1; i<=max_height-1; i++ )); do
-	(( bashrun_window_height+=1 ))
+	(( bashrun_window_height+=1 ))	
 	brwctl $bashrun_window_id sizeh \
 	    $bashrun_window_width \
 	    $bashrun_window_height

@@ -98,7 +98,6 @@ int main(int argc, char **argv)
       show();
 
     if (strcmp(cmd, "pos") == 0) {
-      fprintf(stderr, "%d < %d\n", i+2, argc-1);
       if (i+2 > argc-1) {
 	fprintf(stderr, "Usage: pos <x> <y>\n");
 	exit(1);
