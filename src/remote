@@ -8,42 +8,25 @@ bashrun_remote=$bashrun_data_home/$BASHRUN_MODE-remote
 
 function §remote.run {
 
-    local words
-    local action
-    local input
-    local command
-    local stty
+    local words cwd action command
 
     if [[ -f $bashrun_remote ]]; then
 	
 	words=($(<$bashrun_remote))
-	action=${words[0]}	
-	input=0
+	cwd="${words[0]}"
+	action="${words[1]}"
+	command=${words[@]:2}
 
-	# everything else goes into command
-	command=${words[@]:1}
+	§debug "action" -v "$action" "command" -v "$command" "cwd" -v "$cwd"
 
-	§debug "$action" "$input" "$command"
-
-	§actions.seek "$action"	
-
-	if §action.depends_on? "su"; then 	    
-	    # save the current tty settings
-	    stty="$(stty -g)"
-	    
-	    # prepare tty for su password entry
-	    stty echo cooked -cbreak	    
+	if §actions.seek "$action"; then
+	    cd "$cwd"
+	    §engine.action "$action" 0 "$command"	
+	    cd - &>/dev/null
 	fi
 
-	§engine.action "$action" "$input" "$command"	
-
-	if §action.depends_on? "su"; then 	    
-	    # reset tty settings
-	    stty "$stty"
-	fi
-
-	# since readline didn't get an accept-line,
 	# we need to force a redisplay of the prompt
+        # since readline didn't get an accept-line:
 	kill -WINCH $$
 
 	# remove command file

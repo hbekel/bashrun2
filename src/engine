@@ -3,7 +3,7 @@
 ################################################################################
 
 bashrun_action=''
-bashrun_execmode=''
+bashrun_execmode='&'
 bashrun_engine_busy=0
 bashrun_engine_reload=0
 bashrun_logfile=${bashrun_logfile:-/dev/null}
@@ -137,9 +137,6 @@ function §engine.trap {
     # as expanded by the shell
     bashrun_command="$BASH_COMMAND"
     
-    # assume execmode background
-    bashrun_execmode="&"
-
     # remove quotes (;|&)
     §command.unquote
 
@@ -167,7 +164,7 @@ function §engine.launch {
     local status=0
 
     # command override
-    if [[ "$command" != '' ]]; then
+    if [[ $# -eq 1 || -n "$command" ]]; then
 	§debug -c override -v "$command"
 	bashrun_command="$command"
 	bashrun_command_line="$command"
@@ -192,9 +189,14 @@ function §engine.launch {
 	    fi
 	fi
     fi
-    §debug "executing" -v "$bashrun_command $bashrun_execmode"
-    
-    §engine.execute
+
+    if [[ -z "$bashrun_command" ]]; then
+	§debug "no command(s) to execute" "->" -r "abort"
+    else
+	§debug "executing" -v "$bashrun_command $bashrun_execmode"
+        §engine.execute
+    fi
+
     §engine.reset
     return 0
 }
@@ -205,7 +207,20 @@ function §engine.execute {
 	§prepare_logfile
 	bash -c "$bashrun_command >> $bashrun_logfile 2>&1 &" > /dev/null 2>&1
     else
+	if §action.depends_on? "su"; then 	    
+	    # save the current tty settings
+	    local stty="$(stty -g)"
+	    
+	    # prepare tty for su password entry
+	    stty echo cooked -cbreak	    
+	fi
+
 	bash -c "$bashrun_command"
+	
+	if §action.depends_on? "su"; then 	    
+	    # reset tty settings
+	    stty "$stty"
+	fi
 	§window.mapped? && §mode.unmap? && §window.unmap
     fi
 }
@@ -219,6 +234,9 @@ function §engine.reset {
 
     # reset rules
     bashrun_rules_applied=0
+
+    # assume execmode background
+    bashrun_execmode="&"
 
     # reset terminal
     §terminals.seek default
