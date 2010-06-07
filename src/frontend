@@ -114,18 +114,15 @@ function launch {
 	$terminal $termopts $termfix -e bash \
 	--rcfile __PREFIX__/share/bashrun/bashrc &    
 
-    # wait for the new instance to register and get it's window id and pid
-    widfile="$bashrun_cache_home/${mode}-wid"
-    wait_until "[[ -f $widfile ]]"
-    wid="$(<$widfile)"
-    
-    pidfile="$bashrun_cache_home/${mode}-pid"
-    wait_until "[[ -f $pidfile ]]"
-    pid="$(<$pidfile)"
+    # wait for the new instance to be ready, get it's wid and pid
+    wait_until "[[ -f '$bashrun_cache_home/${mode}-ready' ]]"
 
+    wid="$(<$bashrun_cache_home/${mode}-wid)"
+    pid="$(<$bashrun_cache_home/${mode}-pid)"
+
+    # do the initial map as soon as the instance is registered
     source_window
     geometry="$saved_geometry"    
-
     §window.map fast &>/dev/null
 }
 
@@ -148,20 +145,21 @@ function remote {
 
 function wait_until { 
     # wait until code returns success,
-    # bail out after 3 secs (30*0.1)
+    # bail out after 15 secs (150*0.1s)
     # e.g. wait_until "[[ -f some_file ]]"
 
     local code=${1:-:}
-    local attempts=30
+    local attempts=150
 
     eval "until $code; do
 	if [[ attempts -eq 0 ]]; then
-	    exit 1
+	    return 1
 	fi
 	((attempts-=1))
 	sleep 0.1
-    done"
-    return 0
+    done
+    return 0"
+    return $?
 }
 
 function version {

@@ -32,6 +32,19 @@ fi
 # setup global variables
 source __PREFIX__/share/bashrun/globals
 
+# check if another frontend process is currently running
+lock="$bashrun_cache_home/bashrun.lck"
+if [[ -f "$lock" ]]; then
+    echo "bashrun: locked: $bashrun_cache_home/bashrun.lck exists." >&2
+    exit 1
+fi
+
+# no other process, so take the lock
+touch "$lock"
+
+# shadow exit to remove lock
+exit () { [[ -f "$lock" ]] && rm "$lock"; builtin exit $1; }
+
 # bootstrap if cache home doesn't exist
 if [[ ! -e $bashrun_cache_home ]]; then
     source $bashrun_site/bootstrap
@@ -65,9 +78,9 @@ if [[ $# -gt 0 ]]; then
 fi
 
 # get info about the current mode
-MODEINFO="$bashrun_cache_home/${mode}-info"
-[[ ! -f $MODEINFO ]] && create_modeinfo
-source $MODEINFO
+modeinfo="$bashrun_cache_home/${mode}-info"
+[[ ! -f $modeinfo ]] && create_modeinfo
+source $modeinfo
 
 # get command argument, if any
 if [[ $# -gt 0 && "$1" != "--" ]]; then
