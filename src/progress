@@ -11,16 +11,17 @@ function §progress.enabled? {
     [[ BASHRUN_DEBUG -eq 0 && BASHRUN_FEEDBACK -eq 1 && §window.terminal? ]]
 }
 
-function §progress.active? {
-    [[ bashrun_progress_active -eq 1 ]]
-}
-
 §progress.new () {
     bashrun_progress_task="${1:-Progress}"
     bashrun_progress_percent=${2:-0}
     bashrun_progress_active=1
 
     §progress.update "$bashrun_progress_percent"
+
+    if §progress.enabled?; then
+	tput civis >&2
+	stty -echo 
+    fi
 }
 
 §progress.update () {
@@ -42,34 +43,31 @@ function §progress.active? {
 §progress.update_line () {
 
     local i=0
+    declare -i spaces=$(( 
+	    $COLUMNS - ${#bashrun_progress_task} - 
+	    ${#bashrun_progress_percent} - 4 
+	    ))
+
     bashrun_progress_line="$bashrun_progress_task"
-    for ((i=0; i<$COLUMNS-${#bashrun_progress_task}-${#bashrun_progress_percent}-4; i++)); do
-	bashrun_progress_line="$bashrun_progress_line "
+    for ((i=0; i<spaces; i++)); do
+	bashrun_progress_line+=" "
     done
-    bashrun_progress_line="$bashrun_progress_line [$bashrun_progress_percent%]"
+    bashrun_progress_line+=" [$bashrun_progress_percent%]"
 }
 
 §progress.draw () {
 
     §progress.enabled? || return 1
 
-    tput civis
+    declare -i len=$(( COLUMNS * bashrun_progress_percent / 100 ))
 
-    local l=$(( COLUMNS * bashrun_progress_percent / 100 ))
-    local i=0
-    local char=""
-    echo -ne '\e[0G' >&2
-    echo -ne '\e[1m' >&2
-    for ((i=0; i<${#bashrun_progress_line}; i++)); do
-	if [[ i -lt l ]]; then	    
-	    echo -ne '\e[33m' >&2
-	    echo -ne '\e[44m' >&2
-	else
-	    echo -ne '\e[34m' >&2
-	    echo -ne '\e[40m' >&2
-	fi
-	echo -n "${bashrun_progress_line:$i:1}" >&2
-    done
+    tput el >&2
+    tput cr >&2
+
+    echo -ne '\e[7m' >&2
+    echo -n "${bashrun_progress_line:0:len}" >&2
+    echo -ne '\e[0m' >&2
+    echo -n "${bashrun_progress_line:len}" >&2
 }
     
 §progress.reset () {
@@ -79,22 +77,11 @@ function §progress.active? {
     bashrun_progress_active=0
 
     if §progress.enabled?; then
-	echo -ne '\e[0m' >&2
-	tput cvvis
-	tput cr
-	tput el
+	tput none >&2
+	tput cvvis >&2
+	tput cr >&2
+	tput el >&2
+	stty echo >&2
     fi
 }
 
-§progress.destroy () {
-   
-    unset bashrun_progress_percent bashrun_progress_task bashrun_progress_line
-    unset -f \
-	§progress.enabled? \
-	§progress.new \
-	§progress.update \
-	§progress.update_line \
-	§progress.draw \
-	§progress.reset \
-	§progress.destroy
-}
