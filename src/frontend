@@ -45,8 +45,8 @@ function create_modeinfo {
 
     # get requested mode
     if ! §modes.seek "$mode"; then
-	mode="bashrun"
-	§modes.seek $mode
+	echo "bashrun: error: no such mode: \`$mode', exiting..."
+	exit 1
     fi
     §mode.write_info
 }
@@ -104,18 +104,35 @@ function launch {
 	termfix+='-keysym.Control-Left "\033[1;5D" '
 	termfix+='-keysym.Control-Right "\033[1;5C"'
     fi
+    
+    ready="$bashrun_cache_home/${mode}-ready"
+    abort="$bashrun_cache_home/${mode}-abort"
 
-    # launch terminal
     BASHRUN=1 \
 	BASHRUN_FRONTEND=1 \
 	BASHRUN_MODE="$mode" \
 	BASHRUN_FEEDBACK="$feedback" \
 	BASHRUN_DEBUG=$BASHRUN_DEBUG \
 	$terminal $termopts $termfix -e bash \
-	--rcfile __PREFIX__/share/bashrun/bashrc &    
+	--rcfile __PREFIX__/share/bashrun/bashrc || { 
+	   touch "$abort"
+	   [[ -f "$modeinfo" ]] && rm "$modeinfo"
+	   
+	   # if I use a §message here, openbox freezes bashrun is 
+	   # launched via a key binding (?)
 
-    # wait for the new instance to be ready, get it's wid and pid
-    wait_until "[[ -f '$bashrun_cache_home/${mode}-ready' ]]"
+	   echo -e "\nError: Failed to launch terminal. Please confirm that the terminal command line (+mode $mode --terminal) is correct:\n\n  $terminal\n"
+
+    } &
+
+    # wait for the new instance to be ready
+    # (abort if the terminal command failed...)
+
+    wait_until "[[ -f '$ready' ]]" "[[ -f '$abort' ]]"
+    status=$?
+
+    [[ status -eq 1 ]] && exit 1
+    [[ status -eq 2 ]] && rm "$abort" && exit 1    
 
     wid="$(<$bashrun_cache_home/${mode}-wid)"
     pid="$(<$bashrun_cache_home/${mode}-pid)"
@@ -148,13 +165,17 @@ function wait_until {
     # bail out after 15 secs (150*0.1s)
     # e.g. wait_until "[[ -f some_file ]]"
 
-    local code=${1:-:}
+    local wait_condition=${1:-:}
+    local break_condition=${2:-false}
     local attempts=150
 
-    eval "until $code; do
+    eval "until $wait_condition; do
 	if [[ attempts -eq 0 ]]; then
 	    return 1
 	fi
+        if $break_condition; then
+            return 2
+        fi
 	((attempts-=1))
 	sleep 0.1
     done

@@ -42,8 +42,9 @@ fi
 # no other process, so take the lock
 touch "$lock"
 
-# shadow exit to remove lock
-exit () { [[ -f "$lock" ]] && rm "$lock"; builtin exit $1; }
+# remove lock on exit or term
+trap '[[ -f "$lock" ]] && rm "$lock"' EXIT
+trap '[[ -f "$lock" ]] && rm "$lock"' TERM
 
 # bootstrap if cache home doesn't exist
 if [[ ! -e $bashrun_cache_home ]]; then
