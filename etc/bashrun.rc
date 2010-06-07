@@ -434,16 +434,6 @@
 	   (( READLINE_POINT += size ))
 	   return 2
        }
-
-    +action pastebin
-      --description "Pastebin command output and browse"
-      --depends 'wgetpaste cut'
-      
-      function +action-pastebin {
-
-	  command "$($(command) | wgetpaste - | cut -d ' ' -f7)"
-	  +action-browse
-      }
 }
 
 +configure-keys () {
@@ -511,6 +501,5 @@
 
     +bind kill-to-xclip   '\ek'
     +bind yank-from-xclip '\ey'
-    +bind pastebin '\e\C-p'
 }
 
