@@ -20,7 +20,6 @@ function §progress.enabled? {
 
     if §progress.enabled?; then
 	tput civis >&2
-	stty -echo 
     fi
 }
 
@@ -61,8 +60,8 @@ function §progress.enabled? {
 
     declare -i len=$(( COLUMNS * bashrun_progress_percent / 100 ))
 
-    tput el >&2
-    tput cr >&2
+    tput el 
+    tput cr 
 
     echo -ne '\e[7m' >&2
     echo -n "${bashrun_progress_line:0:len}" >&2
@@ -77,11 +76,9 @@ function §progress.enabled? {
     bashrun_progress_active=0
 
     if §progress.enabled?; then
-	tput none >&2
 	tput cvvis >&2
 	tput cr >&2
 	tput el >&2
-	stty echo >&2
     fi
 }
 

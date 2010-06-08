@@ -77,8 +77,6 @@ function §engine.init {
     §debug emph -y "done"
 
     §separator 
-    
-    §progress.reset
 
     # reset the reload flag
     bashrun_engine_reload=0
@@ -88,6 +86,8 @@ function §engine.init {
     if [[ BASHRUN_FRONTEND -eq 1 ]]; then
 	touch $bashrun_ready
     fi
+
+    §progress.reset
 }
 
 function §engine.action {
