@@ -2,7 +2,9 @@
 
 function §message.init {
     local method
-    for method in dialog xmessage zenity kdialog notify-send echo; do
+    local methods="zenity kdialog notify-send xmessage echo"
+ 
+   for method in $methods; do
 	if type $method &>/dev/null; then
 	    bashrun_message_method=$method
 	    break
@@ -160,7 +162,7 @@ function §message {
 		# we're outside of bashrun, so we need a terminal
 		local term=""
 		for term in urxvt xterm rxvt mrxvt; do
-		    if type $term &>/dev/null; then  
+		    if type -p $term &>/dev/null; then  
 			$term -g 80x$height+0+0 -e bash -c "$dialog"
 			break
 		    fi

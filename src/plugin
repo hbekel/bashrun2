@@ -17,6 +17,7 @@ function §plugin.find {
 
 function §plugin.check {
     local file="$1"
+    local name="$name"
     local retval=0
     declare -i i
 
@@ -24,7 +25,7 @@ function §plugin.check {
     retval=$?
     
     if ! §plugin.checked? "$file"; then
-	echo "$file" >> $bashrun_plugins_checked
+	echo "$name.rc" >> $bashrun_plugins_checked
     fi
     return $retval
 }
@@ -40,12 +41,12 @@ function +plugins {
     for name in $*; do
 	file="$(§plugin.find "$name")"
 	if [[ -n "$file" ]]; then
-	    if ! §plugin.checked? "$file"; then
-		if ! §plugin.check "$file"; then
+	    if ! §plugin.checked? "$name"; then
+		if ! §plugin.check "$file" "$name"; then
 		    errors="$(<$bashrun_cache_home/errors)"
 		    errors="${errors//$'\n'/\\n}"
-		    §message "Syntax Errors" \
-			"The plugin file $(§tilde_path $file) contains syntax errors:
+		    §message "Warning" \
+		    "Plugin \"$name\" contains syntax errors:
 
                          $errors
 
@@ -55,21 +56,23 @@ function +plugins {
 		    source "$file"
 		fi
 	    else
-		if §plugin.check "$file"; then
+		if §plugin.check "$file" "$name"; then
 		    §debug -v "$name" "->" -c "$(§tilde_path $file)"
 		    source "$file"
 		fi
 	    fi
 	else
-	    if §window.terminal?; then
-		§message "Error" \
+	    if ! §plugin.checked? "^$name\\.rc"; then
+		§message "Warning" \
 		    "Plugin \"$name\" not found: no such file(s):
 
                      $(§tilde_path $bashrun_config_home/plugins)/$name.rc\n
-                     $bashrun_config_dirs/plugins/$name.rc"
+                     $bashrun_config_dirs/plugins/$name.rc
+
+                     Skipping plugin \"$name\"..."
+
+	             echo "$name.rc" >> $bashrun_plugins_checked
 	    fi
 	fi
     done
 }
-
-§function.clone "+plugins" "+plugin"

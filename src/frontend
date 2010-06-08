@@ -90,39 +90,60 @@ function launch {
     terminal=${terminal//%g/$geometry}
     terminal=${terminal//%m/$mode}
 
-    # fix known issues with certain terminals...
-    for t in $terminal; do break; done
+    # get first word of terminal line (program binary)
+    for prog in $terminal; do break; done
 
-    if [[ "$t" == "xterm" ]]; then
+    # fix known issues with certain terminals...
+
+    if [[ "$prog" == "xterm" ]]; then
 	# enable meta keybindings
 	termfix='-xrm XTerm**metaSendsEscape:True '
 
-    elif [[ "$t" =~ urxvtc? ]]; then
+    elif [[ "$prog" =~ urxvtc? ]]; then
 	# enable ctrl-arrow keys
 	termfix='-keysym.Control-Up "\033[1;5A" '
 	termfix+='-keysym.Control-Down "\033[1;5B" '
 	termfix+='-keysym.Control-Left "\033[1;5D" '
 	termfix+='-keysym.Control-Right "\033[1;5C"'
     fi
-    
+
+    if ! type -p $prog &>/dev/null; then
+	source $bashrun_site/message
+	§message "Error" \
+                 "The terminal program \"$prog\" was not found. Please
+                  make sure that the terminal command line is correct:
+
+                 $terminal
+
+                 (+mode $mode --terminal)"
+	rm "$modeinfo"
+	exit 1
+    fi
+
     ready="$bashrun_cache_home/${mode}-ready"
     abort="$bashrun_cache_home/${mode}-abort"
 
-    BASHRUN=1 \
+    error="$(BASHRUN=1 \
 	BASHRUN_FRONTEND=1 \
 	BASHRUN_MODE="$mode" \
 	BASHRUN_FEEDBACK="$feedback" \
 	BASHRUN_DEBUG=$BASHRUN_DEBUG \
 	$terminal $termopts $termfix -e bash \
-	--rcfile __PREFIX__/share/bashrun/bashrc || { 
+	--rcfile __PREFIX__/share/bashrun/bashrc 2>&1)" || { 
+
 	   touch "$abort"
 	   [[ -f "$modeinfo" ]] && rm "$modeinfo"
 	   
-	   # if I use a §message here, openbox freezes bashrun is 
-	   # launched via a key binding (?)
+	   source $bashrun_site/message
+	   §message "Error" \
+                    "Failed to launch terminal. Please make sure that
+                     the terminal command line is correct:
 
-	   echo -e "\nError: Failed to launch terminal. Please confirm that the terminal command line (+mode $mode --terminal) is correct:\n\n  $terminal\n"
+                     $terminal $termopts
 
+                     (+mode $mode --terminal)
+
+                     $error"
     } &
 
     # wait for the new instance to be ready

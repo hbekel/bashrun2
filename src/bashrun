@@ -51,7 +51,7 @@ if [[ ! -e $bashrun_cache_home ]]; then
     source $bashrun_site/bootstrap
 fi
 
-# default mode and command
+# set default mode and command
 mode="launcher"
 command="show"
 
@@ -68,7 +68,7 @@ if [[ $# -gt 0 ]]; then
  	    usage && exit 0
  	    ;;    
 	-m|--mode)
- 	    mode=${2:-launcher}
+ 	    mode="$2"
  	    shift; shift
  	    ;;
 	-d|--debug)
@@ -172,14 +172,15 @@ case "$command" in
 	;;
     restart)
 	if [[ launched -eq 0 ]]; then
-	    kill $pid
+	    remote quit
 	    sleep 1
 	    export BASHRUN_DEBUG
+	    rm "$lock" &>/dev/null
 	    exec bashrun -m $mode	
 	fi
 	;;
     exit|quit)
-	kill $pid
+	remote quit
 	;;
     *)
 	echo "bashrun: unknown command: $command"
