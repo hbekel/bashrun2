@@ -164,26 +164,10 @@ function §command.add_terminal {
 	fi
     fi
 
-    # get the terminal command
+    # cook the terminal command
     terminal_command="$(§terminal.get_command)"
+    bashrun_command="$(§terminal.cook "$terminal_command" "$bashrun_command")"
 
-    # %* insert command split into words
-    # %@ insert command as a single word (one level of quoting)
-    # %@@, %@@@, ... add two, three, etc. levels of quoting
-    if [[ "$terminal_command" =~ [^\\]%((@|\*)+) ]]; then
-	method="${BASH_REMATCH[1]}"
-	
-	if [[ "$method" =~ @ ]]; then
-		§quote ${#method} bashrun_command
-	fi
-
-	# insert command into terminal command 
-	bashrun_command="$(§replace "$terminal_command" "%$method" "$bashrun_command")"
-
-    else
-	# append command to terminal command
-	bashrun_command="$(§terminal.get_command) $bashrun_command"
-    fi
     §debug "$bashrun_command"
 
     return 0

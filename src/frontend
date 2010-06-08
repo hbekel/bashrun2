@@ -158,9 +158,9 @@ function launch {
     wid="$(<$bashrun_cache_home/${mode}-wid)"
     pid="$(<$bashrun_cache_home/${mode}-pid)"
 
-    # do the initial map as soon as the instance is registered
     source_window
     geometry="$saved_geometry"    
+
     §window.map fast &>/dev/null
 }
 

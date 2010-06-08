@@ -32,20 +32,67 @@ function §terminal.get_command {
     local cooked="$(§terminal.get_cooked)"
 
     if [[ -z "$cooked" ]]; then
-	if [[ "$command" =~ [^\\]%(g|f) ]]; then
-            
-            # replace %g and %f with geometry and font
-	    local geometry="$(§terminal.get_geometry)"
-	    local font="$(§terminal.get_font)"
-	
-	    command="$(§replace "$command" "%g" "$geometry")"
-	    command="$(§replace "$command" "%f" "$font")"
-	fi
-	§terminal.set_cooked "$command"
-	echo "$command"
-    else
-	echo "$cooked"
+	local geometry="$(§terminal.get_geometry)"
+	local font="$(§terminal.get_font)"
+	local mode="$BASHRUN_MODE"
+
+	cooked="$(§terminal.cook "" "$command" "$mode" "$geometry" "$font")"
+	§terminal.set_cooked "$cooked"	
     fi
+    echo "$cooked"
+}
+
+function §terminal.cook {
+    local template="$1"
+    local command="$2"
+    local mode="$3"
+    local geometry="$4"
+    local font="$5"
+    local options="$6"
+    
+    local word="" tmp="" method=""
+    declare -i i=0
+
+    # insert mode, geometry and font
+    if [[ "$template" =~ [^\\]%[mgf] ]]; then
+	template="$(§replace "$template" "%m" "$mode")"
+	template="$(§replace "$template" "%g" "$geometry")"
+	template="$(§replace "$template" "%f" "$font")"
+    fi
+
+    # insert command if given...
+
+    # %* insert command split into words
+    # %@ insert command as a single word (one level of quoting)
+    # %@@, %@@@, ... add two, three, etc. levels of quoting
+    if [[ -n "$command" ]]; then
+	if [[ "$template" =~ [^\\]%((@|\*)+) ]]; then
+	    method="${BASH_REMATCH[1]}"
+	    
+	    if [[ "$method" =~ @ ]]; then
+		§quote ${#method} command
+	    fi
+	    
+	# insert command into template
+	    template="$(§replace "$template" "%$method" "$command")"
+	    
+	else
+	# append command to template
+	    template+=" $command"
+	fi
+    fi
+
+    # insert options if given
+    if [[ -n "$options" ]]; then
+	for word in $template; do
+	    tmp+="$word "
+	    [[ i -eq 0 ]] && tmp+="$options "
+	    i+=1
+	done
+	template="$tmp"
+    fi
+
+    echo "$template"
 }
 
 function §terminal.code {
