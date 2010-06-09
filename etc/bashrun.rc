@@ -436,7 +436,7 @@
        }
 }
 
-+configure-keys () {
++configure-emacs-mode () {
 
     # Bind actions to key sequences:
     # 
@@ -503,3 +503,4 @@
     +bind yank-from-xclip '\ey'
 }
 
++configure-vi-mode () { :; }

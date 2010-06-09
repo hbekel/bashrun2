@@ -9,6 +9,7 @@ bashrun_engine_reload=0
 bashrun_logfile=${bashrun_logfile:-/dev/null}
 bashrun_cmd_not_found_handle=0
 bashrun_action_return_value=-1
+bashrun_status="Initializing..."
 
 # FIXME: move handling of flag files to functions
 bashrun_ready="$bashrun_cache_home/${BASHRUN_MODE}-ready"
@@ -23,7 +24,7 @@ function §engine.init {
 
     §debug -v "rcfile" "->" -c "$(§tilde_path $bashrun_rcfile)"
 
-    §progress.update +10 "Initializing... [window]"
+    §progress.update +10 "$bashrun_status [window]"
 
     # set wid to terminal $WINDOWID
     §window.id $WINDOWID
@@ -46,7 +47,7 @@ function §engine.init {
     # seek back to the current mode
     §modes.seek "$BASHRUN_MODE";
 
-    §progress.update 100 "Initializing... [engine]"
+    §progress.update 100 "$bashrun_status [engine]"
 
     # enable extdebug and prepare escape from trap
     # (bashdb bugs out if extdebug is set directly from a startup file)

@@ -8,7 +8,7 @@
 
 bind '"\C-x00": accept-line'
 
-bashrun_bindings_next_char=20                     # next char to bind
+bashrun_bindings_next_char=20 
 bashrun_bindings_blacklist=" 34 39 127 "                         
 
 bashrun_keymap='emacs' # will be initialized in engine.init
@@ -41,8 +41,33 @@ function §binding.code {
     echo "--bind $args"
 }
 
-function §keys.dump () {
+function §emacs-mode.dump () {
     §bindings.dump "$@"
+}
+
+function §vi-mode.dump () {
+    §bindings.dump "$@"
+}
+
+function set {
+    builtin set "$@"
+    if [[ "$1" == "-o" && "$2" =~ (emacs|vi) ]]; then
+	local mode="${BASH_REMATCH[1]}-mode"
+	local feedback=$BASHRUN_FEEDBACK
+	BASHRUN_FEEDBACK=0
+
+	§bindings.clear
+	§internals.clear
+	§keynames.clear
+	§configs.clear
+
+	§configs.restore_core "$mode" &>/dev/null
+	§configs.collect_user_configs "$mode"
+
+	§configs.seek "$mode" && §config.restore 
+
+	BASHRUN_FEEDBACK=$feedback
+    fi
 }
 
 function §bindings.dump {

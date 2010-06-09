@@ -10,6 +10,7 @@ function create_modeinfo {
     §objects.namespace "bashrun"
     
     source $bashrun_site/utils
+    source $bashrun_site/readline
     source $bashrun_site/message
     source $bashrun_site/config
     source $bashrun_site/plugin

@@ -54,8 +54,9 @@
  }
 
 +configure-core-handlers () { :; }
-+configure-core-keys () { :; }
 +configure-core-bookmarks () { :; }
++configure-core-emacs-mode () { :; }
++configure-core-vi-mode () { :; }
 
 +configure-core-actions () {
 
@@ -79,6 +80,7 @@
       --core 1
 
       function +action-reload {
+	  bashrun_status="Reloading..."
 	  bashrun_engine_reload=1
 	  return 2
       }

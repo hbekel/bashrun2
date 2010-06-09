@@ -32,6 +32,10 @@ function §progress.enabled? {
 	bashrun_progress_percent="$value"
     fi
 
+    if [[ bashrun_progress_percent -gt 100 ]]; then
+	bashrun_progress_percent=100
+    fi
+
     if [[ $# -eq 2 ]]; then
 	bashrun_progress_task="$2"
     fi

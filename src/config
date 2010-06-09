@@ -115,7 +115,7 @@ function §config.restore {
     local state="restoring"
     local name=""
 
-    §progress.update +12 "Initializing... [$type]"
+    §progress.update +10 "$bashrun_status [$type]"
 
     for name in $(§config.get_names); do
 	[[ "$name" == "core" ]] && continue
@@ -162,12 +162,13 @@ function §config.restore {
 
 function §configs.restore_core {
 
-    local types="${1:-actions|modes|terminals|rules|handlers|keys|bookmarks}"
+    local keys="$(§readline.get_setting 'editing-mode')-mode" &>/dev/null
+    local types="${1:-actions|modes|terminals|rules|handlers|$keys|bookmarks}"
     local functions="$(declare -f | grep '^+configure-')"
 
     local line function name type dumpfile
 
-    §progress.update +5 "Initializing... [core]"
+    §progress.update +10 "$bashrun_status [core]"
 
     for function in $functions; do
 	if [[ "$function" =~ ^\+configure-core-(.+) ]]; then
@@ -192,7 +193,8 @@ function §configs.restore_core {
 
 function §configs.collect_user_configs {
 
-    local types="${1:-actions|modes|terminals|rules|handlers|keys|bookmarks}"
+    local keys="$(§readline.get_setting 'editing-mode')-mode" &>/dev/null
+    local types="${1:-actions|modes|terminals|rules|handlers|$keys|bookmarks}"
     local functions="$(declare -f | grep '^+configure-')"
 
     local line function name type
