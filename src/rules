@@ -31,6 +31,7 @@ function §rules.apply {
     local command="$bashrun_command"
     local regexp=''
     local progs=''
+    local term=''
 
     §rules.seek_start
     while §rules.next?; do

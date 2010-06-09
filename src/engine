@@ -36,12 +36,11 @@ function §engine.init {
     # initialize keymap
     bashrun_keymap="$(§readline.get_setting keymap)"
 
-    §progress.update +1
-        
     # load/restore configuration
     §configs.restore
 
     # initialize objects
+    §progress.update 99 "$bashrun_status [engine]"
     §objects.init
 
     # seek back to the current mode
@@ -162,6 +161,7 @@ function §engine.trap {
 function §engine.launch {
 
     local command="$1"
+    local retval=0
     local status=0
 
     # command override

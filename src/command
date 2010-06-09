@@ -8,7 +8,7 @@ bashrun_command_word=''
 
 function §command.unquote {
 
-    command="$bashrun_command"
+    local command="$bashrun_command"
 
     # unquote quoted &;|
     command=${command//\\&/&}
@@ -17,7 +17,7 @@ function §command.unquote {
     command=${command//&&/ && }
     command=${command//||/ || }
 
-    bashrun_command=$command
+    bashrun_command="$command"
 }
 
 function §command.get_line {

@@ -312,14 +312,13 @@ function §action.run {
     
     local action="$(§action.get_name)"
     local command="$1"
+    local retval=0
 
     if [[ "$command" != '' ]]; then
 	bashrun_command="$command"
     fi
 
     §separator "+action-$action"
-
-    local retval
 
     # enable the action interface
     §action.api.enable

@@ -115,7 +115,7 @@ function §config.restore {
     local state="restoring"
     local name=""
 
-    §progress.update +10 "$bashrun_status [$type]"
+    §progress.update +9 "$bashrun_status [$type]"
 
     for name in $(§config.get_names); do
 	[[ "$name" == "core" ]] && continue
@@ -168,7 +168,7 @@ function §configs.restore_core {
 
     local line function name type dumpfile
 
-    §progress.update +10 "$bashrun_status [core]"
+    §progress.update +5 "$bashrun_status [core]"
 
     for function in $functions; do
 	if [[ "$function" =~ ^\+configure-core-(.+) ]]; then
