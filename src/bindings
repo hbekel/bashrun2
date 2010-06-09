@@ -13,15 +13,31 @@ bashrun_bindings_blacklist=" 34 39 127 "
 
 bashrun_keymap='emacs' # will be initialized in engine.init
 
+§function.clone "§bindings.init" "§_bindings.init"
 §function.clone "§bindings.dump" "§_bindings.dump"
 §function.clone "§internals.dump" "§_internals.dump"
 §function.clone "§keynames.dump" "§_keynames.dump"
 
 ################################################################################
 
+function §bindings.init {
+    local file="$bashrun_cache_home/keybindings"
+    [[ -f "$file" ]] && rm "$file"
+
+    §_bindings.init
+}
+
 function §binding.bound? {
-    [[ "$(§binding.get_is_bound)" == '1' ]] && return 0
-    return 1
+    [[ "$(§binding.get_is_bound)" == '1' ]]
+}
+
+function §binding.get_keyname {
+    local keyseq="$(§binding.get_keyseq)"
+    if §keynames.seek "$keyseq"; then
+	echo "$(§keyname.get_name)"
+    else
+	echo "$(§ks2kn "$keyseq")"
+    fi
 }
 
 function §binding.code {
@@ -65,6 +81,8 @@ function set {
 	§configs.collect_user_configs "$mode"
 
 	§configs.seek "$mode" && §config.restore 
+
+	§readline.get_settings
 
 	BASHRUN_FEEDBACK=$feedback
     fi

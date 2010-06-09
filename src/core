@@ -379,6 +379,7 @@
 	local tmpfile=$bashrun_cache_home/keybindings
 	if [[ ! -f "$tmpfile" ]]; then
 	    §print_bindings > $tmpfile
+	    §bindings.modified 0
 
 	elif §bindings.modified?; then
 	    §print_bindings > $tmpfile

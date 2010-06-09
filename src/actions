@@ -411,8 +411,8 @@ function §action.print_depends {
     local bash="$(§action.get_bash)"
     local str=''
 
-    local r="\033[1;31m" # red
-    local g="\033[1;32m" # green 
+    local r="\033[0;31m" # red
+    local g="\033[0;32m" # green 
     local n="\033[0m"    # none
 
     local found="$r"

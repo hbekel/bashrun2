@@ -286,8 +286,7 @@ function §print_line {
 }
 
 function §print_bindings {
-        
-    # some colours (used in §print_bindings)
+
     local w="\033[1;37m" # white
     local r="\033[1;31m" # red
     local g="\033[1;32m" # green 
@@ -297,120 +296,43 @@ function §print_bindings {
     local y="\033[1;33m" # yellow
     local n="\033[0m"    # none
 
-    # display order of core actions, | denotes a newline
-    local order="bashrun-bindings bashrun-manual debug | 
-                 pass abort reload quit |
-                 run term-run term-page term-hold | 
-                 su-run su-term-run su-term-page su-term-hold |
-                 show-manual show-info show-help |
-                 browse google-search dict-lookup |
-                 copy-to-clipboard filter-clipboard |
-                 cycle-size resize-up resize-down resize-left resize-right"
-        
-    local id=""
-    local bindings=""
-    local keymap=""
-    local covered=""
-
-    echo -e "${w}Bashrun Keybindings${n}\n"
-
-    for keymap in emacs vi-insert vi-command; do
-	bindings="$(§bound_and_sorted $keymap)"
-	if [[ -n "$bindings" ]]; then
-	    echo -e "${c}$keymap:${n}\n"
-	    for id in $bindings; do
-		if [[ "$id" == "|" ]]; then		    
-		    echo
-		else
-		    §print_binding "$id"
-		fi
-	    done
-	    echo
-	fi
-    done
-}
-
-function §bound_and_sorted {
+    local mode="$(§readline.get_setting 'editing-mode')"
+    local keymaps="emacs"
+    local keymap id ids covered action keyname
     
-    local keymap="${1:-emacs}"
-    local ids="$(§bindings.select keymap "$keymap")"
-
-    local sorted=""
-    local action=""
-    local id=""
-    local len=0
-    local found=0
-
-    # core actions
-    for action in $order; do
-	if [[ "$action" != '|' ]]; then
-	    for id in $ids; do
-		§bindings.seek "$id"
-		if [[ "$(§binding.get_action)" == "$action" &&
-			    "$(§binding.get_is_bound)" == "1" ]]; then
-		    sorted="$sorted $id"
-		    found=1
-		fi
-	    done
-	else
-	    len=${#sorted}
-	    [[ ${sorted:$len-1:1} != '|' ]] && sorted="$sorted |"
-	fi
-    done
+    if [[ "$mode" == "vi" ]]; then
+	keymaps="vi-insert vi-command"
+    fi
+    mode+="-mode"
     
-    # user actions
-    local first=1
+    for keymap in $keymaps; do
+	ids="$(§bindings.select keymap "$keymap")"
+	[[ -z "$ids" ]] && continue
 
-    for id in $ids; do
-	§bindings.seek "$id"
-	§actions.seek "$(§binding.get_action)"
-	if [[ "$(§action.get_core)" != "1" && "$(§binding.get_is_bound)" == "1" ]]; then	    
-	    found=1
-	    if [[ "$first" == "1" ]]; then
-		sorted="$sorted | $id"
-		first=0
-	    else
-		sorted="$sorted $id"
+	echo -e "${w}Bashrun Keybindings$n ($c$mode$n):\n"
+
+	covered=""
+
+	for id in $ids; do
+	    §bindings.seek "$id"
+	    §binding.bound? || continue
+
+	    action="$(§binding.get_action)"
+	    if §actions.seek "$action"; then
+		keyname="$(§binding.get_keyname)"
+		[[ " $covered " =~ " $keyname " ]] && continue
+			
+		echo -en "\t$b$keyname$n\t"
+		echo -en "$(§action.get_description)"
+		if [[ -n "$(§action.get_depends)" ]]; then
+    		    echo -en " ($(§action.print_depends))"
+		fi
+		echo
+		covered+="$keyname "
 	    fi
-	fi
-    done
-    [[ found -eq 1 ]] && echo "$sorted"
-}
-
-function §print_binding {
-    
-    local id="$1"
-    local name=""
-    local desc=""
-    local deps=""
-    local keyname=""
-    local keyseq=""
-
-    §bindings.seek "$id"
-
-    name="$(§binding.get_action)"
-    
-    §actions.seek "$name"
-    desc="$(§action.get_description)"
-    
-    deps="$(§action.print_depends)"
-    keyseq="$(§binding.get_keyseq)"
-    
-    if §keynames.seek "$keyseq"; then
-	keyname="$(§keyname.get_name)"
-    else
-	keyname="$(§ks2kn $keyseq)"
-    fi
-
-    if [[ ! " $covered " =~ "$keyname" ]]; then
-	echo -ne " ${w}$keyname\t${n}$desc"
-	if [[ "$deps" != "" ]]; then
-	    echo -e " (requires $deps${n})"
-	else
-	    echo
-	fi
-	covered="$covered $keyname"
-    fi
+	done
+	echo
+    done	
 }
 
 function §tilde_path {
