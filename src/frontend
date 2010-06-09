@@ -121,7 +121,6 @@ function launch {
 	exit 1
     fi
 
-    ready="$bashrun_cache_home/${mode}-ready"
     abort="$bashrun_cache_home/${mode}-abort"
 
     error="$(BASHRUN=1 \
@@ -150,14 +149,16 @@ function launch {
     # wait for the new instance to be ready
     # (abort if the terminal command failed...)
 
-    wait_until "[[ -f '$ready' ]]" "[[ -f '$abort' ]]"
+    wait_until "brwctl bashrun-$mode &>/dev/null" "[[ -f '$abort' ]]"
     status=$?
 
-    [[ status -eq 1 ]] && exit 1
-    [[ status -eq 2 ]] && rm "$abort" && exit 1    
+    [[ status -eq 1 ]] && exit 1    
+    if [[ status -eq 2 || -f "$abort" ]]; then
+	rm "$abort" 
+	exit 1
+    fi
 
-    wid="$(<$bashrun_cache_home/${mode}-wid)"
-    pid="$(<$bashrun_cache_home/${mode}-pid)"
+    wid="$(brwctl bashrun-$mode)"
 
     source_window
     geometry="$saved_geometry"    

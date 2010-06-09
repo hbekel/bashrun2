@@ -132,7 +132,7 @@ fi
 # handle command
 case "$command" in
     show)
-	§window.map fast # &>/dev/null
+	[[ launched -eq 0 ]] && §window.map fast &>/dev/null
 	;;
     hide)
 	§window.unmap fast &>/dev/null

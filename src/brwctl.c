@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <ctype.h>
 
 #define _NET_WM_STATE_REMOVE 0
 #define _NET_WM_STATE_ADD 1
@@ -23,19 +24,21 @@ static int show();
 static int pos(int, int);
 static int size(int, int, int);
 static int get_class();
+static int search_window(char*, Window);
 static int message(char*, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long);
 static unsigned char *property(Window, Atom, long*, Atom*, int*);
 static int bad_window(Display*, XErrorEvent*);
 
 Display *dpy;
 Window win;
+char *classname;
 Window root;
 
 int main(int argc, char **argv)
 { 
   char *cmd;
-  int x=0, y=0;
-  unsigned int width=0, height=0, bw=0, depth=0, i=0;
+  int x=0, y=0, ret=0;
+  unsigned int width=0, height=0, bw=0, depth=0, i=0, start=1;
   XErrorHandler error_handler;
   
   if (NULL==(dpy=XOpenDisplay(NULL))) {
@@ -44,24 +47,43 @@ int main(int argc, char **argv)
   }
   root = XDefaultRootWindow(dpy);
   
-  if (argc < 2) {
-    fprintf(stderr, "Usage: brwctl <wid> [<cmd> [<args>]...]\n");
-    exit(1);
+  if (argc == 1) {
+    exit(0);
   }
 
-  win = (Window)strtol(argv[1], NULL, 0);
+  if (!isdigit(argv[1][0])) { // search for class->res_name
+
+    ret = search_window(argv[1], root);
+    if (ret == 0) { // found a window
+      if (argc == 2) { // no more commands?
+	printf("%d\n", (int)win);
+	exit(ret);
+      }
+      // start at arg 2
+      start=2;
+    }
+    else { // no window found
+      exit(ret);
+    }
+  }
+  else {
+
+    win = (Window)strtol(argv[1], NULL, 0);
   
-  /* check if the window exists... */
-  error_handler = XSetErrorHandler(bad_window);
-  XGetGeometry(dpy, win, &root, &x, &y, &width, &height, &bw, &depth);
-  XFlush(dpy);
-  (void)XSetErrorHandler(error_handler);
-  
-  for (i=1; i<argc; i++) {
+    /* check if the window exists... */
+    error_handler = XSetErrorHandler(bad_window);
+    XGetGeometry(dpy, win, &root, &x, &y, &width, &height, &bw, &depth);
+    XFlush(dpy);
+    (void)XSetErrorHandler(error_handler);
+  }
+
+  for (i=start; i<argc; i++) {
     cmd = argv[i];    
 
-    if (strcmp(cmd, "class?") == 0)
+    if (strcmp(cmd, "class?") == 0) {
       get_class();
+      exit(0);
+    }
 
     if (strcmp(cmd, "map") == 0)
       map();
@@ -129,7 +151,7 @@ int main(int argc, char **argv)
   }
   
   XCloseDisplay(dpy);
-  exit(0);
+  exit(ret);
 }
 
 static int map() {
@@ -291,7 +313,42 @@ static int get_class() {
   
   printf("%s %s\n", class->res_name, class->res_class);
   XFree(class);
-  exit(0);
+  return 0;
+}
+
+static int search_window (char *classname, Window w) {
+  Window unused;
+  Window *children;
+  Window current;
+  XClassHint *class = XAllocClassHint();
+  unsigned int length, i;
+
+  if (!XQueryTree(dpy, w, &unused, &unused, &children, &length))
+    return 0;
+  
+  for (i = 0; i < length; i++) {
+    current = children[i];
+
+    if (search_window(classname, current) == 0) {
+      XFree(children);
+      XFree(class);
+      return 0;
+    }
+    else {
+      XGetClassHint(dpy, current, class);
+      if (class->res_name != NULL) {
+	if (strcmp(classname, class->res_name) == 0) {
+	  win = current;
+	  XFree(children);
+	  XFree(class);
+	  return 0;
+	}
+      }
+    }
+  }
+  XFree(children);
+  XFree(class);
+  return 1;
 }
 
 static unsigned char *property(Window w, Atom atom, long *nitems, 
