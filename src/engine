@@ -40,13 +40,11 @@ function §engine.init {
     §configs.restore
 
     # initialize objects
-    §progress.update 99 "$bashrun_status [engine]"
+    §progress.update 100 "$bashrun_status [engine]"
     §objects.init
 
     # seek back to the current mode
     §modes.seek "$BASHRUN_MODE";
-
-    §progress.update 100 "$bashrun_status [engine]"
 
     # enable extdebug and prepare escape from trap
     # (bashdb bugs out if extdebug is set directly from a startup file)

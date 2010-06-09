@@ -74,6 +74,7 @@ if [[ $# -gt 0 ]]; then
 	-d|--debug)
 	    BASHRUN_DEBUG=1
 	    shift
+	    [[ $# -eq 0 ]] && command="debug"
 	    ;;
     esac
 fi
@@ -116,13 +117,14 @@ fi
 
 launched=0
 if [[ ! "$(brwctl $wid class? 2>/dev/null)" =~ bashrun-$mode ]]; then
-    if [[ "$command" =~ ^(exit|quit)$ ]]; then
-	exit 0
-    elif [[ "$command" =~ ^(w|p)id$ ]]; then
+    if [[ "$command" =~ ^(exit|quit|wid|pid)$ ]]; then
 	exit 1
     else
 	launch
 	launched=1
+	if [[ "$command" =~ ^(show|toggle|smart|reload|restart|debug)$ ]]; then
+	    exit 0
+	fi
     fi
 fi
 
@@ -132,16 +134,16 @@ fi
 # handle command
 case "$command" in
     show)
-	[[ launched -eq 0 ]] && §window.map fast &>/dev/null
+	§window.map fast &>/dev/null
 	;;
     hide)
 	§window.unmap fast &>/dev/null
 	;;	
     toggle)
-	[[ launched -eq 0 ]] && §window.toggle fast &>/dev/null
+	§window.toggle fast &>/dev/null
 	;;
     smart)
-	[[ launched -eq 0 ]] && §window.toggle_smart fast 1 &>/dev/null
+	§window.toggle_smart fast 1 &>/dev/null
 	;;
     wid)
 	echo $wid
@@ -168,20 +170,22 @@ case "$command" in
 	fi
 	;;
     reload)
-	[[ launched -eq 0 ]] && remote reload
+	remote reload
 	;;
     restart)
-	if [[ launched -eq 0 ]]; then
-	    remote quit
-	    sleep 1
-	    export BASHRUN_DEBUG
-	    rm "$lock" &>/dev/null
-	    exec bashrun -m $mode	
-	fi
+	remote quit
+	sleep 1
+	export BASHRUN_DEBUG
+	rm "$lock" &>/dev/null
+	exec bashrun -m $mode	
+	;;
+    debug)
+	remote debug
+	§window.map fast &>/dev/null
 	;;
     exit|quit)
 	remote quit
-	;;
+	;;    
     *)
 	echo "bashrun: unknown command: $command"
 	exit 1

@@ -402,7 +402,7 @@ function §print_binding {
 	keyname="$(§ks2kn $keyseq)"
     fi
 
-    if [[ ! " $covered " =~ $keyname ]]; then
+    if [[ ! " $covered " =~ "$keyname" ]]; then
 	echo -ne " ${w}$keyname\t${n}$desc"
 	if [[ "$deps" != "" ]]; then
 	    echo -e " (requires $deps${n})"

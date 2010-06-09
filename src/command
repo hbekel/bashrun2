@@ -47,6 +47,11 @@ function §command.get_word {
     for word in $bashrun_command; do
 	[[ ! "$word" =~ = ]] && break
     done 
+
+    if [[ "$bashrun_command" =~ \#\s__(HOLD|PAGER)__\s([^\ ]+) ]]; then
+	word="$BASH_REMATCH[2]"
+    fi
+
     bashrun_command_word="$word"
 }
 
@@ -177,6 +182,8 @@ function §command.add_hold {
 
     local seconds=${1:-0}
     local method='read -n1'
+    §command.get_word
+
     [[ seconds -gt 0 ]] && method="sleep $seconds"
 
     if [[ "$bashrun_command" =~ ^\(.+?\)$ ]]; then
@@ -184,7 +191,8 @@ function §command.add_hold {
     fi
     
     if [[ ! "$bashrun_command" =~ \#__HOLD__$ ]]; then
-	bashrun_command="tput civis; (${bashrun_command}); $method #__HOLD__";
+	bashrun_command="tput civis;(${bashrun_command});$method"
+        bashrun_command+=" #__HOLD__ $bashrun_command_word";
 	§debug "$bashrun_command"
     else
 	§debug "already using hold:" -v "$bashrun_command"
@@ -192,8 +200,12 @@ function §command.add_hold {
 }
 
 function §command.add_pager {
+
+    §command.get_word
+
     if [[ ! "$bashrun_command" =~ \#__PAGER__$ ]]; then
-	bashrun_command="$bashrun_command | ${PAGER} #__PAGER__"
+	bashrun_command="$bashrun_command | ${PAGER} "
+        bashrun_command+=" #__PAGER__ $bashrun_command_word"
 	§debug "$bashrun_command"
     else
 	§debug "already using pager:" -v "$bashrun_command"

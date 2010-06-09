@@ -116,7 +116,7 @@
 	exit 0
     }
     
-    +action debug
+    +action 'debug'
     --description "Toggle debugging"
     --input 0
     --core 1

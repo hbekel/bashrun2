@@ -219,7 +219,7 @@ function usage {
     -v, --version : show version information and exit
     -h, --help    : show this message and exit
     -m, --mode    : select mode to launch/control
-    -d, --debug   : enable debugging on startup
+    -d, --debug   : launch in debug mode
 
   Commands: 
        
@@ -229,6 +229,7 @@ function usage {
     smart     : move window up front if not focused/visible, hide otherwise  
     wid       : print window id
     pid       : print pid of bashrun session
+    debug     : toggle debugging
     reload    : reload configuration
     restart   : restart bashrun 
     quit,exit : terminate bashrun

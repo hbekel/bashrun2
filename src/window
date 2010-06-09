@@ -116,6 +116,7 @@ function §window.geometry {
 	fi
 
 	if §geometry.position?; then
+	    §window.update
 	    §window.pos $(§geometry.x $bashrun_window_pixel_width) \
 		$(§geometry.y $bashrun_window_pixel_height)	
 	fi
@@ -123,7 +124,7 @@ function §window.geometry {
 }
 
 function §window.pos {
-    
+
     if [[ $# -eq 0 ]]; then
 	§window.update
 	echo $bashrun_window_pos_x $bashrun_window_pos_y
@@ -205,9 +206,8 @@ function §window.map {
     [[ $# -eq 0 ]] && §window.update
 
     # parse geometry for this mode or use debug geometry
-    if [[ BASHRUN_DEBUG -eq 0 ]]; then
-	§geometry.parse "$(§mode.get_geometry 0)"
-    else
+    §geometry.parse "$(§mode.get_geometry 0)"
+    if [[ BASHRUN_DEBUG -eq 1 ]]; then
 	§geometry.parse "80x24"
     fi
     local saved_geometry="$(§geometry)"
