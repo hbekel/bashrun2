@@ -36,7 +36,7 @@ function §terminal.get_command {
 	local font="$(§terminal.get_font)"
 	local mode="$BASHRUN_MODE"
 
-	cooked="$(§terminal.cook "" "$command" "$mode" "$geometry" "$font")"
+	cooked="$(§terminal.cook "$command" "" "$mode" "$geometry" "$font")"
 	§terminal.set_cooked "$cooked"	
     fi
     echo "$cooked"
@@ -110,8 +110,9 @@ function §terminal.code {
 }
 
 function §terminal.binary {
-    [[ "$(§terminal.get_command)" =~ ^([^\ ]+?) ]]
-    echo "${BASH_REMATCH[1]}"
+    local binary=""
+    for binary in $(§terminal.get_command); do break; done
+    echo "$binary"
 }
 
 function §terminals.used {
@@ -122,7 +123,7 @@ function §terminals.used {
     §terminals.seek_start
     while §terminals.next?; do
 	
-	binary="$(§terminal.binary)"
+	binary="$(§terminal.binary)"	
 	if [[ ! " $used " =~ $binary ]]; then
 	    used="$binary $used"
 	fi
@@ -130,7 +131,7 @@ function §terminals.used {
     done
     §terminals.seek "$saved"
     
-    echo " $used "
+    echo "$used"
 }
 
 function §terminal.list {
