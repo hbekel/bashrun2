@@ -6,19 +6,19 @@
 
 ################################################################################
 
-§function.clone "§terminal.new" "§_terminal.new"
-§function.clone "§terminals.init" "§_terminals.init"
-§function.clone "§terminal.get_command" "§_terminal.get_command"
+§function.clone "§terminal.new" "§terminal._new"
+§function.clone "§terminals.init" "§terminals._init"
+§function.clone "§terminal.get_command" "§terminal._get_command"
 
 function §terminal.new { 
 
-    §_terminal.new "$1"
+    §terminal._new "$1"
     §terminal.set_command "xterm -e bash -c %@"
 }
 
 function §terminals.init {
     bashrun_terminals_used="$(§terminals.used)"
-    §_terminals.init
+    §terminals._init
 }
 
 function §terminal.init {
@@ -28,7 +28,7 @@ function §terminal.init {
 
 function §terminal.get_command {
     
-    local command="$(§_terminal.get_command)"
+    local command="$(§terminal._get_command)"
     local cooked="$(§terminal.get_cooked)"
 
     if [[ -z "$cooked" ]]; then
@@ -98,7 +98,7 @@ function §terminal.cook {
 function §terminal.code {
     
     local name="$(§terminal.get_name)"
-    local command="$(§_terminal.get_command)"
+    local command="$(§terminal._get_command)"
     local geometry="$(§terminal.get_geometry)"
     local font="$(§terminal.get_font)"
 
@@ -141,7 +141,7 @@ function §terminal.list {
 	local key
 	for key in ${_BASHRUN_TERMINALS_KEYS[@]}; do
 	    if [[ "$key" == "command" ]]; then
-		echo "$key: $(§_terminal.get_command)"
+		echo "$key: $(§terminal._get_command)"
 	    else
 		echo "$key: $(§terminal.get $key)"
 	    fi

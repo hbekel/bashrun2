@@ -7,14 +7,14 @@
 # Note to self: if the "core" property changes it's position, the
 # temporary setter in file 'core' needs to be adjusted.
 
-§function.clone "§action.new" "§_action.new"
-§function.clone "§actions.dump" "§_actions.dump"
+§function.clone "§action.new" "§action._new"
+§function.clone "§actions.dump" "§actions._dump"
 
 ################################################################################
 
 function §action.new {
 
-    §_action.new "$1"
+    §action._new "$1"
     §action.set_input "1"
     §action.set_description "$1"
     §action.set_bash "3.2"
@@ -474,7 +474,7 @@ function §actions.dump {
 
     local file="$_OBJECTS_DATA_HOME/${1:-§actions.dump}"
     local action=''
-    §_actions.dump $1
+    §actions._dump $1
 
     local saved="$(§action.get_name)"
 

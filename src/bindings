@@ -13,10 +13,10 @@ bashrun_bindings_blacklist=" 34 39 127 "
 
 bashrun_keymap='emacs' # will be initialized in engine.init
 
-§function.clone "§bindings.init" "§_bindings.init"
-§function.clone "§bindings.dump" "§_bindings.dump"
-§function.clone "§internals.dump" "§_internals.dump"
-§function.clone "§keynames.dump" "§_keynames.dump"
+§function.clone "§bindings.init" "§bindings._init"
+§function.clone "§bindings.dump" "§bindings._dump"
+§function.clone "§internals.dump" "§internals._dump"
+§function.clone "§keynames.dump" "§keynames._dump"
 
 ################################################################################
 
@@ -24,7 +24,7 @@ function §bindings.init {
     local file="$bashrun_cache_home/keybindings"
     [[ -f "$file" ]] && rm "$file"
 
-    §_bindings.init
+    §bindings._init
 }
 
 function §binding.bound? {
@@ -92,7 +92,7 @@ function §bindings.dump {
 
     local file=$_OBJECTS_DATA_HOME/${1:-§bindings.dump}
 
-    §_bindings.dump "${1:-§bindings.dump}"
+    §bindings._dump "${1:-§bindings.dump}"
 
     echo "bashrun_bindings_next_char=$bashrun_bindings_next_char" >> $file
 
@@ -115,7 +115,7 @@ function §internals.dump {
 
     local file="$_OBJECTS_DATA_HOME/${1:-§internals.dump}"
 
-    §_internals.dump "${1:-§internals.dump}" append
+    §internals._dump "${1:-§internals.dump}" append
 
     local saved=$(§internal.get_action)
 
@@ -129,7 +129,7 @@ function §internals.dump {
 
 function §keynames.dump {
 
-    §_keynames.dump "${1:-§keynames.dump}" append
+    §keynames._dump "${1:-§keynames.dump}" append
 
 }
 

@@ -156,7 +156,7 @@
     +action-term-run () 
     { 
 	action run
-	terminal;
+	terminal
 	return 0
     }
     
@@ -169,7 +169,6 @@
     { 
 	! executable? && handlers
 	pager
-	rules
 	terminal
 	return 0
     }
@@ -183,6 +182,7 @@
     { 
 	! executable? && handlers
 	hold
+	rules
 	terminal
 	return 0
     }

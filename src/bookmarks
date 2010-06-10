@@ -4,14 +4,14 @@
 
 §class "§bookmark" "name" ""
 
-§function.clone "§bookmark.new" "§_bookmark.new"
-§function.clone "§bookmarks.dump" "§_bookmarks.dump"
+§function.clone "§bookmark.new" "§bookmark._new"
+§function.clone "§bookmarks.dump" "§bookmarks._dump"
 
 ################################################################################
 
 function §bookmark.new {
 
-    §_bookmark.new $1
+    §bookmark._new $1
     
     eval "function $1 { 
         +action-browse
@@ -28,7 +28,7 @@ function §bookmarks.dump {
     
     local file="$_OBJECTS_DATA_HOME/${1:-§bookmarks.dump}"
 
-    §_bookmarks.dump $1
+    §bookmarks._dump $1
 
     §bookmarks.seek_start
     while §bookmarks.next?; do

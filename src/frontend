@@ -123,13 +123,14 @@ function launch {
 
     abort="$bashrun_cache_home/${mode}-abort"
 
-    error="$(BASHRUN=1 \
-	BASHRUN_FRONTEND=1 \
-	BASHRUN_MODE="$mode" \
-	BASHRUN_FEEDBACK="$feedback" \
-	BASHRUN_DEBUG=$BASHRUN_DEBUG \
-	$terminal $termopts $termfix -e bash \
-	--rcfile __PREFIX__/share/bashrun/bashrc 2>&1)" || { 
+    launch="BASHRUN_FRONTEND=1 BASHRUN_MODE=$mode \
+	    BASHRUN_FEEDBACK=$feedback BASHRUN_DEBUG=$BASHRUN_DEBUG \
+	    $terminal $termopts $termfix -e bash \
+	    --rcfile __PREFIX__/share/bashrun/bashrc"
+
+    §debug "starting bashrun-$mode:" -n "$launch"
+
+    error=$(eval "$launch" 2>&1) || { 
 
 	   touch "$abort"
 	   [[ -f "$modeinfo" ]] && rm "$modeinfo"

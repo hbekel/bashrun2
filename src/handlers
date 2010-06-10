@@ -7,13 +7,13 @@
 bashrun_from_cmdnfh=0
 bashrun_handlers_order=""
 
-§function.clone "§handler.new" "§_handler.new"
-§function.clone "§handlers.dump" "§_handlers.dump"
+§function.clone "§handler.new" "§handler._new"
+§function.clone "§handlers.dump" "§handlers._dump"
 
 ################################################################################
 
 function §handler.new {
-    §_handler.new "$1"
+    §handler._new "$1"
     
     §handler.set_pattern '(.+)'
     §handler.set_fallback '0'
@@ -239,7 +239,7 @@ function §handlers.dump {
 
     local file="$_OBJECTS_DATA_HOME/${1:-§handlers.dump}"
     local name=''
-    §_handlers.dump "$1"
+    §handlers._dump "$1"
 
     local saved="$(§handler.get_name)"
 

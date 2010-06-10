@@ -6,15 +6,15 @@
                 completion unmap:b feedback:b animated:b 
                 onmap onunmap cmdnfh:b logfile current" ""
 
-§function.clone "§mode.new" "§_mode.new"
-§function.clone "§mode.get_geometry" "§_mode.get_geometry"
-§function.clone "§modes.dump" "§_modes.dump"
+§function.clone "§mode.new" "§mode._new"
+§function.clone "§mode.get_geometry" "§mode._get_geometry"
+§function.clone "§modes.dump" "§modes._dump"
 
 ################################################################################
 
 function §mode.new { 
 
-    §_mode.new "$1"
+    §mode._new "$1"
     §mode.set_terminal "xterm -geometry %g -name bashrun-%m"
     §mode.set_geometry "80x24"
     §mode.set_current "0"
@@ -30,12 +30,12 @@ function §mode.new {
 function §mode.get_geometry {
     
     if [[ $# -eq 0 ]]; then
-	§_mode.get_geometry
+	§mode._get_geometry
 	return 0
     fi
 
     local wanted=${1:-0}
-    local geometry="$(§_mode.get_geometry)"
+    local geometry="$(§mode._get_geometry)"
     local g="" i=0
 
     for g in $geometry; do	
@@ -155,7 +155,7 @@ function §modes.dump {
     local mode=''
     local func=''
 
-    §_modes.dump "${1:-§modes.dump}"
+    §modes._dump "${1:-§modes.dump}"
 
     §modes.seek_start
     while §modes.next?; do

@@ -48,8 +48,8 @@ function §command.get_word {
 	[[ ! "$word" =~ = ]] && break
     done 
 
-    if [[ "$bashrun_command" =~ \#\s__(HOLD|PAGER)__\s([^\ ]+) ]]; then
-	word="$BASH_REMATCH[2]"
+    if [[ "$bashrun_command" =~ \#__(HOLD|PAGER)__\ ([^\ ]+) ]]; then
+	word="${BASH_REMATCH[2]}"
     fi
 
     bashrun_command_word="$word"
@@ -154,6 +154,7 @@ function §command.add_su {
 function §command.add_terminal {
 
     §command.get_word
+
     local terminal=""
     local terminal_command=""
     local method=""
@@ -190,7 +191,7 @@ function §command.add_hold {
 	bashrun_command=${BASH_REMATCH[1]}
     fi
     
-    if [[ ! "$bashrun_command" =~ \#__HOLD__$ ]]; then
+    if [[ ! "$bashrun_command" =~ \#__HOLD__ ]]; then
 	bashrun_command="tput civis;(${bashrun_command});$method"
         bashrun_command+=" #__HOLD__ $bashrun_command_word";
 	§debug "$bashrun_command"
@@ -203,7 +204,7 @@ function §command.add_pager {
 
     §command.get_word
 
-    if [[ ! "$bashrun_command" =~ \#__PAGER__$ ]]; then
+    if [[ ! "$bashrun_command" =~ \#__PAGER__ ]]; then
 	bashrun_command="$bashrun_command | ${PAGER} "
         bashrun_command+=" #__PAGER__ $bashrun_command_word"
 	§debug "$bashrun_command"
