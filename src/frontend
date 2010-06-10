@@ -98,7 +98,7 @@ function launch {
 	source $bashrun_site/message
 	§message "Error" \
                  "The terminal program \"$prog\" was not found. Please
-                  make sure that the terminal command line is correct:
+                  make sure that the terminal command template is correct:
 
                  $terminal
 
@@ -121,32 +121,39 @@ function launch {
 	termfix+='-keysym.Control-Right "\033[1;5C"'
     fi
 
-    abort="$bashrun_cache_home/${mode}-abort"
-
+    # create terminal command
     launch="BASHRUN_FRONTEND=1 \
             BASHRUN_MODE=$mode \
 	    BASHRUN_FEEDBACK=$feedback \
             BASHRUN_DEBUG=$BASHRUN_DEBUG \
-            $(§terminal.cook "$terminal" \
+            $(§terminal.expand "$terminal" \
                  'bash --rcfile __PREFIX__/share/bashrun/bashrc' \
                  "$mode" "$geometry" "$font" "$termopts $termfix")" 
                
+    # clean whitespace
     launch="$(echo "$launch" | sed 's/[ \t]\+/ /g')"
 
-    §debug "starting bashrun-$mode:" -n "$launch"
+    §debug -c "$mode:" -n "$launch"
 
+    # file to flag aborting
+    abort="$bashrun_cache_home/${mode}-abort"
+
+    # launch the terminal command
     error="$(eval "$launch" 2>&1)" || { 
 
+	   # terminal command failed	
 	   touch "$abort"
-	   [[ -f "$modeinfo" ]] && rm "$modeinfo"
-	   
 
+	   # remove possibly bogus modeinfo
+	   [[ -f "$modeinfo" ]] && rm "$modeinfo"	   
+
+	   # notify user
 	   source $bashrun_site/message
 	   §message "Error" \
                     "Failed to launch terminal. Please make sure that
                      the terminal command line is correct:
 
-                     $(§terminal.cook "$terminal" '...' \
+                     $(§terminal.expand "$terminal" '...' \
                         "$mode" "$geometry" "$font" "$termopts")
 
                      (+mode $mode --terminal)
@@ -154,15 +161,18 @@ function launch {
                      $error"
     } &
 
-    # wait for the new instance to be ready
-    # (abort if the terminal command failed...)
-
+    # wait for the terminal window to be mapped...
     wait_until "brwctl bashrun-$mode &>/dev/null" "[[ -f '$abort' ]]"
     status=$?
 
-    [[ status -eq 1 ]] && exit 1    
+    if [[ status -eq 1 ]]; then
+	§debug fail "The terminal window never appeared... giving up."
+	exit 1
+    fi
+
     if [[ status -eq 2 || -f "$abort" ]]; then
 	rm "$abort" 
+	§debug fail "failed" -n "$error"
 	exit 1
     fi
 

@@ -211,9 +211,9 @@ function §command.add_terminal {
 	[[ found -eq 1 ]] || §terminals.seek 'default'
     fi
 
-    # cook the terminal command
+    # expand the terminal command
     terminal_command="$(§terminal.get_command)"
-    bashrun_command="$(§terminal.cook "$terminal_command" "$bashrun_command")"
+    bashrun_command="$(§terminal.expand "$terminal_command" "$bashrun_command")"
 
     §debug "$bashrun_command"
 

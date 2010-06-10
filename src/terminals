@@ -2,7 +2,7 @@
 
 ################################################################################
 
-§class "§terminal" "name command geometry font match cooked" ""
+§class "§terminal" "name command geometry font match cache" ""
 
 ################################################################################
 
@@ -34,27 +34,27 @@ function §terminals.init {
 }
 
 function §terminal.init {
-   §terminal.set_cooked ""
+   §terminal.set_cache ""
    §terminal.get_command &>/dev/null
 }
 
 function §terminal.get_command {
     
     local command="$(§terminal._get_command)"
-    local cooked="$(§terminal.get_cooked)"
+    local cached="$(§terminal.get_cache)"
 
-    if [[ -z "$cooked" ]]; then
+    if [[ -z "$cached" ]]; then
 	local geometry="$(§terminal.get_geometry)"
 	local font="$(§terminal.get_font)"
 	local mode="$BASHRUN_MODE"
 
-	cooked="$(§terminal.cook "$command" "" "$mode" "$geometry" "$font")"
-	§terminal.set_cooked "$cooked"	
+	cached="$(§terminal.expand "$command" "" "$mode" "$geometry" "$font")"
+	§terminal.set_cache "$cached"	
     fi
-    echo "$cooked"
+    echo "$cached"
 }
 
-function §terminal.cook {
+function §terminal.expand {
     local template="$1"
     local command="$2"
     local mode="$3"
