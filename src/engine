@@ -131,10 +131,10 @@ function §engine.trap {
     # the verbatim command line entered
     bashrun_command_line=$(§command.get_line)
 
-    # the command about to be executed,
-    # as expanded by the shell
+    # the command about to be executed, expanded by the shell
     bashrun_command="$BASH_COMMAND"
-    
+    bashrun_original_command="$BASH_COMMAND"
+
     # remove quotes (;|&)
     §command.unquote
 
@@ -166,6 +166,7 @@ function §engine.launch {
     if [[ $# -eq 1 || -n "$command" ]]; then
 	§debug -c override -v "$command"
 	bashrun_command="$command"
+	bashrun_original_command="$command"
 	bashrun_command_line="$command"
     fi
     
@@ -294,6 +295,8 @@ function §engine.idle? {
 function §engine.shutdown { 
 
     local suffix file
+
+    §debug -y "shutting down..."
 
     # remove this instance from registry
     §registry.remove

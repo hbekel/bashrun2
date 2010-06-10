@@ -5,6 +5,7 @@
 bashrun_command=''
 bashrun_command_line=''
 bashrun_command_word=''
+bashrun_original_command=''
 
 function §command.unquote {
 
@@ -157,17 +158,57 @@ function §command.add_terminal {
 
     local terminal=""
     local terminal_command=""
-    local method=""
+    local command="$bashrun_original_command"
+    local prog="$bashrun_command_word"
+    local match=""
+    local spec=""
+    local found="0"
 
     if [[ " $bashrun_terminals_used " =~ \ $bashrun_command_word\  ]]; then
      	    §debug "already using" -v "$bashrun_command_word"
      	    return 1
     fi	
 
+    # assume default terminal
+    §terminals.seek 'default'
+
     if [[ $# -eq 1 ]]; then
+	# explicit terminal name given
 	if ! §terminals.seek "$1"; then
+	    §debug warn "no such terminal:" -v "$term" "(using default)"
 	    terminals.seek 'default'
 	fi
+        
+    else
+	# match associated terminals
+	§terminals.seek_start
+	while §terminals.next?; do	    	    
+
+	    match="$(§terminal.get_match)"
+
+	    for spec in $match; do
+
+		if [[ "$prog" == "$spec" ]]; then # literal match
+		    found=1
+		    §debug -v "$prog" "==" -v "$spec" \
+			   "->" -c "$(§terminal.get_name)"
+		    break;
+
+		elif [[ "$spec" =~ ^/.+?/ ]]; then # regexp given
+		    spec=${spec:1:${#spec}-2}
+
+		    if [[ "$command" =~ $spec ]]; then # regex match
+			found=1
+			§debug -v "$prog" "=~" -v "$spec" \
+			    "->" -c "$(§terminal.get_name)"
+			break;
+		    fi
+		fi
+	    done
+	    [[ found -eq 1 ]] && break
+	    §terminals.next
+	done
+	[[ found -eq 1 ]] || §terminals.seek 'default'
     fi
 
     # cook the terminal command
@@ -187,6 +228,8 @@ function §command.add_hold {
 
     [[ seconds -gt 0 ]] && method="sleep $seconds"
 
+    bashrun_original_command="$bashrun_command"
+
     if [[ "$bashrun_command" =~ ^\(.+?\)$ ]]; then
 	bashrun_command=${BASH_REMATCH[1]}
     fi
@@ -203,6 +246,8 @@ function §command.add_hold {
 function §command.add_pager {
 
     §command.get_word
+
+    bashrun_original_command="$bashrun_command"
 
     if [[ ! "$bashrun_command" =~ \#__PAGER__ ]]; then
 	bashrun_command="$bashrun_command | ${PAGER} "

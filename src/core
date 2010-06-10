@@ -49,8 +49,7 @@
 }
 
 +configure-core-rules () {
-    +rule term-page
-      --add 'dict'
+    +rule term-page --match 'dict'
  }
 
 +configure-core-handlers () { :; }
@@ -144,7 +143,7 @@
     +action-run () 
     { 
 	! executable? && handlers
-	rules
+	§rules.apply
 	return 0
     }
     
@@ -155,7 +154,7 @@
     
     +action-term-run () 
     { 
-	action run
+	! executable? && handlers
 	terminal
 	return 0
     }
@@ -182,7 +181,6 @@
     { 
 	! executable? && handlers
 	hold
-	rules
 	terminal
 	return 0
     }

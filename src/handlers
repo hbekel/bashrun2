@@ -2,7 +2,7 @@
 
 ################################################################################
 
-§class "§handler" "name pattern test string action complete fallback:b" ""
+§class "§handler" "name match test string action complete fallback:b" ""
 
 bashrun_from_cmdnfh=0
 bashrun_handlers_order=""
@@ -15,7 +15,7 @@ bashrun_handlers_order=""
 function §handler.new {
     §handler._new "$1"
     
-    §handler.set_pattern '(.+)'
+    §handler.set_match '(.+)'
     §handler.set_fallback '0'
 }
 
@@ -41,21 +41,22 @@ function §handlers.apply {
 	§handlers.seek "$name"
 
 	local append=1
-	local pattern="$(§handler.get_pattern)"
+	local match="$(§handler.get_match)"
 	local string="$(§handler.get_string)"
 	local action="$(§handler.get_action)"
 
 	local result=""
+
 	# interpolate variables if necessary (e.g. $PAGER, $BROWSER)
-	if [[ $string =~ \$.[a-zA-z0-9_] ]]; then
+	if [[ $string =~ \$[a-zA-z0-9_] ]]; then
 	    result="$(§interpolate '$string')"
 	    §debug -v "$string" "->" -v "$result"
 	    string="$result"
 	fi
 
-	if [[ "$bashrun_command" =~ $pattern ]]; then	    
+	if [[ "$bashrun_command" =~ $match ]]; then	    
 
-	    §debug -v "$bashrun_command" "matches" -v "$pattern" "->" -y "$name"
+	    §debug -v "$bashrun_command" "matches" -v "$match" "->" -y "$name"
 
 	    if [[ bashrun_from_cmdnfh -eq 1 ]]; then
 		if §handler.last? && §handler.fallback?; then
@@ -112,14 +113,14 @@ function §handlers.apply {
 	    if [[ "$string" =~ %[0-9] ]]; then
 
 	        # rewrite handler if subpatterns match
-		[[ "$bashrun_command" =~ $pattern ]]
+		[[ "$bashrun_command" =~ $match ]]
 
 		local i=0
 		for (( i=1; i<${#BASH_REMATCH[*]}; i++ )); do
 		    
-		    local match=${BASH_REMATCH[$i]}
-		    §debug "subpattern match:" -v "$match" "->" -v "%$i"
-		    string="${string//%$i/$match}"
+		    local m=${BASH_REMATCH[$i]}
+		    §debug "subpattern match:" -v "$m" "->" -v "%$i"
+		    string="${string//%$i/$m}"
 		    export append=0
 		done
 	        # fail if unmatched $n's remain in handler string
@@ -207,21 +208,21 @@ function §handlers.install_completion {
 function §handler.code {
 
     local name="$(§handler.get_name)"
-    local pattern="$(§handler.get_pattern)"
+    local match="$(§handler.get_match)"
     local test="$(§handler.get_test)"
     local string="$(§handler.get_string)"
     local action="$(§handler.get_action)"
     local complete="$(§handler.get_complete)"
     local fallback="$(§handler.get_fallback)"
 
-    pattern=${pattern//\'/\\\'}
+    match=${match//\'/\\\'}
     string=${string//\"/\\\"}
     string=${string//\$/\\\$}
 
     §print_line "handler $name" "#" "80"
     echo
     echo "+handler '$name'"
-    [[ "$pattern" != '(.+)' ]] && echo "  --pattern '$pattern'" 
+    [[ "$match" != '(.+)' ]] && echo "  --match '$match'" 
     [[ -n "$test" ]] && echo "  --test '$test'" 
     [[ "$string" != '%1' ]] && echo "  --string '$string'"
     [[ -n "$complete" ]] && echo "  --complete '$complete'"

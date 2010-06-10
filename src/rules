@@ -2,13 +2,13 @@
 
 ################################################################################
 
-§class "§rule" "name progs" "add"
+§class "§rule" "name progs" "match"
 
 bashrun_rules_applied=0
 
 ################################################################################
 
-function §rule.add {
+function §rule.match {
 
     local progs="$(§rule.get_progs)"
     if [[ -z "$progs" ]]; then
@@ -26,65 +26,52 @@ function §rules.apply {
     [[ bashrun_rules_applied -eq 1 ]] && return 0
 
     local action=$(§actions.current)
-    local program=''    
     local word="$bashrun_command_word"
     local command="$bashrun_command"
-    local regexp=''
-    local progs=''
-    local term=''
+    local rules rule progs prog regexp 
 
-    §rules.seek_start
-    while §rules.next?; do
+    # move the term-run rule to the end of rules
+    local rules="$(§rules.all)"
+    rules="${rules/term-run/} term-run"
 
-	# eval any environment vars in progs
-	progs=$(eval "echo \"$(§rule.get_progs)\"")
+    §debug "applying rules..."
 
-	for program in $progs; do
+    for rule in $rules; do
+	§rules.seek "$rule"
+	progs="$(§rule.get_progs)"
 
-	    §terminals.seek "default"
-	    
-	    if [[ "$program" =~ (.+?):(.+?) ]]; then
-		program="${BASH_REMATCH[1]}"
-		term="${BASH_REMATCH[2]}"
+	# implicitly add all terminal --match progs to the end of
+	# the term-run rule:
+	if [[ "$rule" == "term-run" ]]; then
+	    progs+=" $(§terminals.get_match)"
+	fi
 
-		# use explicitly given terminal
-		if ! §terminals.seek "$term"; then
-		    §debug warn "no such terminal:" -v "$term" "(using default)"
-		    §terminals.seek "default"
-		fi
-	    fi
+	for prog in $progs; do
 
-	    if [[ "$word" == "$program" ]]; then
+	    if [[ "$word" == "$prog" ]]; then
 		# literal match
 
-		# use a terminal named after program or fallback to default
-		if [[ "$(§terminal.get_name)" == "default" ]]; then
-		    if ! §terminals.seek "$program"; then
-			§debug info "no such terminal:" -v "$program" "(using default)"
-			§terminals.seek "default"
-		    fi
-		fi
-
-		§debug -v "$word" "==" -v "$program" "->" -y "$(§rule.get_name)"
+		§debug -v "$word" "==" -v "$prog" "->" -y "$rule"
 		bashrun_rules_applied=1
 
-		if §actions.seek $(§rule.get_name); then
+		if §actions.seek "$rule"; then
 		    §action.run
 		fi
 		return 0
 	    else
-		if [[ "$program" =~ /.+?/ ]]; then
+		if [[ "$prog" =~ /.+?/ ]]; then
 		    # regexp given
-		    regexp=${program:1:${#program}-2}
+		    regexp=${prog:1:${#prog}-2}
 
 		    # match the whole command against regexp
 		    if [[ "$command" =~ $regexp ]]; then
 			# regexp match
 		
-			§debug -v "'$command'" "=~" -v "$program" "->" -y "$(§rule.get_name)"
+			§debug -v "'$command'" "=~" -v "$prog" \
+			          "->" -y "$rule"
 			bashrun_rules_applied=1
 
-			if §actions.seek $(§rule.get_name); then
+			if §actions.seek "$rule"; then
 			    §action.run
 			fi
 			return 0
@@ -92,7 +79,6 @@ function §rules.apply {
 		fi
 	    fi
 	done
-	§rules.next
     done
     §rules.seek_start
 
@@ -116,5 +102,5 @@ function §rule.code {
     progs=${progs//\'/\\\'}
 
     echo "+rule '$name'"
-    echo "  --add '$progs'"
+    echo "  --match '$progs'"
 }

@@ -25,7 +25,7 @@
       # This is the default "launcher" mode that provides a terminal
       # in the fashion of a run dialog.
 
-      --terminal "xterm -name bashrun-%m -geometry %g -fg grey -bg black"
+      --terminal "xterm -name bashrun-%m -geometry %g -e %*"
       # Specify the terminal to use for bashrun. Within this string,
       # %g expands to the first geometry given in --geometry below.
       # %m expands to the name of this mode. For xterm and the
@@ -57,12 +57,12 @@
       # This replaces the former COMPLETION_TYPE,
       # ALTERNATIVE_COMPLETION_TYPE and COMPLETION_THRESHOLD settings.
 
-      --unmap true
+      --unmap on
       # Whether to unmap the window after running a command. Setting
       # this value to "false" is equivalent to using KEEP_OPEN=yes in
       # previous versions.
 
-      --feedback true
+      --feedback on
       # Whether to show feedback in the form of a progress bar during
       # startup.
 
@@ -143,10 +143,8 @@
       --command "urxvt -g %g -fn %f -e bash -c %@"
       --geometry "160x48"
       --font "xft:Fixed:size=10"
-      # An example of urxvt with a small font.
-      
-    # See the +configure-rules function below for an example of how to
-    # associate it with a specific command...
+      --match "htop /^ls/"
+      # An example of urxvt with a small font.      
 }
 
 +configure-rules () {
@@ -154,7 +152,7 @@
     # Rules can be used to associate actions with specific commands or
     # command lines. For actions that run commands in a terminal, a
     # terminal defined in the section above can also be
-    # associated. The --add option adds one or more command
+    # associated. The --match option adds one or more command
     # specifications to a rule, separated by whitespace.
     #
     # A command specification can be either the executable name of a
@@ -173,12 +171,12 @@
     # Some examples:
 
     +rule term-run
-      --add "watch top:small"
+      --match "watch htop"
       # the term-run action is used to run 'watch' in the default
       # terminal and 'top' in the 'small' terminal defined above
 
     +rule term-page
-      --add "dict" 
+      --match "dict" 
       # the the term-page action is used to show the output of the
       # "dict" program, paged in the default terminal. If you want to
       # use a different dict client, set the DICT environment variable
@@ -186,13 +184,13 @@
       # this is similar to using the DICT_CLIENT setting in previous
       # versions.
      
-      --add '/^ls/:small'
+      --match '/^ls/'
       # the term-page action is used to show the output of any
       # commandline beginning with "ls" paged in the "small" terminal
       # defined above.
 
     +rule su-term-notify
-      --add '/^/etc/rc.d/'
+      --match '/^/etc/rc.d/'
       # the su-term-notify action is used here to run any commandline
       # beginning with '/etc/rc.d' as root and show it's output in the
       # 'notify' terminal, closing the terminal after two
@@ -215,7 +213,7 @@
     # attempt is made to successively match the commandline against
     # each of the handlers defined here.
     #
-    # If the regular expression given in --pattern matches the
+    # If the regular expression given in --match matches the
     # commandline, then the file test pattern given in --test is
     # applied first, if any. If no test was given or if the supplied
     # test succeeds, then either the value of --string will be used as
@@ -238,7 +236,7 @@
     # strings to complete against.
 
     +handler info
-      --pattern '(.+)\?\?'
+      --match '(.+)\?\?'
       --string '%1'
       --action show-info
       # E.g. if run "bash??" then the string "bash" is used as the
@@ -247,7 +245,7 @@
       # to run the "info" program in a specific terminal.
       
     +handler manual
-      --pattern '(.+)\?'
+      --match '(.+)\?'
       --string '%1'
       --action show-manual
       # Similar to the above, but shows manual pages instead. Note
@@ -256,7 +254,7 @@
       # would never be reached.
 
     +handler browse
-      --pattern 'browse (.*)'
+      --match 'browse (.*)'
       --string '%1'
       --action 'browse'
       --complete 'browse'
@@ -269,19 +267,19 @@
       # tab to get at your bookmarks.
 
     +handler http
-      --pattern '^(www|https?)'   
+      --match '^(www|https?)'   
       --action browse
       # A simple url handler, for lines beginning with http, https or
       # www.
 
     +handler tlds
-      --pattern '\.(org|net|com)$'
+      --match '\.(org|net|com)$'
       --action browse
       # Another url handler that matches the end of the commandline,
       # looking for a common toplevel domain.
 
     +handler google
-      --pattern '^gg:(.+)'
+      --match '^gg:(.+)'
       --string  'www.google.com/search?q=%1'
       --action browse
       # An example of a Konqueror-style shortcut: if you type
@@ -290,37 +288,37 @@
       # browse action, which finally launches "$BROWSER <url>"
 
     +handler google-lucky
-      --pattern '^ggl:(.+)'
+      --match '^ggl:(.+)'
       --string  'www.google.com/search?q=%1&btnI=I\%27m+Feeling+Lucky'
       --action browse
 
     +handler freshmeat-search
-      --pattern '^fm:(.+)'  
+      --match '^fm:(.+)'  
       --string 'freshmeat.net/search/?q=%1&section=projects'
       --action browse
 
     +handler sourceforge-project
-      --pattern '^sf:(.+)'  
+      --match '^sf:(.+)'  
       --string 'sourceforge.net/projects/%1/'
       --action browse
       
     +handler sourceforge-website
-      --pattern '^sfw:(.+)' 
+      --match '^sfw:(.+)' 
       --string '%1.sourceforge.net/'
       --action browse
 
     +handler aur-search
-      --pattern 'aur:(.+)'
+      --match 'aur:(.+)'
       --string  'aur.archlinux.org/packages.php?K=%1&do_Search=Go'
       --action browse
 
     +handler ftp
-      --pattern '^ftp:(.+)' 
+      --match '^ftp:(.+)' 
       --string 'ncftp %1'
       --action term-run 
 
     +handler gimp
-      --pattern '\.jpe?g$'
+      --match '\.jpe?g$'
       --test 'f!x'
       --string 'gimp'
       # This handler implements a file association by matching any
@@ -333,14 +331,14 @@
       # "file" fallback handler below.
 
     +handler video
-      --pattern '\.(avi|mpe?g|flv|mp4|wmv|mov)$'
+      --match '\.(avi|mpe?g|flv|mp4|wmv|mov)$'
       --test 'f'
       --string 'mplayer -fs'
       # Another file association to open video files in fullscreen
       # mplayer.
 
     +handler command-help
-      --pattern '^\?(.+)'  
+      --match '^\?(.+)'  
       --string '%1 --help'
       --action term-page
       # E.g. ?bash pages "bash --help" in a terminal

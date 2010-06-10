@@ -2,11 +2,12 @@
 
 ################################################################################
 
-§class "§terminal" "name command cooked geometry font" ""
+§class "§terminal" "name command geometry font match cooked" ""
 
 ################################################################################
 
 §function.clone "§terminal.new" "§terminal._new"
+§function.clone "§terminal.set_match" "§terminal._set_match"
 §function.clone "§terminals.init" "§terminals._init"
 §function.clone "§terminal.get_command" "§terminal._get_command"
 
@@ -14,6 +15,17 @@ function §terminal.new {
 
     §terminal._new "$1"
     §terminal.set_command "xterm -e bash -c %@"
+}
+
+function §terminal.set_match {
+
+    local match="$(§terminal.get_match)"
+    if [[ -z "$match" ]]; then
+	match="$@"
+    else
+	match+=" $@"
+    fi
+    §terminal._set_match "$match"
 }
 
 function §terminals.init {
@@ -95,24 +107,44 @@ function §terminal.cook {
     echo "$template"
 }
 
+function §terminal.binary {
+    local binary=""
+    for binary in $(§terminal.get_command); do break; done
+    echo "$binary"
+}
+
+function §terminal.list {
+    local opt="$1"
+
+    if [[ "$opt" == '-l' ]]; then
+	local key
+	for key in ${_BASHRUN_TERMINALS_KEYS[@]}; do
+	    if [[ "$key" == "command" ]]; then
+		echo "$key: $(§terminal._get_command)"
+	    else
+		echo "$key: $(§terminal.get $key)"
+	    fi
+	done;
+	echo
+    else
+	echo $(§terminal.id)
+    fi
+}
+
 function §terminal.code {
     
     local name="$(§terminal.get_name)"
     local command="$(§terminal._get_command)"
     local geometry="$(§terminal.get_geometry)"
     local font="$(§terminal.get_font)"
+    local match="$(§terminal.get_match)"
 
     echo "+terminal '$name'"
     echo "  --command '$command'"
     [[ -n "$geometry" ]] && echo "  --geometry '$geometry'"
     [[ -n "$font" ]] && echo "  --font '$font'"
+    [[ -n "$match" ]] && echo "  --match '$match'"
     echo
-}
-
-function §terminal.binary {
-    local binary=""
-    for binary in $(§terminal.get_command); do break; done
-    echo "$binary"
 }
 
 function §terminals.used {
@@ -134,21 +166,17 @@ function §terminals.used {
     echo "$used"
 }
 
-function §terminal.list {
-    local opt="$1"
+function §terminals.get_match {
+    local saved="$(§terminal.get_name)"
+    local match=""
 
-    if [[ "$opt" == '-l' ]]; then
-	local key
-	for key in ${_BASHRUN_TERMINALS_KEYS[@]}; do
-	    if [[ "$key" == "command" ]]; then
-		echo "$key: $(§terminal._get_command)"
-	    else
-		echo "$key: $(§terminal.get $key)"
-	    fi
-	done;
-	echo
-    else
-	echo $(§terminal.id)
-    fi
+    §terminals.seek_start
+    while §terminals.next?; do
+	match+="$(§terminal.get_match) "
+	§terminals.next
+    done
+
+    §terminals.seek "$saved"
+
+    echo "$match"
 }
-
