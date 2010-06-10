@@ -65,11 +65,21 @@ function §terminal.cook {
     local word="" tmp="" method=""
     declare -i i=0
 
-    # insert mode, geometry and font
-    if [[ "$template" =~ [^\\]%[mgf] ]]; then
+    # insert mode, geometry, font and options
+    if [[ "$template" =~ [^\\]%m ]]; then
 	template="$(§replace "$template" "%m" "$mode")"
+    fi
+
+    if [[ "$template" =~ [^\\]%g ]]; then
 	template="$(§replace "$template" "%g" "$geometry")"
+    fi
+
+    if [[ "$template" =~ [^\\]%f ]]; then
 	template="$(§replace "$template" "%f" "$font")"
+    fi
+
+    if [[ "$template" =~ [^\\]%o ]]; then
+	template="$(§replace "$template" "%o" "$options")"
     fi
 
     # insert command if given...
@@ -92,16 +102,6 @@ function §terminal.cook {
 	# append command to template
 	    template+=" $command"
 	fi
-    fi
-
-    # insert options if given
-    if [[ -n "$options" ]]; then
-	for word in $template; do
-	    tmp+="$word "
-	    [[ i -eq 0 ]] && tmp+="$options "
-	    i+=1
-	done
-	template="$tmp"
     fi
 
     echo "$template"

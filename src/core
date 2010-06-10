@@ -5,7 +5,7 @@
 +configure-core-modes () {
 
     +mode launcher
-      --terminal "xterm -geometry %g -name bashrun-%m"
+      --terminal 'xterm -geometry %g -name bashrun-%m %o -e %*'
       --geometry '40x1 40x8'
       --completion 'menu-complete complete 8'
       --unmap true
@@ -14,14 +14,14 @@
 
     +mode-launcher-init () {	
 	
-	HISTFILE="$(§xdg data-home bashrun/history)"
+	HISTFILE="$($bashrun_data_home/history)"
 	PS1='>'
 	stty -ixon
 	stty eof 0201
     }
 
     +mode terminal
-      --terminal 'xterm -geometry %g -name bashrun-%m'
+      --terminal 'xterm -geometry %g -name bashrun-%m %o -e %*'
       --cmdnfh true
 
     +mode-terminal-init() {
