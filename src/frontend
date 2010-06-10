@@ -131,6 +131,8 @@ function launch {
                  'bash --rcfile __PREFIX__/share/bashrun/bashrc' \
                  "$mode" "$geometry" "$font" "$termopts $termfix")" 
                
+    launch="$(echo "$launch" | sed 's/[ \t]\+/ /g')"
+
     §debug "starting bashrun-$mode:" -n "$launch"
 
     error="$(eval "$launch" 2>&1)" || { 
@@ -138,12 +140,14 @@ function launch {
 	   touch "$abort"
 	   [[ -f "$modeinfo" ]] && rm "$modeinfo"
 	   
+
 	   source $bashrun_site/message
 	   §message "Error" \
                     "Failed to launch terminal. Please make sure that
                      the terminal command line is correct:
 
-                     $terminal $termopts
+                     $(§terminal.cook "$terminal" '...' \
+                        "$mode" "$geometry" "$font" "$termopts")
 
                      (+mode $mode --terminal)
 
