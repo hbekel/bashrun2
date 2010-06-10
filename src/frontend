@@ -71,6 +71,8 @@ function source_window {
 
 function launch {
 
+    source $bashrun_site/terminals
+
     # launch a one line terminal if this mode is animated
     saved_geometry="$geometry"
 
@@ -82,32 +84,16 @@ function launch {
     	
 	geometry="$(§geometry)"
     fi
-
+    
+    # launch a default sized terminal in debug mode
     if [[ BASHRUN_DEBUG -eq 1 ]]; then
 	geometry="80x24"
     fi
 
-    # insert geometry and mode into terminal command
-    terminal=${terminal//%g/$geometry}
-    terminal=${terminal//%m/$mode}
-
     # get first word of terminal line (program binary)
     for prog in $terminal; do break; done
 
-    # fix known issues with certain terminals...
-
-    if [[ "$prog" == "xterm" ]]; then
-	# enable meta keybindings
-	termfix='-xrm XTerm**metaSendsEscape:True '
-
-    elif [[ "$prog" =~ urxvtc? ]]; then
-	# enable ctrl-arrow keys
-	termfix='-keysym.Control-Up "\033[1;5A" '
-	termfix+='-keysym.Control-Down "\033[1;5B" '
-	termfix+='-keysym.Control-Left "\033[1;5D" '
-	termfix+='-keysym.Control-Right "\033[1;5C"'
-    fi
-
+    # check if the terminal program is usable
     if ! type -p $prog &>/dev/null; then
 	source $bashrun_site/message
 	§message "Error" \
@@ -121,16 +107,33 @@ function launch {
 	exit 1
     fi
 
+    # fix known issues with xterm or *rxvt's...
+
+    if [[ "$prog" == "xterm" ]]; then
+	# enable meta keybindings
+	termfix='-xrm XTerm**metaSendsEscape:True '
+
+    elif [[ "$prog" =~ *rxvtc? ]]; then
+	# enable ctrl-arrow keys
+	termfix='-keysym.Control-Up "\033[1;5A" '
+	termfix+='-keysym.Control-Down "\033[1;5B" '
+	termfix+='-keysym.Control-Left "\033[1;5D" '
+	termfix+='-keysym.Control-Right "\033[1;5C"'
+    fi
+
     abort="$bashrun_cache_home/${mode}-abort"
 
-    launch="BASHRUN_FRONTEND=1 BASHRUN_MODE=$mode \
-	    BASHRUN_FEEDBACK=$feedback BASHRUN_DEBUG=$BASHRUN_DEBUG \
-	    $terminal $termopts $termfix -e bash \
-	    --rcfile __PREFIX__/share/bashrun/bashrc"
-
+    launch="BASHRUN_FRONTEND=1 \
+            BASHRUN_MODE=$mode \
+	    BASHRUN_FEEDBACK=$feedback \
+            BASHRUN_DEBUG=$BASHRUN_DEBUG \
+            $(§terminal.cook "$terminal" \
+                 'bash --rcfile __PREFIX__/share/bashrun/bashrc' \
+                 "$mode" "$geometry" "$font" "$termopts $termfix")" 
+               
     §debug "starting bashrun-$mode:" -n "$launch"
 
-    error=$(eval "$launch" 2>&1) || { 
+    error="$(eval "$launch" 2>&1)" || { 
 
 	   touch "$abort"
 	   [[ -f "$modeinfo" ]] && rm "$modeinfo"
