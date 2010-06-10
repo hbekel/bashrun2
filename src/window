@@ -212,9 +212,6 @@ function §window.map {
     fi
     local saved_geometry="$(§geometry)"
 
-    # map the window
-    brwctl $bashrun_window_id show
-
     # apply position
     if §geometry.position?; then
 	§window.update
@@ -225,11 +222,16 @@ function §window.map {
     # apply size
     if §geometry.size?; then
 	if [[ "$(§mode.get_animated)" == "1" ]]; then	    
-	    §geometry.height 1
+	    if [[ ! bashrun_window_height -eq "$(§geometry.height)" ]]; then
+		§geometry.height 1
+	    fi
 	fi
 	§window.size --hint "$(§geometry.width)" \
 	    "$(§geometry.height)"
     fi    
+
+    # map the window
+    brwctl $bashrun_window_id show
 
     # call user supplied onmap handler
     $(§mode.get_onmap)

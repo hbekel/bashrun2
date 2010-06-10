@@ -22,12 +22,11 @@
 ######################################################################
 
 # if no arguments are given, attempt to map an existing launcher as
-# fast as possible
+# fast as possible and exit immediately on success
 if [[ $# -eq 0 ]]; then    
     widfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/launcher-wid"
     [[ -f "$widfile" ]] && brwctl "$(<$widfile)" show && exit 0
 fi
-# no existing bashrun session -> proceed...
 
 # setup global variables
 source __PREFIX__/share/bashrun/globals

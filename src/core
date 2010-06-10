@@ -101,7 +101,7 @@
     
     +action-abort () {
 	§bash4 && READLINE_LINE=""
-	§window.unmap fast
+	§window.unmap
 	return 1
     }
 
