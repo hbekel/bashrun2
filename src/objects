@@ -136,16 +136,23 @@ function §class {
 	    key=${BASH_REMATCH[1]}
 	    access=${BASH_REMATCH[2]}
 	    [[ "$access" == "b" ]] && access="rwb"
+	    [[ "$access" == "a" ]] && access="rwa"
 	else
 	    access="rw"
 	fi
 
 	if [[ "$access" =~ r ]]; then
-      	    §object.create_reader $name $NAME $key $i
+	    if [[ "$access" =~ a ]]; then
+      		§object.create_array_reader $name $NAME $key $i
+	    else
+		§object.create_reader $name $NAME $key $i
+	    fi
 	fi
 	if [[ "$access" =~ w ]]; then
 	    if [[ "$access" =~ b ]]; then
 		§object.create_bool_writer $name $NAME $key $i
+	    elif [[ "$access" =~ a ]]; then
+		§object.create_array_writer $name $NAME $key $i
 	    else
 		§object.create_writer $name $NAME $key $i
 	    fi
@@ -218,6 +225,51 @@ function §object.create_writer {
 
 function ${name}.set_${key} {
     _${NAME}S[\$_${NAME}S_POSITION+$field]="\$@";
+    _${NAME}S_MODIFIED=1;
+}
+EOF
+    ) >> $tmpfile
+}
+
+function §object.create_array_reader {
+    local name=$1
+    local NAME=$2
+    local key=$3
+    local field=$4
+    local tmpfile=$_OBJECTS_CACHE_HOME/$name.bash
+
+    echo $(cat <<EOF
+
+function ${name}.get_${key} {
+    local var="\$1";
+    local data="\${_${NAME}S[\$_${NAME}S_POSITION+$field]}";
+    
+    if [[ -z "\$data" ]]; then
+      echo "declare -a \$var";
+    else
+      echo "declare -a \$var=\$data";
+    fi
+}
+EOF
+    ) >> $tmpfile
+}
+
+function §object.create_array_writer {
+    local name=$1
+    local NAME=$2
+    local key=$3
+    local field=$4
+    local tmpfile=$_OBJECTS_CACHE_HOME/$name.bash
+
+    echo $(cat <<EOF
+
+function ${name}.set_${key} {
+    declare -a a=("\$@");
+    
+    local data="\$(declare -p a)";
+    data="\${data:14:\${#data}-15}";    
+
+    _${NAME}S[\$_${NAME}S_POSITION+$field]="\$data";
     _${NAME}S_MODIFIED=1;
 }
 EOF
