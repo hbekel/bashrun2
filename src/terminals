@@ -2,7 +2,7 @@
 
 ################################################################################
 
-§class "§terminal" "name command geometry font match cache" ""
+§class "§terminal" "name command geometry font match:a cache" ""
 
 ################################################################################
 
@@ -19,13 +19,15 @@ function §terminal.new {
 
 function §terminal.set_match {
 
-    local match="$(§terminal.get_match)"
-    if [[ -z "$match" ]]; then
-	match="$@"
+    eval "$(§terminal.get_match matches)"
+
+    if [[ ${#matches[*]} -eq 0 ]]; then
+	matches=("$@")
     else
-	match+=" $@"
+	matches=("${matches[@]}" "$@")
     fi
-    §terminal._set_match "$match"
+    §terminal._set_match "${matches[@]}"
+
 }
 
 function §terminals.init {
@@ -131,22 +133,6 @@ function §terminal.list {
     fi
 }
 
-function §terminal.code {
-    
-    local name="$(§terminal.get_name)"
-    local command="$(§terminal._get_command)"
-    local geometry="$(§terminal.get_geometry)"
-    local font="$(§terminal.get_font)"
-    local match="$(§terminal.get_match)"
-
-    echo "+terminal '$name'"
-    echo "  --command '$command'"
-    [[ -n "$geometry" ]] && echo "  --geometry '$geometry'"
-    [[ -n "$font" ]] && echo "  --font '$font'"
-    [[ -n "$match" ]] && echo "  --match '$match'"
-    echo
-}
-
 function §terminals.used {
     local used=""
     local saved="$(§terminal.get_name)"
@@ -168,15 +154,40 @@ function §terminals.used {
 
 function §terminals.get_match {
     local saved="$(§terminal.get_name)"
-    local match=""
+    local match=()
+    local data=""
 
     §terminals.seek_start
     while §terminals.next?; do
-	match+="$(§terminal.get_match) "
+        eval "$(§terminal.get_match m)"
+	match=( "${match[@]}" "${m[@]}" )
 	§terminals.next
     done
 
     §terminals.seek "$saved"
 
-    echo "$match"
+    local data="$(declare -p match)"
+    data="${data:18:${#data}-19}"    
+    data="declare -a $1=$data"
+    echo "$data"
+}
+
+function §terminal.code {
+    
+    local name="$(§terminal.get_name)"
+    local command="$(§terminal._get_command)"
+    local geometry="$(§terminal.get_geometry)"
+    local font="$(§terminal.get_font)"
+    eval "$(§terminal.get_match match)"
+    local m=""
+
+    echo "+terminal '$name'"
+    echo "  --command '$command'"
+    [[ -n "$geometry" ]] && echo "  --geometry '$geometry'"
+    [[ -n "$font" ]] && echo "  --font '$font'"
+
+    for m in "${match[@]}"; do
+	echo "  --match '$m'"
+    done
+    echo
 }

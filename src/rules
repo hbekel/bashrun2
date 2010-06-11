@@ -2,7 +2,7 @@
 
 ################################################################################
 
-§class "§rule" "name match" ""
+§class "§rule" "name match:a" ""
 
 §function.clone "§rule.set_match" "§rule._set_match"
 
@@ -12,14 +12,14 @@ bashrun_rules_applied=0
 
 function §rule.set_match {
 
-    local match="$(§rule.get_match)"
+    eval "$(§rule.get_match matches)"
 
-    if [[ -z "$match" ]]; then
-	match="$@"
+    if [[ ${#matches[*]} -eq 0 ]]; then
+	matches=("$@")
     else
-	match="$match $@"
+	matches=("${matches[@]}" "$@")
     fi
-    §rule._set_match "$match"
+    §rule._set_match "${matches[@]}"
 }
 
 function §rules.apply {
@@ -41,15 +41,16 @@ function §rules.apply {
 
     for rule in $rules; do
 	§rules.seek "$rule"
-	match="$(§rule.get_match)"
+	eval "$(§rule.get_match match)"
 
 	# implicitly add all terminal --match progs to the end of
 	# the term-run rule:
 	if [[ "$rule" == "term-run" ]]; then
-	    match+=" $(§terminals.get_match)"
+	    eval "$(§terminals.get_match terminals_match)"
+	    match=( "${match[@]}" "${terminals_match[@]}" )
 	fi
 
-	for spec in $match; do
+	for spec in "${match[@]}"; do
 
 	    if [[ "$word" == "$spec" ]]; then
 		# literal match
@@ -98,12 +99,11 @@ function §rules.applied? {
 function §rule.code {
 
     local name=$(§rule.get_name)
-    local progs=$(§rule.get_match)
-    local program=''
-
-    name=${name//\'/\\\'}
-    progs=${progs//\'/\\\'}
+    eval "$(§rule.get_match match)"
+    local m=""
 
     echo "+rule '$name'"
-    echo "  --match '$progs'"
+    for m in "${match[@]}"; do
+	echo "  --match '$m'"
+    done
 }

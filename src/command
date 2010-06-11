@@ -160,7 +160,6 @@ function §command.add_terminal {
     local terminal_command=""
     local command="$bashrun_original_command"
     local prog="$bashrun_command_word"
-    local match=""
     local spec=""
     local found="0"
 
@@ -184,9 +183,9 @@ function §command.add_terminal {
 	§terminals.seek_start
 	while §terminals.next?; do	    	    
 
-	    match="$(§terminal.get_match)"
+	    eval "$(§terminal.get_match match)"
 
-	    for spec in $match; do
+	    for spec in "${match[@]}"; do
 
 		if [[ "$prog" == "$spec" ]]; then # literal match
 		    found=1
