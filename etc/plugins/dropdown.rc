@@ -2,7 +2,7 @@
 +configure-dropdown-modes() {
 
     +mode dropdown
-      --terminal 'xterm -g %g -n bashrun-%m %o -e %*'
+      --terminal 'xterm -g %g -name %n %o -e %*'
       --geometry '113x20+0+0'
       --animated true
       --unmap false

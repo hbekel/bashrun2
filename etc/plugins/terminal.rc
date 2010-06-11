@@ -2,7 +2,7 @@
 +configure-terminal-modes() {
     
     +mode terminal
-      --terminal 'xterm -g %g -n bashrun-%m %o -e %*'
+      --terminal 'xterm -geometry %g -name %n %o -e %*'
       --cmdnfh true
 
     +mode-terminal-init() {
