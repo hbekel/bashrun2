@@ -5,7 +5,7 @@
 # User configuration files go into ~/.config/bashrun, or
 # $XDG_CONFIG_HOME/bashrun if $XDG_CONFIG_HOME has been modified.
 #
-# Changes to this file require a restart of bashrun.
+# Changes to this file require a reload of bashrun (Alt-r).
 #
 # Please see bashrun(1) for all the details on configuration.
 
@@ -25,14 +25,7 @@
       # This is the default "launcher" mode that provides a terminal
       # in the fashion of a run dialog.
 
-      --terminal "xterm -geometry %g -name %n %o -e %*"
-      # Specify the terminal to use for bashrun. Within this string,
-      # %g expands to the first geometry given in --geometry below.
-      # %m expands to the name of this mode. For xterm and the
-      # *rxvt's, the "-name" option can be used to set the name
-      # portion of the WM_CLASS window property, as seen above. A
-      # window manager may then match windows depending on the window
-      # name.
+      --terminal 'xterm -geometry %g -name %n %o -e %*'
       #
       # This setting replaces the former XTERM, XTERM_OPTIONS, FGCOLOR
       # and BGCOLOR settings.
@@ -59,7 +52,7 @@
 
       --unmap on
       # Whether to unmap the window after running a command. Setting
-      # this value to "false" is equivalent to using KEEP_OPEN=yes in
+      # this value to "off" is equivalent to using KEEP_OPEN=yes in
       # previous versions.
 
       --feedback on
@@ -78,7 +71,7 @@
 
       function +mode-launcher-init {	
           # This fuction, if defined, will be called for the default
-	  # mode "launcher" during startup. Here you may configure
+	  # mode "launcher" during startup. Here you can configure
 	  # anything that is specific to this mode only. See
 	  # bashrun(1) for alternatives.
 
@@ -111,54 +104,53 @@
     # If neither %* or %@ is given, the command is appended without
     # quoting.
     
-    
-    # The following two default terminals, named "default" and
+    # The following two terminals, called "default" and
     # "notify", are always defined:
 
-    +terminal default --command "xterm -e bash -c %@"
-    # The default terminal to launch commands in if no other terminal
-    # has been requested by an action or an action rule.
+    +terminal default 
+      --command 'xterm -e bash -c %@'
+
+    # The default terminal is used to execute commands if no other
+    # terminal has been explicitly requested by an action.
     #
     # Some examples on how to run shell commands in common terminals:
     #
-    # +terminal default --command "rxvt -e bash -c %@"
-    # +terminal default --command "urxvt -e bash -c %@"
-    # +terminal default --command "mrxvt -e bash -c %@"
-    # +terminal default --command "xterm -e bash -c %@"
-    # +terminal default --command "aterm -e bash -c %@"
-    # +terminal default --command "Eterm -e bash -c %@"
-    # +terminal default --command "Terminal -x bash -c %@"
-    # +terminal default --command "roxterm -e bash -c %@"
-    # +terminal default --command "konsole  -e bash -c %@"
+    # +terminal default --command 'rxvt -e bash -c %@'
+    # +terminal default --command 'urxvt -e bash -c %@'
+    # +terminal default --command 'mrxvt -e bash -c %@'
+    # +terminal default --command 'xterm -e bash -c %@'
+    # +terminal default --command 'aterm -e bash -c %@'
+    # +terminal default --command 'Eterm -e bash -c %@'
+    # +terminal default --command 'Terminal -x bash -c %@'
+    # +terminal default --command 'roxterm -e bash -c %@'
+    # +terminal default --command 'konsole  -e bash -c %@'
     # +terminal default --command 'gnome-terminal -e bash\ -c\ %@@'
-    # +terminal default --command "terminator -x bash -c %@"    
+    # +terminal default --command 'terminator -x bash -c %@'    
 
     +terminal notify 
-      --command "xterm -g %g -e bash -c %@"
-      --geometry "40x4+0+0"
+      --command 'xterm -g %g -e bash -c %@'
+      --geometry '40x4+0+0'
       # ^ A small terminal for notifications, used by the default actions
       # "term-notify" and "su-term-notify".
       
     +terminal small
-      --command "urxvt -g %g -fn %f -e bash -c %@"
-      --geometry "160x48"
-      --font "xft:Fixed:size=10"
-      --match "htop /^ls/"
-      # An example of urxvt with a small font.      
+      --command 'urxvt -g %g -fn %f -e bash -c %@'
+      --geometry '160x48'
+      --font 'xft:fixed'
+      --match 'htop /^ls/'
+
+      # An example of using urxvt with a small font. 
 }
 
 +configure-rules () {
 
     # Rules can be used to associate actions with specific commands or
-    # command lines. For actions that run commands in a terminal, a
-    # terminal defined in the section above can also be
-    # associated. The --match option adds one or more command
-    # specifications to a rule, separated by whitespace.
+    # command lines that are run using the generic "run" action. The
+    # --match option adds one or more command specifications to a
+    # rule, separated by whitespace.
     #
     # A command specification can be either the executable name of a
-    # program or a regular expression, which is applied to the
-    # complete commandline. Both may optionally be followed by a colon
-    # (':'), followed by the name of the terminal to use.
+    # program or a regular expression.
     #
     # Regular expressions are denoted by enclosing them in '/'. Note
     # that you don't have to quote literal slashes inside the regular
@@ -169,11 +161,6 @@
     # versions.
     #
     # Some examples:
-
-    +rule term-run
-      --match "watch htop"
-      # the term-run action is used to run 'watch' in the default
-      # terminal and 'top' in the 'small' terminal defined above
 
     +rule term-page
       --match "dict" 
@@ -186,8 +173,7 @@
      
       --match '/^ls/'
       # the term-page action is used to show the output of any
-      # commandline beginning with "ls" paged in the "small" terminal
-      # defined above.
+      # commandline beginning with "ls", paged in a terminal.
 
     +rule su-term-notify
       --match '/^/etc/rc.d/'
@@ -195,13 +181,7 @@
       # beginning with '/etc/rc.d' as root and show it's output in the
       # 'notify' terminal, closing the terminal after two
       # seconds. Note that in this case, the su-term-notify function
-      # already chooses to use the 'notify' terminal by default.
-
-    # Finally, if there is a terminal defined by the exact name of the
-    # command, then that terminal is chosen automatically, e.g. if you
-    # have a terminal called "alsamixer", then simply adding
-    # "alsamixer" to the "term-run" rule is equivalent to adding
-    # "alsamixer:alsamixer"
+      # explicitly chooses to use the 'notify' terminal by default.
 }
 
 +configure-handlers () {
@@ -241,8 +221,8 @@
       --action show-info
       # E.g. if run "bash??" then the string "bash" is used as the
       # commandline to be used with the show-info action, which pages
-      # "info bash" in the default terminal, unless a rule indicates
-      # to run the "info" program in a specific terminal.
+      # "info bash" in the default terminal, unless the "info" program
+      # has been associated with a specific terminal object.
       
     +handler manual
       --match '(.+)\?'
@@ -251,7 +231,7 @@
       # Similar to the above, but shows manual pages instead. Note
       # that the order of handlers is important here: if this handler
       # was defined before the info handler, then the info handler
-      # would never be reached.
+      # would never be reached, because.
 
     +handler browse
       --match 'browse (.*)'
@@ -264,7 +244,9 @@
       # named "browse", for which the +handler-complete-browse
       # function is used to generate the list of possible matches from
       # bashrun's bookmarks. Thus you can just type "browse " and hit
-      # tab to get at your bookmarks.
+      # tab to get at your bookmarks. If you hit return, this handler
+      # will delegate the bookmark string to the default "browse" action,
+      # which open the bookmark string using $BROWSER (default: firefox)
 
     +handler http
       --match '^(www|https?)'   
@@ -282,7 +264,7 @@
       --match '^gg:(.+)'
       --string  'www.google.com/search?q=%1'
       --action browse
-      # An example of a Konqueror-style shortcut: if you type
+      # An example of a Konqueror-style url shortcut: if you type
       # "gg:foo", then the %1 in "www.google.com/search?q=%1" will be
       # replaced with "foo", and the resulting url will be passed to the
       # browse action, which finally launches "$BROWSER <url>"
@@ -291,6 +273,7 @@
       --match '^ggl:(.+)'
       --string  'www.google.com/search?q=%1&btnI=I\%27m+Feeling+Lucky'
       --action browse
+      # The same as above, but uses google's "Feeling Lucky" function.
 
     +handler freshmeat-search
       --match '^fm:(.+)'  
@@ -303,7 +286,7 @@
       --action browse
       
     +handler sourceforge-website
-      --match '^sfw:(.+)' 
+      --match '^sw:(.+)' 
       --string '%1.sourceforge.net/'
       --action browse
 
@@ -313,8 +296,8 @@
       --action browse
 
     +handler ftp
-      --match '^ftp:(.+)' 
-      --string 'ncftp %1'
+      --match '^ftp://(.+)' 
+      --string 'ncftp'
       --action term-run 
 
     +handler gimp
@@ -436,13 +419,12 @@
 
 +configure-emacs-mode () {
 
-    # Bind actions to key sequences:
+    # Bind actions to key sequences for readline's emacs-mode:
     # 
     # +keymap <keymap> 
     #
     #   The +keymap directive can be used to change the target keymap
-    #   for subsequent +bind directives.  Possible targets are "emacs",
-    #   "vi-insert" or "vi-command".
+    #   for subsequent +bind directives.
     #
     # +bind <action> <keyseq> [<keyname>]
     #
@@ -493,7 +475,7 @@
     +bind resize-up    '\e[1;5A' C-up
     +bind resize-down  '\e[1;5B' C-down
     +bind resize-left  '\e[1;5D' C-left
-    +bind resize-right '\e[1;5C' C-rght
+    +bind resize-right '\e[1;5C' C-right
 
     +bind run-as '\eu'
 
@@ -501,4 +483,7 @@
     +bind yank-from-xclip '\ey'
 }
 
-+configure-vi-mode () { :; }
++configure-vi-mode () { 
+    # FIXME
+    :
+}
