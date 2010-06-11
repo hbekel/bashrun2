@@ -385,7 +385,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
                     if [[ \$# -eq 0 ]]; then
 		      object.get_$optname
                     else
-                      object.set_$optname \"\$1\"
+                      object.set_$optname \"\$@\"
                     fi
 	        }"
 	    else
@@ -406,6 +406,7 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
     function +object {
 
 	declare -a args
+	declare -a cargs
 	declare remove arg next 
 	
         # remove a previous type's interface
@@ -438,18 +439,19 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 	fi
 
 	args=("$@")
-	declare i=0
+	declare -i i=0
 	for (( i=0; i<${#args[@]}; i++ )); do
 	    arg="${args[i]}"
 	    next="${args[i+1]}"
 
-	    if [[ "$arg" =~ ^\-\- ]]; then
-		if [[ -n "$next" && ! "$next" =~ ^\-\- ]]; then		    
-		    $arg "$next"
-		else
-		    $arg
-		fi
-		continue
+	    if [[ "$arg" =~ ^\-\- ]]; then		
+                # get the command arguments
+		cargs=()
+		until [[ -z "$next" || "$next" =~ ^\-\- ]]; do	    
+		    cargs[${#cargs[*]}]="$next"
+		    i+=1; next="${args[i+1]}"
+		done
+		$arg "${cargs[@]}"
 	    fi
 	done   
     }   

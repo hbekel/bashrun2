@@ -217,7 +217,7 @@ function §object.create_writer {
     echo $(cat <<EOF
 
 function ${name}.set_${key} {
-    _${NAME}S[\$_${NAME}S_POSITION+$field]=\$1;
+    _${NAME}S[\$_${NAME}S_POSITION+$field]="\$@";
     _${NAME}S_MODIFIED=1;
 }
 EOF
