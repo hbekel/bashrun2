@@ -2,21 +2,24 @@
 
 ################################################################################
 
-§class "§rule" "name progs" "match"
+§class "§rule" "name match" ""
+
+§function.clone "§rule.set_match" "§rule._set_match"
 
 bashrun_rules_applied=0
 
 ################################################################################
 
-function §rule.match {
+function §rule.set_match {
 
-    local progs="$(§rule.get_progs)"
-    if [[ -z "$progs" ]]; then
-	progs="$@"
+    local match="$(§rule.get_match)"
+
+    if [[ -z "$match" ]]; then
+	match="$@"
     else
-	progs="$progs $@"
+	match="$match $@"
     fi
-    §rule.set_progs "$progs"
+    §rule._set_match "$match"
 }
 
 function §rules.apply {
@@ -28,7 +31,7 @@ function §rules.apply {
     local action=$(§actions.current)
     local word="$bashrun_command_word"
     local command="$bashrun_command"
-    local rules rule progs prog regexp 
+    local rules rule match spec regexp 
 
     # move the term-run rule to the end of rules
     local rules="$(§rules.all)"
@@ -38,20 +41,20 @@ function §rules.apply {
 
     for rule in $rules; do
 	§rules.seek "$rule"
-	progs="$(§rule.get_progs)"
+	match="$(§rule.get_match)"
 
 	# implicitly add all terminal --match progs to the end of
 	# the term-run rule:
 	if [[ "$rule" == "term-run" ]]; then
-	    progs+=" $(§terminals.get_match)"
+	    match+=" $(§terminals.get_match)"
 	fi
 
-	for prog in $progs; do
+	for spec in $match; do
 
-	    if [[ "$word" == "$prog" ]]; then
+	    if [[ "$word" == "$spec" ]]; then
 		# literal match
 
-		§debug -v "$word" "==" -v "$prog" "->" -y "$rule"
+		§debug -v "$word" "==" -v "$spec" "->" -y "$rule"
 		bashrun_rules_applied=1
 
 		if §actions.seek "$rule"; then
@@ -59,15 +62,15 @@ function §rules.apply {
 		fi
 		return 0
 	    else
-		if [[ "$prog" =~ /.+?/ ]]; then
+		if [[ "$spec" =~ /.+?/ ]]; then
 		    # regexp given
-		    regexp=${prog:1:${#prog}-2}
+		    regexp=${spec:1:${#spec}-2}
 
 		    # match the whole command against regexp
 		    if [[ "$command" =~ $regexp ]]; then
 			# regexp match
 		
-			§debug -v "'$command'" "=~" -v "$prog" \
+			§debug -v "'$command'" "=~" -v "$spec" \
 			          "->" -y "$rule"
 			bashrun_rules_applied=1
 
@@ -95,7 +98,7 @@ function §rules.applied? {
 function §rule.code {
 
     local name=$(§rule.get_name)
-    local progs=$(§rule.get_progs)
+    local progs=$(§rule.get_match)
     local program=''
 
     name=${name//\'/\\\'}
