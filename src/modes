@@ -2,7 +2,7 @@
 
 ################################################################################
 
-§class "§mode" "name terminal geometry
+§class "§mode" "name terminal geometry font
                 completion unmap:b feedback:b animated:b 
                 onmap onunmap cmdnfh:b logfile current" ""
 
@@ -101,6 +101,7 @@ function §mode.write_info {
           wid=$WINDOWID
 	  terminal=$terminal
           geometry=$(§mode.get_geometry 0)
+          font=$(§mode.get_font)        
           feedback=$(§mode.get_feedback)
           animated=$(§mode.get_animated)
           onmap=$onmap
@@ -122,6 +123,7 @@ function §mode.code {
     local completion="$(§mode.get_completion)"
     local unmap="$(§mode.get_unmap)"
     local geometry="$(§mode.get_geometry)"
+    local font="$(§mode.get_font)"
     local animated="$(§mode.get_animated)"
     local onmap="$(§mode.get_onmap)"
     local onunmap="$(§mode.get_onunmap)"
@@ -134,11 +136,12 @@ function §mode.code {
     echo "+mode '$name'"
     echo "  --terminal '$terminal'"
     [[ "$geometry" != '80x24' ]] && echo "  --geometry '$geometry'"
+    [[ -n "$font" ]] && echo "  --font '$font'"
     [[ "$completion" != 'complete' ]] && echo "  --completion '$completion'"
     [[ "$unmap" != '0' ]] && echo "  --unmap '$unmap'"
     [[ "$animated" != '0' ]] && echo "  --animated '$animated'"
-    [[ "$onmap" != '' ]] && echo "  --onmap '$onmap'"
-    [[ "$onunmap" != '' ]] && echo "  --onunmap '$onunmap'"
+    [[ -n "$onmap" ]] && echo "  --onmap '$onmap'"
+    [[ -n "$onunmap" ]] && echo "  --onunmap '$onunmap'"
     [[ "$feedback" != '0' ]] && echo "  --feedback '$feedback'"
     [[ "$logfile" != '/dev/null' ]] && echo "  --logfile '$logfile'"
     echo

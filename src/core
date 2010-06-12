@@ -80,6 +80,7 @@
 
       function +action-reload {
 	  bashrun_status="Reloading..."
+	  tput civis >&2
 	  bashrun_engine_reload=1
 	  return 2
       }
