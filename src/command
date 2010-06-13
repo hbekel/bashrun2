@@ -120,7 +120,8 @@ function §command.bookmark? {
 
 function §command.add_su {
 
-    local user=${1:-root}
+    local user="${1:-root}"
+    local stty=""
 
     # don't wrap in su -c '' twice...
     if [[ "$bashrun_command" =~ ^su\  ]]; then
@@ -134,7 +135,13 @@ function §command.add_su {
 	    tput el
 	    tput cr
 	    echo -ne 'Username: '
+
+	    stty="$(stty -g)"
+	    stty echo cooked -cbreak
+
 	    read user
+
+	    stty "$stty"
 	done
     fi
 
