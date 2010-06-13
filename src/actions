@@ -103,7 +103,10 @@ function §action.bind {
 
 	# save char in internal	
 	§internal.set_char "$char"
-	
+
+	# add internal keybinding to remote interface
+	§remote.interface.add "internal" "$action" "$keymap" "$char" "$keyseq"	
+
 	# next free char
 	((bashrun_bindings_next_char+=1))
 	until [[ ! "$bashrun_bindings_blacklist" =~ \ $bashrun_bindings_next_char\  ]]; do
@@ -125,6 +128,9 @@ function §action.bind {
     §debug emph -y "usr" -v "$action" "->" -v "$keyname" "($keymap)" 
     # echo "bind $bind"
     eval "bind $bind"
+
+    # add requested keybinding to remote interface
+    §remote.interface.add "requested" "$action" "$keymap" "$char" "$keyseq"	
 
     # create or set binding
     if §bindings.seek "$keyseq" "$keymap"; then

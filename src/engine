@@ -46,6 +46,9 @@ function §engine.init {
     # seek back to the current mode
     §modes.seek "$BASHRUN_MODE";
 
+    # create the experimental remote interface
+    §remote.interface.write
+
     # enable extdebug and prepare escape from trap
     # (bashdb bugs out if extdebug is set directly from a startup file)
     PROMPT_COMMAND="trap DEBUG; shopt -s extdebug;$PROMPT_COMMAND"
