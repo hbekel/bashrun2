@@ -453,8 +453,8 @@ if [[ _OBJECTS_HAVE_INTERFACE -eq 1 ]]; then
 		done
 		$arg "${cargs[@]}"
 	    fi
-	done   
-    }   
+	done
+    }
 
     # completion
     function object.complete {

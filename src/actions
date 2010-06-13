@@ -245,7 +245,6 @@ function §action.bound? {
 
 function §action.function? {
     §function.defined? "+action-$(§action.get_name)"
-    return $?
 }
 
 function §action.depends_on? {
@@ -409,9 +408,9 @@ function §action.print_depends {
     local bash="$(§action.get_bash)"
     local str=''
 
-    local r="\033[0;31m" # red
-    local g="\033[0;32m" # green 
-    local n="\033[0m"    # none
+    local r="\e[0;31m" # red
+    local g="\e[0;32m" # green 
+    local n="\e[0m"    # none
 
     local found="$r"
 
