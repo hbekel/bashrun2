@@ -27,19 +27,6 @@ function §bindings.init {
     §bindings._init
 }
 
-function §binding.init {
-    §binding.bound? || return 0
-    local keyseq="$(§binding.get_keyseq)"
-    local keymap="$(§binding.get_keymap)"
-    local action="$(§binding.get_action)"
-
-    §internals.seek "$action" "$keymap"
-    local char="$(§internal.get_char)"
-
-    §remote.interface.bind "internal" "$action" "$keymap" "$char" "$keyseq"
-    §remote.interface.bind "requested" "$action" "$keymap" "$char" "$keyseq"	
-}
-
 function §binding.bound? {
     [[ "$(§binding.get_is_bound)" == '1' ]]
 }
@@ -104,6 +91,9 @@ function set {
 function §bindings.dump {
 
     local file=$_OBJECTS_DATA_HOME/${1:-§bindings.dump}
+    local remote_bindings="$bashrun_cache_home/remote-bindings.bash"
+
+    [[ -f "$remote_bindings" ]] && rm "$remote_bindings"
 
     §bindings._dump "${1:-§bindings.dump}"
 
@@ -117,7 +107,21 @@ function §bindings.dump {
     §bindings.seek_start
     while §bindings.next?; do
 	if §binding.bound?; then
+	    # dump the bashrun binding
 	    echo "bind $(§binding.get_readline)" >> $file
+
+	    # create the remote interface binding
+	    local keyseq="$(§binding.get_keyseq)"
+	    local keymap="$(§binding.get_keymap)"
+	    local action="$(§binding.get_action)"
+	    
+	    §internals.seek "$action" "$keymap"
+	    local char="$(§internal.get_char)"
+	    
+	    §remote.interface.bind "internal" \
+		"$action" "$keymap" "$char" "$keyseq"
+	    §remote.interface.bind "requested" \
+		"$action" "$keymap" "$char" "$keyseq"	
 	fi
 	§bindings.next
     done

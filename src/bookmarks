@@ -18,10 +18,6 @@ function §bookmark.new {
     }"
 }
 
-function §bookmark.init {
-    local name="$(§bookmark.get_name)"
-    §remote.interface.add "function $name { bashrun do browse '$name'; }"
-}
 function §bookmark.code {
     local name="$(§bookmark.get_name)"
     name=${name//\'/\\\'}
@@ -31,12 +27,24 @@ function §bookmark.code {
 function §bookmarks.dump {
     
     local file="$_OBJECTS_DATA_HOME/${1:-§bookmarks.dump}"
+    local remote_bookmarks="$bashrun_cache_home/remote-bookmarks.bash"
+    local name=""
+
+    [[ -f "$remote_bookmarks" ]] && rm "$remote_bookmarks"
 
     §bookmarks._dump $1
 
     §bookmarks.seek_start
     while §bookmarks.next?; do
-	§function.code "$(§bookmark.get_name)" >> $file
+	name="$(§bookmark.get_name)"
+
+	# dump the bookmark function
+	§function.code "$name" >> $file
+	
+	# create the remote interface bookmark function
+	echo "function $name { bashrun do browse '$name'; }" \
+	    >> "$remote_bookmarks"
+    
 	§bookmarks.next
     done
 }

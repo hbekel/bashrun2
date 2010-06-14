@@ -40,6 +40,9 @@ function §remote.run {
 }
 
 function §remote.interface.bind {
+
+    local bindings="$bashrun_cache_home/remote-bindings.bash"
+
     local type="$1"
     local action="$2"
     local keymap="$3"
@@ -49,7 +52,8 @@ function §remote.interface.bind {
     [[ "$action" =~ ^(cycle-size|resize-|bashrun-|debug|reload|quit) ]] && return
 
     if [[ "$type" == "internal" ]]; then
-	bashrun_remote_interface+="bind -m $keymap -x \$'\"\C-z\\x$char\": §bashrun-remote-trap $action'"
+	echo "bind -m $keymap -x \$'\"\C-z\\x$char\": §bashrun-remote-trap $action'" \
+	    >> "$bindings"
 
     elif [[ "$type" == "requested" ]]; then
 	if [[ "$action" == "run" ]]; then
@@ -60,9 +64,9 @@ function §remote.interface.bind {
 	    [[ "$keyseq" == '\e\C-m' ]] && keyseq='\et'
 	fi       
 
-	bashrun_remote_interface+="bind -m $keymap '\"$keyseq\"':$'\"\C-z\x$char\201\"'"
+	echo "bind -m $keymap '\"$keyseq\"':$'\"\C-z\x$char\201\"'" \
+	    >> "$bindings"
     fi
-    bashrun_remote_interface+=$'\n'
 }
 
 function §remote.interface.add {
@@ -72,6 +76,12 @@ function §remote.interface.add {
 
 function §remote.interface.write {
     local interface="$bashrun_cache_home/remote.bash"
+    local bindings="$bashrun_cache_home/remote-bindings.bash"
+    local bookmarks="$bashrun_cache_home/remote-bookmarks.bash"
+
     cp "$bashrun_site/interface" "$interface"
     echo "$bashrun_remote_interface" >> "$interface"
+
+    echo "source $bindings" >> "$interface"
+    echo "source $bookmarks" >> "$interface"
 }
