@@ -133,16 +133,16 @@ fi
 # handle command
 case "$command" in
     show)
-	§window.map fast &>/dev/null
+	§window.map &>/dev/null
 	;;
     hide)
-	§window.unmap fast &>/dev/null
+	§window.unmap &>/dev/null
 	;;	
     toggle)
-	§window.toggle fast &>/dev/null
+	§window.toggle &>/dev/null
 	;;
     smart)
-	§window.toggle_smart fast 1 &>/dev/null
+	§window.toggle_smart &>/dev/null
 	;;
     wid)
 	echo $wid
@@ -180,7 +180,7 @@ case "$command" in
 	;;
     debug)
 	remote debug
-	§window.map fast &>/dev/null
+	§window.map &>/dev/null
 	;;
     exit|quit)
 	remote quit

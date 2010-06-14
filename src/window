@@ -1,14 +1,9 @@
 # -*- shell-script -*-
 
 bashrun_window_id=""
-bashrun_window_pos_x=0
-bashrun_window_pos_y=0
 bashrun_window_width=$COLUMNS
 bashrun_window_height=$LINES
-bashrun_window_pixel_width=$COLUMNS
-bashrun_window_pixel_height=$LINES
 bashrun_window_mapped=1
-bashrun_window_animate=0
 
 function §window.id {
     
@@ -33,116 +28,14 @@ function §window.terminal? {
     [[ "$bashrun_window_id" == "$WINDOWID" ]]
 }
 
-function §window.animate? {
-     [[ bashrun_window_animate -eq 1 ]]
-}
-
-function §window.animate {
-    bashrun_window_animate=${1:-1}
-}
-
 function §window.update {
-
-    # fast update: mapping state only...
 
     bashrun_window_mapped=0
     if brwctl $bashrun_window_id mapped?; then 
 	bashrun_window_mapped=1
     fi
-    
-    [[ $# -eq 1 ]] && return 0
-
-    # complete update...
-
-    local saved="$IFS"
-    local line=''
-    declare -i x=0 y=0 w=0 h=0 pw=0 ph=0
-
-    IFS=$'\n'
-    for line in $(xwininfo -all -id $bashrun_window_id); do
-
-	if [[ "$line" =~ "Width: "([0-9]+) ]]; then
-	    (( pw=${BASH_REMATCH[1]} ))
-	fi
-
-	if [[ "$line" =~ "Height: "([0-9]+) ]]; then
-	    (( ph=${BASH_REMATCH[1]} ))
-	fi
-
-	if [[ "$line" =~ "Absolute upper-left X:  "([0-9]+) ]]; then
-	    (( x = ${BASH_REMATCH[1]} ))
-	fi
-
-	if [[ "$line" =~ "Absolute upper-left Y:  "([0-9]+) ]]; then
-	    (( y = ${BASH_REMATCH[1]} ))
-	fi
-
-	if [[ "$line" =~ "Relative upper-left X:  "([0-9]+) ]]; then
-	    (( x -= ${BASH_REMATCH[1]} ))
-	    (( pw += ${BASH_REMATCH[1]} * 2 ))
-	fi
-
-	if [[ "$line" =~ "Relative upper-left Y:  "([0-9]+) ]]; then
-	    (( y -= ${BASH_REMATCH[1]} ))
-	    (( ph += ${BASH_REMATCH[1]} * 2 ))
-	fi
-
-	if [[ "$line" =~ "-geometry "([0-9]+)x([0-9]+) ]]; then
-	    w=${BASH_REMATCH[1]}
-	    h=${BASH_REMATCH[2]}
-	fi
-    done
-    IFS="$saved"
-
-    bashrun_window_pos_x=$x
-    bashrun_window_pos_y=$y
-    bashrun_window_width=$w
-    bashrun_window_height=$h
-    bashrun_window_pixel_width=$pw
-    bashrun_window_pixel_height=$ph
-    bashrun_window_animate="$(§mode.get_animated)"
-}
-
-function §window.geometry {
-
-    §window.update
-
-    if [[ "$(§geometry)" != "$1" ]]; then
-	§geometry.parse "$1"
-	§debug "Setting geometry" -v  "$1" 
-
-	if §geometry.size?; then
-	    §window.size --hint $(§geometry.width) $(§geometry.height)
-	fi
-
-	if §geometry.position?; then
-	    §window.update
-	    §window.pos $(§geometry.x $bashrun_window_pixel_width) \
-		$(§geometry.y $bashrun_window_pixel_height)	
-	fi
-    fi
-}
-
-function §window.pos {
-
-    if [[ $# -eq 0 ]]; then
-	§window.update
-	echo $bashrun_window_pos_x $bashrun_window_pos_y
-    else
-	
-	local x="$1"
-	local y="$2"
-	
-	if [[ "$x" =~ ([0-9]+)x([0-9]+) ]]; then
-	    x=${BASH_REMATCH[1]}
-	    y=${BASH_REMATCH[2]}
-	fi
-	
-	brwctl $bashrun_window_id pos $x $y 
-	bashrun_window_pos_x=$x
-	bashrun_window_pos_y=$y
-    fi
-    return 0
+    bashrun_window_width=$COLUMNS
+    bashrun_window_height=$LINES
 }
 
 function §window.resize {
@@ -181,7 +74,8 @@ function §window.size {
     fi
 
     if [[ $# -eq 1 ]]; then
-	if [[ "$width" =~ ([0-9]+)x([0-9]+) ]]; then
+	§debug "$1"
+	if [[ "$1" =~ ([0-9]+)x([0-9]+) ]]; then
 	    local w=${BASH_REMATCH[1]}
 	    local h=${BASH_REMATCH[2]}
 	    brwctl $bashrun_window_id $hint $w $h
@@ -203,44 +97,18 @@ function §window.size {
  
 function §window.map {
 
-    [[ $# -eq 0 ]] && §window.update
-
-    # parse geometry for this mode or use debug geometry
-    §geometry.parse "$(§mode.get_geometry 0)"
-    if [[ BASHRUN_DEBUG -eq 1 ]]; then
-	§geometry.parse "80x24"
+    # apply default size if debugging
+    if [[ BASHRUN_DEBUG -eq 1 ]]; then	 
+	§window.size --hint "80x24"
     fi
-    local saved_geometry="$(§geometry)"
-
-    # apply position
-    if §geometry.position?; then
-	§window.update
-	§window.pos "$(§geometry.x $bashrun_window_pixel_width)" \
-	    "$(§geometry.y $bashrun_window_pixel_height)"
-    fi
-
-    # apply size
-    if §geometry.size?; then
-	if [[ "$(§mode.get_animated)" == "1" ]]; then	    
-	    if [[ ! bashrun_window_height -eq "$(§geometry.height)" ]]; then
-		§geometry.height 1
-	    fi
-	fi
-	§window.size --hint "$(§geometry.width)" \
-	    "$(§geometry.height)"
-    fi    
 
     # map the window
-    brwctl $bashrun_window_id show
+    brwctl $bashrun_window_id show    
 
     # call user supplied onmap handler
     $(§mode.get_onmap)
     
-    if [[ "$(§mode.get_animated)" == "1" ]]; then
-	§geometry.parse "$saved_geometry"
-	§window.expand
-    fi    
-    bashrun_window_mapped=1
+    §window.update
     return 0
 }
 
@@ -248,9 +116,6 @@ function §window.unmap {
 
     [[ $# -eq 0 ]] && §window.update
 
-    if [[ "$(§mode.get_animated)" == "1" ]]; then
-	§window.collapse
-    fi
     brwctl $bashrun_window_id unmap
 
     # call user supplied onunmap handler    
@@ -260,31 +125,29 @@ function §window.unmap {
     return 0
 }
 
-function §window.toggle { # [smart] [fast]
+function §window.toggle { # [smart=0]
     
-    local smart=$1
-    local fast=$2
-
-    §window.update $fast
+    local smart="${1:-0}"
+    §window.update
 
     if [[ bashrun_window_mapped -eq 0 ]]; then	
 	§window.map
     else
 	if [[ smart -eq 1 ]]; then
 	    if brwctl $bashrun_window_id focus?; then
-		§window.unmap $fast
+		§window.unmap
 	    else
-		§window.map $fast
+		§window.map
 	    fi
 	else
-	    §window.unmap $fast
+	    §window.unmap
 	fi
     fi
     return 0
 }
 
 function §window.toggle_smart {
-    §window.toggle 1 $1
+    §window.toggle 1
 }
 
 function §window.collapse {

@@ -60,8 +60,6 @@ function source_window {
     source $bashrun_site/geometry
     source $bashrun_site/window
 
-    bashrun_window_animate="$animated"
-    function §mode.get_animated { echo $animated; }
     function §mode.get_geometry { echo $geometry; }    
     function §mode.get_onmap { echo $onmap; }    
     function §mode.get_onunmap { echo $onunmap; }    
@@ -73,18 +71,6 @@ function launch {
 
     source $bashrun_site/terminals
 
-    # launch a one line terminal if this mode is animated
-    saved_geometry="$geometry"
-
-    if [[ animated -eq 1 ]]; then
-	source $bashrun_site/geometry
-	
-	§geometry.parse $geometry
-    	§geometry.height 1
-    	
-	geometry="$(§geometry)"
-    fi
-    
     # launch a default sized terminal in debug mode
     if [[ BASHRUN_DEBUG -eq 1 ]]; then
 	geometry="80x24"
@@ -179,9 +165,6 @@ function launch {
     wid="$(brwctl bashrun-$mode)"
 
     source_window
-    geometry="$saved_geometry"    
-
-    §window.map fast &>/dev/null
 }
 
 function remote {

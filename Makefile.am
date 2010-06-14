@@ -1,6 +1,5 @@
 SUBDIRS = src etc man
 EXTRA_DIST = etc/bashrun.rc \
-etc/plugins/dropdown.rc	\
 etc/plugins/terminal.rc \
 etc/bash_completion.d/bashrun \
 man/bashrun.1 \

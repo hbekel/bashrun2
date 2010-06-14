@@ -3,7 +3,7 @@
 ################################################################################
 
 §class "§mode" "name terminal geometry font
-                completion unmap:b feedback:b animated:b 
+                completion unmap:b feedback:b 
                 onmap onunmap cmdnfh:b logfile current" ""
 
 §function.clone "§mode.new" "§mode._new"
@@ -20,7 +20,6 @@ function §mode.new {
     §mode.set_current "0"
     §mode.set_completion 'complete'
     §mode.set_unmap '0'
-    §mode.set_animated '0'
     §mode.set_onmap ""
     §mode.set_onunmap ""
     §mode.set_feedback "0"
@@ -69,13 +68,6 @@ function §mode.init {
 	+mode-$name-init
     fi
 
-    # apply animation
-    if [[ "$(§mode.get_animated)" == "1" ]]; then
-	§window.animate 1
-    else
-	§window.animate 0
-    fi
-
     # init logfile
     bashrun_logfile="$(§mode.get_logfile)"
 
@@ -103,7 +95,6 @@ function §mode.write_info {
           geometry=$(§mode.get_geometry 0)
           font=$(§mode.get_font)        
           feedback=$(§mode.get_feedback)
-          animated=$(§mode.get_animated)
           onmap=$onmap
           onunmap=$onunmap" > $file
 }
@@ -124,7 +115,6 @@ function §mode.code {
     local unmap="$(§mode.get_unmap)"
     local geometry="$(§mode.get_geometry)"
     local font="$(§mode.get_font)"
-    local animated="$(§mode.get_animated)"
     local onmap="$(§mode.get_onmap)"
     local onunmap="$(§mode.get_onunmap)"
     local feedback="$(§mode.get_feedback)"
@@ -139,7 +129,6 @@ function §mode.code {
     [[ -n "$font" ]] && echo "  --font '$font'"
     [[ "$completion" != 'complete' ]] && echo "  --completion '$completion'"
     [[ "$unmap" != '0' ]] && echo "  --unmap '$unmap'"
-    [[ "$animated" != '0' ]] && echo "  --animated '$animated'"
     [[ -n "$onmap" ]] && echo "  --onmap '$onmap'"
     [[ -n "$onunmap" ]] && echo "  --onunmap '$onunmap'"
     [[ "$feedback" != '0' ]] && echo "  --feedback '$feedback'"

@@ -9,15 +9,13 @@
 #
 # Please see bashrun(1) for all the details on configuration.
 
-+plugins terminal dropdown
-# The "+plugins" directive can be used to load plugins. The plugins
-# "terminal" and "dropdown" are distributed with bashrun and allow it
-# to be used in a regular terminal or as an animated dropdown
-# terminal, e.g. use 'bashrun --mode terminal'.
++plugins terminal
+# The "+plugins" directive can be used to load plugins. The plugin
+# "terminal" is distributed with bashrun and allow it to be used in a
+# regular terminal, e.g. use 'bashrun --mode terminal'.
 # 
-# See the files terminal.rc and dropdown.rc in
-# /etc/xdg/bashrun/plugins/.  Copy them to ~/.config/bashrun/plugins/
-# if you want to adjust them.
+# See /etc/xdg/bashrun/plugins/terminal.rc. Copy this file to
+# ~/.config/bashrun/plugins/ if you want to adjust it.
 
 +configure-modes () {
 
