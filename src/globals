@@ -35,5 +35,5 @@ bashrun_release_version=rc1
 
 # create version string
 bashrun_version="${bashrun_major_version}.${bashrun_minor_version}.${bashrun_bugfix_version}"
-[[ -n $bashrun_release_version ]] && bashrun_version="$bashrun_version-${bashrun_release_version}"
+[[ -n $bashrun_release_version ]] && bashrun_version="$bashrun_version${bashrun_release_version}"
 

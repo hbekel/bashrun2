@@ -189,20 +189,17 @@ function remote {
 function remote_control_code {
     cat <<EOF
 if [[ BASHRUN -eq 0 ]]; then
-     remote="\${XDG_CACHE_HOME:-\$HOME/.cache}/bashrun/remote.bash";
-     [[ -f "\$remote" ]] && . "\$remote";
-     unset remote;
+     remote="\${XDG_CACHE_HOME:-\$HOME/.cache}/bashrun/remote.bash"
+     [[ -f "\$remote" ]] && . "\$remote"
+     unset remote
 fi
 EOF
 }
 
 function wait_until { 
-    # wait until code returns success,
-    # bail out after 15 secs (150*0.1s)
-    # e.g. wait_until "[[ -f some_file ]]"
 
-    local wait_condition=${1:-:}
-    local break_condition=${2:-false}
+    local wait_condition="${1:-:}"
+    local break_condition="${2:-false}"
     local attempts=150
 
     eval "until $wait_condition; do

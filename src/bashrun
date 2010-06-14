@@ -1,7 +1,7 @@
 #!/bin/bash
 ######################################################################
 #
-# Bashrun 1.0.0-rc1 -- X11 application launcher based on bash
+# Bashrun 1.0.0rc1 -- X11 application launcher based on bash
 # Copyright (C) 2010 Henning Bekel <h.bekel@googlemail.com>
 #
 # This program is free software; you can redistribute it and/or modify
