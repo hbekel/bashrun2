@@ -108,7 +108,8 @@ function launch {
     fi
 
     # create terminal command
-    launch="BASHRUN_FRONTEND=1 \
+    launch="BASHRUN=1 \
+            BASHRUN_FRONTEND=1 \
             BASHRUN_MODE=$mode \
 	    BASHRUN_FEEDBACK=$feedback \
             BASHRUN_DEBUG=$BASHRUN_DEBUG \
@@ -163,8 +164,9 @@ function launch {
     fi
 
     wid="$(brwctl bashrun-$mode)"
-
     source_window
+
+    §window.map
 }
 
 function remote {

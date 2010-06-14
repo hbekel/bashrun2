@@ -66,7 +66,7 @@ function §remote.interface.add {
 }
 
 function §remote.interface.write {
-    local file="$bashrun_cache_home/bashrun-remote-interface.sh"
+    local file="$bashrun_cache_home/bashrun-remote.sh"
     echo $(cat <<EOF
     §bashrun-remote () { 
       bashrun do "\${1:-run}" "\$READLINE_LINE";

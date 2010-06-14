@@ -22,10 +22,10 @@
 ######################################################################
 
 # if no arguments are given, attempt to map an existing launcher as
-# fast as possible and exit immediately on success
+# fast as possible first...
 if [[ $# -eq 0 ]]; then    
     widfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/launcher-wid"
-    [[ -f "$widfile" ]] && brwctl "$(<$widfile)" show && exit 0
+    [[ -f "$widfile" ]] && brwctl "$(<$widfile)" show
 fi
 
 # setup global variables
@@ -116,11 +116,14 @@ fi
 
 launched=0
 if [[ ! "$(brwctl $wid class? 2>/dev/null)" =~ bashrun-$mode ]]; then
+
+    # don't launch a new instance for these commands:
     if [[ "$command" =~ ^(exit|quit|wid|pid)$ ]]; then
 	exit 1
     else
 	launch
 	launched=1
+	# don't apply these commands on a fresh instance:
 	if [[ "$command" =~ ^(show|toggle|smart|reload|restart|debug)$ ]]; then
 	    exit 0
 	fi

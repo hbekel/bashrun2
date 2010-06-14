@@ -51,7 +51,9 @@ function §engine.init {
 
     # enable extdebug and prepare escape from trap
     # (bashdb bugs out if extdebug is set directly from a startup file)
-    PROMPT_COMMAND="trap DEBUG; shopt -s extdebug;$PROMPT_COMMAND"
+    if [[ ! "$PROMPT_COMMAND" =~ ^trap\ DEBUG ]]; then
+	PROMPT_COMMAND="trap DEBUG; shopt -s extdebug;$PROMPT_COMMAND"
+    fi
 
     # init exec mode
     bashrun_execmode='&'
