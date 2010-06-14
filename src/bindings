@@ -2,8 +2,8 @@
 
 ################################################################################
 
-§class "§internal" "action keymap char readline"
 §class "§binding" "keyseq keymap action is_bound:b readline"  
+§class "§internal" "action keymap char readline"
 §class "§keyname" "keyseq name"                             
 
 bind '"\C-x00": accept-line'
@@ -25,6 +25,19 @@ function §bindings.init {
     [[ -f "$file" ]] && rm "$file"
 
     §bindings._init
+}
+
+function §binding.init {
+    §binding.bound? || return 0
+    local keyseq="$(§binding.get_keyseq)"
+    local keymap="$(§binding.get_keymap)"
+    local action="$(§binding.get_action)"
+
+    §internals.seek "$action" "$keymap"
+    local char="$(§internal.get_char)"
+
+    §remote.interface.bind "internal" "$action" "$keymap" "$char" "$keyseq"
+    §remote.interface.bind "requested" "$action" "$keymap" "$char" "$keyseq"	
 }
 
 function §binding.bound? {

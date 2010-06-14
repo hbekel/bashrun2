@@ -18,6 +18,7 @@ src/frontend \
 src/geometry \
 src/globals \
 src/handlers \
+src/interface \
 src/message \
 src/modes \
 src/object \

@@ -199,6 +199,14 @@ function §handlers.install_completion {
                       }"
 		
 		complete -F "_bashrun_$name" "$prefix"
+
+		# add this to the remote interface, too
+		§remote.interface.add "# completion for +handler $name"
+		§remote.interface.add "$(§function.code +handler-$name-complete)"
+		§remote.interface.add "$func"
+		§remote.interface.add \
+		    "function $prefix { bashrun do run \"$prefix \$@\"; }"
+		§remote.interface.add "complete -F '_bashrun_$name' '$prefix'"
 	    fi	
 	fi
 	§handlers.next

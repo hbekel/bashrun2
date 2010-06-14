@@ -184,7 +184,7 @@ function objects.all {
 function objects.init {
     
     local i=0
-    for ((i=0; i<=${#_OBJECTS[@]}; i+=${#_OBJECTS_KEYS[@]})); do
+    for ((i=0; i<${#_OBJECTS[@]}; i+=${#_OBJECTS_KEYS[@]})); do
 	_OBJECTS_POSITION=$i
 	object.init
     done

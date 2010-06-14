@@ -75,6 +75,10 @@ if [[ $# -gt 0 ]]; then
 	    shift
 	    [[ $# -eq 0 ]] && command="debug"
 	    ;;
+	--remote-control)
+	    remote_control_code
+	    exit 0
+	    ;;	
     esac
 fi
 

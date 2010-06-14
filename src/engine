@@ -46,9 +46,6 @@ function §engine.init {
     # seek back to the current mode
     §modes.seek "$BASHRUN_MODE";
 
-    # create the experimental remote interface
-    §remote.interface.write
-
     # enable extdebug and prepare escape from trap
     # (bashdb bugs out if extdebug is set directly from a startup file)
     if [[ ! "$PROMPT_COMMAND" =~ ^trap\ DEBUG ]]; then
@@ -71,6 +68,9 @@ function §engine.init {
 	    return 127
 	}
     fi
+
+    # create the experimental remote interface
+    §remote.interface.write
 
     # shutdown on EXIT and TERM
     trap §engine.shutdown TERM

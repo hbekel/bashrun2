@@ -74,7 +74,6 @@ function §window.size {
     fi
 
     if [[ $# -eq 1 ]]; then
-	§debug "$1"
 	if [[ "$1" =~ ([0-9]+)x([0-9]+) ]]; then
 	    local w=${BASH_REMATCH[1]}
 	    local h=${BASH_REMATCH[2]}

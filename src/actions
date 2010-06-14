@@ -105,7 +105,7 @@ function §action.bind {
 	§internal.set_char "$char"
 
 	# add internal keybinding to remote interface
-	§remote.interface.add "internal" "$action" "$keymap" "$char" "$keyseq"	
+	# §remote.interface.bind "internal" "$action" "$keymap" "$char" "$keyseq"
 
 	# next free char
 	((bashrun_bindings_next_char+=1))
@@ -130,7 +130,7 @@ function §action.bind {
     eval "bind $bind"
 
     # add requested keybinding to remote interface
-    §remote.interface.add "requested" "$action" "$keymap" "$char" "$keyseq"	
+    # §remote.interface.bind "requested" "$action" "$keymap" "$char" "$keyseq"	
 
     # create or set binding
     if §bindings.seek "$keyseq" "$keymap"; then

@@ -18,6 +18,10 @@ function §bookmark.new {
     }"
 }
 
+function §bookmark.init {
+    local name="$(§bookmark.get_name)"
+    §remote.interface.add "function $name { bashrun do browse '$name'; }"
+}
 function §bookmark.code {
     local name="$(§bookmark.get_name)"
     name=${name//\'/\\\'}

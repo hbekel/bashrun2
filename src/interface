@@ -1,0 +1,23 @@
+# bashrun remote interface ################################ -*- shell-script -*-
+
+if [[ ! "$PROMPT_COMMAND" =~ ^trap\ DEBUG ]]; then
+    PROMPT_COMMAND="trap DEBUG; shopt -s extdebug;$PROMPT_COMMAND"
+fi
+
+§bashrun-remote-trap () {
+    trap "§bashrun-remote-action $1" DEBUG
+}
+
+§bashrun-remote-action () { 
+    [[ "$BASH_COMMAND" =~ ^trap ]] && return 0
+    bashrun do "${1:-run}" "${BASH_COMMAND:-$2}" && return 1
+}
+
+command_not_found_handle () {
+    bashrun do run "$@"
+}
+
+bind '"\201": accept-line'; 
+
+################################################################################
+

@@ -7,7 +7,7 @@ function _bashrun {
     local prev="${COMP_WORDS[COMP_CWORD-1]}"
     local sec="${COMP_WORDS[1]}"
 
-    local options="--mode --help --version --debug -m -h -v -d"
+    local options="--mode --help --version --debug --remote-control -m -h -v -d"
     local commands="show hide toggle smart exit restart su do wid pid"
 
     local modes=()

@@ -3,7 +3,7 @@
 ################################################################################
 
 bashrun_remote=$bashrun_data_home/$BASHRUN_MODE-remote
-bashrun_remote_bindings=""
+bashrun_remote_interface=""
 
 ################################################################################
 
@@ -39,7 +39,7 @@ function §remote.run {
     fi
 }
 
-function §remote.interface.add {
+function §remote.interface.bind {
     local type="$1"
     local action="$2"
     local keymap="$3"
@@ -49,7 +49,7 @@ function §remote.interface.add {
     [[ "$action" =~ ^(cycle-size|resize-|bashrun-|debug|reload|quit) ]] && return
 
     if [[ "$type" == "internal" ]]; then
-	bashrun_remote_bindings+="bind -m $keymap -x \$'\"\C-z\\x$char\": §bashrun-remote $action'"
+	bashrun_remote_interface+="bind -m $keymap -x \$'\"\C-z\\x$char\": §bashrun-remote-trap $action'"
 
     elif [[ "$type" == "requested" ]]; then
 	if [[ "$action" == "run" ]]; then
@@ -60,42 +60,18 @@ function §remote.interface.add {
 	    [[ "$keyseq" == '\e\C-m' ]] && keyseq='\et'
 	fi       
 
-	bashrun_remote_bindings+="bind -m $keymap '\"$keyseq\"':$'\"\201\202\C-z\x$char\203\"'"
+	bashrun_remote_interface+="bind -m $keymap '\"$keyseq\"':$'\"\C-z\x$char\201\"'"
     fi
-    bashrun_remote_bindings+=$'\n'
+    bashrun_remote_interface+=$'\n'
+}
+
+function §remote.interface.add {
+    bashrun_remote_interface+="$@"
+    bashrun_remote_interface+=$'\n'
 }
 
 function §remote.interface.write {
-    local file="$bashrun_cache_home/bashrun-remote.sh"
-    echo $(cat <<EOF
-    §bashrun-remote () { 
-      bashrun do "\${1:-run}" "\$READLINE_LINE";
-      READLINE_LINE="";
-    };
-
-    §bashrun-save-original-line () {
-       bashrun_remote_command="\$READLINE_LINE";
-       history -s "\$READLINE_LINE";
-    };
-
-    §bashrun-restore-original-line () {
-      if [[ -n "\$bashrun_remote_command" ]]; then
-        tput sc;
-        tput cuu1;
-        echo -n "\$bashrun_remote_command";
-        tput rc;
-      fi;
-      kill -USR2 \$\$;
-    };      
-
-    trap 'bashrun_remote_command=""' SIGUSR2; 
-
-    bind -x '"\201": §bashrun-save-original-line';
-    bind '"\202": shell-expand-line';
-    bind '"\203": accept-line';
-    PS1="\$PS1\[\\\$(§bashrun-restore-original-line)\]"
-EOF
-) > "$file"
-
-    echo "$bashrun_remote_bindings" >> "$file"
+    local interface="$bashrun_cache_home/remote.bash"
+    cp "$bashrun_site/interface" "$interface"
+    echo "$bashrun_remote_interface" >> "$interface"
 }

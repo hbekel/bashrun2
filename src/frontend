@@ -186,6 +186,16 @@ function remote {
     return 0
 }
 
+function remote_control_code {
+    cat <<EOF
+if [[ BASHRUN -eq 0 ]]; then
+     remote="\${XDG_CACHE_HOME:-\$HOME/.cache}/bashrun/remote.bash";
+     [[ -f "\$remote" ]] && . "\$remote";
+     unset remote;
+fi
+EOF
+}
+
 function wait_until { 
     # wait until code returns success,
     # bail out after 15 secs (150*0.1s)
@@ -219,11 +229,12 @@ function usage {
 
   Options: 
 
-    -v, --version : show version information and exit
-    -h, --help    : show this message and exit
-    -m, --mode    : select mode to launch/control
-    -d, --debug   : launch in debug mode
-
+    -v, --version    : show version information and exit
+    -h, --help       : show this message and exit
+    -m, --mode       : select mode to launch/control
+    -d, --debug      : launch in debug mode
+    --remote-control : show code to enable remote control interface
+                       
   Commands: 
        
     show      : show window, move to current desktop and focus
