@@ -48,8 +48,14 @@ function §remote.interface.bind {
     local keymap="$3"
     local char="$4"
     local keyseq="$5"
+    local saved="$(§action.get_name)"
+    local remote="0"
 
-    [[ "$action" =~ ^(cycle-size|resize-|bashrun-|debug|reload|quit) ]] && return
+    §actions.seek "$action"
+    remote="$(§action.get_remote)"
+    §actions.seek "$saved"
+
+    [[ remote -eq 0 ]] && return
 
     if [[ "$type" == "internal" ]]; then
 	echo "bind -m $keymap -x \$'\"\C-z\\x$char\": §bashrun-remote-trap $action'" \

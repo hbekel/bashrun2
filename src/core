@@ -70,12 +70,13 @@
 	[[ "$input" =~ ^([Yy]es|[Tt]rue|[Oo]n|1)$ ]] && value=1;
 	[[ "$input" =~ ^([Nn]o|[Ff]alse|[Oo]ff|0)$ ]] && value=0;
 
-	_bashrun_actionS[${_bashrun_actionS_POSITION}+5]="$1"
+	_BASHRUN_ACTIONS[${_BASHRUN_ACTIONS_POSITION}+6]="$1"
     }
 
     +action 'reload'
       --description 'Reload configuration'
       --input 0
+      --remote 0
       --core 1
 
       function +action-reload {
@@ -88,6 +89,7 @@
     +action 'pass'
       --description 'Passthrough command'
       --input 0
+      --remote 0
       --core 1
 
       function +action-pass { 
@@ -98,6 +100,7 @@
     +action 'abort'
     --description 'Abort (unmap window)'
     --input 0
+    --remote 0
     --core 1
     
     +action-abort () {
@@ -109,6 +112,7 @@
     +action 'quit'
     --description 'Exit bashrun'
     --input 0
+    --remote 0
     --core 1
     
     +action-quit () {
@@ -119,6 +123,7 @@
     +action 'debug'
     --description "Toggle debugging"
     --input 0
+    --remote 0
     --core 1
     
     +action-debug () {
@@ -324,9 +329,9 @@
     }
     
     +action 'browse'
-    --description 'Open page in $BROWSER'
-    --input 1
-    --core 1
+      --description 'Open page in $BROWSER'
+      --input 1
+      --core 1
     
     function +action-browse {
 	quote-command
@@ -335,9 +340,9 @@
     }
     
     +action 'google-search'
-    --description 'Google words using $BROWSER'
-    --input 1
-    --core 1
+      --description 'Google words using $BROWSER'
+      --input 1
+      --core 1
     
     function +action-google-search {
 
@@ -347,9 +352,9 @@
     }
     
     +action 'dict-lookup'
-    --description 'Lookup words in $DICT'
-    --input 1
-    --core 1
+      --description 'Lookup words in $DICT'
+      --input 1
+      --core 1
     
     function +action-dict-lookup {
 	command "$DICT $(command)"
@@ -358,10 +363,11 @@
     }
     
     +action 'bashrun-manual'
-    --description 'Show bashrun manual'
-    --input 0
-    --depends 'man'
-    --core 1
+      --description 'Show bashrun manual'
+      --input 0
+      --remote 0
+      --depends 'man'
+      --core 1
     
     function +action-bashrun-manual {
 	command "bashrun"
@@ -371,6 +377,7 @@
     +action 'bashrun-bindings'
     --description 'Show current keybindings'
     --input 0
+    --remote 0
     --core 1
     
     function +action-bashrun-bindings {
@@ -392,6 +399,7 @@
     +action 'cycle-size'
     --description 'Cycle through geometries of the current mode'
     --input 0
+    --remote 0
     --core 1
     
     function +action-cycle-size {
@@ -417,6 +425,7 @@
     +action resize-up
       --description "Resize terminal up"
       --input 0
+      --remote 0
       --core 1
 
     +action-resize-up() {
@@ -427,6 +436,7 @@
     +action resize-down
       --description "Resize terminal down"
       --input 0
+      --remote 0
       --core 1
 
     +action-resize-down() {
@@ -437,6 +447,7 @@
     +action resize-left
       --description "Resize terminal left"
       --input 0
+      --remote 0
       --core 1
 
     +action-resize-left() {
@@ -447,6 +458,7 @@
     +action resize-right
       --description "Resize terminal right"
       --input 0
+      --remote 0
       --core 1
 
     +action-resize-right() {
