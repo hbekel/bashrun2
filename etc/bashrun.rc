@@ -28,7 +28,7 @@
       # This setting replaces the former XTERM, XTERM_OPTIONS, FGCOLOR
       # and BGCOLOR settings.
 
-      --geometry '40x1 40x8'
+      --geometry '40x1' '40x8'
       # Set the geometry or geometries to use for the terminal
       # window. If more than one geometry is used, the cycle-size
       # action (Ctrl-l) will allow you to cycle through these
@@ -135,7 +135,7 @@
       --command 'urxvt -g %g -fn %f -e bash -c %@'
       --geometry '160x48'
       --font 'xft:fixed'
-      --match 'htop /^ls/'
+      --match 'htop' '/^ls/'
 
       # An example of using urxvt with a small font. 
 }
@@ -161,7 +161,7 @@
     # Some examples:
 
     +rule term-page
-      --match "dict" 
+      --match 'dict'
       # the the term-page action is used to show the output of the
       # "dict" program, paged in the default terminal. If you want to
       # use a different dict client, set the DICT environment variable
@@ -174,7 +174,7 @@
       # commandline beginning with "ls", paged in a terminal.
 
     +rule su-term-notify
-      --match '/^/etc/rc.d/'
+      --match '/^/etc/(rc|init)\.d/'
       # the su-term-notify action is used here to run any commandline
       # beginning with '/etc/rc.d' as root and show it's output in the
       # 'notify' terminal, closing the terminal after two
