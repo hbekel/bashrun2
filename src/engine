@@ -63,7 +63,11 @@ function §engine.init {
 		    return 0
 		fi
 	    fi
-	    echo "bash: $1: command not found"
+	    	   
+	    local self="$(§function.code command_not_found_handle)"
+	    unset -f command_not_found_handle
+	    $*
+	    eval "$self"
 	    return 127
 	}
     fi

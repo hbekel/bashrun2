@@ -14,7 +14,14 @@ fi
 }
 
 command_not_found_handle () {
-    bashrun do run "$@"
+    
+    bashrun do run "$@"    
+
+    local self="$(echo -n '#'; type command_not_found_handle)"
+    unset -f command_not_found_handle
+    $*
+    eval "$self"
+    return 127
 }
 
 bind '"\201": accept-line'; 

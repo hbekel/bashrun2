@@ -58,15 +58,6 @@ function §handlers.apply {
 
 	    §debug -v "$bashrun_command" "matches" -v "$match" "->" -y "$name"
 
-	    if [[ bashrun_from_cmdnfh -eq 1 ]]; then
-		if §handler.last? && §handler.fallback?; then
-		    §debug "skipping fallback (command_not_found_handle active)"
-		    §command.get_word
-		    echo "bash: $bashrun_command_word: command not found"
-		    return 0
-		fi		    
-	    fi
-
 	    local tests="$(§handler.get_test)"
 	    if [[ -n "$tests" ]]; then 
 		if [[ "$tests" =~ [abcdefghkprstuwxOGLSN!] ]]; then
@@ -82,7 +73,6 @@ function §handlers.apply {
 			    continue
 			else
 			    test="$test -$CHAR"
-			    test="${test/ /}"
 			    if eval "test $test $bashrun_command_word"; then
 				§debug -v "test $test $bashrun_command_word" "->" -g "succeeds"
 				success=1
@@ -139,26 +129,35 @@ function §handlers.apply {
 	    fi
 
 	    [[ -n "$string" ]] && §debug "result:" -v "$string"
+	    handled=1
 
 	    if [[ -n "$action" ]]; then
 		local saved="$(§action.get_name)"
 		if §actions.seek "$action"; then
 		    if §action.available?; then
 			§action.run
+			return 0
 		    fi
 		fi
 	    fi
-	    return
-	    handled=1
+	    return 0
 	fi
     done
 
-    # run bookmark funtion unless already handled
+    # run bookmark function unless already handled, or pass through
+    # command to let bash complain as usual.
     if [[ handled -eq 0 ]]; then
 	if §command.bookmark?; then
 	    $bashrun_command
+	    return 0
+	else
+	    local cmdnfh="$(§function.code command_not_found_handle)"
+	    unset -f command_not_found_handle
+	    $bashrun_command
+	    eval "$cmdnfh"
 	fi
     fi
+    return 1
 }
 
 function §handlers.install_completion {
