@@ -56,7 +56,7 @@ function §handlers.apply {
 
 	if [[ "$bashrun_command" =~ $match ]]; then	    
 
-	    §debug -v "$bashrun_command" "matches" -v "$match" "->" -y "$name"
+	    §debug -c "$name" ":"  -v "$bashrun_command" "matches" -v "$match" "->"
 
 	    local tests="$(§handler.get_test)"
 	    if [[ -n "$tests" ]]; then 
@@ -74,10 +74,12 @@ function §handlers.apply {
 			else
 			    test="$test -$CHAR"
 			    if eval "test $test $bashrun_command_word"; then
-				§debug -v "test $test $bashrun_command_word" "->" -g "succeeds"
+				§debug -c "$name" ":"  \
+				    -v "test $test $bashrun_command_word" "->" -g "succeeds"
 				success=1
 			    else
-				§debug fail -v "test $test $bashrun_command_word" "->" -r "fails" 
+				§debug fail -c "$name" ":" \
+				    -v "test $test $bashrun_command_word" "->" -r "fails" 
 				success=0
 				break
 			    fi			
@@ -87,12 +89,13 @@ function §handlers.apply {
 		else
 		    tests="${tests//!/}"
 		    tests="${tests//[abcdefghkprstuwxOGLSN]/}"
-		    §debug fail -v "$tests" "-> no such file test(s), skipping handler" -y "$name"
+		    §debug -c "$name" ":"  \
+			-v "$tests" "-> no such file test(s), skipping handler"
 		    success=0
 		fi
 		
 		if [[ ! success -eq 1 ]]; then
-		    §debug "not handled"
+		    §debug -c "$name" ":"  "not handled"
 		    §handlers.next
 		    continue
 		fi
@@ -109,14 +112,14 @@ function §handlers.apply {
 		for (( i=1; i<${#BASH_REMATCH[*]}; i++ )); do
 		    
 		    local m=${BASH_REMATCH[$i]}
-		    §debug "subpattern match:" -v "$m" "->" -v "%$i"
+		    §debug -c "$name" ":"  "subpattern match:" -v "$m" "->" -v "%$i"
 		    string="${string//%$i/$m}"
 		    export append=0
 		done
 	        # fail if unmatched $n's remain in handler string
 		if [[ "$string" =~ [^\\](%[0-9]) ]]; then
 		    local missing=${BASH_REMATCH[1]}
-		    §debug -c "$string"
+		    §debug -c "$name" ":"  -v "$string"
 		    §debug fail "^ string incomplete: no content for" -v "$missing"
 		    return 1
 		fi
@@ -128,13 +131,14 @@ function §handlers.apply {
 		bashrun_command="$string"
 	    fi
 
-	    [[ -n "$string" ]] && §debug "result:" -v "$string"
+	    [[ -n "$string" ]] && §debug -c "$name" ":"  "result:" -v "$string"
 	    handled=1
 
 	    if [[ -n "$action" ]]; then
 		local saved="$(§action.get_name)"
 		if §actions.seek "$action"; then
 		    if §action.available?; then
+			§debug -c "$name" ":"  "->" -y "$action"
 			§action.run
 			return 0
 		    fi

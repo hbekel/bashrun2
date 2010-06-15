@@ -340,8 +340,10 @@ function §action.run {
 	[[ retval -eq 0 ]] && res="-c launch"
 	[[ retval -eq 1 ]] && res="-y abort (all done)"
 	[[ retval -eq 2 ]] && res="-y abort (all done, don't unmap)"
-	§debug -y "+action-$action" "returned" -v "$retval" "->" $res
+	§debug -y "+action-$action" "returns" -v "$retval" "->" $res
     fi
+
+    §separator "+action-$action complete"
 
     return 0
 }

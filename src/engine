@@ -48,7 +48,7 @@ function §engine.init {
     # enable extdebug and prepare escape from trap
     # (bashdb bugs out if extdebug is set directly from a startup file)
     if [[ ! "$PROMPT_COMMAND" =~ ^trap\ DEBUG ]]; then
-	PROMPT_COMMAND="trap DEBUG; shopt -s extdebug;$PROMPT_COMMAND"
+	PROMPT_COMMAND="trap DEBUG; shopt -s extdebug; $PROMPT_COMMAND"
     fi
 
     # init exec mode
@@ -127,7 +127,7 @@ function §engine.action {
 	esac
     else
 	§debug fail "no such action:" -v "$action"
-    fi
+    fi   
 }
 
 function §engine.trap {
@@ -254,12 +254,13 @@ function §engine.reset {
 	    §window.unmap
 	fi
     fi
+
     §engine.idle
     
     §debug -c "reset"
 
-    §separator
-    
+    §separator       
+
     [[ bashrun_engine_reload -eq 1 ]] && §engine.reload
 }
 

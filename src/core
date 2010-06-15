@@ -149,6 +149,7 @@
     +action-run () 
     { 
 	! executable? && handlers
+	[[ $? -ne 0 ]] && return 1
 	§rules.apply
 	return 0
     }
@@ -161,6 +162,8 @@
     +action-term-run () 
     { 
 	! executable? && handlers
+	[[ $? -ne 0 ]] && return 1
+
 	terminal
 	return 0
     }
@@ -172,7 +175,9 @@
     
     +action-term-page () 
     { 
-	! executable? && handlers
+ 	! executable? && handlers
+	[[ $? -ne 0 ]] && return 1
+
 	pager
 	terminal
 	return 0
@@ -185,7 +190,9 @@
     
     +action-term-hold () 
     { 
-	! executable? && handlers
+ 	! executable? && handlers
+	[[ $? -ne 0 ]] && return 1
+
 	hold
 	terminal
 	return 0
@@ -198,7 +205,9 @@
 
     +action-term-notify () 
     { 
-	! executable? && handlers
+ 	! executable? && handlers
+	[[ $? -ne 0 ]] && return 1
+
 	hold 2
 	terminal notify
 	return 0
