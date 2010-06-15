@@ -48,11 +48,13 @@ function §function.clone {
 
 function §syntax? {
     local file="$1"
-    local errors="$bashrun_cache_home/errors"
+    local errorfile="$bashrun_cache_home/syntax-errors"
+    local errors=""
 
-    bash -n "$1" &> $errors
-    errors="$(<$errors)"
-    
+    bash -n "$1" &> "$errorfile"
+    errors="$(<$errorfile)"
+    [[ -z "$errors" ]] && rm "$errorfile"
+
     [[ -z "$errors" ]]
 }
 

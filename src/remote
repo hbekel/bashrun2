@@ -74,7 +74,7 @@ function §remote.interface.add {
     bashrun_remote_interface+=$'\n'
 }
 
-function §remote.interface.write {
+function §remote.interface.create {
     local interface="$bashrun_cache_home/remote.bash"
     local bindings="$bashrun_cache_home/remote-bindings.bash"
     local bookmarks="$bashrun_cache_home/remote-bookmarks.bash"

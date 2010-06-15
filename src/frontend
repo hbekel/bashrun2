@@ -23,8 +23,9 @@ function create_modeinfo {
     source $bashrun_site/core 
 
     # check rcfile syntax
+    errorfile="$bashrun_cache_home/syntax-errors"
     if ! §syntax? "$bashrun_rcfile"; then
-	errors="$(<$bashrun_cache_home/errors)"
+	errors="$(<$errorfile)"
 	errors="${errors//$'\n'/\\n}"
 	§message "Syntax Errors" \
 	    "The configuration file contains syntax errors:
@@ -32,11 +33,13 @@ function create_modeinfo {
              $errors
 
              Aborting. Please fix and retry."
+	
 	exit 1
     else
 	§debug "using" -c "$(§tilde_path $bashrun_rcfile)"
 	source $bashrun_rcfile
     fi
+    [[ -f "$errorfile" ]] && rm "$errorfile"
     
     # load modes from configuration file
     §configs.restore_core "modes" &>/dev/null

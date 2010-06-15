@@ -38,12 +38,13 @@ function +plugins {
     local file=""
     local name=""
     local errors=""
+    errorfile="$bashrun_cache_home/syntax-errors"
     for name in $*; do
 	file="$(§plugin.find "$name")"
 	if [[ -n "$file" ]]; then
 	    if ! §plugin.checked? "$name"; then
 		if ! §plugin.check "$file" "$name"; then
-		    errors="$(<$bashrun_cache_home/errors)"
+		    errors="$(<$errorfile)"
 		    errors="${errors//$'\n'/\\n}"
 		    §message "Warning" \
 		    "Plugin \"$name\" contains syntax errors:
@@ -55,6 +56,7 @@ function +plugins {
 		    §debug -v "$name" "->" -c "$(§tilde_path $file)"
 		    source "$file"
 		fi
+		[[ -f "$errorfile" ]] && rm "$errorfile"
 	    else
 		if §plugin.check "$file" "$name"; then
 		    §debug -v "$name" "->" -c "$(§tilde_path $file)"

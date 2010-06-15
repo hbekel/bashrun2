@@ -2,17 +2,16 @@
 
 ################################################################################
 
-bashrun_action=''
-bashrun_execmode='&'
 bashrun_engine_busy=0
 bashrun_engine_reload=0
+bashrun_engine_ready="$bashrun_cache_home/${BASHRUN_MODE}-ready"
+
+bashrun_action=''
+bashrun_execmode='&'
 bashrun_logfile=${bashrun_logfile:-/dev/null}
 bashrun_cmd_not_found_handle=0
 bashrun_action_return_value=-1
 bashrun_status="Initializing..."
-
-# FIXME: move handling of flag files to functions
-bashrun_ready="$bashrun_cache_home/${BASHRUN_MODE}-ready"
 
 ################################################################################
 
@@ -43,7 +42,7 @@ function §engine.init {
     §progress.update 100 "$bashrun_status [engine]"
     §objects.init
 
-    # seek back to the current mode
+    # seek to the current mode
     §modes.seek "$BASHRUN_MODE";
 
     # enable extdebug and prepare escape from trap
@@ -70,26 +69,22 @@ function §engine.init {
     fi
 
     # create the experimental remote interface
-    §remote.interface.write
+    §remote.interface.create
 
-    # shutdown on EXIT and TERM
+    # set traps: shutdown on EXIT and TERM, remote invocation on USR1
     trap §engine.shutdown TERM
     trap §engine.shutdown EXIT
     trap §remote.run SIGUSR1
 
-    §debug emph -y "done"
-
-    §separator 
-
     # reset the reload flag
     bashrun_engine_reload=0
 
+    # set ready and idle flags
+    §engine.ready
     §engine.idle
 
-    if [[ BASHRUN_FRONTEND -eq 1 ]]; then
-	touch $bashrun_ready
-    fi
-
+    §debug emph -y "done"
+    §separator
     §progress.reset
 }
 
@@ -269,7 +264,7 @@ function §engine.reload {
     §separator "reloading engine..."
     §window.map
 
-    rm $bashrun_ready &>/dev/null
+    rm $bashrun_engine_ready &>/dev/null
 
     §objects.clear    
     §engine.init
@@ -279,22 +274,6 @@ function §engine.reload {
     [[ BASHRUN_DEBUG -eq 0 ]] && tput reset
     
     §separator "engine reloaded"
-}
-
-function §engine.busy {
-    bashrun_engine_busy=1
-}
-
-function §engine.busy? {
-    [[ "$bashrun_engine_busy" == "1" ]]
-}
-
-function §engine.idle {
-    bashrun_engine_busy=0
-}
-
-function §engine.idle? {
-    [[ "$bashrun_engine_busy" == "0" ]]
 }
 
 function §engine.shutdown { 
@@ -314,8 +293,34 @@ function §engine.shutdown {
 
     # remove plugin check and errors file
     rm "$bashrun_plugins_checked" &>/dev/null
-    rm "$bashrun_cache_home/errors" &>/dev/null    
 
     §debug "exit"
     exit 0
 }    
+
+function §engine.busy {
+    bashrun_engine_busy=1
+}
+
+function §engine.busy? {
+    [[ "$bashrun_engine_busy" == "1" ]]
+}
+
+function §engine.idle {
+    bashrun_engine_busy=0
+}
+
+function §engine.idle? {
+    [[ "$bashrun_engine_busy" == "0" ]]
+}
+
+function §engine.ready {
+    
+    if [[ BASHRUN_FRONTEND -eq 1 ]]; then
+	touch "$bashrun_engine_ready"
+    fi
+}    
+
+function §engine.ready? {
+    [[ -f "$bashrun_engine_ready" ]]
+}
