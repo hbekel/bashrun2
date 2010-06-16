@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.65])
-AC_INIT([bashrun], [1.0.0rc1], [h.bekel@googlemail.com])
+AC_INIT([bashrun], [1.0.0rc1], [h.bekel@googlemail.com], [], [http://bashrun.sourceforge.net])
 AM_INIT_AUTOMAKE(bashrun, 1.0.0rc1)
 
 # Checks for programs.

@@ -17,51 +17,51 @@ session running in a small \fBxterm\fP(1) terminal window, thus
 providing a simple run dialog (\fIlauncher\fP mode). It can also be
 used from a regular terminal session, allowing the user to seamlessly
 launch both graphical and terminal applications from the command line
-(\fIterminal\fP mode).
+(using \fIterminal\fP mode or the \fBREMOTE CONTROL INTERFACE\fP).
 .SH OVERVIEW
 Bashrun is composed out of a set of user configurable \fBobjects\fP
 that control different aspects of application launching and terminal
 management:
 
-\fBModes\fP, such as the default \fIlauncher\fP and
-\fIterminal\fP modes described above, control the appearance and
-behavior of the terminal hosting the bashrun session.
+\fBModes\fP control the appearance and behavior of the terminal
+hosting the bashrun session, such as the default modes \fIlauncher\fP
+and \fIterminal\fP described above.
 
-\fBActions\fP implement special ways of treating user input,
-such as launching a command in a terminal or looking up words in a
-dictionary client, and can be bound to key sequences.
+\fBActions\fP can be bound to key sequences and handle user input in
+different ways, such as launching a command in a terminal or looking
+up words in a dictionary client.
 
 \fBTerminals\fP allow the user to specify different terminal command
-lines to be used for launching console applications with.
+lines to be used for launching console applications, and can be
+associated with specific commands or command lines.
 
-\fBRules\fP associate \fBactions\fP and \fBterminals\fP with specific
-commands, e.g. to automatically launch certain commands in a specific
-\fBterminal\fP. Optional support for regular expressions allows for
-fine grained command matching.
+\fBRules\fP associate \fBactions\fP with specific commands or command
+lines, e.g. to automatically launch certain commands in a
+\fBterminal\fP. Regular expressions allow fine grained control over
+command matching.
 
 \fPHandlers\fP provide a flexible mechanism for rewriting
 non-executable commands, using regular expression matching,
 substitution and file test operators, thus offering a way to implement
-things like file associations or web shortcuts. They also provide a
+stuff like file associations or web shortcuts. They also provide a
 simple interface to programmable completion.
 
 \fBPlugins\fP allow flexible inclusion and distribution of user
 created configuration objects.
-
 .SH COMMAND LINE INTERFACE
 The \fBbashrun\fP executable provides a command line interface to
 bashrun sessions and can be used to create, select and control bashrun
 sessions running in different \fBmodes\fP. It can manage a single
 bashrun session for each \fBmode\fP object defined in the
-configuration file. See \fBINVOCATION\fP below for alternatives.
+configuration file.
 
 Modes are selected by the \fB-m\fP or \fB\--mode\fP option. If no
 \fBmode\fP is specified, the default \fBmode\fP \fIlauncher\fP is
 used.
 
 If no session is currently running in the selected \fBmode\fP, then a
-session is started in the selected \fBmode\fP and a \fBcommand\fP
-given is applied to the newly created session, unless the
+session is started in the selected \fBmode\fP. The \fBcommand\fP, if
+given, is then applied to the newly created session, unless the
 \fBcommand\fP is either \fIexit\fP, \fIwid\fP or \fIpid\fP. If no
 \fBcommand\fP is specified, the default \fBcommand\fP \fIshow\fP is
 used.
@@ -69,6 +69,9 @@ used.
 .IP \fB-m\fP,\ \fB--mode\fP\ \fImode\fP
 Select mode to launch or control. In the absence
 of this option, the default mode \fIlauncher\fP is used.
+.IP \fB--remote-control\fP
+Print bash code to create a remote control interface to an existing bashrun
+session on stdout. See \fBREMOTE CONTROL INTERFACE\fP.
 .IP \fB-d\fP,\ \fB--debug\fP
 Enable debugging on startup
 .IP \fB-h\fP,\ \fB--help\fP
@@ -110,6 +113,7 @@ Reload configuration files.
 Exit the bashrun session and start a new one.
 .IP \fBexit\fP
 Exit the bashrun session.
+.SH CONFIGURATION 
 .SH BUGS
 Please report any bugs you may find using the email address
 below. Comments, suggestions, feedback of any kind is appreciated.
@@ -118,23 +122,23 @@ Henning Bekel <h.bekel at googlemail dot com> (english and german)
 .SH "SEE ALSO"
 .BR bash (1)
 .BR readline (3)
-.BR Xorg (1)
 .BR xterm (1)
+.BR su (1)
 .BR stty (1)
 
-     \" Handler setup:
-     
-     \"   1. Reorder handlers 
+\" Handler setup:
     
-     \"     If --fallback is true, move handlers to the end of the chain.
-     \"     Fallback handlers will end up at the end of the chain in the
-     \"     order they are defined in this configuration file.
+\"   1. Reorder handlers 
     
-     \"   2. Setup completion
+\"     If --fallback is true, move handlers to the end of the chain.
+\"     Fallback handlers will end up at the end of the chain in the
+\"     order they are defined in this configuration file.
     
-     \"     If --complete is given, create a stub function using the
-     \"     word given as the function name, so that the word can be
-     \"     completed to from an empty commandline.
+\"   2. Setup completion
+    
+\"     If --complete is given, create a stub function using the
+\"     word given as the function name, so that the word can be
+\"     completed to from an empty commandline.
     
      \"       If a function by the name +handler-<handlername>-complete
      \"       is defined, install a completion function for the word
