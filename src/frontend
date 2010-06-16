@@ -191,10 +191,14 @@ function remote {
 
 function remote_control_code {
     cat <<EOF
-if [[ BASHRUN -eq 0 ]]; then
-     remote="\${XDG_CACHE_HOME:-\$HOME/.cache}/bashrun/remote.bash"
-     [[ -f "\$remote" ]] && . "\$remote"
-     unset remote
+if [[ BASHRUN -ne 1 ]]; then
+     remote_control="\${XDG_CACHE_HOME:-\$HOME/.cache}/bashrun/remote.bash"
+
+     if [[ -f "\$remote_control" ]]; then
+       . "\$remote_control"
+     fi
+     
+     unset remote_control
 fi
 EOF
 }
