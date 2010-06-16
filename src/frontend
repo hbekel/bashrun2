@@ -229,7 +229,7 @@ function version {
 }
 
 function usage {
-    echo "Usage: bashrun [option] [command [arg...]] [-- termopts]
+    echo "Usage: bashrun [option] [command [arg...]] [-- termopt...]
 
   Options: 
 
@@ -237,8 +237,12 @@ function usage {
     -h, --help       : show this message and exit
     -m, --mode       : select mode to launch/control
     -d, --debug      : launch in debug mode
-    --remote-control : show code to enable remote control interface
-                       
+
+    --remote-control : show code to load remote control interface and exit
+
+    -- <termopt>    : terminate argument processing and add the remaining 
+                    : arguments to the terminal command line
+
   Commands: 
        
     show      : show window, move to current desktop and focus
