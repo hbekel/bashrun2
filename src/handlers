@@ -73,13 +73,13 @@ function §handlers.apply {
 			    continue
 			else
 			    test="$test -$CHAR"
-			    if eval "test $test $bashrun_command_word"; then
+			    if eval "test $test $bashrun_command"; then
 				§debug -c "$name" ":"  \
-				    -v "test $test $bashrun_command_word" "->" -g "succeeds"
+				    -v "test $test $bashrun_command" "->" -g "succeeds"
 				success=1
 			    else
 				§debug fail -c "$name" ":" \
-				    -v "test $test $bashrun_command_word" "->" -r "fails" 
+				    -v "test $test $bashrun_command" "->" -r "fails" 
 				success=0
 				break
 			    fi			
@@ -126,12 +126,12 @@ function §handlers.apply {
 	    fi
 
 	    if [[ append -eq 1 ]]; then
-		[[ -n "$string" ]] && bashrun_command="$string $bashrun_command"
+		bashrun_command="$string $bashrun_command"
 	    else
 		bashrun_command="$string"
 	    fi
 
-	    [[ -n "$string" ]] && §debug -c "$name" ":"  "result:" -v "$string"
+	    §debug -c "$name" ":"  "result:" -v "$bashrun_command"
 	    handled=1
 
 	    if [[ -n "$action" ]]; then
