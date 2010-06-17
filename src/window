@@ -149,29 +149,4 @@ function §window.toggle_smart {
     §window.toggle 1
 }
 
-function §window.collapse {
-
-    local i=0
-    for (( i=$bashrun_window_height; i>1; i-- )); do
-	(( bashrun_window_height-=1 ))
-	brwctl $bashrun_window_id sizeh \
-	    $bashrun_window_width \
-	    $bashrun_window_height
-    done
-}
-
-function §window.expand {
-
-    local max_height="$(§geometry.height)"
-    
-    [[ bashrun_window_height -ge max_height ]] && return 1
-
-    local i=0
-    for (( i=1; i<=max_height-1; i++ )); do
-	(( bashrun_window_height+=1 ))	
-	brwctl $bashrun_window_id sizeh \
-	    $bashrun_window_width \
-	    $bashrun_window_height
-    done
-}
 

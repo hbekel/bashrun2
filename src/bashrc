@@ -6,11 +6,6 @@
 #
 ################################################################################
 
-# never source bashrun in console
-if [[ "$TERM" == "linux" ]]; then    
-    return 1
-fi
-
 # source global variables
 source __PREFIX__/share/bashrun/globals
 

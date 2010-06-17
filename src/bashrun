@@ -1,7 +1,7 @@
 #!/bin/bash
 ######################################################################
 #
-# Bashrun 1.0.0rc1 -- X11 application launcher based on bash
+# Bashrun 1.0.0 -- launch applications from interactive bash sessions
 # Copyright (C) 2010 Henning Bekel <h.bekel@googlemail.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -45,8 +45,8 @@ touch "$lock"
 trap '[[ -f "$lock" ]] && rm "$lock"' EXIT
 trap '[[ -f "$lock" ]] && rm "$lock"' TERM
 
-# bootstrap if cache home doesn't exist
-if [[ ! -e $bashrun_cache_home ]]; then
+# bootstrap if cache or data home don't exist
+if [[ ! -e $bashrun_cache_home || ! -e $bashrun_data_home ]]; then
     source $bashrun_site/bootstrap
 fi
 
@@ -61,10 +61,12 @@ source $bashrun_site/frontend
 until [[ "$1" == "--" || "${1:0:1}" != '-' ]]; do
     case "$1" in
 	-v|--version)
- 	    version && exit 0
+ 	    version
+	    exit 0
  	    ;;
 	-h|--help)
- 	    usage && exit 0
+ 	    usage 
+	    exit 0
  	    ;;    
 	-m|--mode)
  	    mode="$2"
@@ -79,10 +81,15 @@ until [[ "$1" == "--" || "${1:0:1}" != '-' ]]; do
 	    remote_control_code
 	    exit 0
 	    ;;	
+	*)
+	    echo "bashrun: error: unknown option: $1" >&2
+	    usage
+	    exit 1
+	    ;;
     esac
 done
 
-# get info about the current mode
+# get info about the selected mode
 modeinfo="$bashrun_cache_home/${mode}-info"
 [[ ! -f $modeinfo ]] && create_modeinfo
 source $modeinfo
@@ -90,7 +97,6 @@ source $modeinfo
 # get command argument, if any
 if [[ $# -gt 0 && "$1" != "--" ]]; then
     command="$1"
-    command=${command/--/}
     shift
 fi
 
@@ -117,7 +123,6 @@ if [[ $# -gt 0 ]]; then
 fi
 
 # launch a new instance if necessary
-
 launched=0
 if [[ ! "$(brwctl $wid class? 2>/dev/null)" =~ bashrun-$mode ]]; then
 
@@ -193,7 +198,7 @@ case "$command" in
 	remote quit
 	;;    
     *)
-	echo "bashrun: unknown command: $command"
+	echo "bashrun: error: unknown command: $command" >&2
 	exit 1
 esac 
 exit 0

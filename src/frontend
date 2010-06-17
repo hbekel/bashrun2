@@ -9,18 +9,10 @@ function create_modeinfo {
     §objects.data_home $bashrun_cache_home
     §objects.namespace "bashrun"
     
-    source $bashrun_site/utils
-    source $bashrun_site/readline
-    source $bashrun_site/message
-    source $bashrun_site/config
-    source $bashrun_site/plugin
-    source $bashrun_site/geometry
-    source $bashrun_site/registry
-    source $bashrun_site/progress
-    source $bashrun_site/terminals
-    source $bashrun_site/window
-    source $bashrun_site/modes
-    source $bashrun_site/core 
+    for file in utils readline message config plugin geometry registry \
+	progress terminals window modes core; do
+	source "$bashrun_site/$file"
+    done
 
     # check rcfile syntax
     errorfile="$bashrun_cache_home/syntax-errors"
@@ -74,7 +66,7 @@ function launch {
 
     source $bashrun_site/terminals
 
-    # launch a default sized terminal in debug mode
+    # launch a standard sized terminal in debug mode
     if [[ bashrun_debug -eq 1 ]]; then
 	geometry="80x24"
     fi
@@ -97,10 +89,8 @@ function launch {
     fi
 
     # fix known issues with xterm or *rxvt's...
-
     if [[ "$prog" == "xterm" ]]; then
-	# enable meta keybindings
-	termfix='-xrm XTerm**metaSendsEscape:True '
+	termfix='-xrm XTerm**metaSendsEscape:True'
 
     elif [[ "$prog" =~ *rxvtc? ]]; then
 	# enable ctrl-arrow keys
@@ -120,12 +110,12 @@ function launch {
                  'bash --rcfile __PREFIX__/share/bashrun/bashrc' \
                  "$mode" "$geometry" "$font" "$termopts $termfix")" 
                
-    # clean whitespace
+    # trim whitespace
     launch="$(echo "$launch" | sed 's/[ \t]\+/ /g')"
 
     §debug -c "$mode:" -n "$launch"
 
-    # file to flag aborting
+    # file to flag aborts
     abort="$bashrun_cache_home/${mode}-abort"
 
     # launch the terminal command
@@ -174,10 +164,10 @@ function launch {
 
 function remote {
 
-    # wait until a newly started instance is ready
+    # wait until the remote instance is ready
     if wait_until "[[ -f $bashrun_cache_home/${mode}-ready ]]"; then
 	
-        # put "<action> <cmd>" in the "remote" file
+        # put "cwd" "<action> <cmd>" in the "remote" file
 	echo "$PWD" "$@" > $bashrun_data_home/$mode-remote
 
         # send SIGUSR1 to bashrun to pick it up (see §remote)
@@ -201,26 +191,6 @@ if [[ bashrun -ne 1 ]]; then
      unset remote_control
 fi
 EOF
-}
-
-function wait_until { 
-
-    local wait_condition="${1:-:}"
-    local break_condition="${2:-false}"
-    local attempts=150
-
-    eval "until $wait_condition; do
-	if [[ attempts -eq 0 ]]; then
-	    return 1
-	fi
-        if $break_condition; then
-            return 2
-        fi
-	((attempts-=1))
-	sleep 0.1
-    done
-    return 0"
-    return $?
 }
 
 function version {
@@ -264,4 +234,24 @@ function usage {
   For more information, see bashrun(1) or visit http://bashrun.sourceforge.net
 "
 
+}
+
+function wait_until { 
+
+    local wait_condition="${1:-:}"
+    local break_condition="${2:-false}"
+    local attempts=150
+
+    eval "until $wait_condition; do
+	if [[ attempts -eq 0 ]]; then
+	    return 1
+	fi
+        if $break_condition; then
+            return 2
+        fi
+	((attempts-=1))
+	sleep 0.1
+    done
+    return 0"
+    return $?
 }

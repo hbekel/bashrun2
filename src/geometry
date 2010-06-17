@@ -9,6 +9,17 @@ declare bashrun_geometry_width=0 bashrun_geometry_height=0 \
 bashrun_display_width=${BASH_REMATCH[1]}
 bashrun_display_height=${BASH_REMATCH[2]}
 
+function §geometry {
+
+    §geometry.size? && \
+	echo -n "${bashrun_geometry_width}x${bashrun_geometry_height}"
+
+    §geometry.position? && \
+	echo -n "${bashrun_geometry_xoff}${bashrun_geometry_yoff}"
+
+    [[ §geometry.size? || §geometry.position? ]] && echo
+}
+
 function §geometry.parse {
 
     bashrun_geometry_has_size=0
@@ -103,11 +114,5 @@ function §geometry.calc_point {
 	    echo "$(( display - value - size ))"
 	fi	
     fi
-}
-
-function §geometry {
-    §geometry.size? && echo -n "${bashrun_geometry_width}x${bashrun_geometry_height}"
-    §geometry.position? && echo -n "${bashrun_geometry_xoff}${bashrun_geometry_yoff}"
-    [[ §geometry.size? || §geometry.position? ]] && echo
 }
 
