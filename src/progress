@@ -8,7 +8,7 @@ bashrun_progress_task="Busy"
 bashrun_progress_line=""
 
 function §progress.enabled? {
-    [[ BASHRUN_DEBUG -eq 0 && BASHRUN_FEEDBACK -eq 1 && §window.terminal? ]]
+    [[ bashrun_debug -eq 0 && bashrun_feedback -eq 1 && §window.terminal? ]]
 }
 
 §progress.new () {

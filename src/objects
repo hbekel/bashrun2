@@ -2,67 +2,67 @@
 
 ################################################################################
 
-_OBJECTS_CACHE_HOME='/tmp'
-_OBJECTS_DATA_HOME='/tmp'
-_OBJECTS_NAMESPACE='boop'
-_OBJECTS_SITE="."
+_objects_cache_home='/tmp'
+_objects_data_home='/tmp'
+_objects_namespace='boop'
+_objects_site="."
 
-_OBJECTS_TYPES=''
-_OBJECTS_FOCUS=''
+_objects_types=''
+_objects_focus=''
 
 function §objects.site {
     
     if [[ $# -eq 0 ]]; then
-	echo "$_OBJECTS_SITE"
+	echo "$_objects_site"
     else
-	_OBJECTS_SITE="$1"
+	_objects_site="$1"
     fi
 }
 
 function §objects.cache_home {
     
     if [[ $# -eq 0 ]]; then
-	echo "$_OBJECTS_CACHE_HOME"
+	echo "$_objects_cache_home"
     else
-	_OBJECTS_CACHE_HOME="$1"
+	_objects_cache_home="$1"
     fi
 }
 
 function §objects.data_home {
     
     if [[ $# -eq 0 ]]; then
-	echo "$_OBJECTS_DATA_HOME"
+	echo "$_objects_data_home"
     else
-	_OBJECTS_DATA_HOME="$1"
+	_objects_data_home="$1"
     fi
 }
 
 function §objects.namespace {
     
     if [[ $# -eq 0 ]]; then
-	echo "$_OBJECTS_NAMESPACE"
+	echo "$_objects_namespace"
     else
-	_OBJECTS_NAMESPACE="$1"
+	_objects_namespace="$1"
     fi
 }
 
 function §objects.types {    
-    echo " $_OBJECTS_TYPES "
+    echo " $_objects_types "
 }
 
 function §objects.focus {
     
     if [[ $# -eq 0 ]]; then
-	echo "$_OBJECTS_FOCUS"
+	echo "$_objects_focus"
     else
-	_OBJECTS_FOCUS="$1"
+	_objects_focus="$1"
     fi
 }
 
 function §objects.seek_start {
     local type=""
-    for type in $_OBJECTS_TYPES; do
-	${type}s.seek_start
+    for type in $_objects_types; do
+	§${type}s.seek_start
     done    
 }
 
@@ -70,17 +70,17 @@ function §class {
 
     # create object from 'objects' template
 
-    local name=$1
-    local keys=$2
+    local name="$1"
+    local keys="$2"
     local key=''
     local clean_keys=""
     local methods="nil"
     local have_interface=0
     
     # register object type
-    _OBJECTS_TYPES="$_OBJECTS_TYPES $name"
-    if [[ "${_OBJECTS_TYPES:0:1}" == ' ' ]]; then
-	_OBJECTS_TYPES="${_OBJECTS_TYPES:1}"
+    _objects_types="$_objects_types $name"
+    if [[ "${_objects_types:0:1}" == ' ' ]]; then
+	_objects_types="${_objects_types:1}"
     fi
 
     # interface and additional interfaced methods
@@ -108,25 +108,20 @@ function §class {
 	interface="${interface[@]}"
     fi
 
-    local tmpfile=$_OBJECTS_CACHE_HOME/$name.bash
+    local tmpfile=$_objects_cache_home/$name.bash
 
     if [[ -f $tmpfile ]]; then
 	source $tmpfile
 	return 0
     fi
 
-    declare -u NAME="$(§objects.namespace)_$name"
-    NAME=${NAME//§/}
-
-    local plusname=${name//§/+}
-
-    cat $_OBJECTS_SITE/object | \
-	sed "s|_OBJECTS_KEYS=()|_OBJECTS_KEYS=($clean_keys)|" | \
-	sed "s|_OBJECTS_INTERFACE_OPTIONS=''|_OBJECTS_INTERFACE_OPTIONS='$interface' |" | \
-	sed "s|_OBJECTS_HAVE_INTERFACE=0|_OBJECTS_HAVE_INTERFACE=$have_interface|" | \
-	sed "s|_OBJECTS_INTERFACE_METHODS=''|_OBJECTS_INTERFACE_METHODS='$methods'|" | \
-	sed "s|object|$name|g;s|+$name|$plusname|g;s|OBJECT|$NAME|g;" | \
-	sed "s|ObJeCt|OBJECT|g;s|oBjEcT|§object|g" \
+    cat $_objects_site/object | \
+	sed "s|_objects_keys=()|_objects_keys=($clean_keys)|" | \
+	sed "s|_objects_interface_options=''|_objects_interface_options='$interface' |" | \
+	sed "s|_objects_have_interface=0|_objects_have_interface=$have_interface|" | \
+	sed "s|_objects_interface_methods=''|_objects_interface_methods='$methods'|" | \
+	sed "s|object|$name|g;s|_$name|_$(§objects.namespace)_$name|g;" | \
+	sed "s|oBjEcT|object|g" \
 	> $tmpfile
 
     local i=0
@@ -143,18 +138,18 @@ function §class {
 
 	if [[ "$access" =~ r ]]; then
 	    if [[ "$access" =~ a ]]; then
-      		§object.create_array_reader $name $NAME $key $i
+      		§object.create_array_reader $name $key $i
 	    else
-		§object.create_reader $name $NAME $key $i
+		§object.create_reader $name $key $i
 	    fi
 	fi
 	if [[ "$access" =~ w ]]; then
 	    if [[ "$access" =~ b ]]; then
-		§object.create_bool_writer $name $NAME $key $i
+		§object.create_bool_writer $name $key $i
 	    elif [[ "$access" =~ a ]]; then
-		§object.create_array_writer $name $NAME $key $i
+		§object.create_array_writer $name $key $i
 	    else
-		§object.create_writer $name $NAME $key $i
+		§object.create_writer $name $key $i
 	    fi
 	fi
 	let i++
@@ -165,84 +160,80 @@ function §class {
     return 0
 }
 
-function §objects.list {
-    ${_OBJECTS_FOCUS}s.list 
-}
-
 function §objects.init {
     local type=""
-    for type in $_OBJECTS_TYPES; do
-	eval "${type}s.init"
+    for type in $_objects_types; do
+	eval "§${type}s.init"
     done
     §objects.seek_start
 }
 
 function §objects.dump {
     local type=""
-    for type in $_OBJECTS_TYPES; do
-	eval "${type}s.dump"
+    for type in $_objects_types; do
+	eval "§${type}s.dump"
     done
 }
 
 function §objects.restore {
     local type=""
-    for type in $_OBJECTS_TYPES; do
-	eval "${type}s.restore"
+    for type in $_objects_types; do
+	eval "§${type}s.restore"
     done
 }
 
 function §objects.clear {
     local type=""
-    for type in $_OBJECTS_TYPES; do
-	eval "${type}s.clear"
+    for type in $_objects_types; do
+	eval "§${type}s.clear"
     done
 }
 
 function §object.create_reader {
-    local name=$1
-    local NAME=$2
-    local key=$3
-    local field=$4
-    local tmpfile=$_OBJECTS_CACHE_HOME/$name.bash
+    local name="$1"
+    local NAME="$(§objects.namespace)_$name"
+    local key="$2"
+    local field="$3"
+    local tmpfile=$_objects_cache_home/$name.bash
 
     echo $(cat <<EOF
 
-function ${name}.get_${key} {
-    echo "\${_${NAME}S[\$_${NAME}S_POSITION+$field]}";
+function §${name}.get_${key} {
+    echo "\${_${NAME}s[\$_${NAME}s_position+$field]}";
 }
 EOF
     ) >> $tmpfile
 }
 
 function §object.create_writer {
-    local name=$1
-    local NAME=$2
-    local key=$3
-    local field=$4
-    local tmpfile=$_OBJECTS_CACHE_HOME/$name.bash
+    local name="$1"
+    local NAME="$(§objects.namespace)_$name"
+    local key="$2"
+    local field="$3"
+    local tmpfile=$_objects_cache_home/$name.bash
 
     echo $(cat <<EOF
 
-function ${name}.set_${key} {
-    _${NAME}S[\$_${NAME}S_POSITION+$field]="\$@";
-    _${NAME}S_MODIFIED=1;
+function §${name}.set_${key} {
+    _${NAME}s[\$_${NAME}s_position+$field]="\$@";
+    _${NAME}s_modified=1;
 }
 EOF
     ) >> $tmpfile
 }
 
 function §object.create_array_reader {
-    local name=$1
-    local NAME=$2
-    local key=$3
-    local field=$4
-    local tmpfile=$_OBJECTS_CACHE_HOME/$name.bash
+    local name="$1"
+    local NAME="$(§objects.namespace)_$name"
+    local key="$2"
+    local field="$3"
+    local tmpfile=$_objects_cache_home/$name.bash
 
     echo $(cat <<EOF
 
-function ${name}.get_${key} {
+function §${name}.get_${key} {
     local var="\$1";
-    local data="\${_${NAME}S[\$_${NAME}S_POSITION+$field]}";
+    local data="\${_${NAME}s[\$_${NAME}s_position+$field]}";
     
     if [[ -z "\$data" ]]; then
       echo "declare -a \$var";
@@ -255,37 +246,37 @@ EOF
 }
 
 function §object.create_array_writer {
-    local name=$1
-    local NAME=$2
-    local key=$3
-    local field=$4
-    local tmpfile=$_OBJECTS_CACHE_HOME/$name.bash
+    local name="$1"
+    local NAME="$(§objects.namespace)_$name"
+    local key="$2"
+    local field="$3"
+    local tmpfile=$_objects_cache_home/$name.bash
 
     echo $(cat <<EOF
 
-function ${name}.set_${key} {
+function §${name}.set_${key} {
     declare -a a=("\$@");
     
     local data="\$(declare -p a)";
     data="\${data:14:\${#data}-15}";    
 
-    _${NAME}S[\$_${NAME}S_POSITION+$field]="\$data";
-    _${NAME}S_MODIFIED=1;
+    _${NAME}s[\$_${NAME}s_position+$field]="\$data";
+    _${NAME}s_modified=1;
 }
 EOF
     ) >> $tmpfile
 }
 
 function §object.create_bool_writer {
-    local name=$1
-    local NAME=$2
-    local key=$3
-    local field=$4
-    local tmpfile=$_OBJECTS_CACHE_HOME/$name.bash
+    local name="$1"
+    local NAME="$(§objects.namespace)_$name"
+    local key="$2"
+    local field="$3"
+    local tmpfile=$_objects_cache_home/$name.bash
 
     echo $(cat <<EOF
 
-function ${name}.set_${key} {
+function §${name}.set_${key} {
 
      local input="\$1";
      local value=0;
@@ -294,8 +285,8 @@ function ${name}.set_${key} {
      [[ "\$input" =~ ^([Yy]es|[Tt]rue|[Oo]n|1)\$ ]] && value=1;
      [[ "\$input" =~ ^([Nn]o|[Ff]alse|[Oo]ff|0)\$ ]] && value=0;
 
-    _${NAME}S[\$_${NAME}S_POSITION+$field]=\$value;
-    _${NAME}S_MODIFIED=1;
+    _${NAME}s[\$_${NAME}s_position+$field]=\$value;
+    _${NAME}s_modified=1;
 }
 EOF
     ) >> $tmpfile

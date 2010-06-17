@@ -2,7 +2,7 @@
 
 ################################################################################
 
-§class "§mode" "name terminal geometry font
+§class "mode" "name terminal geometry font
                 completion unmap:b feedback:b 
                 onmap onunmap cmdnfh:b logfile current" ""
 
@@ -48,11 +48,11 @@ function §mode.get_geometry {
 }
 
 function §mode.unmap? {
-    [[ "$(§mode.get_unmap)" == "1" && BASHRUN_DEBUG -eq 0 ]]
+    [[ "$(§mode.get_unmap)" == "1" && bashrun_debug -eq 0 ]]
 }
 
 function §modes.init {
-    §modes.seek "$BASHRUN_MODE";
+    §modes.seek "$bashrun_mode";
     §mode.init
 }
 
@@ -75,7 +75,7 @@ function §mode.init {
     §completion.init
 
     # dump modeinfo for frontend if required
-    [[ BASHRUN_FRONTEND -eq 1 ]] && §mode.write_info
+    [[ bashrun_frontend -eq 1 ]] && §mode.write_info
 }
 
 function §mode.write_info {
@@ -143,7 +143,7 @@ function §mode.code {
 
 function §modes.dump {
 
-    local file="$_OBJECTS_DATA_HOME/${1:-§modes.dump}"
+    local file="$(§objects.data_home)/${1:-§modes.dump}"
     local mode=''
     local func=''
 
@@ -159,7 +159,7 @@ function §modes.dump {
 	fi
 	§modes.next
     done
-    §modes.seek $BASHRUN_MODE
+    §modes.seek $bashrun_mode
 
     # bashrun completion helper
     §modes.list > $bashrun_cache_home/modes

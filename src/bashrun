@@ -71,7 +71,7 @@ until [[ "$1" == "--" || "${1:0:1}" != '-' ]]; do
  	    shift; shift
  	    ;;
 	-d|--debug)
-	    BASHRUN_DEBUG=1
+	    bashrun_debug=1
 	    shift
 	    [[ $# -eq 0 ]] && command="debug"
 	    ;;
@@ -181,7 +181,7 @@ case "$command" in
     restart)
 	remote quit
 	sleep 1
-	export BASHRUN_DEBUG
+	export bashrun_debug
 	rm "$lock" &>/dev/null
 	exec bashrun -m $mode	
 	;;

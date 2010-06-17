@@ -4,7 +4,7 @@
 
 function §registry.add {
 
-    local mode="$BASHRUN_MODE"
+    local mode="$bashrun_mode"
     local widfile="$bashrun_cache_home/${mode}-wid"
     local pidfile="$bashrun_cache_home/${mode}-pid"
     
@@ -32,8 +32,8 @@ function §registry.add {
 
 function §registry.remove {
 
-    local widfile="$bashrun_cache_home/${BASHRUN_MODE:-terminal}-wid"
-    local pidfile="$bashrun_cache_home/${BASHRUN_MODE:-terminal}-pid"
+    local widfile="$bashrun_cache_home/${bashrun_mode:-terminal}-wid"
+    local pidfile="$bashrun_cache_home/${bashrun_mode:-terminal}-pid"
 
     if [[ -f "$pidfile" ]]; then
 	rm "$pidfile"

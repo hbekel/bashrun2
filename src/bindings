@@ -2,9 +2,9 @@
 
 ################################################################################
 
-§class "§binding" "keyseq keymap action is_bound:b readline"  
-§class "§internal" "action keymap char readline"
-§class "§keyname" "keyseq name"                             
+§class "binding" "keyseq keymap action is_bound:b readline"  
+§class "internal" "action keymap char readline"
+§class "keyname" "keyseq name"                             
 
 bind '"\C-x00": accept-line'
 
@@ -69,8 +69,8 @@ function set {
     builtin set "$@"
     if [[ "$1" == "-o" && "$2" =~ (emacs|vi) ]]; then
 	local mode="${BASH_REMATCH[1]}-mode"
-	local feedback=$BASHRUN_FEEDBACK
-	BASHRUN_FEEDBACK=0
+	local feedback=$bashrun_feedback
+	bashrun_feedback=0
 
 	§bindings.clear
 	§internals.clear
@@ -84,23 +84,23 @@ function set {
 
 	§readline.get_settings
 
-	BASHRUN_FEEDBACK=$feedback
+	bashrun_feedback=$feedback
     fi
 }
 
 function §bindings.dump {
 
-    local file=$_OBJECTS_DATA_HOME/${1:-§bindings.dump}
+    local file="$(§objects.data_home)/${1:-bindings.dump}"
     local remote_bindings="$bashrun_cache_home/remote-bindings.bash"
 
     [[ -f "$remote_bindings" ]] && rm "$remote_bindings"
 
-    §bindings._dump "${1:-§bindings.dump}"
+    §bindings._dump "${1:-bindings.dump}"
 
     echo "bashrun_bindings_next_char=$bashrun_bindings_next_char" >> $file
 
-    §internals.dump "${1:-§bindings.dump}" append
-    §keynames.dump "${1:-§bindings.dump}" append
+    §internals.dump "${1:-bindings.dump}" append
+    §keynames.dump "${1:-bindings.dump}" append
 
     local saved=$(§binding.get_keyseq)
 
@@ -130,9 +130,9 @@ function §bindings.dump {
 
 function §internals.dump {
 
-    local file="$_OBJECTS_DATA_HOME/${1:-§internals.dump}"
+    local file="$(§objects.data_home)/${1:-internals.dump}"
 
-    §internals._dump "${1:-§internals.dump}" append
+    §internals._dump "${1:-internals.dump}" append
 
     local saved=$(§internal.get_action)
 

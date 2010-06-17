@@ -97,7 +97,7 @@ function §window.size {
 function §window.map {
 
     # apply default size if debugging
-    if [[ BASHRUN_DEBUG -eq 1 ]]; then	 
+    if [[ bashrun_debug -eq 1 ]]; then	 
 	§window.size --hint "80x24"
     fi
 

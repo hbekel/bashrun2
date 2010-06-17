@@ -4,7 +4,7 @@
 
 bashrun_engine_busy=0
 bashrun_engine_reload=0
-bashrun_engine_ready="$bashrun_cache_home/${BASHRUN_MODE}-ready"
+bashrun_engine_ready="$bashrun_cache_home/${bashrun_mode}-ready"
 
 bashrun_action=''
 bashrun_execmode='&'
@@ -43,7 +43,7 @@ function §engine.init {
     §objects.init
 
     # seek to the current mode
-    §modes.seek "$BASHRUN_MODE";
+    §modes.seek "$bashrun_mode";
 
     # enable extdebug and prepare escape from trap
     # (bashdb bugs out if extdebug is set directly from a startup file)
@@ -276,7 +276,7 @@ function §engine.reload {
 
     §window.map
     
-    [[ BASHRUN_DEBUG -eq 0 ]] && tput reset
+    [[ bashrun_debug -eq 0 ]] && tput reset
     
     §separator "engine reloaded"
 }
@@ -292,7 +292,7 @@ function §engine.shutdown {
 
     # remove ready flag, remove mode-info
     for suffix in ready info; do
-	file="$bashrun_cache_home/${BASHRUN_MODE}-$suffix"
+	file="$bashrun_cache_home/${bashrun_mode}-$suffix"
 	[[ -f "$file" ]] && rm "$file"
     done
 
@@ -321,7 +321,7 @@ function §engine.idle? {
 
 function §engine.ready {
     
-    if [[ BASHRUN_FRONTEND -eq 1 ]]; then
+    if [[ bashrun_frontend -eq 1 ]]; then
 	touch "$bashrun_engine_ready"
     fi
 }    

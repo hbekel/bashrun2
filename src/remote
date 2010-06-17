@@ -2,7 +2,7 @@
 
 ################################################################################
 
-bashrun_remote=$bashrun_data_home/$BASHRUN_MODE-remote
+bashrun_remote=$bashrun_data_home/$bashrun_mode-remote
 bashrun_remote_interface=""
 
 ################################################################################

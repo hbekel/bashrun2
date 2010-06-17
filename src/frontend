@@ -59,7 +59,7 @@ function source_window {
 
     # create the environment §window expects and set wid
 
-    BASHRUN_MODE="$mode"
+    bashrun_mode="$mode"
     source $bashrun_site/geometry
     source $bashrun_site/window
 
@@ -75,7 +75,7 @@ function launch {
     source $bashrun_site/terminals
 
     # launch a default sized terminal in debug mode
-    if [[ BASHRUN_DEBUG -eq 1 ]]; then
+    if [[ bashrun_debug -eq 1 ]]; then
 	geometry="80x24"
     fi
 
@@ -111,11 +111,11 @@ function launch {
     fi
 
     # create terminal command
-    launch="BASHRUN=1 \
-            BASHRUN_FRONTEND=1 \
-            BASHRUN_MODE=$mode \
-	    BASHRUN_FEEDBACK=$feedback \
-            BASHRUN_DEBUG=$BASHRUN_DEBUG \
+    launch="bashrun=1 \
+            bashrun_frontend=1 \
+            bashrun_mode=$mode \
+	    bashrun_feedback=$feedback \
+            bashrun_debug=$bashrun_debug \
             $(§terminal.expand "$terminal" \
                  'bash --rcfile __PREFIX__/share/bashrun/bashrc' \
                  "$mode" "$geometry" "$font" "$termopts $termfix")" 
@@ -191,7 +191,7 @@ function remote {
 
 function remote_control_code {
     cat <<EOF
-if [[ BASHRUN -ne 1 ]]; then
+if [[ bashrun -ne 1 ]]; then
      remote_control="\${XDG_CACHE_HOME:-\$HOME/.cache}/bashrun/remote.bash"
 
      if [[ -f "\$remote_control" ]]; then

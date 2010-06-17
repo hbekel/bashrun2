@@ -2,7 +2,7 @@
 
 ################################################################################
 
-§class "§bookmark" "name" ""
+§class "bookmark" "name" ""
 
 §function.clone "§bookmark.new" "§bookmark._new"
 §function.clone "§bookmarks.dump" "§bookmarks._dump"
@@ -26,7 +26,7 @@ function §bookmark.code {
 
 function §bookmarks.dump {
     
-    local file="$_OBJECTS_DATA_HOME/${1:-§bookmarks.dump}"
+    local file="$(§objects.data_home)/${1:-bookmarks.dump}"
     local remote_bookmarks="$bashrun_cache_home/remote-bookmarks.bash"
     local name=""
 

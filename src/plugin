@@ -38,7 +38,7 @@ function +plugins {
     local file=""
     local name=""
     local errors=""
-    errorfile="$bashrun_cache_home/syntax-errors"
+    local errorfile="$bashrun_cache_home/syntax-errors"
     for name in $*; do
 	file="$(§plugin.find "$name")"
 	if [[ -n "$file" ]]; then

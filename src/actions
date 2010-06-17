@@ -2,7 +2,7 @@
 
 ################################################################################
 
-§class "§action" "name:r description input:b depends bash remote:b core:rb" ""
+§class "action" "name:r description input:b depends bash remote:b core:rb" ""
 
 # Note to self: if the "core" property changes it's position, the
 # temporary setter in file 'core' needs to be adjusted.
@@ -474,7 +474,7 @@ function §action.code {
 
 function §actions.dump {
 
-    local file="$_OBJECTS_DATA_HOME/${1:-§actions.dump}"
+    local file="$(§objects.data_home)/${1:-actions.dump}"
     local action=''
     §actions._dump $1
 

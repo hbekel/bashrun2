@@ -2,7 +2,7 @@
 
 ################################################################################
 
-§class "§terminal" "name command geometry font match:a cache" ""
+§class "terminal" "name command geometry font match:a cache" ""
 
 ################################################################################
 
@@ -48,7 +48,7 @@ function §terminal.get_command {
     if [[ -z "$cached" ]]; then
 	local geometry="$(§terminal.get_geometry)"
 	local font="$(§terminal.get_font)"
-	local mode="$BASHRUN_MODE"
+	local mode="$bashrun_mode"
 
 	cached="$(§terminal.expand "$command" "" "$mode" "$geometry" "$font")"
 	§terminal.set_cache "$cached"	
@@ -120,7 +120,7 @@ function §terminal.list {
 
     if [[ "$opt" == '-l' ]]; then
 	local key
-	for key in ${_BASHRUN_TERMINALS_KEYS[@]}; do
+	for key in ${_bashrun_terminals_keys[@]}; do
 	    if [[ "$key" == "command" ]]; then
 		echo "$key: $(§terminal._get_command)"
 	    else

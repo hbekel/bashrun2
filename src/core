@@ -70,7 +70,7 @@
 	[[ "$input" =~ ^([Yy]es|[Tt]rue|[Oo]n|1)$ ]] && value=1;
 	[[ "$input" =~ ^([Nn]o|[Ff]alse|[Oo]ff|0)$ ]] && value=0;
 
-	_BASHRUN_ACTIONS[${_BASHRUN_ACTIONS_POSITION}+6]="$1"
+	_bashrun_actions[${_bashrun_actions_position}+6]="$1"
     }
 
     +action 'reload'
@@ -128,15 +128,15 @@
     
     +action-debug () {
 	
-	if [[ BASHRUN_DEBUG -eq 0 ]]; then
-	    BASHRUN_DEBUG=1
+	if [[ bashrun_debug -eq 0 ]]; then
+	    bashrun_debug=1
 	    §debug "debug mode" -g "enabled"
 	    §window.size --hint "80x24"
 	else
 	    §window.size --hint "$(§mode.get_geometry $(§mode.get_current))"
 	    §debug "debug mode" -r "disabled"
 	    tput clear
-	    BASHRUN_DEBUG=0
+	    bashrun_debug=0
 	fi
 	return 2
     }

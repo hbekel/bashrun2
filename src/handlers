@@ -2,7 +2,7 @@
 
 ################################################################################
 
-§class "§handler" "name match test string action complete fallback:b" ""
+§class "handler" "name match test string action complete fallback:b" ""
 
 bashrun_from_cmdnfh=0
 bashrun_handlers_order=""
@@ -249,7 +249,7 @@ function §handler.code {
 
 function §handlers.dump {
 
-    local file="$_OBJECTS_DATA_HOME/${1:-§handlers.dump}"
+    local file="$(§objects.data_home)/${1:-handlers.dump}"
     local name=''
     §handlers._dump "$1"
 

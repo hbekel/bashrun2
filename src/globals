@@ -3,11 +3,11 @@
 ################################################################################
 
 # setup bashrun environment vars
-BASHRUN=0
-BASHRUN_MODE=${BASHRUN_MODE:-terminal}
-BASHRUN_DEBUG=${BASHRUN_DEBUG:-0}
-BASHRUN_FEEDBACK=${BASHRUN_FEEDBACK:-0}
-BASHRUN_FRONTEND=${BASHRUN_FRONTEND:-0}
+bashrun=0
+bashrun_mode=${bashrun_mode:-terminal}
+bashrun_debug=${bashrun_debug:-0}
+bashrun_feedback=${bashrun_feedback:-0}
+bashrun_frontend=${bashrun_frontend:-0}
 
 # setup user environment vars used by bashrun
 BROWSER=${BROWSER:-firefox}
