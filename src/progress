@@ -81,7 +81,9 @@ function §progress.enabled? {
 
     if §progress.enabled?; then
 	tput cvvis >&2
+	tput cr >&2
 	tput el >&2
+	tput cr >&2
     fi
 }
 
