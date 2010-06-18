@@ -9,7 +9,7 @@ function create_modeinfo {
     §objects.data_home $bashrun_cache_home
     §objects.namespace "bashrun"
     
-    for file in utils readline message config plugin geometry registry \
+    for file in utils readline message config plugin registry \
 	progress terminals window modes core; do
 	source "$bashrun_site/$file"
     done
@@ -52,7 +52,6 @@ function source_window {
     # create the environment §window expects and set wid
 
     bashrun_mode="$mode"
-    source $bashrun_site/geometry
     source $bashrun_site/window
 
     function §mode.get_geometry { echo $geometry; }    

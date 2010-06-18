@@ -40,7 +40,6 @@ source $bashrun_site/progress
 source $bashrun_site/config
 source $bashrun_site/plugin
 source $bashrun_site/remote
-source $bashrun_site/geometry
 source $bashrun_site/command
 source $bashrun_site/readline
 source $bashrun_site/completion

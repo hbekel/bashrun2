@@ -76,8 +76,8 @@
 	  HISTFILE="${XDG_DATA_HOME:-$HOME/.local/share}/bashrun/history"	
 	  PS1='>'
 
-	  stty -ixon    # disable flow control, allows to bind C-Q
-	  stty eof 0201 # prevent C-d on an empty line from exiting	  
+	  stty -ixon       # disable flow control, allows to bind C-Q
+	  set -o ignoreeof # prevent C-d on an empty line from exiting	  
       }
 
     # For more options and a detailed description of modes, see

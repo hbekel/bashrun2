@@ -15,7 +15,6 @@ src/config \
 src/core \
 src/engine \
 src/frontend \
-src/geometry \
 src/globals \
 src/handlers \
 src/interface \
