@@ -209,6 +209,9 @@ function §engine.launch {
 
 function §engine.execute {
 
+    local ret=0
+    local err="$bashrun_cache_home/su-error"
+
     if [[ "$bashrun_execmode" == "&" ]]; then
 	§prepare_logfile
 	bash -c "$bashrun_command >> $bashrun_logfile 2>&1 &" > /dev/null 2>&1
@@ -222,12 +225,18 @@ function §engine.execute {
 	fi
 
 	bash -c "$bashrun_command"
+	ret=$?
+
+	§window.mapped? && §mode.unmap? && §window.unmap
 
 	if §action.depends_on? "su"; then 	    
 	    # reset tty settings
 	    stty "$stty"
+
+	    if [[ ret -eq 125 ]]; then
+		§message "Error" "su: incorrect password"
+	    fi
 	fi
-	§window.mapped? && §mode.unmap? && §window.unmap
     fi
 }
 
