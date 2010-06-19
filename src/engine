@@ -132,6 +132,8 @@ function §engine.action {
 
 function §engine.trap {
     
+    §command.reset
+
     # the verbatim command line entered
     bashrun_command_line=$(§command.get_line)
 
@@ -220,7 +222,7 @@ function §engine.execute {
 	fi
 
 	bash -c "$bashrun_command"
-	
+
 	if §action.depends_on? "su"; then 	    
 	    # reset tty settings
 	    stty "$stty"
@@ -254,6 +256,8 @@ function §engine.reset {
 	    §window.unmap
 	fi
     fi
+
+    §command.reset
 
     §engine.idle
     

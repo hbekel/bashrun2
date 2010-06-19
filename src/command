@@ -5,6 +5,9 @@
 bashrun_command=''
 bashrun_command_line=''
 bashrun_command_word=''
+bashrun_command_hold=''
+bashrun_command_page=''
+bashrun_command_su=''
 bashrun_original_command=''
 
 function §command.unquote {
@@ -44,14 +47,15 @@ function §command.get_word {
     # current command that does not contain a '='.
 
     local word=""
+    local command="$bashrun_command"
 
-    for word in $bashrun_command; do
+    [[ "$bashrun_command_hold" ]] && command="$bashrun_command_hold"
+    [[ "$bashrun_command_page" ]] && command="$bashrun_command_page"
+    [[ "$bashrun_command_su" ]] && command="$bashrun_command_su"
+
+    for word in $command; do
 	[[ ! "$word" =~ = ]] && break
     done 
-
-    if [[ "$bashrun_command" =~ \#__(HOLD|PAGER)__\ ([^\ ]+) ]]; then
-	word="${BASH_REMATCH[2]}"
-    fi
 
     bashrun_command_word="$word"
 }
@@ -124,7 +128,7 @@ function §command.add_su {
     local stty=""
 
     # don't wrap in su -c '' twice...
-    if [[ "$bashrun_command" =~ ^su\  ]]; then
+    if [[ -n "$bashrun_command_su" ]]; then
 	§debug "already using su"
 	return 0
     fi
@@ -146,6 +150,7 @@ function §command.add_su {
     fi
 
     # run the command itself in the background
+    bashrun_command_su="$bashrun_command"
     bashrun_command="$bashrun_command &> /dev/null &"
 
     # quote the command
@@ -156,7 +161,7 @@ function §command.add_su {
 
     # run the su command in foreground for password entry
     bashrun_execmode="" 
-    §debug "$bashrun_command"
+    §debug -v "$bashrun_command"
 }
 
 function §command.add_terminal {
@@ -221,7 +226,7 @@ function §command.add_terminal {
     terminal_command="$(§terminal.get_command)"
     bashrun_command="$(§terminal.expand "$terminal_command" "$bashrun_command")"
 
-    §debug "$bashrun_command"
+    §debug -v "$bashrun_command"
 
     return 0
 }
@@ -240,12 +245,12 @@ function §command.add_hold {
 	bashrun_command=${BASH_REMATCH[1]}
     fi
     
-    if [[ ! "$bashrun_command" =~ \#__HOLD__ ]]; then
+    if [[ -z "$bashrun_command_hold" ]]; then
+        bashrun_command_hold="$bashrun_command";
 	bashrun_command="tput civis;(${bashrun_command});$method"
-        bashrun_command+=" #__HOLD__ $bashrun_command_word";
-	§debug "$bashrun_command"
+	§debug -v "$bashrun_command"
     else
-	§debug "already using hold:" -v "$bashrun_command"
+	§debug "already using hold with" -v "$bashrun_command_hold"
     fi
 }
 
@@ -255,11 +260,20 @@ function §command.add_pager {
 
     bashrun_original_command="$bashrun_command"
 
-    if [[ ! "$bashrun_command" =~ \#__PAGER__ ]]; then
+    if [[ -z "$bashrun_command_page" ]]; then
+        bashrun_command_page="$bashrun_command"
 	bashrun_command="$bashrun_command | ${PAGER} "
-        bashrun_command+=" #__PAGER__ $bashrun_command_word"
 	§debug "$bashrun_command"
     else
-	§debug "already using pager:" -v "$bashrun_command"
+	§debug "already using pager with" -v "$bashrun_command_page"
     fi
+}
+
+function §command.reset {
+    bashrun_command=''
+    bashrun_command_word=''
+    bashrun_command_hold=''
+    bashrun_command_page=''
+    bashrun_command_su=''
+    bashrun_original_command=''
 }
