@@ -166,7 +166,7 @@ function remote {
     # wait until the remote instance is ready
     if wait_until "[[ -f $bashrun_cache_home/${mode}-ready ]]"; then
 	
-        # put "cwd" "<action> <cmd>" in the "remote" file
+        # put "cwd" "<action> <cmd>" in the "remote" file	
 	echo "$PWD" "$@" > $bashrun_data_home/$mode-remote
 
         # send SIGUSR1 to bashrun to pick it up (see §remote)

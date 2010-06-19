@@ -22,6 +22,7 @@
 
     +mode terminal
       --terminal 'xterm -geometry %g -name %n %o -e %*'
+      --feedback true
       --cmdnfh true
 
     +mode-terminal-init() {
