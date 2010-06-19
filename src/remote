@@ -9,14 +9,15 @@ bashrun_remote_interface=""
 
 function §remote.run {
 
-    local words cwd action command
+    declare -a words
+    local cwd action command
 
     if [[ -f $bashrun_remote ]]; then
 	
-	words=($(<$bashrun_remote))
+	mapfile -t words < "$bashrun_remote"
 	cwd="${words[0]}"
 	action="${words[1]}"
-	command=${words[@]:2}
+	command="${words[@]:2}"
 
 	§debug "action" -v "$action" "command" -v "$command" "cwd" -v "$cwd"
 

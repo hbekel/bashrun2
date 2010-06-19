@@ -163,14 +163,20 @@ function launch {
 
 function remote {
 
-    # wait until the remote instance is ready
-    if wait_until "[[ -f $bashrun_cache_home/${mode}-ready ]]"; then
-	
-        # put "cwd" "<action> <cmd>" in the "remote" file	
-	echo "$PWD" "$@" > $bashrun_data_home/$mode-remote
+    local remote="$bashrun_data_home/$mode-remote"
+    local ready="$bashrun_cache_home/${mode}-ready"
 
-        # send SIGUSR1 to bashrun to pick it up (see §remote)
-	kill -USR1 "$(<$bashrun_cache_home/${mode}-pid)"
+    # wait until the remote instance is ready
+    if wait_until "[[ -f '$ready' ]]"; then
+	
+            # put "cwd" "<action> <cmd>" in the "remote" file	
+	    printf "$PWD\n$1\n${@:2}\n" > "$remote"
+
+            # send SIGUSR1 to bashrun to pick it up (see §remote)
+	    kill -USR1 "$(<$bashrun_cache_home/${mode}-pid)"
+
+	    # wait until the remote session has removed the file
+	    wait_until "[[ ! -e '$remote' ]]"
     else
 	echo "bashrun: error: bashrun-$mode not ready"
 	return 1
@@ -242,7 +248,7 @@ function wait_until {
     local attempts=150
 
     eval "until $wait_condition; do
-	if [[ attempts -eq 0 ]]; then
+        if [[ attempts -eq 0 ]]; then
 	    return 1
 	fi
         if $break_condition; then
