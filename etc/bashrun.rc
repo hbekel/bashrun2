@@ -398,7 +398,6 @@
       --description 'Yank clipboard contents' 
       --input no
       --depends 'xclip'
-      --bash '4.1'
 
        function +action-yank-from-xclip {
  

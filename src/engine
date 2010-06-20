@@ -172,8 +172,10 @@ function §engine.launch {
     if [[ $# -eq 1 || -n "$command" ]]; then
 	§debug -c override -v "$command"
 	bashrun_command="$command"
-	bashrun_original_command="$command"
-	bashrun_command_line="$command"
+	§command.unquote
+	
+	bashrun_original_command="$bashrun_command"
+	bashrun_command_line="$bashrun_command"
     fi
     
     if §actions.seek "$bashrun_action"; then

@@ -337,7 +337,7 @@ function §print_bindings {
 		[[ " $covered " =~ " $keyname " ]] && continue
 			
 		echo -en "\t$b$keyname$n\t"
-		echo -en "$(§action.get_description)"
+		echo -en "$(§interpolate "$(§action.get_description)")"
 		if [[ -n "$(§action.get_depends)" ]]; then
     		    echo -en " ($(§action.print_depends))"
 		fi

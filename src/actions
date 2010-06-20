@@ -17,7 +17,7 @@ function §action.new {
     §action._new "$1"
     §action.set_input "1"
     §action.set_description "$1"
-    §action.set_bash "3.2"
+    §action.set_bash "4.1"
     §action.set_remote "1"
 
     if ! §function.defined? "+action-$1"; then
@@ -417,7 +417,7 @@ function §action.print_depends {
 
     local found="$r"
 
-    if [[ "$depends" != '' || "$bash" != "3.2" ]]; then
+    if [[ "$depends" != '' || "$bash" != "4.1" ]]; then
 	
 	for dep in $depends; do
 	    if `type -p $dep &> /dev/null`; then
@@ -435,7 +435,7 @@ function §action.print_depends {
 	local ok="$g"
 	[[ current -lt wanted ]] && ok="$r"
 
-	if [[ "$bash" != "3.2" ]]; then 
+	if [[ "$bash" != "4.1" ]]; then 
 	    str=", ${ok}bash>=${bash// /.}$n$str"	
 	fi
 
@@ -463,7 +463,7 @@ function §action.code {
     [[ "$input" != "" ]] && echo "  --input $input"
     [[ "$remote" != "1" ]] && echo "  --remote '$remote'"
     [[ "$depends" != "" ]] && echo "  --depends '$depends'"
-    [[ "$bash" != "3.2" ]] && echo "  --bash '$bash'"
+    [[ "$bash" != "4.1" ]] && echo "  --bash '$bash'"
     
     # function
     if §action.function?; then
