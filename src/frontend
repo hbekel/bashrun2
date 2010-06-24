@@ -186,7 +186,8 @@ function remote {
 
 function remote_control_code {
     cat <<EOF
-if [[ bashrun -ne 1 ]]; then
+if [[ "\$DISPLAY" != '' ]] && ! shopt -p login_shell &>/dev/null; then
+  if [[ bashrun -ne 1 ]]; then
      remote_control="\${XDG_CACHE_HOME:-\$HOME/.cache}/bashrun/remote.bash"
 
      if [[ -f "\$remote_control" ]]; then
@@ -194,6 +195,7 @@ if [[ bashrun -ne 1 ]]; then
      fi
      
      unset remote_control
+  fi
 fi
 EOF
 }
