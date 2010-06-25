@@ -168,7 +168,7 @@ function §handlers.install_completion {
 
     local name=""
     local prefix=""
-    local func=""
+    local compfunc=""
 
     §handlers.seek_start
     while §handlers.next?; do
@@ -177,39 +177,31 @@ function §handlers.install_completion {
 	if [[ -n prefix ]]; then
 	    if §function.defined? +handler-$name-complete; then
 	    
-		func='function _bashrun___NAME__ {
+		compfunc="function _bashrun_${name} {
 
-        		local cur prev
-	        	COMPREPLY=()
-	        	cur="${COMP_WORDS[COMP_CWORD]}"
-		        prev="${COMP_WORDS[COMP_CWORD-1]}"
-		
-		        if [[ ${cur} == * ]]; then		
-		           COMPREPLY=($(compgen -W "$(__COMPGEN__)" ${cur}))
-		        fi
-		        return 0
-	         }'
-		
-		func=${func//__NAME__/$name}
-		func=${func//__COMPGEN__/+handler-$name-complete}
-
-		echo "$func" > $bashrun_cache_home/compfunc
-		source $bashrun_cache_home/compfunc
-		rm $bashrun_cache_home/compfunc		
+	        COMPREPLY=()
+	        local cur=\"\${COMP_WORDS[COMP_CWORD]}\"		
+		        
+                local IFS=\$'\n'
+                COMPREPLY=(\$(compgen -W \"\$(+handler-$name-complete)\" \${cur}))
+		return 0
+	        }"
+		eval "$compfunc"
 	    
 		eval "function $prefix { 
                         §engine.action run 0 \"$prefix \$@\" 
                       }"
 		
-		complete -F "_bashrun_$name" "$prefix"
+		complete -o filenames -F "_bashrun_$name" "$prefix"
 
 		# add this to the remote interface, too
 		§remote.interface.add "# completion for +handler $name"
 		§remote.interface.add "$(§function.code +handler-$name-complete)"
-		§remote.interface.add "$func"
+		§remote.interface.add "$compfunc"
 		§remote.interface.add \
 		    "function $prefix { bashrun do run \"$prefix \$@\"; }"
-		§remote.interface.add "complete -F '_bashrun_$name' '$prefix'"
+		§remote.interface.add \
+		    "complete -o filenames -F '_bashrun_$name' '$prefix'"
 	    fi	
 	fi
 	§handlers.next
