@@ -1,7 +1,7 @@
 #!/bin/bash
 ######################################################################
 #
-# Bashrun 1.0.0 -- launch applications from interactive bash sessions
+# Bashrun 1.0.0rc1 -- launch applications from interactive bash sessions
 # Copyright (C) 2010 Henning Bekel <h.bekel@googlemail.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -46,7 +46,7 @@ trap '[[ -f "$lock" ]] && rm "$lock"' EXIT
 trap '[[ -f "$lock" ]] && rm "$lock"' TERM
 
 # bootstrap if cache or data home don't exist
-if [[ ! -e $bashrun_cache_home || ! -e $bashrun_data_home ]]; then
+if [[ ! -e "$bashrun_cache_home" || ! -e "$bashrun_data_home" ]]; then
     source $bashrun_site/bootstrap
 fi
 
@@ -55,7 +55,7 @@ mode="launcher"
 command="show"
 
 # load frontend functions
-source $bashrun_site/frontend
+source "$bashrun_site/frontend"
 
 # handle options first
 until [[ "$1" == "--" || "${1:0:1}" != '-' ]]; do
@@ -157,10 +157,10 @@ case "$command" in
 	§window.toggle_smart &>/dev/null
 	;;
     wid)
-	echo $wid
+	echo "$wid"
 	;;
     pid)
-	echo $pid
+	echo "$pid"
 	;;
     su)
 	if [[ ${#args[@]} -gt 0 ]]; then
@@ -188,7 +188,7 @@ case "$command" in
 	sleep 1
 	export bashrun_debug
 	rm "$lock" &>/dev/null
-	exec bashrun -m $mode	
+	exec bashrun -m "$mode"	
 	;;
     debug)
 	remote debug

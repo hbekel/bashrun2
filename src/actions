@@ -159,7 +159,7 @@ function §action.unbind {
 
     if [[ "$keyseq" == '' ]]; then
         # find the next bound binding
-	for id in $(§bindings.select action $action); do
+	for id in $(§bindings.select action "$action"); do
 	    if §bindings.seek "$id" "$keymap"; then
 		if [[ "$id" == "$keyseq" ]]; then
 		    if §binding.bound?; then		    
@@ -286,28 +286,6 @@ function §action.input? {
     [[ "$(§action.get_input)" == "1" ]]
 }
 
-function §action.uses {
-
-    local code="$(type +action-$(§action.get_name))"
-    local applies=""
-    local methods="command line \+handlers \+rules \+term \+pager \+user executable? builtin? bookmark?"
-
-    local method=''
-    for method in $methods; do
-	if [[ "$code" =~ ${method} ]]; then
-	    if [[ "$method" == "+user" ]]; then
-		if [[ "$code" =~ \+user\ +?([^\}\;]+) ]]; then 
-		    applies="$applies, user:${BASH_REMATCH[1]}"
-		fi
-	    else
-		applies="$applies, ${method/\\+/}"
-	    fi
-	fi
-    done
-    applies="${applies:2}"
-    echo "$applies"
-}
-
 function §action.run {
     
     local action="$(§action.get_name)"
@@ -380,10 +358,10 @@ function §action.api.enable {
     
     function action { +action-$1; }
     function handlers { §handlers.apply; }
-    function terminal { §command.add_terminal $1; }
-    function hold { §command.add_hold $1; }
+    function terminal { §command.add_terminal "$1"; }
+    function hold { §command.add_hold "$1"; }
     function pager { §command.add_pager; }    
-    function user { tput cr; tput el; map; §command.add_su ${1:-root}; }
+    function user { tput cr; tput el; map; §command.add_su "${1:-root}"; }
     function map { §window.map; tput cr; }
 }
 
@@ -460,9 +438,9 @@ function §action.code {
     # add action 
     echo "+action '$name'"
     echo "  --description '$description'"
-    [[ "$input" != "" ]] && echo "  --input $input"
+    [[ -n "$input" ]] && echo "  --input $input"
     [[ "$remote" != "1" ]] && echo "  --remote '$remote'"
-    [[ "$depends" != "" ]] && echo "  --depends '$depends'"
+    [[ -n "$depends" ]] && echo "  --depends '$depends'"
     [[ "$bash" != "4.1" ]] && echo "  --bash '$bash'"
     
     # function
@@ -476,7 +454,7 @@ function §actions.dump {
 
     local file="$(§objects.data_home)/${1:-actions.dump}"
     local action=''
-    §actions._dump $1
+    §actions._dump "$1"
 
     local saved="$(§action.get_name)"
 
@@ -489,7 +467,7 @@ function §actions.dump {
     §actions.seek "$saved"    
 
     # bashrun completion helper
-    §actions.list > $bashrun_cache_home/actions
+    §actions.list > "$bashrun_cache_home/actions"
 }
 
 ## shortcut functions to §action.bind ##
@@ -503,7 +481,7 @@ function +bind () {
     if §actions.seek "$action"; then
 	§action.bind "$keyseq" "$bashrun_keymap" "$keyname"
     else
-	§debug fail "no such action:" -v $action
+	§debug fail "no such action:" -v "$action"
 	return 1
     fi
 }
@@ -516,7 +494,7 @@ function +unbind () {
     if §actions.seek "$action"; then
 	§action.unbind "$keyseq" "$bashrun_keymap"
     else
-	§debug fail "no such action:" -v $action
+	§debug fail "no such action:" -v "$action"
 	return 1
     fi
 }
@@ -528,7 +506,7 @@ function +rebind () {
     if §actions.seek "$action"; then
 	§action.rebind "$bashrun_keymap"
     else
-	§debug fail "no such action:" -v $action
+	§debug fail "no such action:" -v "$action"
 	return 1
     fi
 }
@@ -537,7 +515,7 @@ function +keymap () {
     local keymap="$1"
     if [[ ! "$keymap" =~ (emacs|vi-insert|vi-command) ]]; then
 	§debug fail "must be one of 'emacs', 'vi-insert' or 'vi-command'"
-	§debug warn "keymap remains set to" -v $bashrun_keymap
+	§debug warn "keymap remains set to" -v "$bashrun_keymap"
 	return 1
     fi
     bashrun_keymap="$keymap"

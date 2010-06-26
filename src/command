@@ -44,7 +44,9 @@ function §command.get_line {
 function §command.get_word {
 
     # updates bashrun_command_word to contain the first word of the
-    # current command that does not contain a '='.
+    # current command that does not contain a '='. The current command
+    # may be the command that was previously wrapped in a hold, page
+    # or su invocation.
 
     local word=""
     local command="$bashrun_command"
@@ -107,10 +109,10 @@ function §command.builtin? {
     local word="$bashrun_command_word"
 
     if [[ "$(type -t $word)" == "builtin" ]]; then
-	§debug -v "$word" "->" -g yes
+	§debug -v "$word" "->" -g "yes"
 	return 0
     fi
-    §debug -v "$word" "->" -r no
+    §debug -v "$word" "->" -r "no"
     return 1
 }
 
@@ -183,7 +185,7 @@ function §command.add_terminal {
     # assume default terminal
     §terminals.seek 'default'
 
-    if [[ $# -eq 1 ]]; then
+    if [[ -n "$1" ]]; then
 	# explicit terminal name given
 	if ! §terminals.seek "$1"; then
 	    §debug warn "no such terminal:" -v "$term" "(using default)"
