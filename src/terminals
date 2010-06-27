@@ -14,7 +14,8 @@
 function §terminal.new { 
 
     §terminal._new "$1"
-    §terminal.set_command "xterm -e bash -c %@"
+    §terminal.set_command "__EXEC_TERMINAL__"
+    §terminal.set_geometry "80x24"
 }
 
 function §terminal.set_match {

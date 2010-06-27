@@ -5,7 +5,7 @@
 +configure-core-modes () {
 
     +mode launcher
-      --terminal 'xterm -geometry %g -name %n %o -e %*'
+      --terminal '__TERMINAL__'
       --geometry '40x1 40x8'
       --completion 'menu-complete complete 8'
       --unmap true
@@ -21,7 +21,7 @@
     }
 
     +mode terminal
-      --terminal 'xterm -geometry %g -name %n %o -e %*'
+      --terminal '__TERMINAL__'
       --feedback true
       --cmdnfh true
 
@@ -42,10 +42,10 @@
 
 +configure-core-terminals () {
     
-    +terminal default --command "xterm -e bash -c %@"
+    +terminal default --command '__EXEC_TERMINAL__'
 
     +terminal notify 
-      --command "xterm -g %g -e bash -c %@"
+      --command '__EXEC_TERMINAL__'
       --geometry "40x4+0+0"
 }
 

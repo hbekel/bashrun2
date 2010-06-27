@@ -23,7 +23,7 @@
       # This is the default "launcher" mode that provides a terminal
       # in the fashion of a run dialog.
 
-      --terminal 'xterm -geometry %g -name %n %o -e %*'
+      --terminal '__TERMINAL__'
       #
       # This setting replaces the former XTERM, XTERM_OPTIONS, FGCOLOR
       # and BGCOLOR settings.
@@ -106,13 +106,14 @@
     # "notify", are always defined:
 
     +terminal default 
-      --command 'xterm -e bash -c %@'
+      --command '__EXEC_TERMINAL__'
 
     # The default terminal is used to execute commands if no other
     # terminal has been explicitly requested by an action.
     #
     # Some examples on how to run shell commands in common terminals:
     #
+    # +terminal default --command '__EXEC_TERMINAL__'
     # +terminal default --command 'rxvt -e bash -c %@'
     # +terminal default --command 'urxvt -e bash -c %@'
     # +terminal default --command 'mrxvt -e bash -c %@'
@@ -126,7 +127,7 @@
     # +terminal default --command 'terminator -x bash -c %@'    
 
     +terminal notify 
-      --command 'xterm -g %g -e bash -c %@'
+      --command '__EXEC_TERMINAL__'
       --geometry '40x4+0+0'
       # ^ A small terminal for notifications, used by the default actions
       # "term-notify" and "su-term-notify".

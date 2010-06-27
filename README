@@ -38,13 +38,13 @@ Runtime dependencies
 The following external programs need to be installed on the target
 system in order to successfully run bashrun:
 
-bash>=4.1, sed, grep, tput, stty, kill
+bash>=4.1, sed, grep, tput, stty, kill, xterm(see below)
 
 The ./configure script only checks for buildtime dependencies. It's up
 to the user/packager to make sure that runtime dependencies are
 satisfied on the target system.
 
-Note to packagers
+Default terminals
 =================
 
 The default configuration file shipped with bashrun assumes xterm to
@@ -53,8 +53,22 @@ will be presented with an appropriate error message, recommending to
 either install xterm or to set up bashrun to use a different
 terminal. 
 
-I consider it up to the packager to decide whether to include xterm as
-a package dependency to make sure users get a working install out of
-the box, or to trust users to handle this case on their own. Since the
-default configuration file includes numerous ready to use examples for
-other common terminals, I'd personally opt for the latter.
+If you want to build bashrun using a default terminal other than
+xterm, please use the ./configure options
+
+--with-terminal=TEMPLATE
+--with-exec-terminal=TEMPLATE
+
+To specify the default command templates to be used for the terminal
+to launch bashrun in as well as the terminal to launch console
+applications in. For example, to use urxvt instead of xterm by
+default:
+
+$ ./configure \
+  --sysconfdir=/etc \
+  --with-terminal='urxvt -g %g -n %n %o -e %*' \
+  --with-exec-terminal='urxvt -g %g -e bash -c %@'
+
+(See the default config file ./etc/bashrun.rc for examples of using
+other common terminals and the manual for details on command
+templates)

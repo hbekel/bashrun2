@@ -15,3 +15,9 @@ install-data-hook :
 	$(SED) -i 's|__PREFIX__|@prefix@|g' $(DESTDIR)$(sitedir)/bashrc
 	$(SED) -i 's|__PREFIX__|@prefix@|g' $(DESTDIR)$(sitedir)/globals
 
+	$(SED) -i 's|__TERMINAL__|@ac_with_terminal@|g' $(DESTDIR)$(sitedir)/core
+	$(SED) -i 's|__TERMINAL__|@ac_with_terminal@|g' $(DESTDIR)$(sitedir)/modes
+
+	$(SED) -i 's|__EXEC_TERMINAL__|@ac_with_exec_terminal@|g' $(DESTDIR)$(sitedir)/core
+	$(SED) -i 's|__EXEC_TERMINAL__|@ac_with_exec_terminal@|g' $(DESTDIR)$(sitedir)/terminals
+

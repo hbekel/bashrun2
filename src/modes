@@ -15,7 +15,7 @@
 function §mode.new { 
 
     §mode._new "$1"
-    §mode.set_terminal "xterm -geometry %g -name %n %o -e %*"
+    §mode.set_terminal "__TERMINAL__"
     §mode.set_geometry "80x24"
     §mode.set_current "0"
     §mode.set_completion 'complete'
