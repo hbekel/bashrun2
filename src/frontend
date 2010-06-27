@@ -78,11 +78,16 @@ function launch {
 	source $bashrun_site/message
 	§message "Error" \
                  "The terminal program \"$prog\" was not found. Please
-                  make sure that the terminal command template is correct:
+                  install $prog or use a different terminal installed on
+                  your system.
 
-                 $terminal
+                  The current terminal command template is
 
-                 (+mode $mode --terminal)"
+                  '$terminal'
+
+                 (as defined by the config directive '+mode $mode
+                 --terminal')"
+
 	rm "$modeinfo"
 	exit 1
     fi
@@ -130,12 +135,12 @@ function launch {
 	   source $bashrun_site/message
 	   §message "Error" \
                     "Failed to launch terminal. Please make sure that
-                     the terminal command line is correct:
+                     the following terminal command line is correct:
 
                      $(§terminal.expand "$terminal" '...' \
                         "$mode" "$geometry" "$font" "$termopts")
 
-                     (+mode $mode --terminal)
+                     (See the config directive '+mode $mode --terminal')
 
                      $error"
     } &
@@ -206,7 +211,7 @@ function version {
 }
 
 function usage {
-    echo "Usage: bashrun [option] [command [arg...]] [-- termopt...]
+    echo "Usage: bashrun [options] [command [args]] [-- termopts]
 
   Options: 
 
@@ -217,8 +222,8 @@ function usage {
 
     --remote-control : show code to load remote control interface and exit
 
-    -- <termopt>    : terminate argument processing and add the remaining 
-                    : arguments to the terminal command line
+    -- <termopts>    : terminate argument processing and add the remaining 
+                     : arguments to the terminal command line
 
   Commands: 
        

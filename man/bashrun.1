@@ -5,23 +5,23 @@
 .SH NAME
 \fBbashrun\fP \- launch applications from interactive bash sessions
 .SH SYNOPSIS
-\fBbashrun\fP [\fIoption\fP] [\fIcommand\fP [\fIarg...\fP]] [-- \fItermopt...\fP]
+\fBbashrun\fP [\fIoptions\fP] [\fIcommand\fP [\fIargs\fP]] [-- \fItermopts\fP]
 .SH DESCRIPTION
 .PP
-\fBbashrun\fP provides application launching and terminal window
-management capabilities to interactive bash sessions, suitable for use
-in a graphical user environment.
+\fBbashrun\fP adds application launching capabilities suitable for use
+in a graphical user environment to interactive bash sessions.
 
-In its default setup, \fBbashrun\fP creates an interactive bash
-session running in a small \fBxterm\fP(1) terminal window, thus
-providing a simple run dialog (\fIlauncher\fP mode). It can also be
-used from a regular terminal session, allowing the user to seamlessly
-launch both graphical and terminal applications from the command line
-(using \fIterminal\fP mode or the \fBREMOTE CONTROL INTERFACE\fP).
+In its default setup, \fBbashrun\fP provides a simple run dialog by
+creating an interactive bash session in a small \fBxterm\fP(1)
+terminal window (\fIlauncher\fP mode). It can also be used from a
+regular terminal session, allowing the user to seamlessly launch both
+graphical and terminal applications from the command line (either by
+using the \fIterminal\fP mode or by installing a lightweight \fBREMOTE
+CONTROL INTERFACE\fP).
 .SH OVERVIEW
 Bashrun is composed out of a set of user configurable \fBobjects\fP
 that control different aspects of application launching and terminal
-management:
+window management:
 
 \fBModes\fP control the appearance and behavior of the terminal
 hosting the bashrun session, such as the default modes \fIlauncher\fP
@@ -97,7 +97,7 @@ Remotely invoke \fIaction\fP with
 \fIshell-command\fP. If the requested action involves
 .BR su (1),
 the terminal window is shown before invoking the action to allow
-password entry.
+the user to enter a password.
 .IP \fBsu\fP\ \fIshell-command\fP
 Remotely invoke the \fIsu-run\fP action with \fIshell-command\fP. This is
 the equivalent to \fBdo\fP \fIsu-run\fP \fIshell-command\fP.
@@ -113,8 +113,12 @@ Reload configuration files.
 Exit the bashrun session and start a new one.
 .IP \fBexit\fP
 Exit the bashrun session.
-.SH REMOTE CONTROL INTERFACE
-.SH CONFIGURATION 
+.SH CONFIGURATION
+\fBbashrun\fP will look for a user specific configuration file
+\fI$XDG_CONFIG_HOME/bashrun/bashrun.rc\fP (usually
+\fI~/.config/bashrun/bashrun.rc\fP). If no such file exists, the
+system wide default configuration file
+\fI__SYSCONFDIR__/xdg/bashrun/bashrun.rc\fP will be used.
 .SH MODES
 .SH TERMINALS
 .SH RULES

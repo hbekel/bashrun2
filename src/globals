@@ -27,6 +27,36 @@ bashrun_cache_home="$(§xdg cache-home bashrun)"
 # setup rcfile
 bashrun_rcfile="$(§xdg -e config bashrun/bashrun.rc)"
 
+if [[ -z "$bashrun_rcfile" ]]; then
+    source "$bashrun_site/message"
+
+    files="$(§xdg config bashrun/bashrun.rc)"
+    files="${files//$'\n'/\\n}"
+
+    §message "Error" \
+	"Could not find a configuration file at the following locations:
+
+        $files
+
+        Please make sure that either
+
+        - Your XDG_CONFIG_DIRS environment variable contains the
+          appropriate path to the xdg directory below which the
+          default configuration files have been installed, or that
+
+        - Bashrun has been installed using the default sysconfdir
+          prefix as defined by the XDG Base Directory Specification by
+          using the configure option '--sysconfdir=/etc'.
+
+        If you have installed bashrun by using the package manager of
+        your distribution, please consider reporting this as a bug
+        to the maintainer of the distribution package.
+
+        See the README file included in the source tarball for details."
+
+    exit 1
+fi
+
 # define version info
 bashrun_major_version=1
 bashrun_minor_version=0

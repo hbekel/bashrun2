@@ -1,0 +1,60 @@
+Installation
+============
+
+To install in compliance with the XDG Base Directory Specification,
+please include
+
+--sysconfdir=/etc
+
+in the options you supply to the configure script.
+
+This will make sure that the system wide configuration files will be
+installed below /etc/xdg/bashrun/ and will thus be found by bashrun at
+runtime using the method(s) defined in the XDG Base Directory
+Specification.
+
+If you choose to use a $sysconfdir other than /etc you will have to
+make sure that the user's XDG_CONFIG_DIRS environment variable
+includes the directory $sysconfdir/xdg in order to allow bashrun to
+locate the system wide default configuration files at runtime.
+
+Note that if you don't use an explicit --sysconfdir option,
+$sysconfdir will default to $prefix/etc and will likely result in the
+need to adjust XDG_CONFIG_DIRS as described above.
+
+Staged installation
+===================
+
+The standard DESTDIR mechanism can be used for a staged installation,
+e.g.
+
+make DESTDIR=/tmp/stage install
+
+will install all files relative to /tmp/stage instead of /.
+
+Runtime dependencies
+====================
+
+The following external programs need to be installed on the target
+system in order to successfully run bashrun:
+
+bash>=4.1, sed, grep, tput, stty, kill
+
+The ./configure script only checks for buildtime dependencies. It's up
+to the user/packager to make sure that runtime dependencies are
+satisfied on the target system.
+
+Note to packagers
+=================
+
+The default configuration file shipped with bashrun assumes xterm to
+be available on the target system. If xterm is not available, the user
+will be presented with an appropriate error message, recommending to
+either install xterm or to set up bashrun to use a different
+terminal. 
+
+I consider it up to the packager to decide whether to include xterm as
+a package dependency to make sure users get a working install out of
+the box, or to trust users to handle this case on their own. Since the
+default configuration file includes numerous ready to use examples for
+other common terminals, I'd personally opt for the latter.
