@@ -62,10 +62,17 @@ function source_window {
 }
 
 function launch {
+    
+    for file in utils terminals; do
+	source "$bashrun_site/$file" &>/dev/null
+    done
 
-    source $bashrun_site/terminals
-
-    # launch a standard sized terminal in debug mode
+    # cleanup possibly stale cache files
+    for suffix in wid pid ready do; do
+	[[ -f "$mode-$suffix" ]] && rm "$mode-$suffix"
+    done
+	
+    # launch a standard sized terminal in debug mode...
     if [[ bashrun_debug -eq 1 ]]; then
 	geometry="80x24"
     fi
