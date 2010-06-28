@@ -19,14 +19,14 @@ AC_CHECK_LIB(X11, XOpenDisplay,
 # Arguments for setting the default terminal command lines
 
 AC_ARG_WITH(terminal,
-  [AS_HELP_STRING([--with-terminal=TEMPLATE], [the default terminal command template used to launch new bashrun sessions with (+mode * --terminal, default='xterm -g %g -n %n %o -e %*')])],
+  [AS_HELP_STRING([--with-terminal=TEMPLATE], [the default terminal command template used to launch new bashrun sessions with (+mode * --terminal, default='xterm -g %g -name %n %o -e %*')])],
   [
     ac_with_terminal="$withval"
     ac_with_terminal_name="$(echo "$withval" | awk '{ print $1 }')"
     ],
     
   [
-    ac_with_terminal='xterm -g %g -n %n %o -e %*'
+    ac_with_terminal='xterm -g %g -name %n %o -e %*'
     ac_with_terminal_name='xterm'
   ])
 AC_SUBST(ac_with_terminal)
