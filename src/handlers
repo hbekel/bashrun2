@@ -2,7 +2,9 @@
 
 ################################################################################
 
-§class "handler" "name match test string action complete fallback:b" ""
+§class "handler" --with-interface \
+    --properties "name" "match" "test" "string" \
+                 "action" "complete" "fallback:b"
 
 bashrun_from_cmdnfh=0
 bashrun_handlers_order=""

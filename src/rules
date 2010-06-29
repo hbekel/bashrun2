@@ -2,7 +2,7 @@
 
 ################################################################################
 
-§class "rule" "name match:a" ""
+§class "rule" --with-interface --properties "name" "match:a" 
 
 §function.clone "§rule.set_match" "§rule._set_match"
 

@@ -2,7 +2,8 @@
 
 ################################################################################
 
-§class "terminal" "name command geometry font match:a cache" ""
+§class "terminal" --with-interface \
+    --properties "name" "command" "geometry" "font" "match:a" "cache"
 
 ################################################################################
 

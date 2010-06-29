@@ -2,9 +2,10 @@
 
 ################################################################################
 
-§class "mode" "name terminal geometry font
-                completion unmap:b feedback:b 
-                onmap onunmap cmdnfh:b logfile current" ""
+§class "mode" --with-interface \
+    --properties "name" "terminal" "geometry" "font" \
+                 "completion" "unmap:b" "feedback:b" \
+                 "onmap" "onunmap" "cmdnfh:b" "logfile" "current"
 
 §function.clone "§mode.new" "§mode._new"
 §function.clone "§mode.get_geometry" "§mode._get_geometry"

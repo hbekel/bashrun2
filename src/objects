@@ -50,6 +50,14 @@ function §objects.types {
     echo " $_objects_types "
 }
 
+function §objects.register_type {
+
+    _objects_types+=" $1"
+    if [[ "${_objects_types:0:1}" == ' ' ]]; then
+	_objects_types="${_objects_types:1}"
+    fi
+}
+
 function §objects.focus {
     
     if [[ $# -eq 0 ]]; then
@@ -64,100 +72,6 @@ function §objects.seek_start {
     for type in $_objects_types; do
 	§${type}s.seek_start
     done    
-}
-
-function §class {
-
-    # create object from 'objects' template
-
-    local name="$1"
-    local keys="$2"
-    local key=''
-    local clean_keys=""
-    local methods="nil"
-    local have_interface=0
-    
-    # register object type
-    _objects_types="$_objects_types $name"
-    if [[ "${_objects_types:0:1}" == ' ' ]]; then
-	_objects_types="${_objects_types:1}"
-    fi
-
-    # interface and additional interfaced methods
-    if [[ "$#" == "3" ]]; then 
-	methods=${3}
-    fi
-
-    for key in $keys; do
-	if [[ "$key" =~ (.+?):(.+) ]]; then
-	    key=${BASH_REMATCH[1]}
-	fi
-	clean_keys="$clean_keys $key"
-    done
-
-    if [[ "$methods" != 'nil' ]]; then
-
-	local interface=(new code $clean_keys $methods)
-	have_interface=1
-
-        # prepare interface options (prefix with --)
-	local i=0
-	for ((i=0; i<${#interface[@]}; i++)); do
-	    interface[$i]="--${interface[$i]}"
-	done
-	interface="${interface[@]}"
-    fi
-
-    local tmpfile=$_objects_cache_home/$name.bash
-
-    if [[ -f $tmpfile ]]; then
-	source $tmpfile
-	return 0
-    fi
-
-    cat $_objects_site/object | \
-	sed "s|_objects_keys=()|_objects_keys=($clean_keys)|" | \
-	sed "s|_objects_interface_options=''|_objects_interface_options='$interface' |" | \
-	sed "s|_objects_have_interface=0|_objects_have_interface=$have_interface|" | \
-	sed "s|_objects_interface_methods=''|_objects_interface_methods='$methods'|" | \
-	sed "s|object|$name|g;s|_$name|_$(§objects.namespace)_$name|g;" | \
-	sed "s|oBjEcT|object|g" \
-	> $tmpfile
-
-    local i=0
-    local access='rw'
-    for key in $keys; do
-	if [[ "$key" =~ (.+?):(.*) ]]; then
-	    key=${BASH_REMATCH[1]}
-	    access=${BASH_REMATCH[2]}
-	    [[ "$access" == "b" ]] && access="rwb"
-	    [[ "$access" == "a" ]] && access="rwa"
-	else
-	    access="rw"
-	fi
-
-	if [[ "$access" =~ r ]]; then
-	    if [[ "$access" =~ a ]]; then
-      		§object.create_array_reader $name $key $i
-	    else
-		§object.create_reader $name $key $i
-	    fi
-	fi
-	if [[ "$access" =~ w ]]; then
-	    if [[ "$access" =~ b ]]; then
-		§object.create_bool_writer $name $key $i
-	    elif [[ "$access" =~ a ]]; then
-		§object.create_array_writer $name $key $i
-	    else
-		§object.create_writer $name $key $i
-	    fi
-	fi
-	let i++
-    done
-    
-    source $tmpfile
-
-    return 0
 }
 
 function §objects.init {
@@ -189,12 +103,124 @@ function §objects.clear {
     done
 }
 
+function §class {
+
+    # §class 'name' --properties <propspecs>... --with-interface [<methods>]...
+
+    local type="$1"
+    shift
+
+    local has_interface=0
+    local arg="" target="ignored" property=""
+    declare -a ignored properties methods property_names
+
+    # parse arguments...
+    for arg in "$@"; do
+	if [[ "$arg" == "--properties" ]]; then
+	    target="properties"
+	    continue
+
+	elif [[ "$arg" == "--with-interface" ]]; then
+	    has_interface=1
+	    target="methods"
+	    continue
+
+	else
+	    eval "$target[\${#$target[@]}]=\"\$arg\""
+	fi
+    done
+
+    # warn about ignored arguments...
+    if [[ "${#ignored[@]}" -ne 0 ]]; then
+	echo "warning: §class $type: ignored arguments: ${ignored[@]}" >&2
+    fi
+
+    §objects.register_type "$type"
+
+    # get property names from properties array
+    for property in "${properties[@]}"; do
+	if [[ "$property" =~ (.+?):(.+?) ]]; then
+	    property="${BASH_REMATCH[1]}"
+	fi
+	property_names[${#property_names[@]}]="$property"
+    done
+
+    # prepare interface options (prefix method names with --)
+    if [[ has_interface -eq 1 ]]; then
+
+	local interface=(new code ${property_names[@]} ${methods[@]})
+
+	local i=0
+	for ((i=0; i<${#interface[@]}; i++)); do
+	    interface[$i]="--${interface[$i]}"
+	done
+	interface="${interface[@]}"
+    fi
+
+    # the object source file
+    local file="$_objects_cache_home/$type.bash"
+
+    # source it if it already exists, and return
+    if [[ -f "$file" ]]; then
+	source "$file"
+	return 0
+    fi
+
+    # create object source file from object template...
+    local names="${property_names[@]}"
+
+    cat "$_objects_site/object" | \
+	sed "s|_objects_keys=()|_objects_keys=($names)|" | \
+	sed "s|_objects_interface_options=''|_objects_interface_options='$interface'|" | \
+	sed "s|_objects_have_interface=0|_objects_have_interface=$has_interface|" | \
+	sed "s|_objects_interface_methods=''|_objects_interface_methods='${methods[@]}'|" | \
+	sed "s|object|$type|g;s|_$type|_$(§objects.namespace)_$type|g" | \
+	sed "s|oBjEcT|object|g" \
+	> "$file"
+
+    # create object methods and append them to the object source file    
+    local pos=0
+    local access='rw'
+
+    for property in "${properties[@]}"; do
+	if [[ "$property" =~ (.+?):(.*) ]]; then
+	    property="${BASH_REMATCH[1]}"
+	    access="${BASH_REMATCH[2]}"
+	    [[ "$access" == "b" ]] && access="rwb"
+	    [[ "$access" == "a" ]] && access="rwa"
+	else
+	    access="rw"
+	fi
+
+	if [[ "$access" =~ r ]]; then
+	    if [[ "$access" =~ a ]]; then
+      		§object.create_array_reader "$type" "$property" "$pos" >> "$file"
+	    else
+		§object.create_reader "$type" "$property" "$pos" >> "$file"
+	    fi
+	fi
+	if [[ "$access" =~ w ]]; then
+	    if [[ "$access" =~ b ]]; then
+		§object.create_bool_writer "$type" "$property" "$pos" >> "$file"
+	    elif [[ "$access" =~ a ]]; then
+		§object.create_array_writer "$type" "$property" "$pos" >> "$file"
+	    else
+		§object.create_writer "$type" "$property" "$pos" >> "$file"
+	    fi
+	fi
+	let pos++
+    done
+    
+    source "$file"
+
+    return 0
+}
+
 function §object.create_reader {
     local name="$1"
     local NAME="$(§objects.namespace)_$name"
     local key="$2"
     local field="$3"
-    local tmpfile=$_objects_cache_home/$name.bash
 
     echo $(cat <<EOF
 
@@ -202,7 +228,7 @@ function §${name}.get_${key} {
     echo "\${_${NAME}s[\$_${NAME}s_position+$field]}";
 }
 EOF
-    ) >> $tmpfile
+    )
 }
 
 function §object.create_writer {
@@ -210,7 +236,6 @@ function §object.create_writer {
     local NAME="$(§objects.namespace)_$name"
     local key="$2"
     local field="$3"
-    local tmpfile=$_objects_cache_home/$name.bash
 
     echo $(cat <<EOF
 
@@ -219,7 +244,7 @@ function §${name}.set_${key} {
     _${NAME}s_modified=1;
 }
 EOF
-    ) >> $tmpfile
+    )
 }
 
 function §object.create_array_reader {
@@ -227,7 +252,6 @@ function §object.create_array_reader {
     local NAME="$(§objects.namespace)_$name"
     local key="$2"
     local field="$3"
-    local tmpfile=$_objects_cache_home/$name.bash
 
     echo $(cat <<EOF
 
@@ -242,7 +266,7 @@ function §${name}.get_${key} {
     fi
 }
 EOF
-    ) >> $tmpfile
+    )
 }
 
 function §object.create_array_writer {
@@ -250,7 +274,6 @@ function §object.create_array_writer {
     local NAME="$(§objects.namespace)_$name"
     local key="$2"
     local field="$3"
-    local tmpfile=$_objects_cache_home/$name.bash
 
     echo $(cat <<EOF
 
@@ -264,7 +287,7 @@ function §${name}.set_${key} {
     _${NAME}s_modified=1;
 }
 EOF
-    ) >> $tmpfile
+    ) 
 }
 
 function §object.create_bool_writer {
@@ -272,7 +295,6 @@ function §object.create_bool_writer {
     local NAME="$(§objects.namespace)_$name"
     local key="$2"
     local field="$3"
-    local tmpfile=$_objects_cache_home/$name.bash
 
     echo $(cat <<EOF
 
@@ -289,6 +311,6 @@ function §${name}.set_${key} {
     _${NAME}s_modified=1;
 }
 EOF
-    ) >> $tmpfile
+    ) 
 }
 

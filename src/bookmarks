@@ -2,7 +2,7 @@
 
 ################################################################################
 
-§class "bookmark" "name" ""
+§class "bookmark" --properties "name" --with-interface
 
 §function.clone "§bookmark.new" "§bookmark._new"
 §function.clone "§bookmarks.dump" "§bookmarks._dump"

@@ -2,7 +2,9 @@
 
 ################################################################################
 
-§class "action" "name:r description input:b depends bash remote:b core:rb" ""
+§class "action" --with-interface \
+    --properties "name:r" "description" "input:b" \
+                 "depends" "bash" "remote:b" "core:rb"
 
 # Note to self: if the "core" property changes it's position, the
 # temporary setter in file 'core' needs to be adjusted.
