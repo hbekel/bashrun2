@@ -185,10 +185,9 @@ case "$command" in
 	;;
     restart)
 	remote quit
-	sleep 1
 	export bashrun_debug
 	rm "$lock" &>/dev/null
-	exec bashrun -m "$mode"	
+	exec bashrun -m "$mode"	-- $termopts
 	;;
     debug)
 	remote debug

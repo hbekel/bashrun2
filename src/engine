@@ -314,6 +314,9 @@ function §engine.shutdown {
     # remove plugin check and errors file
     rm "$bashrun_plugins_checked" &>/dev/null
 
+    # remove remote command file (required for remote quit)
+    rm "$bashrun_remote"
+
     §debug "exit"
     exit 0
 }    
