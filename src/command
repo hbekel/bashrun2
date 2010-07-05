@@ -78,10 +78,10 @@ function §command.executable? {
 
     if [[ "$type" == "function" ]]; then
 	if §function.exported? $word; then
-	    §debug -v "$word" "->" -v "exported $type" "->" -g "yes"
+	    §debug -v "$word" "->" -v "exported function" "->" -g "yes"
 	    return 0
 	else	    
-	    §debug -v "$word" "->" -v "$type" "->" -r "no"
+	    §debug -v "$word" "->" -v "local function" "->" -r "no"
 	    return 1
 	fi
     fi
@@ -265,7 +265,7 @@ function §command.add_pager {
     if [[ -z "$bashrun_command_page" ]]; then
         bashrun_command_page="$bashrun_command"
 	bashrun_command="$bashrun_command | ${PAGER} "
-	§debug "$bashrun_command"
+	§debug -v "$bashrun_command"
     else
 	§debug "already using pager with" -v "$bashrun_command_page"
     fi

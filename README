@@ -60,7 +60,7 @@ xterm, please use the ./configure options
 --with-exec-terminal=TEMPLATE
 
 To specify the default command templates to be used for the terminal
-to launch bashrun in as well as the terminal to launch console
+to launch bashrun in, as well as the terminal to launch console
 applications in. For example, to use urxvt instead of xterm by
 default:
 

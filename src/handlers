@@ -3,7 +3,7 @@
 ################################################################################
 
 §class "handler" --with-interface \
-    --properties "name" "match=(.+)" "test" "string=%1" \
+    --properties "name" "match=(.+)" "test" "string" \
                  "action" "complete" "fallback:b=0"
 
 bashrun_from_cmdnfh=0
@@ -121,7 +121,9 @@ function §handlers.apply {
 	    fi
 
 	    if [[ append -eq 1 ]]; then
-		bashrun_command="$string $bashrun_command"
+		if [[ -n "$string" ]]; then
+		    bashrun_command="$string $bashrun_command"
+		fi
 	    else
 		bashrun_command="$string"
 	    fi

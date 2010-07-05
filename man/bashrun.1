@@ -1,7 +1,7 @@
 .\" Process this file with
 .\" groff -man -Tascii bashrun.1
 .\"
-.TH BASHRUN 1 "2010-05-22" "Linux" "User manuals"
+.TH BASHRUN 1 "2010-06-28" "Linux" "User manuals"
 .SH NAME
 \fBbashrun\fP \- launch applications from interactive bash sessions
 .SH SYNOPSIS
@@ -114,11 +114,89 @@ Exit the bashrun session and start a new one.
 .IP \fBexit\fP
 Exit the bashrun session.
 .SH CONFIGURATION
-\fBbashrun\fP will look for a user specific configuration file
-\fI$XDG_CONFIG_HOME/bashrun/bashrun.rc\fP (usually
-\fI~/.config/bashrun/bashrun.rc\fP). If no such file exists, the
-system wide default configuration file
-\fI__SYSCONFDIR__/xdg/bashrun/bashrun.rc\fP will be used.
+.SS FILES
+Bashrun follows the \fBXDG Base Directory Specification\fP to locate
+configuration files. If the environment variables
+\fIXDG_CONFIG_DIRS\fP and \fI XDG_CONFIG_HOME\fP have not been set,
+are empty or include only the default directories defined by the xdg
+spec, then the main configuration file will be searched for at the
+following locations:
+.PP
+.RS
+.nf\fI
+~/.config/bashrun/bashrun.rc
+/etc/xdg/bashrun/bashrun.rc
+.fi \fP
+.RE
+.PP
+A plugin specified for inclusion with the \fB+plugins\fP directive
+(see \fBPLUGINS\fP below) will be searched for in the following
+locations:
+.PP
+.RS
+.nf\fI
+~/.config/bashrun/plugins/<plugin-name>.rc
+/etc/xdg/bashrun/plugins/<plugin-name>.rc
+.fi \fP
+.RE
+.SS SYNTAX
+Configuration files \fIbashrun.rc\fP are bash scripts that will be
+\fIsourced\fP during the startup of the bashrun session and are
+responsible for setting up the configuration functions that contain
+actual object definitions as well as additional helper function
+definitions for a specific type of object.
+.PP
+For each object type, bashrun will look for a function
+named 
+.PP
+.RS
+\fB+configure-\fP<\fItype\fP>\fBs\fP
+.RE
+.PP
+For example, \fBmode\fP objects are configured by a function named
+.PP
+.RS
+\fI+configure-modes\fP
+.RE
+.PP
+An \fBobject definition\fP consists of an \fBobject initializer\fP,
+optionally followed by one or more object \fBproperty definitions\fP on the
+same line, followed by one ore more single object \fBproperty definitions\fP
+on subsequent lines:
+.PP
+.RS
+\fB+\fP<\fItype\fP> \fB'\fP<\fIname\fP>\fB'\fP [\fB--\fP<\fIproperty-name\fP> \fB'\fP<\fIargs\fP>\fB'\fP...]
+.RS
+.nf
+[\fB--\fP<\fIproperty-name\fP> \fB'\fP<\fIargs\fP>\fB'\fP...]
+\[char46]\.\.
+.fi
+.RE
+.RE
+.PP
+For example, adding the following \fBterminal\fP object definition to
+the \fI+configure-terminals\fP function will create a new
+\fBterminal\fP object called '\fIsmall\fP' and set its \fBcommand\fP
+and \fBgeometry\fP properties:
+.PP
+.RS
++terminal 'small' 
+  --command 'urxvt -g %g -e bash -c %@'
+  --geometry '40x12'
+.RE
+.PP
+Note that if an \fBobject initializer\fP refers to a previously defined
+object of the same type using the same \fBname\fP, then subsequent
+\fBproperty definitions\fP will apply to the existing objects instead of
+creating a new object, i.e. the above example could also be written as
+.RS
+.PP
+.nf
++terminal 'small' --command 'urxvt -g %g -e bash -c %@'
++terminal 'small' --geometry '40x12'
+.ni
+.PP
+.RE
 .SH MODES
 .SH TERMINALS
 .SH RULES
@@ -132,7 +210,7 @@ Henning Bekel <h.bekel at googlemail dot com> (english and german)
 .SH "SEE ALSO"
 .BR bash (1)
 .BR readline (3)
-.BR xterm (1)
+.BR __TERMINAL_NAME__ (1)
 .BR su (1)
 .BR stty (1)
 

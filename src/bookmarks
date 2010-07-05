@@ -26,14 +26,14 @@ function §bookmarks.dump {
 
     [[ -f "$remote_bookmarks" ]] && rm "$remote_bookmarks"
 
-    §bookmarks._dump $1
+    §bookmarks._dump "$1"
 
     §bookmarks.seek_start
     while §bookmarks.next?; do
 	name="$(§bookmark.get_name)"
 
 	# dump the bookmark function
-	§function.code "$name" >> $file
+	§function.code "$name" >> "$file"
 	
 	# create the remote interface bookmark function
 	§quote name

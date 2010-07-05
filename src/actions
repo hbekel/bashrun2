@@ -332,7 +332,7 @@ function §action.api.enable {
 	    echo "$bashrun_command"
 	else
 	    bashrun_command="$@"
-	    §debug "$bashrun_command"
+	    §debug "command =" -v "$bashrun_command"
 	fi
     }
     function word { 
