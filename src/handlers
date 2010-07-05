@@ -3,23 +3,16 @@
 ################################################################################
 
 §class "handler" --with-interface \
-    --properties "name" "match" "test" "string" \
-                 "action" "complete" "fallback:b"
+    --properties "name" "match=(.+)" "test" "string=%1" \
+                 "action" "complete" "fallback:b=0"
 
 bashrun_from_cmdnfh=0
 bashrun_handlers_order=""
 
-§function.clone "§handler.new" "§handler._new"
 §function.clone "§handlers.dump" "§handlers._dump"
+§function.clone "§handler.code" "§handler._code"
 
 ################################################################################
-
-function §handler.new {
-    §handler._new "$1"
-    
-    §handler.set_match '(.+)'
-    §handler.set_fallback '0'
-}
 
 function §handler.fallback? {
     [[ "$(§handler.get_fallback)" == "1" ]]
@@ -213,31 +206,12 @@ function §handlers.install_completion {
 function §handler.code {
 
     local name="$(§handler.get_name)"
-    local match="$(§handler.get_match)"
-    local test="$(§handler.get_test)"
-    local string="$(§handler.get_string)"
-    local action="$(§handler.get_action)"
-    local complete="$(§handler.get_complete)"
-    local fallback="$(§handler.get_fallback)"
 
-    match=${match//\'/\\\'}
-    string=${string//\"/\\\"}
-    string=${string//\$/\\\$}
+    §handler._code
 
-    §print_line "handler $name" "#" "80"
-    echo
-    echo "+handler '$name'"
-    [[ "$match" != '(.+)' ]] && echo "  --match '$match'" 
-    [[ -n "$test" ]] && echo "  --test '$test'" 
-    [[ "$string" != '%1' ]] && echo "  --string '$string'"
-    [[ -n "$complete" ]] && echo "  --complete '$complete'"
-    [[ -n "$action" ]] && echo "  --action '$action'"
-    [[ "$fallback" -ne 0 ]] && echo "  --fallback '$fallback'"
-    echo
-
-    if §function.defined? +handler-$name-complete; then
-	§function.code +handler-$name-complete
+    if §function.defined? "+handler-$name-complete"; then
 	echo
+	§function.code "+handler-$name-complete"
     fi
 }
 

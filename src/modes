@@ -3,29 +3,24 @@
 ################################################################################
 
 §class "mode" --with-interface \
-    --properties "name" "terminal" "geometry" "font" \
-                 "completion" "unmap:b" "feedback:b" \
-                 "onmap" "onunmap" "cmdnfh:b" "logfile" "current"
+    --properties "name" \
+                 "terminal=__TERMINAL__" \
+                 "geometry=80x24" \
+                 "font" \
+                 "completion=complete" \
+                 "unmap:b=0" \
+                 "feedback:b=0" \
+                 "onmap" \
+                 "onunmap" \
+                 "cmdnfh:b=0" \
+                 "logfile=/dev/null" \
+                 "current=0"
 
-§function.clone "§mode.new" "§mode._new"
 §function.clone "§mode.get_geometry" "§mode._get_geometry"
 §function.clone "§modes.dump" "§modes._dump"
+§function.clone "§mode.code" "§mode._code"
 
 ################################################################################
-
-function §mode.new { 
-
-    §mode._new "$1"
-    §mode.set_terminal "__TERMINAL__"
-    §mode.set_geometry "80x24"
-    §mode.set_current "0"
-    §mode.set_completion 'complete'
-    §mode.set_unmap '0'
-    §mode.set_onmap ""
-    §mode.set_onunmap ""
-    §mode.set_feedback "0"
-    §mode.set_logfile "/dev/null"
-}
 
 function §mode.get_geometry {
     
@@ -110,35 +105,12 @@ function §mode.reset {
 
 function §mode.code {
 
+    §mode._code
     local name="$(§mode.get_name)"
-    local terminal="$(§mode.get_terminal)"
-    local completion="$(§mode.get_completion)"
-    local unmap="$(§mode.get_unmap)"
-    local geometry="$(§mode.get_geometry)"
-    local font="$(§mode.get_font)"
-    local onmap="$(§mode.get_onmap)"
-    local onunmap="$(§mode.get_onunmap)"
-    local feedback="$(§mode.get_feedback)"
-    local logfile="$(§mode.get_logfile)"
-
-    §print_line "mode $name" "#" "80"
-    echo
-
-    echo "+mode '$name'"
-    echo "  --terminal '$terminal'"
-    [[ "$geometry" != '80x24' ]] && echo "  --geometry '$geometry'"
-    [[ -n "$font" ]] && echo "  --font '$font'"
-    [[ "$completion" != 'complete' ]] && echo "  --completion '$completion'"
-    [[ "$unmap" != '0' ]] && echo "  --unmap '$unmap'"
-    [[ -n "$onmap" ]] && echo "  --onmap '$onmap'"
-    [[ -n "$onunmap" ]] && echo "  --onunmap '$onunmap'"
-    [[ "$feedback" != '0' ]] && echo "  --feedback '$feedback'"
-    [[ "$logfile" != '/dev/null' ]] && echo "  --logfile '$logfile'"
-    echo
 
     if §function.defined? "+mode-$name-init"; then
-	§function.code "+mode-$name-init"
 	echo
+	§function.code "+mode-$name-init"
     fi
 }
 

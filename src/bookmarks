@@ -11,17 +11,11 @@
 
 function §bookmark.new {
 
-    §bookmark._new $1
+    §bookmark._new "$1"
     
     eval "function $1 { 
         +action-browse
     }"
-}
-
-function §bookmark.code {
-    local name="$(§bookmark.get_name)"
-    name=${name//\'/\\\'}
-    echo "+bookmark '$name'"
 }
 
 function §bookmarks.dump {

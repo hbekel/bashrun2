@@ -112,7 +112,7 @@ function §class {
 
     local has_interface=0
     local arg="" target="ignored" property=""
-    declare -a ignored properties methods property_names
+    declare -a ignored properties methods property_names defaults types
 
     # parse arguments...
     for arg in "$@"; do
@@ -137,10 +137,12 @@ function §class {
 
     §objects.register_type "$type"
 
-    # get property names from properties array
+    # get property names, default values and types from property specs
     for property in "${properties[@]}"; do
-	if [[ "$property" =~ (.+?):(.+?) ]]; then
+	if [[ "$property" =~ ([^:=]+?)(:([^=]+?))?(=(.+?))? ]]; then
 	    property="${BASH_REMATCH[1]}"
+	    types[${#types[@]}]="${BASH_REMATCH[3]}"
+	    defaults[${#defaults[@]}]="${BASH_REMATCH[5]}"
 	fi
 	property_names[${#property_names[@]}]="$property"
     done
@@ -169,8 +171,16 @@ function §class {
     # create object source file from object template...
     local names="${property_names[@]}"
 
+    local defaults="$(declare -p defaults)"
+    defaults="${defaults:21:${#defaults}-22}"
+
+    local types="$(declare -p types)"
+    types="${types:18:${#types}-19}"
+    
     cat "$_objects_site/object" | \
 	sed "s|_objects_keys=()|_objects_keys=($names)|" | \
+	sed "s|_objects_defaults=()|_objects_defaults=$defaults|" | \
+	sed "s|_objects_types=()|_objects_types=$types|" | \
 	sed "s|_objects_interface_options=''|_objects_interface_options='$interface'|" | \
 	sed "s|_objects_have_interface=0|_objects_have_interface=$has_interface|" | \
 	sed "s|_objects_interface_methods=''|_objects_interface_methods='${methods[@]}'|" | \
@@ -183,14 +193,15 @@ function §class {
     local access='rw'
 
     for property in "${properties[@]}"; do
-	if [[ "$property" =~ (.+?):(.*) ]]; then
+	if [[ "$property" =~ ([^:=]+?)(:([^=]+?))?(=(.+?))? ]]; then
 	    property="${BASH_REMATCH[1]}"
-	    access="${BASH_REMATCH[2]}"
+	    access="${BASH_REMATCH[3]}"
 	    [[ "$access" == "b" ]] && access="rwb"
 	    [[ "$access" == "a" ]] && access="rwa"
-	else
-	    access="rw"
+	    [[ "$access" == "t" ]] && access="rwt"
 	fi
+	[[ -z "$access" ]] && access="rw"
+	[[ "$access" =~ t ]] && access="${access/t/}"
 
 	if [[ "$access" =~ r ]]; then
 	    if [[ "$access" =~ a ]]; then

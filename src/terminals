@@ -3,21 +3,18 @@
 ################################################################################
 
 §class "terminal" --with-interface \
-    --properties "name" "command" "geometry" "font" "match:a" "cache"
+    --properties "name" \
+                 "command=__EXEC_TERMINAL__" \
+                 "geometry=80x24" \
+                 "font" \
+                 "match:a" \
+                 "cache:t"
 
 ################################################################################
 
-§function.clone "§terminal.new" "§terminal._new"
 §function.clone "§terminal.set_match" "§terminal._set_match"
 §function.clone "§terminals.init" "§terminals._init"
 §function.clone "§terminal.get_command" "§terminal._get_command"
-
-function §terminal.new { 
-
-    §terminal._new "$1"
-    §terminal.set_command "__EXEC_TERMINAL__"
-    §terminal.set_geometry "80x24"
-}
 
 function §terminal.set_match {
 
@@ -174,22 +171,3 @@ function §terminals.get_match {
     echo "$data"
 }
 
-function §terminal.code {
-    
-    local name="$(§terminal.get_name)"
-    local command="$(§terminal._get_command)"
-    local geometry="$(§terminal.get_geometry)"
-    local font="$(§terminal.get_font)"
-    eval "$(§terminal.get_match match)"
-    local m=""
-
-    echo "+terminal '$name'"
-    echo "  --command '$command'"
-    [[ -n "$geometry" ]] && echo "  --geometry '$geometry'"
-    [[ -n "$font" ]] && echo "  --font '$font'"
-
-    for m in "${match[@]}"; do
-	echo "  --match '$m'"
-    done
-    echo
-}

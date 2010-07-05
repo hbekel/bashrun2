@@ -43,23 +43,6 @@ function §binding.get_keyname {
     fi
 }
 
-function §binding.code {
-    
-    local indent="${1:-0}"
-
-    local keyseq=$(§binding.get_keyseq)
-    local keymap=$(§binding.get_keymap)
-    local action=$(§binding.get_action)
-
-    local args="'$keyseq'"
-    [[ "$keymap" != 'emacs' ]] && args="$args '$keymap'"
-    
-    if [[ indent -eq 1 ]]; then
-	echo -n "  "
-    fi
-    echo "--bind $args"
-}
-
 function §emacs-mode.dump () {
     §bindings.dump "$@"
 }

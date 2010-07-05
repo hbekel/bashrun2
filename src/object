@@ -4,6 +4,8 @@
 
 _objects=()
 _objects_keys=()
+_objects_defaults=()
+_objects_types=()
 _objects_width=${#_objects_keys[@]}
 _objects_position=0
 _objects_size=0
@@ -239,11 +241,15 @@ function §object.new {
     local i
 
     for ((i=1; i<=${#_objects_keys[@]}; i++)); do
-	_objects[${#_objects[@]}]=${!i}
+	if [[ $# -ge $i ]]; then
+	    _objects[${#_objects[@]}]="${!i}"
+	else
+	    _objects[${#_objects[@]}]="${_objects_defaults[$i-1]}"
+	fi
     done
     (( _objects_size+=1 ))
     _objects_modified=1
-    §objects.seek $1
+    §objects.seek "$1"
 }
 function §object.init { :; }
 
@@ -327,18 +333,70 @@ function §object.last? { # [key]
 }
 
 function §object.code {
-    
+
     local i=0;
     local pos=0
-    local args=''
     
-    for ((i=0; i<${_objects_width}; i++)); do
-	(( pos = _objects_position + i ))
-	args="$args $(printf '%q' "${_objects[$pos]}")"
-    done
-    args="${args:1}"
+    if [[ _objects_have_interface -eq 0 ]]; then
+	local args=''
+	
+	for ((i=0; i<${_objects_width}; i++)); do
+	    (( pos = _objects_position + i ))
+	    args+=" $(printf '%q' "${_objects[$pos]}")"
+	done
+	args="${args:1}"
+	
+	echo "§object.new $args"
+    else
+	local key=""
+	local val="" v=""
+	local def=""
+	local type=""
+	declare -a vals
 
-    echo "§object.new $args"
+	for ((i=0; i<${_objects_width}; i++)); do
+	    (( pos = _objects_position + i ))
+	    key="${_objects_keys[$i]}"
+	    def="${_objects_defaults[$i]}"
+	    type="${_objects_types[$i]}"
+	    val="${_objects[$pos]}"
+
+	    if [[ i -eq 0 ]]; then
+		echo "+object '$val'"
+	    else
+		[[ "$type" =~ t ]] && continue
+		
+		if [[ "$type" =~ a ]]; then
+		    declare -a vals=$val
+		    for v in "${vals[@]}"; do
+			if [[ "$v" != "$def" ]]; then
+			    if [[ "$v" =~ \' ]]; then
+				echo "  --$key $(printf '%q' "$v")"
+			    else
+				echo "  --$key '$v'"
+			    fi
+			fi
+		    done
+		    continue
+		fi
+		
+		if [[ "$val" != "$def" ]]; then
+		    if [[ "$type" =~ b ]]; then
+			[[ "$val" == "0" ]] && val="false"
+			[[ "$val" == "1" ]] && val="true"
+			echo "  --$key $val"
+			continue
+		    fi
+
+		    if [[ "$val" =~ \' ]]; then
+			echo "  --$key $(printf '%q' "$val")"
+		    else
+			echo "  --$key '$val'"
+		    fi
+		fi
+	    fi
+	done
+    fi
 }
 
 function §objects.code {
@@ -347,9 +405,9 @@ function §objects.code {
     while §objects.next?; do
 	§object.code
 	§objects.next
+	echo
     done
     §objects.seek_start
-    echo
 }
     
 function §object.list {

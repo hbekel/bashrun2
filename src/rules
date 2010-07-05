@@ -96,14 +96,3 @@ function §rules.applied? {
     [[ bashrun_rules_applied -eq 0 ]] && return 1
 }
 
-function §rule.code {
-
-    local name=$(§rule.get_name)
-    eval "$(§rule.get_match match)"
-    local m=""
-
-    echo "+rule '$name'"
-    for m in "${match[@]}"; do
-	echo "  --match '$m'"
-    done
-}

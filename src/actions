@@ -3,24 +3,21 @@
 ################################################################################
 
 §class "action" --with-interface \
-    --properties "name:r" "description" "input:b" \
-                 "depends" "bash" "remote:b" "core:rb"
+    --properties "name:r" "description" "input:b=1" \
+                 "depends" "bash=4.1" "remote:b=1" "core:rbt"
 
 # Note to self: if the "core" property changes it's position, the
 # temporary setter in file 'core' needs to be adjusted.
 
 §function.clone "§action.new" "§action._new"
 §function.clone "§actions.dump" "§actions._dump"
+§function.clone "§action.code" "§action._code"
 
 ################################################################################
 
 function §action.new {
 
     §action._new "$1"
-    §action.set_input "1"
-    §action.set_description "$1"
-    §action.set_bash "4.1"
-    §action.set_remote "1"
 
     if ! §function.defined? "+action-$1"; then
 	eval "
@@ -426,29 +423,11 @@ function §action.print_depends {
 
 function §action.code {
 
-    local name="$(§action.get_name)"
-    local description="$(§action.get_description)"
-    local input="$(§action.get_input)"
-    local remote="$(§action.get_remote)"
-    local depends="$(§action.get_depends)"
-    local bash="$(§action.get_bash)"
+    §action._code
 
-    echo
-    §print_line "action $name" "#" "80"
-    echo
-
-    # add action 
-    echo "+action '$name'"
-    echo "  --description '$description'"
-    [[ -n "$input" ]] && echo "  --input $input"
-    [[ "$remote" != "1" ]] && echo "  --remote '$remote'"
-    [[ -n "$depends" ]] && echo "  --depends '$depends'"
-    [[ "$bash" != "4.1" ]] && echo "  --bash '$bash'"
-    
-    # function
     if §action.function?; then
 	echo
-	§function.code "+action-$name"
+	§function.code "+action-$(§action.get_name)"
     fi
 }
 
