@@ -72,6 +72,9 @@ function §vi-mode.dump () {
 }
 
 function set {
+    # overload the set builtin to switch bindings if the user switches
+    # the editing mode via set -o vi or set -o emacs
+
     builtin set "$@"
     if [[ "$1" == "-o" && "$2" =~ (emacs|vi) ]]; then
 	local mode="${BASH_REMATCH[1]}-mode"

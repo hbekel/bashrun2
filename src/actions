@@ -233,7 +233,7 @@ function §action.available? {
 
     # check for deps
     for dep in $(§action.get_depends); do
-	if ! `type -p $dep &> /dev/null`; then
+	if ! type -P "$dep" &> /dev/null; then
 	    §message "Error" "\"$(§action.get_name)\" requires $dep."
 	    result=1
 	fi
@@ -249,7 +249,7 @@ function §action.available? {
 	result=1
     fi
 
-    [[ result -eq 0 ]]    
+    return $result    
 }
 
 function §action.core? {
@@ -372,7 +372,7 @@ function §action.print_depends {
     if [[ "$depends" != '' || "$bash" != "4.1" ]]; then
 	
 	for dep in $depends; do
-	    if `type -p $dep &> /dev/null`; then
+	    if type -P "$dep" &> /dev/null; then
 		found="$g"
 	    else
 		found="$r"
@@ -426,7 +426,7 @@ function §actions.dump {
     §actions.list > "$bashrun_cache_home/actions"
 }
 
-## shortcut functions to §action.bind ##
+## shortcut functions to §action.(un|re)bind ##
 
 function +bind () {
 

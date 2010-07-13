@@ -59,14 +59,15 @@ xterm, please use the ./configure options
 --with-terminal=TEMPLATE
 --with-exec-terminal=TEMPLATE
 
-To specify the default command templates to be used for the terminal
+to specify the default command templates to be used for the terminal
 to launch bashrun in, as well as the terminal to launch console
 applications in. For example, to use urxvt instead of xterm by
 default:
 
 $ ./configure \
+  --prefix=/usr \
   --sysconfdir=/etc \
-  --with-terminal='urxvt -g %g -n %n %o -e %*' \
+  --with-terminal='urxvt -g %g -name %n %o -e %*' \
   --with-exec-terminal='urxvt -g %g -e bash -c %@'
 
 (See the default config file ./etc/bashrun.rc for examples of using

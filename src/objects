@@ -115,7 +115,7 @@ function §class {
     declare -a ignored properties methods property_names defaults types
 
     # parse arguments...
-    for arg in "$@"; do
+    for arg; do
 	if [[ "$arg" == "--properties" ]]; then
 	    target="properties"
 	    continue

@@ -60,11 +60,12 @@ Modes are selected by the \fB-m\fP or \fB\--mode\fP option. If no
 used.
 
 If no session is currently running in the selected \fBmode\fP, then a
-session is started in the selected \fBmode\fP. The \fBcommand\fP, if
-given, is then applied to the newly created session, unless the
-\fBcommand\fP is either \fIexit\fP, \fIwid\fP or \fIpid\fP. If no
-\fBcommand\fP is specified, the default \fBcommand\fP \fIshow\fP is
-used.
+session is started in the selected \fBmode\fP, unless the
+\fBcommand\fP is either \fIexit\fP, \fIwid\fP or
+\fIpid\fP. The \fBcommand\fP is then applied to the newly created
+session, unless it is either \fIshow\fP, \fItoggle\fP, \fIsmart\fP,
+\fIreload\fP, \fIrestart\fP or \fIdebug\fP. If no \fBcommand\fP is
+specified, the default \fBcommand\fP \fIshow\fP is used.
 .SS OPTIONS
 .IP \fB-m\fP,\ \fB--mode\fP\ \fImode\fP
 Select mode to launch or control. In the absence
@@ -197,7 +198,24 @@ creating a new object, i.e. the above example could also be written as
 .ni
 .PP
 .RE
-.SH MODES
+.SS CACHING
+The results of a specific \fI+configure\fP function are cached in
+\fIXDG_CACHE_HOME/bashrun\fP. Objects of the corresponding type and
+associated helper functions will be restored from the cache on
+subsequent invocations, until the code of the \fI+configure\fP
+function changes, upon which the function is again run and the
+resulting objects and functions cached to replace the previoulsy
+cached results.
+.PP
+.SH OBJECTS
+.SS MODES
+\fBmode\fP objects define a terminal command line used to launch a
+bashrun session and control the sessions appearance and general
+behavior.
+
+.IP \fI\-\-terminal\fP
+The 
+
 .SH TERMINALS
 .SH RULES
 .SH HANDLERS

@@ -58,7 +58,7 @@
 §xdg_dirs () {
     local dirs=""
  
-    for type in "$@"; do
+    for type; do
 
 	case "$type" in
 

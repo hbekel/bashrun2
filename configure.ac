@@ -16,8 +16,7 @@ AC_CHECK_LIB(X11, XOpenDisplay,
   AC_MSG_ERROR([Could not find XOpenDisplay in -lX11.])
 )
 
-# Arguments for setting the default terminal command lines
-
+# Arguments for setting the default terminal command line templates
 AC_ARG_WITH(terminal,
   [AS_HELP_STRING([--with-terminal=TEMPLATE], [the default terminal command template used to launch new bashrun sessions with (+mode * --terminal, default='xterm -g %g -name %n %o -e %*')])],
   [

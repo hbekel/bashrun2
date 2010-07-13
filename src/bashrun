@@ -47,7 +47,7 @@ trap '[[ -f "$lock" ]] && rm "$lock"' TERM
 
 # bootstrap if cache or data home don't exist
 if [[ ! -e "$bashrun_cache_home" || ! -e "$bashrun_data_home" ]]; then
-    source $bashrun_site/bootstrap
+    source "$bashrun_site/bootstrap"
 fi
 
 # set default mode and command
@@ -106,7 +106,7 @@ termopts=""
 
 if [[ $# -gt 0 ]]; then
     target="args"    
-    for arg in "$@"; do
+    for arg; do
 
 	if [[ "$arg" == "--" ]]; then
 	    target="term"
