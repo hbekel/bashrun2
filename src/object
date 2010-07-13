@@ -64,7 +64,7 @@ function §objects.next? {
 }
 
 function §objects.current {
-    echo "${_objects[$_objects_position]}"
+    printf '%s' "${_objects[$_objects_position]}"
 }
 
 function §objects.next {
@@ -115,7 +115,7 @@ function §objects.select { # key value [which=0]-> "id1 id2..."
     §objects.seek $saved
     [[ "${ids:0:1}" == " " ]] && ids="${ids:1}"
 	
-    echo "$ids"
+    printf '%s' "$ids"
 }
 
 function §objects.modified? {
@@ -131,7 +131,7 @@ function §objects.interface? {
 }
 
 function §objects.size {
-    echo "$_objects_size"
+    printf '%s' "$_objects_size"
 }
 
 function §objects.empty? {
@@ -177,7 +177,7 @@ function §objects.all {
     for ((i=0; i<=${#_objects[@]}; i+=${#_objects_keys[@]})); do
 	all="$all ${_objects[$i]}"
     done
-    echo "${all:1}"
+    printf '%s' "${all:1}"
 }
 
 function §objects.init {
@@ -217,9 +217,9 @@ function §objects.dump {
         "
 
     if [[ "$2" == "append" ]]; then
-        echo "$dump" >> $dumpfile
+        printf '%s\n' "$dump" >> $dumpfile
     else
-        echo "$dump" > $dumpfile
+        printf '%s\n' "$dump" > $dumpfile
     fi
 }
 
@@ -288,7 +288,7 @@ function §object.get { # key -> "value"
     done
 
     if [[ index -ge 0 ]]; then 
-	echo "${_objects[$_objects_position+$index]}"
+	printf '%s' "${_objects[$_objects_position+$index]}"
     fi
 }
 
@@ -346,7 +346,7 @@ function §object.code {
 	done
 	args="${args:1}"
 	
-	echo "§object.new $args"
+	printf '%s\n' "§object.new $args"
     else
 	local key=""
 	local val="" v=""
@@ -362,7 +362,7 @@ function §object.code {
 	    val="${_objects[$pos]}"
 
 	    if [[ i -eq 0 ]]; then
-		echo "+object '$val'"
+		printf '%s\n' "+object '$val'"
 	    else
 		[[ "$type" =~ t ]] && continue
 		
@@ -371,9 +371,9 @@ function §object.code {
 		    for v in "${vals[@]}"; do
 			if [[ "$v" != "$def" ]]; then
 			    if [[ "$v" =~ \' ]]; then
-				echo "  --$key $(printf '%q' "$v")"
+				printf '%s\n' "  --$key $(printf '%q' "$v")"
 			    else
-				echo "  --$key '$v'"
+				printf '%s\n' "  --$key '$v'"
 			    fi
 			fi
 		    done
@@ -384,14 +384,14 @@ function §object.code {
 		    if [[ "$type" =~ b ]]; then
 			[[ "$val" == "0" ]] && val="false"
 			[[ "$val" == "1" ]] && val="true"
-			echo "  --$key $val"
+			printf '%s\n' "  --$key $val"
 			continue
 		    fi
 
 		    if [[ "$val" =~ \' ]]; then
-			echo "  --$key $(printf '%q' "$val")"
+			printf '%s\n' "  --$key $(printf '%q' "$val")"
 		    else
-			echo "  --$key '$val'"
+			printf '%s\n' "  --$key '$val'"
 		    fi
 		fi
 	    fi
@@ -405,7 +405,7 @@ function §objects.code {
     while §objects.next?; do
 	§object.code
 	§objects.next
-	echo
+	printf '\n'
     done
     §objects.seek_start
 }
@@ -416,11 +416,11 @@ function §object.list {
     if [[ "$opt" == '-l' ]]; then
 	local key
 	for key in ${_objects_keys[@]}; do
-	    echo "$key: $(§object.get $key)"
+	    printf '%s\n' "$key: $(§object.get $key)"
 	done;
-	echo
+	printf '\n'
     else
-	echo $(§object.id)
+	printf '%s\n' "$(§object.id)"
     fi
 }
 

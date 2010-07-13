@@ -29,7 +29,7 @@ function §configs.list () {
 
     §configs.seek_start
     while §configs.next?; do
-	echo "$(§config.get_type) ($(§config.get_names))"
+	printf '%s\n' "$(§config.get_type) ($(§config.get_names))"
 	§configs.next
     done
 }
@@ -44,7 +44,7 @@ function §config.get_dumpname { # $wanted
 	dump="$dump-$name"
 	[[ "$name" == "$wanted" ]] && break
     done
-    echo "$dump.dump"
+    printf '%s' "$dump.dump"
 }
 
 function §config.get_final_dumpname {
@@ -62,7 +62,7 @@ function §config.get_rcname { # $wanted
 	[[ "$name" == "$wanted" ]] && break
     done
 
-    echo "$dump.rc"
+    printf '%s' "$dump.rc"
 }
 
 function §config.changed? { # $name
@@ -87,9 +87,9 @@ function §config.changed? { # $name
 function §config.get_funcname { # $wanted
     local name="$1"
     if [[ "$name" == "user" ]]; then
-	echo "+configure-$(§config.get_type)"
+	printf '%s' "+configure-$(§config.get_type)"
     else
-	echo "+configure-$name-$(§config.get_type)"
+	printf '%s' "+configure-$name-$(§config.get_type)"
     fi
 }
 

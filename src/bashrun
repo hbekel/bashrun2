@@ -34,7 +34,7 @@ source __PREFIX__/share/bashrun/globals
 # check if another frontend process is currently running
 lock="$bashrun_cache_home/bashrun.lck"
 if [[ -f "$lock" ]]; then
-    echo "bashrun: locked: $bashrun_cache_home/bashrun.lck exists." >&2
+    printf '%s\n' "bashrun: locked: $bashrun_cache_home/bashrun.lck exists." >&2
     exit 1
 fi
 
@@ -82,7 +82,7 @@ until [[ "$1" == "--" || "${1:0:1}" != '-' ]]; do
 	    exit 0
 	    ;;	
 	*)
-	    echo "bashrun: error: unknown option: $1" >&2
+	    printf '%s\n' "bashrun: error: unknown option: $1" >&2
 	    usage
 	    exit 1
 	    ;;
@@ -157,17 +157,17 @@ case "$command" in
 	§window.toggle_smart &>/dev/null
 	;;
     wid)
-	echo "$wid"
+	printf '%s\n' "$wid"
 	;;
     pid)
-	echo "$pid"
+	printf '%s\n' "$pid"
 	;;
     su)
 	if [[ ${#args[@]} -gt 0 ]]; then
 	    remote su-run "${args[@]}"
 	else
-	    echo "bashrun: error: command \`su' requires at least " \
-		"one argument: <cmd>" >&2
+	    printf '%s\n' \
+		"bashrun: error: command \`su' requires at least one argument: <cmd>" >&2
 	    exit 1
 	fi
 	;;
@@ -175,8 +175,8 @@ case "$command" in
 	if [[ ${#args[@]} -gt 0 ]]; then
 	    remote "${args[@]}"
 	else
-	    echo "bashrun: error: command \`do' requires at least " \
-		"one argument: <action> [<cmd>]" >&2
+	    printf '%s\n' \
+		"bashrun: error: command \`do' requires at least one argument: <action> [<cmd>]" >&2
 	    exit 1
 	fi
 	;;
@@ -197,7 +197,7 @@ case "$command" in
 	remote quit
 	;;    
     *)
-	echo "bashrun: error: unknown command: $command" >&2
+	printf '%s\n' "bashrun: error: unknown command: $command" >&2
 	exit 1
 esac 
 exit 0

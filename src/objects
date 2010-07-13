@@ -13,7 +13,7 @@ _objects_focus=''
 function §objects.site {
     
     if [[ $# -eq 0 ]]; then
-	echo "$_objects_site"
+	printf '%s' "$_objects_site"
     else
 	_objects_site="$1"
     fi
@@ -22,7 +22,7 @@ function §objects.site {
 function §objects.cache_home {
     
     if [[ $# -eq 0 ]]; then
-	echo "$_objects_cache_home"
+	printf '%s' "$_objects_cache_home"
     else
 	_objects_cache_home="$1"
     fi
@@ -31,7 +31,7 @@ function §objects.cache_home {
 function §objects.data_home {
     
     if [[ $# -eq 0 ]]; then
-	echo "$_objects_data_home"
+	printf '%s' "$_objects_data_home"
     else
 	_objects_data_home="$1"
     fi
@@ -40,14 +40,14 @@ function §objects.data_home {
 function §objects.namespace {
     
     if [[ $# -eq 0 ]]; then
-	echo "$_objects_namespace"
+	printf '%s' "$_objects_namespace"
     else
 	_objects_namespace="$1"
     fi
 }
 
 function §objects.types {    
-    echo " $_objects_types "
+    printf '%s' " $_objects_types "
 }
 
 function §objects.register_type {
@@ -61,7 +61,7 @@ function §objects.register_type {
 function §objects.focus {
     
     if [[ $# -eq 0 ]]; then
-	echo "$_objects_focus"
+	printf '%s' "$_objects_focus"
     else
 	_objects_focus="$1"
     fi
@@ -132,7 +132,7 @@ function §class {
 
     # warn about ignored arguments...
     if [[ "${#ignored[@]}" -ne 0 ]]; then
-	echo "warning: §class $type: ignored arguments: ${ignored[@]}" >&2
+	printf '%s\n' "warning: §class $type: ignored arguments: ${ignored[@]}" >&2
     fi
 
     §objects.register_type "$type"
@@ -233,13 +233,11 @@ function §object.create_reader {
     local key="$2"
     local field="$3"
 
-    echo $(cat <<EOF
-
+    cat <<EOF
 function §${name}.get_${key} {
-    echo "\${_${NAME}s[\$_${NAME}s_position+$field]}";
+    printf '%s' "\${_${NAME}s[\$_${NAME}s_position+$field]}";
 }
 EOF
-    )
 }
 
 function §object.create_writer {
@@ -248,14 +246,12 @@ function §object.create_writer {
     local key="$2"
     local field="$3"
 
-    echo $(cat <<EOF
-
+    cat <<EOF
 function §${name}.set_${key} {
     _${NAME}s[\$_${NAME}s_position+$field]="\$@";
     _${NAME}s_modified=1;
 }
 EOF
-    )
 }
 
 function §object.create_array_reader {
@@ -264,20 +260,19 @@ function §object.create_array_reader {
     local key="$2"
     local field="$3"
 
-    echo $(cat <<EOF
-
+    cat <<EOF
 function §${name}.get_${key} {
     local var="\$1";
     local data="\${_${NAME}s[\$_${NAME}s_position+$field]}";
     
     if [[ -z "\$data" ]]; then
-      echo "declare -a \$var";
+      printf '%s' "declare -a \$var";
     else
-      echo "declare -a \$var=\$data";
+      printf '%s' "declare -a \$var=\$data";
     fi
 }
 EOF
-    )
+
 }
 
 function §object.create_array_writer {
@@ -286,8 +281,7 @@ function §object.create_array_writer {
     local key="$2"
     local field="$3"
 
-    echo $(cat <<EOF
-
+    cat <<EOF
 function §${name}.set_${key} {
     declare -a a=("\$@");
     
@@ -298,7 +292,6 @@ function §${name}.set_${key} {
     _${NAME}s_modified=1;
 }
 EOF
-    ) 
 }
 
 function §object.create_bool_writer {
@@ -307,8 +300,7 @@ function §object.create_bool_writer {
     local key="$2"
     local field="$3"
 
-    echo $(cat <<EOF
-
+    cat <<EOF
 function §${name}.set_${key} {
 
      local input="\$1";
@@ -322,6 +314,6 @@ function §${name}.set_${key} {
     _${NAME}s_modified=1;
 }
 EOF
-    ) 
+
 }
 

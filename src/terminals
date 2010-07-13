@@ -52,7 +52,7 @@ function §terminal.get_command {
 	cached="$(§terminal.expand "$command" "" "$mode" "$geometry" "$font")"
 	§terminal.set_cache "$cached"	
     fi
-    echo "$cached"
+    printf '%s' "$cached"
 }
 
 function §terminal.expand {
@@ -105,13 +105,13 @@ function §terminal.expand {
 	fi
     fi
 
-    echo "$template"
+    printf '%s' "$template"
 }
 
 function §terminal.binary {
     local binary=""
     for binary in $(§terminal.get_command); do break; done
-    echo "$binary"
+    printf '%s' "$binary"
 }
 
 function §terminal.list {
@@ -121,14 +121,14 @@ function §terminal.list {
 	local key
 	for key in ${_bashrun_terminals_keys[@]}; do
 	    if [[ "$key" == "command" ]]; then
-		echo "$key: $(§terminal._get_command)"
+		printf '%s\n' "$key: $(§terminal._get_command)"
 	    else
-		echo "$key: $(§terminal.get $key)"
+		printf '%s\n' "$key: $(§terminal.get $key)"
 	    fi
 	done;
-	echo
+	printf '\n'
     else
-	echo $(§terminal.id)
+	printf '%s\n' "$(§terminal.id)"
     fi
 }
 
@@ -148,7 +148,7 @@ function §terminals.used {
     done
     §terminals.seek "$saved"
     
-    echo "$used"
+    printf '%s' "$used"
 }
 
 function §terminals.get_match {
@@ -168,6 +168,6 @@ function §terminals.get_match {
     local data="$(declare -p match)"
     data="${data:18:${#data}-19}"    
     data="declare -a $1=$data"
-    echo "$data"
+    printf '%s' "$data"
 }
 

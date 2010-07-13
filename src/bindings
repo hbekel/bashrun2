@@ -37,9 +37,9 @@ function §binding.bound? {
 function §binding.get_keyname {
     local keyseq="$(§binding.get_keyseq)"
     if §keynames.seek "$keyseq"; then
-	echo "$(§keyname.get_name)"
+	printf '%s' "$(§keyname.get_name)"
     else
-	echo "$(§ks2kn "$keyseq")"
+	printf '%s' "$(§ks2kn "$keyseq")"
     fi
 }
 
@@ -83,7 +83,7 @@ function §bindings.dump {
 
     §bindings._dump "${1:-bindings.dump}"
 
-    echo "bashrun_bindings_next_char=$bashrun_bindings_next_char" >> $file
+    printf '%s\n' "bashrun_bindings_next_char=$bashrun_bindings_next_char" >> $file
 
     §internals.dump "${1:-bindings.dump}" append
     §keynames.dump "${1:-bindings.dump}" append
@@ -94,7 +94,7 @@ function §bindings.dump {
     while §bindings.next?; do
 	if §binding.bound?; then
 	    # dump the bashrun binding
-	    echo "bind $(§binding.get_readline)" >> $file
+	    printf '%s\n' "bind $(§binding.get_readline)" >> $file
 
 	    # create the remote interface binding
 	    local keyseq="$(§binding.get_keyseq)"
@@ -124,7 +124,7 @@ function §internals.dump {
 
     §internals.seek_start
     while §internals.next?; do
-	echo "bind $(§internal.get_readline)" >> $file
+	printf '%s\n' "bind $(§internal.get_readline)" >> $file
 	§internals.next
     done    
     §internals.seek $saved

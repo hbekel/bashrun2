@@ -20,11 +20,11 @@ function §registry.add {
     fi 
     
     if [[ ! -f "$pidfile" ]]; then	
-	echo "$$" > "$pidfile"
+	printf '%s' "$$" > "$pidfile"
     fi
 
     if [[ ! -f "$widfile" ]]; then	
-	echo "$WINDOWID" > "$widfile"
+	printf '%s' "$WINDOWID" > "$widfile"
 	return 0
     fi
     return 1

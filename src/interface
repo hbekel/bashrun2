@@ -17,7 +17,7 @@ command_not_found_handle () {
     
     bashrun do run "$@"    
 
-    local self="$(echo -n '#'; type command_not_found_handle)"
+    local self="$(printf '#'; type command_not_found_handle)"
     unset -f command_not_found_handle
     $*
     eval "$self"

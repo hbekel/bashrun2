@@ -42,12 +42,12 @@
 	wanted="${wanted//\/\//\/}" 
 
 	if [[ -z "$test" ]]; then
-	    echo "$wanted"
+	    printf '%s\n' "$wanted"
 	    found=0
 	    continue
 
 	elif eval "[[ $test '$wanted' ]]"; then
-	    echo "$wanted"
+	    printf '%s\n' "$wanted"
 	    found=0
 	    break
 	fi
@@ -88,6 +88,6 @@
 		fi
 	esac
     done
-    echo "$dirs"
+    printf '%s' "$dirs"
 }
 

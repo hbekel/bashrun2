@@ -51,7 +51,8 @@ function §handlers.apply {
 
 	if [[ "$bashrun_command" =~ $match ]]; then	    
 
-	    §debug -c "$name" ":"  -v "$bashrun_command" "matches" -v "$match" "->"
+	    §debug -c "$name" ":"  -v "$bashrun_command" "matches" \
+		-v "$match" "->" -v "$string"
 
 	    local tests="$(§handler.get_test)"
 	    if [[ -n "$tests" ]]; then 
@@ -212,7 +213,7 @@ function §handler.code {
     §handler._code
 
     if §function.defined? "+handler-$name-complete"; then
-	echo
+	printf '\n'
 	§function.code "+handler-$name-complete"
     fi
 }

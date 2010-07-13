@@ -123,7 +123,6 @@ function §action.bind {
     
     # bind
     §debug emph -y "usr" -v "$action" "->" -v "$keyname" "($keymap)" 
-    # echo "bind $bind"
     eval "bind $bind"
 
     # create or set binding
@@ -329,7 +328,7 @@ function §action.api.enable {
 
     function command {
 	if [[ "$#" == "0" ]]; then
-	    echo "$bashrun_command"
+	    printf "%s\n" "$bashrun_command"
 	else
 	    bashrun_command="$@"
 	    §debug "command =" -v "$bashrun_command"
@@ -337,9 +336,9 @@ function §action.api.enable {
     }
     function word { 
 	§command.get_word; 
-	echo "$bashrun_command_word";
+	printf "%s\n" "$bashrun_command_word";
     }
-    function line { echo "$bashrun_command_line"; }
+    function line { printf "%s\n" "$bashrun_command_line"; }
 
     function quote-command { §quote bashrun_command; }
 
@@ -417,7 +416,7 @@ function §action.print_depends {
 	fi
 
 	str="${str:2}"
-	echo -ne "$str"
+	printf "%s" "$str"
     fi
 }
 
@@ -426,7 +425,7 @@ function §action.code {
     §action._code
 
     if §action.function?; then
-	echo
+	printf "\n"
 	§function.code "+action-$(§action.get_name)"
     fi
 }

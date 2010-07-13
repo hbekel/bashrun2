@@ -2,7 +2,7 @@
 
 function §message.init {
     local method
-    local methods="zenity kdialog notify-send xmessage echo"
+    local methods="zenity kdialog notify-send xmessage printf"
  
    for method in $methods; do
 	if type $method &>/dev/null; then
@@ -68,10 +68,10 @@ function §message.wrap {
 	done
 
 	if [[ i -eq 0 ]]; then 
-	    echo "${p[@]}"
+	    printf '%s\n' "${p[@]}"
 	else
-	    echo 
-	    echo "${p[@]}"
+	    printf '\n'
+	    printf '%s\n' "${p[@]}"
 	fi
     done    
 }
@@ -86,7 +86,7 @@ function §message {
     
     # prepare text depending on method
     case "$method" in 
-	dialog|xmessage|kdialog|echo)
+	dialog|xmessage|kdialog|printf)
 	    # prewrap text to 76 columns 
 	    # (80 - 4 (dialog border and margin))
 	    text="$(§message.wrap 76 "$@")"
@@ -94,7 +94,7 @@ function §message {
 	zenity|notify-send)
             # split input into chunks at \n\n
 	    text="$1"
-	    text="$(echo "$text" | sed 's/^ *//g')"
+	    text="$(printf '%s\n' "$text" | sed 's/^ *//g')"
 	    text=${text//$'\n'$'\n'/__SePaRaToR__}
 	    text=${text//$'\n'/ }
 	    text=${text//__SePaRaToR__/$'\n\n'}	    
@@ -193,9 +193,9 @@ function §message {
 	    notify-send -t 0 "$title" "$text" &>/dev/null
 	    ;;
 
-	echo)	    	    
-	    echo -n -e "\x07"
-	    echo -e "Bashrun $title:\n\n$text"
+	printf)	    	    
+	    printf '%b' "\x07"
+	    printf '%b\n' "Bashrun $title:\n\n$text"
     esac
 }
 

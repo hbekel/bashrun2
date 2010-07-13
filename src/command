@@ -38,7 +38,7 @@ function §command.get_line {
     if [[ "$histtimeformat" != "" ]]; then
 	HISTTIMEFORMAT=$histtimeformat
     fi
-    echo "$bashrun_command_line"
+    printf '%s' "$bashrun_command_line"
 }
 
 function §command.get_word {
@@ -140,7 +140,7 @@ function §command.add_su {
 	until [[ -n "$user" && "$user" != "--prompt" ]]; do
 	    tput el
 	    tput cr
-	    echo -ne 'Username: '
+	    printf '%b' 'Username: '
 
 	    stty="$(stty -g)"
 	    stty echo cooked -cbreak
@@ -154,9 +154,7 @@ function §command.add_su {
     # run the command itself in the background
     bashrun_command_su="$bashrun_command"
     bashrun_command="$bashrun_command &> /dev/null &"
-
-    # quote the command
-    printf -v bashrun_command %q "$bashrun_command"
+    §quote bashrun_command
 
     # prefix with su command
     bashrun_command="su $user -c $bashrun_command"

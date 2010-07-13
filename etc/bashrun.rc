@@ -99,8 +99,8 @@
     #    %g : replaced with the string given by --geometry.
     #    %f : replaced with the string given by --font.
     #
-    # If neither %* or %@ is given, the command is appended without
-    # quoting.
+    # If neither %* or %@ is given, the command is appended to the end
+    # of the string without further quoting.
     
     # The following two terminals, called "default" and
     # "notify", are always defined:
@@ -115,14 +115,15 @@
     #
     # +terminal default --command '__EXEC_TERMINAL__'
     # +terminal default --command 'rxvt -e bash -c %@'
+    # +terminal default --command 'xterm -e bash -c %@'
     # +terminal default --command 'urxvt -e bash -c %@'
     # +terminal default --command 'mrxvt -e bash -c %@'
-    # +terminal default --command 'xterm -e bash -c %@'
     # +terminal default --command 'aterm -e bash -c %@'
     # +terminal default --command 'Eterm -e bash -c %@'
-    # +terminal default --command 'Terminal -x bash -c %@'
     # +terminal default --command 'roxterm -e bash -c %@'
-    # +terminal default --command 'konsole  -e bash -c %@'
+    # +terminal default --command 'konsole -e bash -c %@'
+
+    # +terminal default --command 'Terminal -x bash -c %@'
     # +terminal default --command 'gnome-terminal -e bash\ -c\ %@@'
     # +terminal default --command 'terminator -x bash -c %@'    
 
@@ -180,7 +181,7 @@
       # beginning with '/etc/rc.d' as root and show it's output in the
       # 'notify' terminal, closing the terminal after two
       # seconds. Note that in this case, the su-term-notify function
-      # explicitly chooses to use the 'notify' terminal by default.
+      # chooses to use the 'notify' terminal by default.
 }
 
 +configure-handlers () {
@@ -218,7 +219,7 @@
       --match '(.+)\?\?'
       --string '%1'
       --action show-info
-      # E.g. if run "bash??" then the string "bash" is used as the
+      # E.g. if you run "bash??" then the string "bash" is used as the
       # commandline to be used with the show-info action, which pages
       # "info bash" in the default terminal, unless the "info" program
       # has been associated with a specific terminal object.
@@ -230,7 +231,7 @@
       # Similar to the above, but shows manual pages instead. Note
       # that the order of handlers is important here: if this handler
       # was defined before the info handler, then the info handler
-      # would never be reached, because.
+      # would never be reached.
 
     +handler browse
       --match 'browse (.*)'
@@ -245,7 +246,7 @@
       # bashrun's bookmarks. Thus you can just type "browse " and hit
       # tab to get at your bookmarks. If you hit return, this handler
       # will delegate the bookmark string to the default "browse" action,
-      # which open the bookmark string using $BROWSER (default: firefox)
+      # which open the bookmark string using $BROWSER.
 
     +handler http
       --match '^(www|https?)'   
@@ -291,7 +292,7 @@
 
     +handler aur-search
       --match 'aur:(.+)'
-      --string  'aur.archlinux.org/packages.php?K=%1&do_Search=Go'
+      --string 'aur.archlinux.org/packages.php?K=%1&do_Search=Go'
       --action browse
 
     +handler ftp
@@ -304,8 +305,8 @@
       --test 'f!x'
       --string 'gimp'
       # This handler implements a file association by matching any
-      # commandline ending in .jpg or .jpeg. It then tests whether the
-      # commandline is a path to a file that is not executable by
+      # command line ending in .jpg or .jpeg. It then tests whether
+      # the command line is a path to a file that is not executable by
       # applying the file test pattern "f!x".  If the test succeeds,
       # the file is opened in gimp.
       #
@@ -345,7 +346,6 @@
       --string "xdg-open %1"
       # handle files universally with xdg-open, see xdg-open(1)
 
-    ## google any non-executable line not yet handled:
     # +handler google-fallback
     #  --fallback 1
     #  --string  "www.google.com/search?q=%1"
@@ -384,14 +384,14 @@
       function +action-run-as {
 	  +action-run
 	  user --prompt
-      }      
+      }
 
     +action kill-to-xclip
       --description 'Kill whole line and copy to clipboard' 
       --depends 'xclip'
 
       function +action-kill-to-xclip { 
-	  command "echo \"$(line)\" | xclip"
+	  command "printf '%s' \"$(line)\" | xclip"
 	  return 0
       }
 

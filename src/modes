@@ -35,7 +35,7 @@ function §mode.get_geometry {
 
     for g in $geometry; do	
 	if [[ i -eq $wanted ]]; then
-	    echo "$g"
+	    printf '%s' "$g"
 	    break
 	else
 	    ((i+=1))
@@ -84,7 +84,7 @@ function §mode.write_info {
 
     §quote terminal onmap onunmap
 
-    echo "# mode info
+    printf '%s\n' "# mode info
           pid=$$
           wid=$WINDOWID
 	  terminal=$terminal
@@ -109,7 +109,7 @@ function §mode.code {
     local name="$(§mode.get_name)"
 
     if §function.defined? "+mode-$name-init"; then
-	echo
+	printf '\n'
 	§function.code "+mode-$name-init"
     fi
 }

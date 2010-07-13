@@ -59,7 +59,8 @@ function §remote.interface.bind {
     [[ remote -eq 0 ]] && return
 
     if [[ "$type" == "internal" ]]; then
-	echo "bind -m $keymap -x \$'\"\C-z\\x$char\": §bashrun-remote-trap $action'" \
+	printf '%s\n' \
+	    "bind -m $keymap -x \$'\"\C-z\\x$char\": §bashrun-remote-trap $action'" \
 	    >> "$bindings"
 
     elif [[ "$type" == "requested" ]]; then
@@ -71,7 +72,8 @@ function §remote.interface.bind {
 	    [[ "$keyseq" == '\e\C-m' ]] && keyseq='\et'
 	fi       
 
-	echo "bind -m $keymap '\"$keyseq\"':$'\"\C-z\x$char\201\"'" \
+	printf '%s\n' \
+	    "bind -m $keymap '\"$keyseq\"':$'\"\C-z\x$char\201\"'" \
 	    >> "$bindings"
     fi
 }
@@ -87,8 +89,8 @@ function §remote.interface.create {
     local bookmarks="$bashrun_cache_home/remote-bookmarks.bash"
 
     cp "$bashrun_site/interface" "$interface"
-    echo "$bashrun_remote_interface" >> "$interface"
+    printf '%s\n' "$bashrun_remote_interface" >> "$interface"
 
-    echo "source $bindings" >> "$interface"
-    echo "source $bookmarks" >> "$interface"
+    printf '%s\n' "source $bindings" >> "$interface"
+    printf '%s\n' "source $bookmarks" >> "$interface"
 }

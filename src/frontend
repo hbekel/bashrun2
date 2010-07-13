@@ -3,10 +3,10 @@
 function create_modeinfo {
 
     # initialize object system
-    source $bashrun_site/objects
-    §objects.site $bashrun_site
-    §objects.cache_home $bashrun_cache_home
-    §objects.data_home $bashrun_cache_home
+    source "$bashrun_site/objects"
+    §objects.site "$bashrun_site"
+    §objects.cache_home "$bashrun_cache_home"
+    §objects.data_home "$bashrun_cache_home"
     §objects.namespace "bashrun"
     
     for file in utils readline message config plugin registry \
@@ -29,7 +29,7 @@ function create_modeinfo {
 	exit 1
     else
 	§debug "using" -c "$(§tilde_path $bashrun_rcfile)"
-	source $bashrun_rcfile
+	source "$bashrun_rcfile"
     fi
     [[ -f "$errorfile" ]] && rm "$errorfile"
     
@@ -41,7 +41,7 @@ function create_modeinfo {
 
     # get requested mode
     if ! §modes.seek "$mode"; then
-	echo "bashrun: error: no such mode: \`$mode', exiting..."
+	printf '%s\n' "bashrun: error: no such mode: \`$mode', exiting..."
 	exit 1
     fi
     §mode.write_info
@@ -52,13 +52,13 @@ function source_window {
     # create the environment §window expects and set wid
 
     bashrun_mode="$mode"
-    source $bashrun_site/window
+    source "$bashrun_site/window"
 
-    function §mode.get_geometry { echo $geometry; }    
-    function §mode.get_onmap { echo $onmap; }    
-    function §mode.get_onunmap { echo $onunmap; }    
+    function §mode.get_geometry { printf '%s' "$geometry"; }    
+    function §mode.get_onmap { printf '%s' "$onmap"; }    
+    function §mode.get_onunmap { printf '%s' "$onunmap"; }    
 
-    §window.id $wid
+    §window.id "$wid"
 }
 
 function launch {
@@ -122,7 +122,7 @@ function launch {
                  "$mode" "$geometry" "$font" "$termopts $termfix")" 
                
     # trim whitespace
-    launch="$(echo "$launch" | sed 's/[ \t]\+/ /g')"
+    launch="$(printf '%s\n' "$launch" | sed 's/[ \t]\+/ /g')"
 
     §debug -c "$mode:" -n "$launch"
 
@@ -139,7 +139,7 @@ function launch {
 	   [[ -f "$modeinfo" ]] && rm "$modeinfo"	   
 
 	   # notify user
-	   source $bashrun_site/message
+	   source "$bashrun_site/message"
 	   §message "Error" \
                     "Failed to launch terminal. Please make sure that
                      the following terminal command line is correct:
@@ -166,10 +166,14 @@ function launch {
 	§debug fail "failed" -n "$error"
 	exit 1
     fi
-
+    
+    # get the window id of the newly created window and prepare the
+    # §window class
     wid="$(brwctl bashrun-$mode)"
     source_window
 
+    # initially map the newly created window (required in case there
+    # is an onmap command)
     §window.map
 }
 
@@ -190,7 +194,7 @@ function remote {
 	    # wait until the remote session has removed the file
 	    wait_until "[[ ! -e '$remote' ]]"
     else
-	echo "bashrun: error: bashrun-$mode not ready"
+	printf '%s\n' "bashrun: error: bashrun-$mode not ready"
 	return 1
     fi
     return 0
@@ -213,12 +217,13 @@ EOF
 }
 
 function version {
-    . $bashrun_site/globals 2> /dev/null
-    echo "bashrun $bashrun_version Copyright (C) 2010 Henning Bekel <h.bekel@googlemail.com>"
+    . "$bashrun_site/globals" 2> /dev/null
+    printf '%s\n' \
+	"bashrun $bashrun_version Copyright (C) 2010 Henning Bekel <h.bekel@googlemail.com>"
 }
 
 function usage {
-    echo "Usage: bashrun [options] [command [args]] [-- termopts]
+    printf '%s\n' "Usage: bashrun [options] [command [args]] [-- termopts]
 
   Options: 
 

@@ -37,7 +37,7 @@ function §bookmarks.dump {
 	
 	# create the remote interface bookmark function
 	§quote name
-	echo "function $name { bashrun do browse $name; }" \
+	printf '%s\n' "function $name { bashrun do browse $name; }" \
 	    >> "$remote_bookmarks"
     
 	§bookmarks.next

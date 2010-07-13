@@ -67,10 +67,10 @@ function §progress.enabled? {
     tput el 
     tput cr 
 
-    echo -ne '\e[7m' >&2
-    echo -n "${bashrun_progress_line:0:len}" >&2
-    echo -ne '\e[0m' >&2
-    echo -n "${bashrun_progress_line:len}" >&2
+    printf '%b' '\e[7m' >&2
+    printf '%s' "${bashrun_progress_line:0:len}" >&2
+    printf '%b' '\e[0m' >&2
+    printf '%s' "${bashrun_progress_line:len}" >&2
 }
     
 §progress.reset () {

@@ -11,7 +11,7 @@ function §plugin.find {
 
     for dir in $bashrun_plugin_dirs; do
 	file="$dir/${wanted}.rc"
-	[[ -f "$file" ]] && echo "$file"
+	[[ -f "$file" ]] && printf '%s' "$file"
     done
 }
 
@@ -25,7 +25,7 @@ function §plugin.check {
     retval=$?
     
     if ! §plugin.checked? "$file"; then
-	echo "$name.rc" >> $bashrun_plugins_checked
+	printf '%s\n' "$name.rc" >> $bashrun_plugins_checked
     fi
     return $retval
 }
@@ -73,7 +73,7 @@ function +plugins {
 
                      Skipping plugin \"$name\"..."
 
-	             echo "$name.rc" >> $bashrun_plugins_checked
+	             printf '%s\n' "$name.rc" >> "$bashrun_plugins_checked"
 	    fi
 	fi
     done

@@ -8,7 +8,7 @@ bashrun_window_mapped=1
 function §window.id {
     
     if [[ $# -eq 0 ]]; then
-	echo $bashrun_window_id
+	printf '%s' "$bashrun_window_id"
     else
 	bashrun_window_id=$1	    
 	§window.update
@@ -63,7 +63,7 @@ function §window.size {
     # get window size
     if [[ $# -eq 0 ]]; then
 	§window.update
-	echo $bashrun_window_width $bashrun_window_height
+	printf '%s' "$bashrun_window_width $bashrun_window_height"
 	return 0;
     fi
 

@@ -40,7 +40,7 @@ function §readline.get_setting {
 	value="${BASH_REMATCH[2]}"
 	[[ "$name" == "$wanted" ]] && break
     done
-    echo "$value"
+    printf '%s' "$value"
 }
 
 function §readline.get_binding {
@@ -54,7 +54,7 @@ function §readline.get_binding {
 	[[ "$line" =~ ^# ]] && continue
 
 	if [[ "$line" =~ .?${keyseq}\" ]]; then # FIXME: regexp ^ ?!
-	    echo $line
+	    printf '%s' "$line"
 	    return 0
 	fi
     done    
@@ -74,7 +74,7 @@ function §readline.restore {
     local binding="-m $keymap '$readline'"    
 
     if [[ "$readline" != '' ]]; then 
-	§debug "bind $binding"
+	§debug -v "bind $binding"
 	eval "bind $binding"
     fi
 }
