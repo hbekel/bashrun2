@@ -14,9 +14,7 @@ bashrun_handlers_order=""
 
 ################################################################################
 
-function §handler.fallback? {
-    [[ "$(§handler.get_fallback)" == "1" ]]
-}
+function §handler.fallback? { (( $(§handler.get_fallback) )); }
 
 function §handlers.init {
     bashrun_handlers_order="$(§handlers.select fallback 0) $(§handlers.select fallback 1)"
@@ -43,7 +41,7 @@ function §handlers.apply {
 	local result=""
 
 	# interpolate variables if necessary (e.g. $PAGER, $BROWSER)
-	if [[ $string =~ \$[a-zA-z0-9_] ]]; then
+	if [[ "$string" =~ \$[a-zA-z0-9_] ]]; then
 	    result="$(§interpolate '$string')"
 	    §debug -v "$string" "->" -v "$result"
 	    string="$result"
@@ -90,7 +88,7 @@ function §handlers.apply {
 		    success=0
 		fi
 		
-		if [[ ! success -eq 1 ]]; then
+		if ! ((success)); then
 		    §debug -c "$name" ":"  "not handled"
 		    §handlers.next
 		    continue
@@ -121,7 +119,7 @@ function §handlers.apply {
 		fi
 	    fi
 
-	    if [[ append -eq 1 ]]; then
+	    if (( append )); then
 		if [[ -n "$string" ]]; then
 		    bashrun_command="$string $bashrun_command"
 		fi
@@ -148,7 +146,7 @@ function §handlers.apply {
 
     # run bookmark function unless already handled, or pass through
     # command to let bash complain as usual.
-    if [[ handled -eq 0 ]]; then
+    if ! (( handled )); then
 	if §command.bookmark?; then
 	    $bashrun_command
 	    return 0

@@ -35,7 +35,7 @@ function §command.get_line {
     [[ $(history 1) =~ \ +[0-9]+?\ +(.+?) ]]
     bashrun_command_line=${BASH_REMATCH[1]}
     
-    if [[ "$histtimeformat" != "" ]]; then
+    if [[ -n "$histtimeformat" ]]; then
 	HISTTIMEFORMAT=$histtimeformat
     fi
     printf '%s' "$bashrun_command_line"
@@ -216,10 +216,10 @@ function §command.add_terminal {
 		    fi
 		fi
 	    done
-	    [[ found -eq 1 ]] && break
+	    (( found )) && break
 	    §terminals.next
 	done
-	[[ found -eq 1 ]] || §terminals.seek 'default'
+	(( found )) || §terminals.seek 'default'
     fi
 
     # expand the terminal command

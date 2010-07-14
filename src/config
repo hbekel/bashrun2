@@ -8,7 +8,7 @@
 
 function §config.add_name () {
     local name="$1"
-    if [[ "$(§config.get_names)" == "" ]]; then
+    if [[ -z "$(§config.get_names)" ]]; then
 	§config.set_names "$name"
     else
 	§config.set_names "$(§config.get_names) $name"

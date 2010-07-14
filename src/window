@@ -7,22 +7,17 @@ bashrun_window_mapped=1
 
 function §window.id {
     
-    if [[ $# -eq 0 ]]; then
+    if (( $# == 0 )); then
 	printf '%s' "$bashrun_window_id"
     else
-	bashrun_window_id=$1	    
+	bashrun_window_id="$1"
 	§window.update
     fi
     return 0
 }
 
-function §window.mapped? {
-    [[ bashrun_window_mapped -eq 1 ]]
-}
-
-function §window.unmapped? {
-    [[ bashrun_window_mapped -eq 0 ]]
-}
+function §window.mapped? { (( bashrun_window_mapped )); }
+function §window.unmapped? { ! (( bashrun_window_mapped )); }
 
 function §window.terminal? {
     [[ "$bashrun_window_id" == "$WINDOWID" ]]
@@ -53,15 +48,15 @@ function §window.resize {
             (( bashrun_window_width+=1 ))
 	    ;;
     esac
-    [[ bashrun_window_height -lt 1 ]] && bashrun_window_height=1
-    [[ bashrun_window_width -lt 1 ]] && bashrun_window_width=1
+    (( bashrun_window_height < 1 )) && bashrun_window_height=1
+    (( bashrun_window_width < 1 )) && bashrun_window_width=1
     §window.size --hint $bashrun_window_width $bashrun_window_height
 }
 
 function §window.size {
     
     # get window size
-    if [[ $# -eq 0 ]]; then
+    if (( $# == 0 )); then
 	§window.update
 	printf '%s' "$bashrun_window_width $bashrun_window_height"
 	return 0;
@@ -73,7 +68,7 @@ function §window.size {
 	shift
     fi
 
-    if [[ $# -eq 1 ]]; then
+    if (( $# == 1 )); then
 	if [[ "$1" =~ ([0-9]+)x([0-9]+) ]]; then
 	    local w=${BASH_REMATCH[1]}
 	    local h=${BASH_REMATCH[2]}
@@ -83,7 +78,7 @@ function §window.size {
 	fi
     fi
 
-    if [[ $# -eq 2 ]]; then
+    if (( $# == 2 )); then
 	brwctl $bashrun_window_id $hint $1 $2
 	bashrun_window_width=$1
 	bashrun_window_height=$2
@@ -97,7 +92,7 @@ function §window.size {
 function §window.map {
 
     # apply default size if debugging
-    if [[ bashrun_debug -eq 1 ]]; then	 
+    if (( bashrun_debug )); then	 
 	§window.size --hint "80x24"
     fi
 
@@ -113,7 +108,7 @@ function §window.map {
 
 function §window.unmap {
 
-    [[ $# -eq 0 ]] && §window.update
+    (( $# == 0 )) && §window.update
 
     brwctl $bashrun_window_id unmap
 
@@ -129,10 +124,10 @@ function §window.toggle { # [smart=0]
     local smart="${1:-0}"
     §window.update
 
-    if [[ bashrun_window_mapped -eq 0 ]]; then	
+    if (( bashrun_window_mapped )); then	
 	§window.map
     else
-	if [[ smart -eq 1 ]]; then
+	if (( smart )); then
 	    if brwctl $bashrun_window_id focus?; then
 		§window.unmap
 	    else

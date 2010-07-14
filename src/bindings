@@ -30,9 +30,7 @@ function §bindings.init {
     §bindings._init
 }
 
-function §binding.bound? {
-    [[ "$(§binding.get_is_bound)" == '1' ]]
-}
+function §binding.bound? { (( $(§binding.get_is_bound) )); }
 
 function §binding.get_keyname {
     local keyseq="$(§binding.get_keyseq)"

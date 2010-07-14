@@ -12,7 +12,7 @@ _objects_focus=''
 
 function §objects.site {
     
-    if [[ $# -eq 0 ]]; then
+    if (( $# == 0 )); then
 	printf '%s' "$_objects_site"
     else
 	_objects_site="$1"
@@ -21,7 +21,7 @@ function §objects.site {
 
 function §objects.cache_home {
     
-    if [[ $# -eq 0 ]]; then
+    if (( $# == 0 )); then
 	printf '%s' "$_objects_cache_home"
     else
 	_objects_cache_home="$1"
@@ -30,7 +30,7 @@ function §objects.cache_home {
 
 function §objects.data_home {
     
-    if [[ $# -eq 0 ]]; then
+    if (( $# == 0 )); then
 	printf '%s' "$_objects_data_home"
     else
 	_objects_data_home="$1"
@@ -39,7 +39,7 @@ function §objects.data_home {
 
 function §objects.namespace {
     
-    if [[ $# -eq 0 ]]; then
+    if (( $# == 0 )); then
 	printf '%s' "$_objects_namespace"
     else
 	_objects_namespace="$1"
@@ -60,7 +60,7 @@ function §objects.register_type {
 
 function §objects.focus {
     
-    if [[ $# -eq 0 ]]; then
+    if (( $# == 0 )); then
 	printf '%s' "$_objects_focus"
     else
 	_objects_focus="$1"
@@ -131,7 +131,7 @@ function §class {
     done
 
     # warn about ignored arguments...
-    if [[ "${#ignored[@]}" -ne 0 ]]; then
+    if (( ${#ignored[@]} )); then
 	printf '%s\n' "warning: §class $type: ignored arguments: ${ignored[@]}" >&2
     fi
 
@@ -148,7 +148,7 @@ function §class {
     done
 
     # prepare interface options (prefix method names with --)
-    if [[ has_interface -eq 1 ]]; then
+    if (( has_interface )); then
 
 	local interface=(new code ${property_names[@]} ${methods[@]})
 

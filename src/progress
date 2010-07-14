@@ -13,7 +13,7 @@ function §progress.enabled? {
 
 §progress.new () {
     bashrun_progress_task="${1:-Progress}"
-    bashrun_progress_percent=${2:-0}
+    bashrun_progress_percent="${2:-0}"
     bashrun_progress_active=1
 
     §progress.update "$bashrun_progress_percent"
@@ -32,11 +32,11 @@ function §progress.enabled? {
 	bashrun_progress_percent="$value"
     fi
 
-    if [[ bashrun_progress_percent -gt 100 ]]; then
+    if (( bashrun_progress_percent > 100 )); then
 	bashrun_progress_percent=100
     fi
 
-    if [[ $# -eq 2 ]]; then
+    if (( $# == 2 )); then
 	bashrun_progress_task="$2"
     fi
     §progress.update_line

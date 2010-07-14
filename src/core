@@ -129,15 +129,16 @@
     
     +action-debug () {
 	
-	if [[ bashrun_debug -eq 0 ]]; then
+	if ! (( bashrun_debug )); then
 	    bashrun_debug=1
 	    §debug "debug mode" -g "enabled"
 	    §window.size --hint "80x24"
 	else
-	    §window.size --hint "$(§mode.get_geometry $(§mode.get_current))"
-	    §debug "debug mode" -r "disabled"
-	    tput clear
 	    bashrun_debug=0
+	    §debug "debug mode" -r "disabled"
+	    §window.size --hint "$(§mode.get_geometry $(§mode.get_current))"
+	    tput clear
+
 	fi
 	return 2
     }
@@ -432,7 +433,7 @@
 	    ((current+=1))
 
 	    local next="$(§mode.get_geometry $current)"
-	    if [[ "$next" == '' ]]; then
+	    if [[ -z "$next" ]]; then
 		current=0
 	    fi
 	    next="$(§mode.get_geometry $current)"

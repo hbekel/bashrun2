@@ -53,7 +53,7 @@ function §action.bind {
     fi
 
     # bind -x C-g directly
-    # this way C-g will still abort from readline searches and the like
+    # this way C-g will still abort from readline searches etc
     if [[ "$keyseq" == "\C-g" ]]; then
 	bind="-m $keymap -x '\"$keyseq\": +action-abort'"
 	eval "bind $bind"
@@ -71,7 +71,7 @@ function §action.bind {
         # no previous internal binding, get next invalid character to bind to
 	char=$(printf "%.2X" $bashrun_bindings_next_char)
 
-	if [[ bashrun_bindings_next_char -gt 0x7f ]]; then
+	if (( bashrun_bindings_next_char > 0x7f )); then
 	    §debug warn "maximum number of internal keyseqs reached, skipping..."
 	    return 1
 	fi
@@ -100,7 +100,7 @@ function §action.bind {
     fi
     
     # don't trigger accept-line if +action --input == 0
-    [[ input -eq 0 ]] && enter=''
+    (( input == 0 )) && enter=''
 
     # bind the requested keyseq to the internal character
     bind="-m $keymap '\"$keyseq\"':$'\"\C-z\x$char$enter\"'"
@@ -131,7 +131,7 @@ function §action.unbind {
 
     bashrun_keymap="$keymap"
 
-    if [[ "$keyseq" == '' ]]; then
+    if [[ -z "$keyseq" ]]; then
         # find the next bound binding
 	for id in $(§bindings.select action "$action"); do
 	    if §bindings.seek "$id" "$keymap"; then
@@ -143,7 +143,7 @@ function §action.unbind {
 		fi
 	    fi
 	done
-	[[ found -eq 0 ]] && return 1
+	((found)) || return 1
 	
         # get the keyseq that it's bound to
 	keyseq="$(§binding.get_keyseq)"
@@ -182,7 +182,7 @@ function §action.rebind {
 	    break
 	fi
     done
-    [[ found -eq 0 ]] && return 1
+    ((found)) || return 1
 
     # get the keyseq that it was bound to before
     keyseq="$(§binding.get_keyseq)"
@@ -244,21 +244,16 @@ function §action.available? {
     local wanted="$(§action.get_bash)"
     wanted="${wanted//./}"    
 
-    if [[ current -lt wanted ]]; then
+    if (( current < wanted )); then
 	§message "Error" "\"$(§action.get_name)\" requires bash>=$(§action.get_bash)." 
 	result=1
     fi
 
-    return $result    
+    return $result
 }
 
-function §action.core? {
-    [[ "$(§action.get_core)" == "1" ]]
-}
-
-function §action.input? {
-    [[ "$(§action.get_input)" == "1" ]]
-}
+function §action.core? { (( $(§action.get_core) )); }
+function §action.input? { (( $(§action.get_input) )); }
 
 function §action.run {
     
@@ -266,7 +261,7 @@ function §action.run {
     local command="$1"
     local retval=0
 
-    if [[ "$command" != '' ]]; then
+    if [[ -n "$command" ]]; then
 	bashrun_command="$command"
     fi
 
@@ -285,7 +280,7 @@ function §action.run {
     # disable action debugging
     bashrun_debug_action=0
 
-    if [[ bashrun_action_return_value -eq -1 ]]; then
+    if (( bashrun_action_return_value == -1 )); then
 	bashrun_action_return_value="$retval"
 	
 	local res=""
@@ -303,7 +298,7 @@ function §action.run {
 function §action.api.enable {
 
     function command {
-	if [[ "$#" == "0" ]]; then
+	if (( $# == 0 )); then
 	    printf "%s\n" "$bashrun_command"
 	else
 	    bashrun_command="$@"
@@ -369,7 +364,7 @@ function §action.print_depends {
 
     local found="$r"
 
-    if [[ "$depends" != '' || "$bash" != "4.1" ]]; then
+    if [[ -n "$depends" || "$bash" != "4.1" ]]; then
 	
 	for dep in $depends; do
 	    if type -P "$dep" &> /dev/null; then
@@ -470,7 +465,7 @@ function +rebind () {
 function +keymap () {
     local keymap="$1"
     if [[ ! "$keymap" =~ (emacs|vi-insert|vi-command) ]]; then
-	§debug fail "must be one of 'emacs', 'vi-insert' or 'vi-command'"
+	§debug warn "must be one of 'emacs', 'vi-insert' or 'vi-command'"
 	§debug warn "keymap remains set to" -v "$bashrun_keymap"
 	return 1
     fi
@@ -481,7 +476,7 @@ function §keymaps.complete {
     COMPREPLY=()    
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local keymaps="emacs vi-insert vi-command"
-    [[ ${cur} == * ]] && COMPREPLY=( $(compgen -W "${keymaps}" ${cur}) )
+    COMPREPLY=( $(compgen -W "${keymaps}" ${cur}) )
     return 0
 }
 

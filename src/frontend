@@ -73,7 +73,7 @@ function launch {
     done
 	
     # launch a standard sized terminal in debug mode...
-    if [[ bashrun_debug -eq 1 ]]; then
+    if (( bashrun_debug )); then
 	geometry="80x24"
     fi
 
@@ -156,12 +156,12 @@ function launch {
     wait_until "brwctl bashrun-$mode &>/dev/null" "[[ -f '$abort' ]]"
     status=$?
 
-    if [[ status -eq 1 ]]; then
+    if (( status == 1 )); then
 	§debug fail "The terminal window never appeared... giving up."
 	exit 1
     fi
 
-    if [[ status -eq 2 || -f "$abort" ]]; then
+    if (( status == 2 )) || [[ -f "$abort" ]]; then
 	rm "$abort" 
 	§debug fail "failed" -n "$error"
 	exit 1
@@ -202,8 +202,8 @@ function remote {
 
 function remote_control_code {
     cat <<EOF
-if [[ "\$DISPLAY" != '' ]] && ! shopt -p login_shell &>/dev/null; then
-  if [[ bashrun -ne 1 ]]; then
+if [[ -n "\$DISPLAY" ]] && ! shopt -p login_shell &>/dev/null; then
+  if ! (( bashrun )); then
      remote_control="\${XDG_CACHE_HOME:-\$HOME/.cache}/bashrun/remote.bash"
 
      if [[ -f "\$remote_control" ]]; then
@@ -267,7 +267,7 @@ function wait_until {
     local attempts=150
 
     eval "until $wait_condition; do
-        if [[ attempts -eq 0 ]]; then
+        if (( attempts == 0 )); then
 	    return 1
 	fi
         if $break_condition; then

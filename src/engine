@@ -57,7 +57,7 @@ function §engine.init {
     # install command_not_found_handle for bash>=4 -> handle
     if §bash4; then
 	function command_not_found_handle {
-	    if [[ "$(§mode.get_cmdnfh)" == "1" ]]; then
+	    if (( $(§mode.get_cmdnfh) )); then
 		if §engine.idle?; then
 		    bashrun_from_cmdnfh=1 §engine.action run 0 "$*"
 		    return 0
@@ -169,7 +169,7 @@ function §engine.launch {
     local status=0
 
     # command override
-    if [[ $# -eq 1 || -n "$command" ]]; then
+    if (( $# == 1 )) || [[ -n "$command" ]]; then
 	§debug -c override -v "$command"
 	bashrun_command="$command"
 	§command.unquote
@@ -190,9 +190,9 @@ function §engine.launch {
 	    §action.run
 	    retval=$bashrun_action_return_value
 
-	    if [[ retval -ne 0 ]]; then
-		[[ retval -eq 1 ]] && §engine.reset 
-		[[ retval -eq 2 ]] && §engine.reset 0
+	    if (( retval != 0 )); then
+		(( retval == 1 )) && §engine.reset 
+		(( retval == 2 )) && §engine.reset 0
 		return 0
 	    fi
 	fi
@@ -235,7 +235,7 @@ function §engine.execute {
 	    # reset tty settings
 	    stty "$stty"
 
-	    if [[ ret -eq 125 ]]; then
+	    if (( ret == 125 )); then
 		§message "Error" "su: incorrect password"
 	    fi
 	fi
@@ -262,7 +262,7 @@ function §engine.reset {
     §action.api.disable 
 
     # unmap the window if requested/necessary
-    if [[ unmap -eq 1 ]]; then 
+    if (( unmap )); then 
 	if §mode.unmap?; then
 	    §window.unmap
 	fi
@@ -276,7 +276,7 @@ function §engine.reset {
 
     §separator       
 
-    [[ bashrun_engine_reload -eq 1 ]] && §engine.reload
+    (( bashrun_engine_reload )) && §engine.reload
 }
 
 function §engine.reload {
@@ -291,7 +291,7 @@ function §engine.reload {
 
     §window.map
     
-    [[ bashrun_debug -eq 0 ]] && tput reset
+    (( bashrun_debug == 0 )) && tput reset
     
     §separator "engine reloaded"
 }
@@ -325,21 +325,17 @@ function §engine.busy {
     bashrun_engine_busy=1
 }
 
-function §engine.busy? {
-    [[ "$bashrun_engine_busy" == "1" ]]
-}
-
 function §engine.idle {
     bashrun_engine_busy=0
 }
 
-function §engine.idle? {
-    [[ "$bashrun_engine_busy" == "0" ]]
-}
+function §engine.busy? { (( bashrun_engine_busy )); }
+
+function §engine.idle? { ! (( bashrun_engine_busy )); }
 
 function §engine.ready {
     
-    if [[ bashrun_frontend -eq 1 ]]; then
+    if (( bashrun_frontend )); then
 	touch "$bashrun_engine_ready"
     fi
 }    

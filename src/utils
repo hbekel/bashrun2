@@ -4,13 +4,8 @@
 
 bashrun_debug_action=0
 
-function §bash3 {
-    [[ ${BASH_VERSINFO[0]} -eq 3 ]]
-}
-
-function §bash4 {
-    [[ ${BASH_VERSINFO[0]} -eq 4 ]]
-}
+function §bash3 { (( ${BASH_VERSINFO[0]} == 3 )); }
+function §bash4 { (( ${BASH_VERSINFO[0]} == 4 )); }
 
 function §defined? {
     [[ "${!1-X}" == "${!1-Y}" ]]
@@ -126,7 +121,7 @@ function §replace {
 
 function §debug {
 
-    [[ bashrun_debug -eq 0 ]] && return
+    (( bashrun_debug )) || return 1
     
     # color
 
@@ -175,7 +170,7 @@ function §debug {
 	    ;;
     esac
     
-    if [[ bashrun_debug_action -eq 1 ]]; then
+    if (( bashrun_debug_action )); then
 	printf '%b' "$col$_from$n $d" >&2
     else
 	printf '%b' "$col$_func$n $d" >&2
@@ -191,7 +186,7 @@ function §debug {
 	    printf '%b' "${!col}" >&2
 	    requested=1
 	else
-	    [[ requested -eq 0 ]] && printf '%b' "$d" >&2 
+	    ! (( requested )) && printf '%b' "$d" >&2 
 	    printf '%b' "$str " >&2
 	    requested=0
 	fi
@@ -201,7 +196,7 @@ function §debug {
 
 function §separator {
 
-    [[ bashrun_debug -eq 0 ]] && return
+    (( bashrun_debug )) || return 1
 
     local y="\033[1;33m" # yellow
     local b="\033[1;34m" # blue
@@ -223,7 +218,7 @@ function §separator {
     local width=${2:-$COLUMNS}
     
     printf '%b' "$b" >&2
-    if [[ "$title" != '' ]]; then
+    if [[ -n "$title" ]]; then
 	(( width = width - ${#title} - 4 )) 
 	printf '%b' "$prefix $y$title$b " >&2
     fi
@@ -239,7 +234,7 @@ function §separator {
 function §prepare_logfile {
 
     # set to /dev/null if empty
-    if [[ "$bashrun_logfile" == "" ]]; then 
+    if [[ -z "$bashrun_logfile" ]]; then 
 	bashrun_logfile="/dev/null"
     fi
  

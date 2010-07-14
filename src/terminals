@@ -20,7 +20,7 @@ function §terminal.set_match {
 
     eval "$(§terminal.get_match matches)"
 
-    if [[ ${#matches[*]} -eq 0 ]]; then
+    if (( ${#matches[*]} == 0 )); then
 	matches=("$@")
     else
 	matches=("${matches[@]}" "$@")
@@ -117,7 +117,7 @@ function §terminal.binary {
 function §terminal.list {
     local opt="$1"
 
-    if [[ "$opt" == '-l' ]]; then
+    if [[ "$opt" == "-l" ]]; then
 	local key
 	for key in ${_bashrun_terminals_keys[@]}; do
 	    if [[ "$key" == "command" ]]; then

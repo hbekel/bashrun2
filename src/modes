@@ -24,27 +24,27 @@
 
 function §mode.get_geometry {
     
-    if [[ $# -eq 0 ]]; then
+    if (( $# == 0 )); then
 	§mode._get_geometry
 	return 0
     fi
 
-    local wanted=${1:-0}
+    local wanted="${1:-0}"
     local geometry="$(§mode._get_geometry)"
     local g="" i=0
 
     for g in $geometry; do	
-	if [[ i -eq $wanted ]]; then
+	if (( i == wanted )); then
 	    printf '%s' "$g"
 	    break
 	else
-	    ((i+=1))
+	    (( i+=1 ))
 	fi
     done
 }
 
 function §mode.unmap? {
-    [[ "$(§mode.get_unmap)" == "1" && bashrun_debug -eq 0 ]]
+    (( $(§mode.get_unmap) == 1 && bashrun_debug == 0 ))
 }
 
 function §modes.init {
@@ -71,7 +71,7 @@ function §mode.init {
     §completion.init
 
     # dump modeinfo for frontend if required
-    [[ bashrun_frontend -eq 1 ]] && §mode.write_info
+    (( bashrun_frontend )) && §mode.write_info
 }
 
 function §mode.write_info {

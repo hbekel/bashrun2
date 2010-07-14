@@ -27,7 +27,7 @@ function §objects.seek { # args
 	matched=0
 	if [[ "${_objects[$i]}" == "$1" ]]; then
 	    matched=1
-	    if [[ $# -eq 2 ]]; then
+	    if (( $# == 2 )); then
 		if [[ "${_objects[$i+1]}" == "$2" ]]; then
 		    matched=1
 		else
@@ -36,13 +36,13 @@ function §objects.seek { # args
 	    fi		
 	fi
 
-	if [[ matched -eq 1 ]]; then
+	if (( matched )); then
 	    _objects_position=$i
 	    break
 	fi	
     done
 
-    if [[ matched -eq 0 ]]; then
+    if ! (( matched )); then
 	_objects_position=$saved
 	return 1
     else
@@ -59,8 +59,7 @@ function §objects.seek_end {
 }
 
 function §objects.next? {
-    [[ $_objects_position+$_objects_width -le ${#_objects[@]} ]] && return 0
-    return 1
+    (( _objects_position + _objects_width <= ${#_objects[@]} ))
 }
 
 function §objects.current {
@@ -72,7 +71,7 @@ function §objects.next {
 }
 
 function §objects.previous? {
-    [[ $_objects_position+1 -ge 0 ]] && return 0
+    (( _objects_position + 1 >= 0 )) && return 0
     _objects_position=0
     return 1
 }
@@ -108,34 +107,30 @@ function §objects.select { # key value [which=0]-> "id1 id2..."
 	    if [[ "$value" =~ $regexp ]]; then
 		# regexp match
 		ids="$ids ${_objects[$i]}"
-		[[ which -eq 0 ]] && break
+		(( which )) || break
 	    fi
 	fi
     done
-    §objects.seek $saved
+    §objects.seek "$saved"
     [[ "${ids:0:1}" == " " ]] && ids="${ids:1}"
 	
     printf '%s' "$ids"
 }
 
-function §objects.modified? {
-    [[ _objects_modified -eq 1 ]]
-}
+function §objects.modified? { (( _objects_modified )); }
 
 function §objects.modified { # value
     _objects_modified=$1
 }
 
-function §objects.interface? {
-    [[ _objects_have_interface -eq 1 ]]
-}
+function §objects.interface? { (( _objects_have_interface )); }
 
 function §objects.size {
     printf '%s' "$_objects_size"
 }
 
 function §objects.empty? {
-    [[ _objects_size -eq 0 ]]
+    (( _objects_size == 0 ))
 }
 
 function §objects.list { # [-l] [ids]
@@ -241,13 +236,13 @@ function §object.new {
     local i
 
     for ((i=1; i<=${#_objects_keys[@]}; i++)); do
-	if [[ $# -ge $i ]]; then
+	if (( $# >= i )); then
 	    _objects[${#_objects[@]}]="${!i}"
 	else
 	    _objects[${#_objects[@]}]="${_objects_defaults[$i-1]}"
 	fi
     done
-    (( _objects_size+=1 ))
+    (( _objects_size += 1 ))
     _objects_modified=1
     §objects.seek "$1"
 }
@@ -281,13 +276,13 @@ function §object.get { # key -> "value"
     local i=0
  
     for ((i=0; i<=${#_objects_keys[@]}; i++)); do
-	if [[ ${_objects_keys[$i]} == $key ]]; then
+	if [[ "${_objects_keys[$i]}" == "$key" ]]; then
 	    index=$i
 	    break
 	fi
     done
 
-    if [[ index -ge 0 ]]; then 
+    if (( index >= 0 )); then 
 	printf '%s' "${_objects[$_objects_position+$index]}"
     fi
 }
@@ -300,23 +295,23 @@ function §object.set { # key value
     local i=0
 
     for ((i=0; i<=${#_objects_keys[@]}; i++)); do
-	if [[ ${_objects_keys[$i]} == $key ]]; then
+	if [[ "${_objects_keys[$i]}" == "$key" ]]; then
 	    index=$i
 	    break
 	fi
     done
 
-    if [[ index -ge 0 ]]; then
+    if (( index >= 0 )); then
 	_objects[$_objects_position+$index]=$value
 	_objects_modified=1
     fi
 }
 
 function §object.first? { # [key]
-    if [[ $# -eq 1 ]]; then
+    if (( $# == 1 )); then
 	[[  "$1" == "$(objects.current)" ]]
     else
-	[[ _objects_position -eq 0  ]]
+	(( _objects_position == 0 ))
     fi
 }
 
@@ -325,7 +320,7 @@ function §object.last? { # [key]
     (( i = (_objects_size-1) * _objects_width ))
     local id=${_objects[$i]}
 
-    if [[ $# -eq 1 ]]; then
+    if (( $# == 1 )); then
 	[[ "$id" == "$1" ]]
     else
 	[[ "$id" == "$(objects.current)" ]]
@@ -337,7 +332,7 @@ function §object.code {
     local i=0;
     local pos=0
     
-    if [[ _objects_have_interface -eq 0 ]]; then
+    if ! (( _objects_have_interface )); then
 	local args=''
 	
 	for ((i=0; i<${_objects_width}; i++)); do
@@ -361,7 +356,7 @@ function §object.code {
 	    type="${_objects_types[$i]}"
 	    val="${_objects[$pos]}"
 
-	    if [[ i -eq 0 ]]; then
+	    if (( i == 0 )); then
 		printf '%s\n' "+object '$val'"
 	    else
 		[[ "$type" =~ t ]] && continue
@@ -427,7 +422,7 @@ function §object.list {
 ################################################################################
 ## INTERFACE
 
-if [[ _objects_have_interface -eq 1 ]]; then
+if (( _objects_have_interface )); then
 
     function §objects.ui.enable {
 	local opt='' optname=''
@@ -437,7 +432,7 @@ if [[ _objects_have_interface -eq 1 ]]; then
 	    
 	    if [[ " ${_objects_keys[@]} " =~ " $optname " ]]; then
 		eval "function $opt {
-                    if [[ \$# -eq 0 ]]; then
+                    if (( \$# == 0 )); then
 		      §object.get_$optname
                     else
                       §object.set_$optname \"\$@\"
@@ -468,8 +463,8 @@ if [[ _objects_have_interface -eq 1 ]]; then
 	remove="§${_oBjEcTs_focus}s.ui.disable"
 
 	if [[ "$_oBjEcTs_focus" != "object" ]]; then
-	    if [[ "$_oBjEcTs_focus" != '' ]]; then
-		if $(type -t $remove &> /dev/null); then
+	    if [[ -n "$_oBjEcTs_focus" ]]; then
+		if type -t $remove &> /dev/null; then
 		    $remove
 		fi
 	    fi
@@ -480,7 +475,7 @@ if [[ _objects_have_interface -eq 1 ]]; then
 	_oBjEcTs_focus="object"
 	
         # no arg -> return (setting focussed type is sideeffect)
-	if [[ "$#" == "0" ]]; then
+	if (( $# == 0 )); then
 	    return 0
 	fi
 
@@ -543,7 +538,7 @@ if [[ _objects_have_interface -eq 1 ]]; then
     }
     
     function +objects {
-	if [[ $# -gt 0 ]]; then
+	if (( $# > 0 )); then
 	    local opt="$1"
 	    shift	
 	    opt="${opt/--/}"

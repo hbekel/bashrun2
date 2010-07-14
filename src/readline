@@ -73,7 +73,7 @@ function §readline.restore {
     
     local binding="-m $keymap '$readline'"    
 
-    if [[ "$readline" != '' ]]; then 
+    if [[ -n "$readline" ]]; then 
 	§debug -v "bind $binding"
 	eval "bind $binding"
     fi
