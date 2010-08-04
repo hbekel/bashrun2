@@ -2,10 +2,10 @@
 
 ################################################################################
 
-_objects_cache_home='/tmp'
-_objects_data_home='/tmp'
 _objects_namespace='boop'
 _objects_site="."
+_objects_data_home='/tmp'
+_objects_cache_home='/tmp'
 
 _objects_types=''
 _objects_focus=''
@@ -316,4 +316,5 @@ function §${name}.set_${key} {
 EOF
 
 }
+
 

@@ -10,7 +10,7 @@
 source __PREFIX__/share/bashrun/globals
 
 # when launched by the frontend, source the user's ~/.bashrc
-if [[ bashrun_frontend -eq 1 && -f "$HOME/.bashrc" ]]; then
+if (( bashrun_frontend )) && [[ -f "$HOME/.bashrc" ]]; then
     source "$HOME/.bashrc"
 fi
 
@@ -28,9 +28,9 @@ source $bashrun_site/registry
 source $bashrun_site/message
 source $bashrun_site/bootstrap
 
-# register this instance (needs to happen early on)
-# unless we're not launched by the frontend...
-[[ bashrun_frontend -eq 1 ]] && §registry.add
+# register this instance unless we're not launched by the
+# frontend... (needs to happen early on)
+(( bashrun_frontend )) && §registry.add
 
 # setup progress bar
 source $bashrun_site/progress

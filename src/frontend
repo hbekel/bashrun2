@@ -152,7 +152,7 @@ function launch {
                      $error"
     } &
 
-    # wait for the terminal window to be mapped...
+    # wait until the terminal window exists...
     wait_until "brwctl bashrun-$mode &>/dev/null" "[[ -f '$abort' ]]"
     status=$?
 
@@ -167,9 +167,10 @@ function launch {
 	exit 1
     fi
     
-    # get the window id of the newly created window and prepare the
-    # §window class
-    wid="$(brwctl bashrun-$mode)"
+    # get the window id of the newly created window, update mode info
+    # and prepare the §window class
+    wid="$(brwctl bashrun-$mode)"    
+    printf "%s\n" "wid=$wid" >> "$modeinfo"
     source_window
 
     # initially map the newly created window (required in case there

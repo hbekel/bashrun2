@@ -8,7 +8,7 @@ function _bashrun {
     local sec="${COMP_WORDS[1]}"
 
     local options="--mode --help --version --debug --remote-control -m -h -v -d"
-    local commands="show hide toggle smart exit restart su do wid pid"
+    local commands="show hide toggle smart exit quit reload restart su do wid pid"
 
     local modes=()
     local modesfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/modes"

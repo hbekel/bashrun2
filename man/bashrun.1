@@ -61,11 +61,11 @@ used.
 
 If no session is currently running in the selected \fBmode\fP, then a
 session is started in the selected \fBmode\fP, unless the
-\fBcommand\fP is either \fIexit\fP, \fIwid\fP or
-\fIpid\fP. The \fBcommand\fP is then applied to the newly created
-session, unless it is either \fIshow\fP, \fItoggle\fP, \fIsmart\fP,
-\fIreload\fP, \fIrestart\fP or \fIdebug\fP. If no \fBcommand\fP is
-specified, the default \fBcommand\fP \fIshow\fP is used.
+\fBcommand\fP is either \fIexit\fP or \fIquit\fP. The \fBcommand\fP is
+then applied to the newly created session, unless it is either
+\fIshow\fP, \fItoggle\fP, \fIsmart\fP, \fIreload\fP, \fIrestart\fP or
+\fIdebug\fP. If no \fBcommand\fP is specified, the default
+\fBcommand\fP \fIshow\fP is used.
 .SS OPTIONS
 .IP \fB-m\fP,\ \fB--mode\fP\ \fImode\fP
 Select mode to launch or control. In the absence
@@ -114,6 +114,8 @@ Reload configuration files.
 Exit the bashrun session and start a new one.
 .IP \fBexit\fP
 Exit the bashrun session.
+.IP \fBquit\fP
+Synonymous with exit.
 .SH CONFIGURATION
 .SS FILES
 Bashrun follows the \fBXDG Base Directory Specification\fP to locate

@@ -91,8 +91,8 @@ done
 
 # get info about the selected mode
 modeinfo="$bashrun_cache_home/${mode}-info"
-[[ ! -f $modeinfo ]] && create_modeinfo
-source $modeinfo
+[[ ! -f "$modeinfo" ]] && create_modeinfo
+source "$modeinfo"
 
 # get command argument, if any
 if [[ $# -gt 0 && "$1" != "--" ]]; then
@@ -122,17 +122,20 @@ if [[ $# -gt 0 ]]; then
     termopts=${termopts/ /}
 fi
 
-# launch a new instance if necessary
+# launch a new instance if necessary...
 launched=0
-if [[ ! "$(brwctl $wid class? 2>/dev/null)" =~ bashrun-$mode ]]; then
 
+if ! brwctl bashrun-$mode &>/dev/null; then # no existing instance
+    
     # don't launch a new instance for these commands:
-    if [[ "$command" =~ ^(exit|quit|wid|pid)$ ]]; then
+    if [[ "$command" =~ ^(exit|quit)$ ]]; then
 	exit 1
     else
+	# attempt to launch a new instance...
 	launch
 	launched=1
-	# don't apply these commands on a fresh instance:
+
+	# don't apply these commands on a new instance:
 	if [[ "$command" =~ ^(show|toggle|smart|reload|restart|debug)$ ]]; then
 	    exit 0
 	fi
@@ -160,7 +163,12 @@ case "$command" in
 	printf '%s\n' "$wid"
 	;;
     pid)
-	printf '%s\n' "$pid"
+	pidfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/$mode-pid"
+	if wait_until '[[ -f "$pidfile" ]]'; then
+	    printf '%s\n' "$(<$pidfile)"
+	else
+	    exit 1
+	fi
 	;;
     su)
 	if [[ ${#args[@]} -gt 0 ]]; then
