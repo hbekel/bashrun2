@@ -38,7 +38,7 @@ Runtime dependencies
 The following external programs need to be installed on the target
 system in order to successfully run bashrun:
 
-bash>=4.1, sed, grep, tput, stty, kill, xterm(see below)
+bash>=4.1, sed, grep, tput, stty, kill, sleep, xterm(see below)
 
 The ./configure script only checks for buildtime dependencies. It's up
 to the user/packager to make sure that runtime dependencies are
