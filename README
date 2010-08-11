@@ -22,16 +22,6 @@ Note that if you don't use an explicit --sysconfdir option,
 $sysconfdir will default to $prefix/etc and will likely result in the
 need to adjust XDG_CONFIG_DIRS as described above.
 
-Staged installation
-===================
-
-The standard DESTDIR mechanism can be used for a staged installation,
-e.g.
-
-make DESTDIR=/tmp/stage install
-
-will install all files relative to /tmp/stage instead of /.
-
 Runtime dependencies
 ====================
 
@@ -73,3 +63,13 @@ $ ./configure \
 (See the default config file ./etc/bashrun.rc for examples of using
 other common terminals and the manual for details on command
 templates)
+
+Staged installation
+===================
+
+The standard DESTDIR mechanism can be used for a staged installation,
+e.g.
+
+make DESTDIR=/tmp/stage install
+
+will install all files relative to /tmp/stage instead of /.

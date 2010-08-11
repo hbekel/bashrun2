@@ -12,10 +12,9 @@
 interactive bash sessions, suitable for use in a graphical user
 environment.
 
-In its default setup, \fBbashrun\fP provides a simple run dialog by
-creating an interactive bash session in a small
-\fB__TERMINAL_NAME__\fP(1) terminal window. This mode of operation is
-configured by the default \fIlauncher\fP mode.
+In its default setup, the \fIlaucher\fP mode provides a simple run
+dialog by creating an interactive bash session in a small
+\fB__TERMINAL_NAME__\fP(1) terminal window.
 
 \fBbashrun\fP may also be used in a regular terminal session, allowing
 the user to seamlessly launch both graphical and terminal applications
@@ -218,8 +217,8 @@ The results of a specific \fI+configure\fP function are cached in
 associated helper functions will be restored from the cache on
 subsequent invocations, until the code of the \fI+configure\fP
 function changes, upon which the function is again run and the
-resulting objects and functions cached to replace the previoulsy
-cached results.
+resulting objects and functions are again cached to replace the
+previoulsy cached results.
 .PP
 .SH OBJECTS
 .SS MODES
@@ -361,16 +360,16 @@ with a backslash in this notation.
 .PP
 There are two terminal objects defined by default. The terminal named
 \fIdefault\fP will be used if no other terminal matches the given
-command and an action has requested the command to be run in a
-terminal. Note that any \fIpatterns\fP associated with this terminal
+command and an \fBaction\fP has requested the command to be run in a
+terminal. The default \fInotify\fP \fBterminal\fP is a small terminal
+used by the default \fBactions\fP \fIterm-notify\fP and
+\fIsu-term-notify\fP (see \fBDEFAULT ACTIONS\fP below).
+ 
+Note that any \fIpatterns\fP associated with a \fBterminal\fP object
 will be implicitly appended to the \fIterm-run\fP \fBrule\fP (see
-\fBRULES\fP below). This means that matching commands will always be
-run in the \fIdefault\fP \fBterminal\fP, even if this was not
-explicitly requested by an \fPaction\fP.
-
-The default \fInotify\fP \fBterminal\fP is a small terminal used by
-the default \fBactions\fP \fIterm-notify\fP and \fIsu-term-notify\fP
-(see \fBDEFAULT ACTIONS\fP below).
+\fBRULES\fP below). This means that commands matched by a
+\fBterminal\fP will always be run in that \fBterminal\fP, even if this
+was not explicitly requested by the current \fPaction\fP.
 
 .SS RULES
 Rule objects associate \fBactions\fP with specific commands or command
@@ -411,7 +410,7 @@ commandline, then an optional file test pattern given with
 test succeeds, then either the value of \fB--command\fP will be used
 as the command to execute, with the original command line appended,
 or, if the regexp contains subexpressions within parenthesis, an
-attempt will be made to substitute the occurence of \fI%\fP[\fI1-9\fP]
+attempt will be made to substitute the occurence of \fI%\fP<\fI1\fP-\fI9\fP>
 in the value of \fB--command\fP with the contents of the corresponding
 subexpression match.
     
@@ -491,6 +490,96 @@ such function is defined, standard bash completion will instead be
 installed for the \fPword\fP.
 
 .SS ACTIONS
+
+\fBAction\fP objects implement the core functionality of bashrun by
+handling of user input in arbitrarily complex ways. Actions can be
+invoked directly by the user via key bindings or remotely from the
+command line. Each action is augmented by an associated helper
+function which is responsible for generating an executable command
+based on user input. To do so, an action function can interact with
+the bashrun engine by using special functions, e.g. to get or set the
+resulting command, test it for certain conditions, invoke handler and
+rules processing, add a terminal, change the effective user id, or
+simply run some shell commands and then terminate processing. See the
+description of the \fB+action-\fP<\fIname\fP> function below for
+details.
+
+.IP \fB\-\-description\fP\ <\fIstring\fP>\ (default:\ \fIempty\fP)
+A short description for this \fBaction\fP. This string will be used to
+describe the action to the user when listing key bindings.
+
+.IP \fB\-\-depends\fP\ <\fIlist\fP>\ (default:\ \fIempty\fP)
+A space separated list of external programs used by this action. The
+user will be prompted with an appropriate error message if one of
+these dependencies is not satisfied.
+
+.IP \fB\-\-input\fP\ <\fIboolean\fP>\ (default:\ \fItrue\fP)
+Accept the current line as input for this action. If set to
+\fIfalse\fP, the action will be invoked without altering the current
+line.
+
+.IP \fB\-\-remote\fP\ <\fIboolean\fP>\ (default:\ \fItrue\fP)
+Include this \fBaction\fP in the remote control interface. (See
+\fBREMOTE CONTROL INTERFACE).
+
+.IP \fB+action-\fP<\fIname\fP>\ \fB()\ {\ commands;\ }\fP
+
+The function implementing this \fBaction\fP. The return value of this
+function determines how to proceed further. If the function returns
+\fI0\fP, then bashrun assumes that the current command set by the
+\fBcommand\fP function (see below) is executable and will proceed to
+spawn a new instance of bash to execute the command. If the function
+returns \fI1\fP, the action terminates immediately, possibly unmapping
+the terminal window if requested by the \fB+mode --teminal\fP
+property. If the function returns \fI2\fP, then the action terminates
+without unmapping the terminal window, regardless of the value of the
+\fB+mode --teminal\fP property.
+.PP
+The following functions are defined during execution of the action
+function:
+.IP \fBcommand\fP\ [\fIvalue\fP]
+Get or set the command. If no \fIvalue\fP is given, print the current
+command on stdout. If a \fIvalue\fP is given, set the current commmand
+to \fIvalue\fP.
+.IP \fBquote-command\fP
+Quote the command in a way that can be reused as shell input.
+.IP \fBline\fP
+Print the complete command line entered by the user to stdout.
+.IP \fBaction\fP\ <\fIname\fP>
+Run the action function of the \fBaction\fP denoted by \fIname\fP on
+the current command.
+.IP \fBhandlers\fP
+Invoke \fBhandler\fP processing for the command.
+.IP \fBrules\fP
+Invoke \fBrules\fP processing for the command.
+.IP \fBterminal\fP\ [<\fIname\fP>].
+Modify the command to be run in the \fBterminal\fP specified by
+\fIname\fP. If no explicit \fBterminal\fP \fIname\fP is given, then
+the \fPterminal\fP that matches the command will be used. If no
+\fBterminal\fP matches the command or no \fBterminal\fP of the given
+\fIname\fP exists, the \fIdefault\fP \fBterminal\fP is used.
+.IP \fBhold\fP\ [<\fIsec\fP=\fI0\fP>]
+Modify the command to add a delay of \fIsec\fP seconds after the
+command has been run. If \fIsec\fP is \fI0\fP (the default), wait
+until the user presses a key.
+.IP \fBpager\fP
+Modify the command to page the output in a pager. The value of the
+environment variable \fBPAGER\fP (default: less) will be used for
+this.
+.IP \fPuser\fP\ [\fB--prompt\fP]\ [<\fIusername\fP=\fIroot\fP>]
+Modify the command to be run with a different user id by using
+\fBsu\fP(1). If the \fB--prompt\fP option is supplied, prompt the user
+for the username, otherwise use the supplied \fIusername\fP (default:
+\fIroot\fP). The terminal window will be mapped prior to running the
+command to allow the user to enter the username and/or password.
+.IP \fBmap\fP
+Map the terminal window, e.g. to prompt the user.
+.IP \fBexecutable?\fP
+Test whether the command is executable.
+.IP \fBbuiltin?\fP
+Test whether the command is a bash builtin command.
+.IP \fBbookmark?\fP
+Test whether the command is a bashrun \fBbookmark\fP.
 .SH FEEDBACK
 Please file bugs on the sourceforge bug tracker:
 
