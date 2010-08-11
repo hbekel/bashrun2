@@ -12,9 +12,9 @@
 interactive bash sessions, suitable for use in a graphical user
 environment.
 
-In its default setup, the \fIlaucher\fP mode provides a simple run
-dialog by creating an interactive bash session in a small
-\fB__TERMINAL_NAME__\fP(1) terminal window.
+In its default setup, bashrun provides a simple run dialog by creating
+an interactive bash session in a small \fB__TERMINAL_NAME__\fP(1)
+terminal window (the default \fIlauncher\fP mode).
 
 \fBbashrun\fP may also be used in a regular terminal session, allowing
 the user to seamlessly launch both graphical and terminal applications
@@ -492,7 +492,7 @@ installed for the \fPword\fP.
 .SS ACTIONS
 
 \fBAction\fP objects implement the core functionality of bashrun by
-handling of user input in arbitrarily complex ways. Actions can be
+handling user input in arbitrarily complex ways. Actions can be
 invoked directly by the user via key bindings or remotely from the
 command line. Each action is augmented by an associated helper
 function which is responsible for generating an executable command
@@ -580,6 +580,95 @@ Test whether the command is executable.
 Test whether the command is a bash builtin command.
 .IP \fBbookmark?\fP
 Test whether the command is a bashrun \fBbookmark\fP.
+.SS BUILTIN ACTIONS
+This section describes the default \fBactions\fP defined in bashrun,
+along with their default keybindings. 
+
+If you wish to change the implementation of a default action, enter
+debug mode, type \fB+action\fP <\fIname\fP> \fB--code\fP and press
+\fBM-w\fP to retrieve the source code of the \fBaction\fP. You can
+this code to your \fB+configure-actions\fP function in your
+configuration file and modify it accordingly.
+
+.IP \fBpass\fP\ (\fBM-w\fP)
+Run a command directly in the bashrun shell session.
+.IP \fBabort\fP\ (\fBC-g\fP)
+Clear the comman line and hide the terminal window.
+.IP \fBbashrun-bindings\fP\ (\fBF1\fP)
+Show the current keybindings in a terminal.
+.IP \fBbashrun-manual\fP\ (\fBF2\fP)
+Show this manual page in a terminal.
+.IP \fBdebug\fP\ (\fBF12\fP)
+Resize the terminal window to 80x24 and turn on debugging.
+.IP \fBreload\fP\ (\fBM-r\fP)
+Reload the configuration. All configuration ibjects are reloaded from
+the cache unless a configuration functions for a certain type of
+object has changed.
+.IP \fBquit\fP\ (\fBC-q\fP)
+Terminate the bashrun session.
+.IP \fBrun\fP\ (\fBC-m\fP,\ \fBC-j\fP,\ \fBEnter\fP)
+Run a command as an independent process, detached from the bashrun
+shell session. If the command is not executable, try match it against
+\fBhandlers\fP. If no handlers match, abort processing, else apply
+\fPrules\fP and proceed. This behaviour is common for all \fBrun-*\fP
+actions.
+.IP \fBterm-run\fP\ (\fBM-C-m\fP,\ \fBM-Enter\fP)
+Run the command in a terminal.
+.IP \fBterm-hold\fP\ (\fBM-h\fP)
+Run the command in a terminal and keep the terminal open until the
+user presses any key.
+.IP \fBterm-page\fP\ (\fBM-+\fP)
+Run the command in a terminal and display the output using the pager program
+defined by the environment variable \fBPAGER\fP. If this variable is
+unset or empty, use \fBless\fP(1).
+.IP \fBterm-notify\fP
+Run command in the default \fInotify\fP \fBterminal\fP and hold for
+two seconds.
+.IP \fBsu-run\fP\ (\fBM-su\fP)
+Run a command as root. Will prompt the user for the root password.
+.IP \fBsu-term-run\fP\ (\fBM-st\fP)
+Run the command as root in a terminal.
+.IP \fBsu-term-hold\fP\ (\fBM-sh\fP)
+Run the command as root in a terminal and keep the terminal open until the
+user presses any key.
+.IP \fBsu-term-page\fP\ (\fBM-s+\fP)
+Run the command as root in a terminal and display the output using
+the pager program defined by the environment variable \fBPAGER\fP. If
+this variable is unset or empty, use \fBless\fP(1).
+.IP \fBsu-term-notify\fP
+Run command as root in the default \fInotify\fP \fBterminal\fP and
+keep the terminal open for two seconds.
+.IP \fBshow-manual\fP\ (\fBM-?\fP)
+Show the manual page for a command.
+.IP \fBshow-info\fP\ (\fBM-C-?\fP)
+Show the manual page for a command.
+.IP \fBshow-help\fP\ (\fBM-C-x?\fP)
+Show help for a bash builtin.
+.IP \fBbrowse\fP\ (\fBM-C-b\fP)
+Launch urls in \fB$BROWSER\fP.
+.IP \fBgoogle-search\fP\ (\fBM-C-g\fP)
+Use command line contents as a search term on google.
+.IP \fBdict-lookup\fP\ (\fBM-C-d\fP)
+Lookup words in a dictionary client. (\fB$DICT\fP)
+.IP \fBcopy-to-clipboard\fP\ (\fBM-x\fP)
+Copy command output to clipboard using \fIxclip -i\fP.
+.IP \fBfilter-clipboard\fP\ (\fBM-a\fP)
+Use command as a filter on clipboard. Equivalent to
+\fI
+.nf
+  xclip -o | command | xclip -i
+.ni
+\fP
+.IP \fBcycle-size\fP\ (\fBC-l\fP)
+Cycle through the geometries given by \fB +mode --geometry\fP.
+.IP \fBresize-up\fP\ (\fBC-↑\fP)
+Decrease terminal height by one line.
+.IP \fBresize-down\fP\ (\fBC-↓\fP)
+Increase terminal height by one line.
+.IP \fBresize-left\fP\ (\fBC-←\fP)
+Decrease terminal width by one column.
+.IP \fBresize-right\fP\ (\fBC-→\fP)
+Increase terminal width by one column.
 .SH FEEDBACK
 Please file bugs on the sourceforge bug tracker:
 

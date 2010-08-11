@@ -110,13 +110,13 @@ function §engine.action {
 	# overrides
 	[[ -z "$input" ]] && input=$(§action.get_input)
 	
-	§debug "action" -v "$action" "input" -c "$input"
+	§debug "action" -v "$action"
 
 	case $input in
 	    
 	    1)
 	        # accept input via trap
-		§debug "accepting input from" -c "DEBUG trap"
+		§debug "setting" -v "DEBUG" -c "trap"
 		trap §engine.trap DEBUG
 		;; 
 	    

@@ -155,7 +155,7 @@
 		return 1
 	    fi
 	fi
-	§rules.apply
+	rules
 	return 0
     }
     
@@ -212,7 +212,7 @@
 	return 0
     }
 
-    +action term-notify
+    +action 'term-notify'
       --description 'Run command in terminal and hold for two seconds'
       --core 1
       --input 1
@@ -282,7 +282,7 @@
 	return 0
     }
 
-    +action su-term-notify
+    +action 'su-term-notify'
       --description 'Run command in terminal as root and hold for two seconds'
       --core 1
       --input 1    
@@ -336,7 +336,7 @@
 	fi	    
     }
 
-    +action copy-to-clipboard
+    +action 'copy-to-clipboard'
       --description "Copy command output to clipboard"
       --core 1
 
@@ -345,7 +345,7 @@
 	return 0
     }
     
-    +action filter-clipboard 
+    +action 'filter-clipboard' 
       --description "Run command as filter on clipboard"
       --depends 'xclip'
       --core 1
@@ -427,19 +427,21 @@
     
     function +action-cycle-size {
 
-	if [[ -n "$(§mode.get_geometry 1)" ]]; then
+	if ! (( bashrun_debug )); then
+	    if [[ -n "$(§mode.get_geometry 1)" ]]; then
 	    
-	    local current="$(§mode.get_current)"
-	    ((current+=1))
-
-	    local next="$(§mode.get_geometry $current)"
-	    if [[ -z "$next" ]]; then
-		current=0
+		local current="$(§mode.get_current)"
+		((current+=1))
+		
+		local next="$(§mode.get_geometry $current)"
+		if [[ -z "$next" ]]; then
+		    current=0
+		fi
+		next="$(§mode.get_geometry $current)"
+		
+		§window.size --hint "$next"
+		§mode.set_current $current	
 	    fi
-	    next="$(§mode.get_geometry $current)"
-
-	    §window.size --hint "$next"
-	    §mode.set_current $current	
 	fi
 	tput clear
 	return 2
