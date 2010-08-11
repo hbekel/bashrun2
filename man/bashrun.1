@@ -15,14 +15,14 @@ environment.
 In its default setup, \fBbashrun\fP provides a simple run dialog by
 creating an interactive bash session in a small
 \fB__TERMINAL_NAME__\fP(1) terminal window. This mode of operation is
-defined by the default \fIlauncher\fP mode.
+configured by the default \fIlauncher\fP mode.
 
 \fBbashrun\fP may also be used in a regular terminal session, allowing
 the user to seamlessly launch both graphical and terminal applications
 from the command line. This can be done by either starting bashrun in
-\fIterminal\fP mode or by installing a lightweight remote control
-interface in a regular bash session (See \fBREMOTE CONTROL
-INTERFACE\fP).
+\fIterminal\fP mode or by installing a lightweight remote interface to
+an existing bashrun session into a regular bash session (See \fBREMOTE
+CONTROL INTERFACE\fP).
 .SH OVERVIEW
 Bashrun is composed out of a set of user configurable \fBobjects\fP
 that control different aspects of application launching and terminal
@@ -372,12 +372,133 @@ The default \fInotify\fP \fBterminal\fP is a small terminal used by
 the default \fBactions\fP \fIterm-notify\fP and \fIsu-term-notify\fP
 (see \fBDEFAULT ACTIONS\fP below).
 
-.SH RULES
-.SH HANDLERS
-.SH ACTIONS
-.SH BUGS
-Please report any bugs you may find using the email address
-below. Comments, suggestions, feedback of any kind is appreciated.
+.SS RULES
+Rule objects associate \fBactions\fP with specific commands or command
+lines. The \fBrule\fP name must correspond to the name of an existing
+action. The first \fBrule\fP that matches the command will take effect
+and invoke the corresponding \fBaction\fP on the command. Rule
+processing takes place only if the generic \fIrun\fP \fBaction\fP is
+invoked on the command.
+
+.IP \fB\-\-match\fP\ <\fIpattern\fP>\ [...]\ (default:\ \fIempty\fP)
+
+Add one or more \fIpatterns\fP to match commands or command lines
+against.
+
+If \fIpattern\fP is a single word, it will be matched verbatim against
+the first word of the command line. If the pattern is delimited by
+slashes (i.e \fB/\fP\fIpattern\fP\fB/\fP), then the pattern is matched
+as a regular expression on the complete command line. Note that
+slashes inside the regular expression do \fInot\fP have to be escaped
+with a backslash in this notation.
+
+.SS HANDLERS
+Handler objects can be used to match, test against and rewrite
+non-executable command lines and then either execute the resulting
+command or dispatch the resulting string to a specific \fBaction\fP
+for further processing. In addition, handlers provide a simple
+interface to programmable completion.
+
+If the commandline entered into bashrun is not executable (i.e. it's
+not an exported function, an alias or an executable) then an attempt
+is made to successively match the command line against each of
+\fBhandlers\fP, in the order in which they are defined in the
+configuration files.
+    
+If the regular expression given with \fB--match\fP matches the
+commandline, then an optional file test pattern given with
+\fB--test\fP is applied. If no test was specified or if the supplied
+test succeeds, then either the value of \fB--command\fP will be used
+as the command to execute, with the original command line appended,
+or, if the regexp contains subexpressions within parenthesis, an
+attempt will be made to substitute the occurence of \fI%\fP[\fI1-9\fP]
+in the value of \fB--command\fP with the contents of the corresponding
+subexpression match.
+    
+The \fB--action\fP property may be used to delegate the resulting
+string to a specific \fBaction\fP for further processing. If no
+\fBaction\fP was given, the resulting string is assumed to constitute
+an executable command, and will be run in the background.
+
+A command word to complete can be supplied via the \fB--complete\fP
+property, and a function named
+\fB+handler-\fP<\fIname\fP>\fB-complete\fP can be defined to generate
+a list of possible completions.
+
+.IP \fB\-\-match\fP\ <\fIregexp\fP>\ (default:\ \fI(.+)\fP)
+The regular expression to match against the command line. The results
+of any matching parenthized subexpressions within this expression can
+be inserted into the \fB--command\fP template (see \fB--command\fP
+below).
+
+.IP \fB\-\-test\fP\ <\fIexpression\fP>\ (default:\ \fIempty\fP)
+
+The test \fIexpression\fP is a series of characters corresponding to
+the unary file test operators defined in section \fBCONDITIONAL
+EXPRESSIONS\fP of the
+.BR bash (1) 
+manual. The individual file tests will each be performed on the
+complete command line. If one of the these tests fails, the test as a
+whole fails and the handler is skipped. File tests can be negated by
+prefixing them with a single \fI!\fP. For example, a handler using the
+\fIexpression\fP \fIf!x\fP will only be applied if the command line
+contstitutes the filename of a regular, non-executable file.
+
+.IP \fB\-\-command\fP\ <\fIcommand\ template\fP>\ (default:\ \fIempty\fP)
+
+The \fIcommand template\fP is used to rewrite the original command
+line to construct an executable command line or a string that can be
+passed on to an \fBaction\fP for further processing, denoted by the
+\fB--action\fP property.
+
+If the template contains a percent sign (\fI%\fP) followed by a single
+digit in the range \fI1-9\fP, then this pattern will be replaced with
+the matching contents of the corresponding parenthesized
+subexpressions in the regular expression given with \fB--match\fP.
+
+If no such patterns occur in the command template, then the original
+command line is appended to the end of the template string, separated
+by a space character.
+
+.IP \fB\-\-action\fP\ <\fIname\fP>\ (default:\ \fIempty\fP)
+
+The \fIname\fP of an \fBaction\fP that shall be invoked on the
+rewritten command string. If no \fBaction\fP is specified, the
+rewritten command string is assumed to constitute an executable
+command and is executed in the background.
+
+.IP \fB\-\-complete\fP\ <\fIword\fP>\ (default:\ \fIempty\fP)
+
+A stub function \fBword\fP is created and can thus be completed on the
+command line. Standard bash completion is installed for this
+\fIword\fP unless a specific completion function is supplied for this
+\fBhandler\fP (see below).
+
+.IP \fB\-\-fallback\fP\ <\fIboolean\fP>\ (default:\ \fIfalse\fP)
+
+If set to true, this \fBhandler\fP will always appear at the end of
+the handler chain, regardless of where it was defined in the
+configuration files. If more than one fallback \fBhandler\fP is
+defined, they will end up at the end of the handler chain in the order
+in which they are defined in the configuration files.
+
+.IP \fB+handler-\fP<\fIname\fP>\fB-complete\fI\ \fB()\ {\ commands;\ }
+
+An optional function that generates a newline-separated list of
+possible completions used for the \fIword\fP given by the
+\fB--complete\fP property of the corresponding \fBhandler\fP. If no
+such function is defined, standard bash completion will instead be
+installed for the \fPword\fP.
+
+.SS ACTIONS
+.SH FEEDBACK
+Please file bugs on the sourceforge bug tracker:
+
+http://sourceforge.net/tracker/?atid=1116177&group_id=241477
+
+Also feel free to mail me directly using the email adress
+below. Questions, comments, suggestions, feedback of any kind is
+greatly appreciated.
 .SH AUTHOR
 Henning Bekel <h.bekel at googlemail dot com> (english and german)
 .SH "SEE ALSO"
@@ -386,43 +507,3 @@ Henning Bekel <h.bekel at googlemail dot com> (english and german)
 .BR __TERMINAL_NAME__ (1)
 .BR su (1)
 .BR stty (1)
-
-\" Handler setup:
-\"   1. Reorder handlers     
-\"     If --fallback is true, move handlers to the end of the chain.
-\"     Fallback handlers will end up at the end of the chain in the
-\"     order they are defined in this configuration file.    
-\"   2. Setup completion    
-\"     If --complete is given, create a stub function using the
-\"     word given as the function name, so that the word can be
-\"     completed to from an empty commandline.    
-\"       If a function by the name +handler-<handlername>-complete
-\"       is defined, install a completion function for the word
-\"       given in --complete that uses the output of the supplied
-\"       function to dynamically retrieve a list of words to
-\"       complete against.  
-\"       If no such function is defined, install default completion
-\"       for the word given in --complete.
-\" Handler processing: 
-\"   Match the line against the regular expression in --pattern
-\"     Perform one or more optional tests using the 'test' builtin.
-\"     A string of test characters, corresponding to the option
-\"     characters of the options to the test builtin, can be given
-\"     in --test. Prefixing a test character with '!' negates the
-\"     test.  Tests are performed in the order in which they appear
-\"     in --test. If one of these tests fails, testing is aborted
-\"     and the test as a whole fails.
-\"       Rewrite the string depending on its contents:       
-\"         If the string contains back references (%[0-9]), replace
-\"         them with the string matching the corresponding
-\"         subpatterns
-\"         If the string contains no back references, append the
-\"         line to the string, separating them with a space
-\"         character.
-\"     If an --action has been specified, run the action on the
-\"     resulting string
-\"     If no --action has been specified, assume that the string now
-\"     constitutes an executable commandline, and launch it in the
-\"     background, detached from the bashrun shell.
-    
-
