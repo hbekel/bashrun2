@@ -195,12 +195,12 @@
     #
     # If the regular expression given in --match matches the
     # commandline, then the file test pattern given in --test is
-    # applied first, if any. If no test was given or if the supplied
-    # test succeeds, then either the value of --string will be used as
-    # the command to execute, with the commandline itself passed as
-    # the argument, or, if the regexp contains subexpressions within
+    # applied, if any. If no test was given or if the supplied test
+    # succeeds, then either the value of --command will be used as the
+    # command to execute, with the commandline itself passed as the
+    # argument, or, if the regexp contains subexpressions within
     # parenthesis, an attempt will be made to substitute the occurence
-    # of %[1-9] in the value of --string with the contents of the
+    # of %[1-9] in the value of --command with the contents of the
     # corresponding subexpression match. In this case, the modified
     # handler string is used as the commandline without adding further
     # arguments.
@@ -217,7 +217,7 @@
 
     +handler info
       --match '(.+)\?\?'
-      --string '%1'
+      --command '%1'
       --action show-info
       # E.g. if you run "bash??" then the string "bash" is used as the
       # commandline to be used with the show-info action, which pages
@@ -226,7 +226,7 @@
       
     +handler manual
       --match '(.+)\?'
-      --string '%1'
+      --command '%1'
       --action show-manual
       # Similar to the above, but shows manual pages instead. Note
       # that the order of handlers is important here: if this handler
@@ -235,7 +235,7 @@
 
     +handler browse
       --match 'browse (.*)'
-      --string '%1'
+      --command '%1'
       --action 'browse'
       --complete 'browse'
 
@@ -262,7 +262,7 @@
 
     +handler google
       --match '^gg:(.+)'
-      --string  'www.google.com/search?q=%1'
+      --command  'www.google.com/search?q=%1'
       --action browse
       # An example of a Konqueror-style url shortcut: if you type
       # "gg:foo", then the %1 in "www.google.com/search?q=%1" will be
@@ -271,39 +271,39 @@
 
     +handler google-lucky
       --match '^ggl:(.+)'
-      --string  'www.google.com/search?q=%1&btnI=I\%27m+Feeling+Lucky'
+      --command  'www.google.com/search?q=%1&btnI=I\%27m+Feeling+Lucky'
       --action browse
       # The same as above, but uses google's "Feeling Lucky" function.
 
     +handler freshmeat-search
       --match '^fm:(.+)'  
-      --string 'freshmeat.net/search/?q=%1&section=projects'
+      --command 'freshmeat.net/search/?q=%1&section=projects'
       --action browse
 
     +handler sourceforge-project
       --match '^sf:(.+)'  
-      --string 'sourceforge.net/projects/%1/'
+      --command 'sourceforge.net/projects/%1/'
       --action browse
       
     +handler sourceforge-website
       --match '^sw:(.+)' 
-      --string '%1.sourceforge.net/'
+      --command '%1.sourceforge.net/'
       --action browse
 
     +handler aur-search
       --match 'aur:(.+)'
-      --string 'aur.archlinux.org/packages.php?K=%1&do_Search=Go'
+      --command 'aur.archlinux.org/packages.php?K=%1&do_Search=Go'
       --action browse
 
     +handler ftp
       --match '^ftp://(.+)' 
-      --string 'ncftp'
+      --command 'ncftp'
       --action term-run 
 
     +handler gimp
       --match '\.jpe?g$'
       --test 'f!x'
-      --string 'gimp'
+      --command 'gimp'
       # This handler implements a file association by matching any
       # command line ending in .jpg or .jpeg. It then tests whether
       # the command line is a path to a file that is not executable by
@@ -316,13 +316,13 @@
     +handler video
       --match '\.(avi|mpe?g|flv|mp4|wmv|mov)$'
       --test 'f'
-      --string 'mplayer -fs'
+      --command 'mplayer -fs'
       # Another file association to open video files in fullscreen
       # mplayer.
 
     +handler command-help
       --match '^\?(.+)'  
-      --string '%1 --help'
+      --command '%1 --help'
       --action term-page
       # E.g. ?bash pages "bash --help" in a terminal
 
@@ -336,19 +336,19 @@
     +handler directory
       --fallback true
       --test 'd'
-      --string "kfmclient openProfile filemanagement %1"
+      --command "kfmclient openProfile filemanagement %1"
       # Open directories in konqueror, using the file management
       # profile.
 
     +handler file
       --fallback true
       --test 'f!x'
-      --string "xdg-open %1"
+      --command "xdg-open %1"
       # handle files universally with xdg-open, see xdg-open(1)
 
     # +handler google-fallback
     #  --fallback 1
-    #  --string  "www.google.com/search?q=%1"
+    #  --command  "www.google.com/search?q=%1"
     #  --action browse
 
     # The "directory" handler is the equivalent of the former
