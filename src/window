@@ -102,7 +102,7 @@ function §window.map {
     # call user supplied onmap handler
     $(§mode.get_onmap)
     
-    §window.update
+    bashrun_window_mapped=1
     return 0
 }
 
@@ -125,8 +125,6 @@ function §window.toggle { # [smart=0]
     §window.update
 
     if (( bashrun_window_mapped )); then	
-	§window.map
-    else
 	if (( smart )); then
 	    if brwctl $bashrun_window_id focus?; then
 		§window.unmap
@@ -136,6 +134,8 @@ function §window.toggle { # [smart=0]
 	else
 	    §window.unmap
 	fi
+    else
+	§window.map
     fi
     return 0
 }
