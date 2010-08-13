@@ -9,7 +9,9 @@
 
 §class "keyname" --properties "keyseq" "name"                             
 
-bind '"\C-x00": accept-line'
+bind -m emacs '"\C-x00": accept-line'
+bind -m vi-insert '"\C-x00": accept-line'
+bind -m vi-command '"\C-x00": accept-line'
 
 bashrun_bindings_next_char=20 
 bashrun_bindings_blacklist=" 34 39 127 "                         
@@ -88,6 +90,8 @@ function set {
 	§configs.collect_user_configs "$mode"
 
 	§configs.seek "$mode" && §config.restore 
+
+	+mode-${bashrun_mode}-init
 
 	§readline.get_settings
 

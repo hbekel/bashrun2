@@ -432,7 +432,7 @@
     #   See readine(1) on how to specify key sequences. In short,
     #   '\ex' means Alt-x and '\C-x' means Control-x.
 
-    +keymap emacs    
+    +keymap emacs
 
     +bind pass '\ew'
     +bind abort  '\C-g'
@@ -462,18 +462,18 @@
     +bind copy-to-clipboard '\ex'
     +bind filter-clipboard  '\ea'
 
-    +bind bashrun-bindings '\e[11~' F1
-    +bind bashrun-bindings '\eOP'  F1
+    +bind bashrun-bindings '\e[11~' 'F1'
+    +bind bashrun-bindings '\eOP'   'F1'
 
-    +bind bashrun-manual   '\e[12~' F2
-    +bind bashrun-manual   '\eOQ' F2
-    +bind debug            '\e[24~' F12
+    +bind bashrun-manual   '\e[12~' 'F2'
+    +bind bashrun-manual   '\eOQ'   'F2'
+    +bind debug            '\e[24~' 'F12'
 
     +bind cycle-size   '\C-l'
-    +bind resize-up    '\e[1;5A' C-up
-    +bind resize-down  '\e[1;5B' C-down
-    +bind resize-left  '\e[1;5D' C-left
-    +bind resize-right '\e[1;5C' C-right
+    +bind resize-up    '\e[1;5A' 'C-up'
+    +bind resize-down  '\e[1;5B' 'C-down'
+    +bind resize-left  '\e[1;5D' 'C-left'
+    +bind resize-right '\e[1;5C' 'C-right'
 
     +bind run-as '\eu'
 
@@ -482,6 +482,70 @@
 }
 
 +configure-vi-mode () { 
-    # FIXME
-    :
+
+    +keymap vi-command
+
+    +bind pass '\ew'
+    +bind abort  '\C-g'
+    +bind reload  '\er'
+    +bind quit '\C-q'
+
+    +bind run  '\C-m'
+    +bind run  '\C-j'
+
+    +bind term-run  '\e\C-m'
+    +bind term-page '\e+'
+    +bind term-hold '\eh'
+
+    +bind su-run       '\esu'
+    +bind su-term-run  '\est'
+    +bind su-term-page '\es+'
+    +bind su-term-hold '\esh'
+
+    +bind show-manual  '\e?'
+    +bind show-info    '\ei'
+    +bind show-help    '\eh'
+
+    +bind browse         '\eb'
+    +bind google-search  '\eg'
+    +bind dict-lookup    '\ed'
+
+    +bind copy-to-clipboard '\ec'
+    +bind filter-clipboard  '\ea'
+
+    +bind bashrun-bindings '\e[11~' 'F1'
+    +bind bashrun-bindings '\eOP'   'F1'
+
+    +bind bashrun-manual   '\e[12~' 'F2'
+    +bind bashrun-manual   '\eOQ'   'F2'
+    +bind debug            '\e[24~' 'F12'
+
+    +bind cycle-size   '\C-l'
+    +bind resize-up    '\e[1;5A' 'C-up'
+    +bind resize-down  '\e[1;5B' 'C-down'
+    +bind resize-left  '\e[1;5D' 'C-left'
+    +bind resize-right '\e[1;5C' 'C-right'
+
+    +keymap vi-insert
+
+    +bind pass '\ew'
+    +bind abort  '\C-g'
+    +bind reload  '\er'
+    +bind quit '\C-q'
+
+    +bind run  '\C-m'
+    +bind run  '\C-j'
+
+    +bind bashrun-bindings '\e[11~' 'F1'
+    +bind bashrun-bindings '\eOP'   'F1'
+
+    +bind bashrun-manual   '\e[12~' 'F2'
+    +bind bashrun-manual   '\eOQ'   'F2'
+    +bind debug            '\e[24~' 'F12'
+
+    +bind cycle-size   '\C-l'
+    +bind resize-up    '\e[1;5A' 'C-up'
+    +bind resize-down  '\e[1;5B' 'C-down'
+    +bind resize-left  '\e[1;5D' 'C-left'
+    +bind resize-right '\e[1;5C' 'C-right'
 }

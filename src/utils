@@ -299,7 +299,7 @@ function §print_bindings {
 	ids="$(§bindings.select keymap "$keymap")"
 	[[ -z "$ids" ]] && continue
 
-	printf '%b' "${w}Bashrun Keybindings$n ($c$mode$n):\n\n"
+	printf '%b' "${w}Bashrun Keybindings$n ($c$mode$n, keymap: $c$keymap$n):\n\n"
 
 	covered=""
 
