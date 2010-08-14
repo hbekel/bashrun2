@@ -4,54 +4,65 @@
 .TH BASHRUN 1 "2010-06-28" "Linux" "User manuals"
 .SH NAME
 \fBbashrun\fP \- launch applications from interactive bash sessions
+
 .SH SYNOPSIS
 \fBbashrun\fP [\fIoptions\fP] [\fIcommand\fP [\fIargs\fP]] [-- \fItermopts\fP]
+
 .SH DESCRIPTION
-.PP
-\fBbashrun\fP adds versatile application launching capabilities to
-interactive bash sessions, suitable for use in a graphical user
-environment.
+\fBbashrun\fP adds application launching capabilities to interactive
+bash sessions, suitable for use in a graphical user environment.
 
-In its default setup, bashrun provides a simple run dialog by creating
-an interactive bash session in a small \fB__TERMINAL_NAME__\fP(1)
-terminal window (the default \fIlauncher\fP mode).
+In its default setup, \fBbashrun\fP provides an application launcher
+in the fashion of a simple run dialog by starting an interactive bash
+session in a small \fB__TERMINAL_NAME__\fP(1) terminal window
+(\fIlauncher\fP mode).
 
-\fBbashrun\fP may also be used in a regular terminal session, allowing
-the user to seamlessly launch both graphical and terminal applications
-from the command line. This can be done by either starting bashrun in
-\fIterminal\fP mode or by installing a lightweight remote interface to
-an existing bashrun session into a regular bash session (See \fBREMOTE
-CONTROL INTERFACE\fP).
-.SH OVERVIEW
-Bashrun is composed out of a set of user configurable \fBobjects\fP
-that control different aspects of application launching and terminal
-window management:
+The \fBbashrun\fP engine can also be installed in an interactive bash
+session, allowing the user to seamlessly launch graphical and terminal
+applications from the command line (\fIterminal\fP mode).
 
-\fBModes\fP control the appearance and behavior of the terminal
-hosting the bashrun session, such as the default modes \fIlauncher\fP
-and \fIterminal\fP mentioned above.
+An existing bashrun session can also be used remotely from any
+interactive bash session by sourcing a lightweight remote interface
+(see \fBREMOTE INTERFACE\fP).
 
-\fBActions\fP can be bound to key sequences and handle user input in
-different ways, such as launching a command in a terminal or looking
-up words in a dictionary client.
+.SH GETTING STARTED
+.SS Using bashrun as a run dialog
+Start bashrun from the command line or with a keybinding in your
+window manager or desktop environment. Bashrun will start in its
+default mode \fIlauncher\fP. It will create an interactive bash
+session in a small one-line \fB__TERMINAL_NAME__\fP(1) terminal and
+initialize the bashrun engine.
 
-\fBTerminals\fP allow the user to specify different terminal command
-lines to be used for launching console applications, and can be
-associated with specific commands or command lines.
+Type a command to launch a graphical application and press
+Enter. Bashrun will launch the application and then hide the terminal
+window. Now run bashrun again. The terminal window will be shown again
+and you can enter another command. This time, type the name of a
+console application. To launch it in a terminal, press Alt-Enter.
 
-\fBRules\fP associate \fBactions\fP with specific commands or command
-lines, e.g. to automatically launch certain commands in a
-\fBterminal\fP. Regular expressions allow fine grained control over
-command matching.
+Bring up bashrun again and press F1 to view a complete list of
+keybindings and available actions.
+.SS Using bashrun in a regular terminal
+Start bashrun with \fIbashrun --mode terminal\fP. It will launch a
+bashrun session in \fIterminal\fP mode, creating a standard sized
+terminal window. 
 
-\fPHandlers\fP provide a flexible mechanism for rewriting
-non-executable commands, using regular expression matching,
-substitution and file test operators, thus offering a way to implement
-stuff like file associations or web shortcuts. They also provide a
-simple interface to programmable completion.
+Pressing Enter will run commands in the current shell as usual. You
+can launch applications in the background now by pressing
+Alt-Enter. To launch a console application in a new terminal, press
+Alt-t. All other keybindings remain the same as in \fIlauncher\fP
+mode.
 
-\fBPlugins\fP allow flexible inclusion and distribution of user
-created configuration objects.
+Bind a key in your window manager or desktop environment to run
+\fIbashrun --mode terminal\fP and use it to bring the window up front
+at any time, regardless of whether it is behind other windows or on
+another desktop. Run \fIbashrun --help\fP or see \fBCOMMAND LINE
+INTERFACE\fP for a list of available options and commands.
+
+.SS Configuring bashrun
+To configure bashrun, either edit the the system wide configuration
+\fI__SYSCONFDIR__/xdg/bashrun/bashrun.rc\fP or create the directory
+\fI~/.config/bashrun/\fP and copy the configuration file into this
+directory.
 .SH COMMAND LINE INTERFACE
 The \fBbashrun\fP executable provides a command line interface to
 bashrun sessions and can be used to create, select and control bashrun
@@ -149,7 +160,7 @@ locations:
 .SS SYNTAX
 Configuration files are bash scripts that will be \fIsourced\fP during
 the startup of the bashrun session. These scripts are responsible for
-defininf the configuration functions that contain actual \fBobject
+defining the configuration functions that contain actual \fBobject
 definitions\fP as well as additional helper function definitions for a
 specific type of object.
 .PP
@@ -200,12 +211,10 @@ Note that if an \fBobject initializer\fP refers to a previously defined
 object of the same type using the same \fBname\fP, then subsequent
 \fBproperty definitions\fP will apply to the existing objects instead of
 creating a new object, i.e. the above example could also be written as
-.RS
 .PP
-.nf
+.RS
 +terminal 'small' --command 'urxvt -g %g -e bash -c %@'
 +terminal 'small' --geometry '40x12'
-.ni
 .RE
 .PP
 Multiple arguments to \fBproperty definitions\fP are usually
@@ -221,6 +230,36 @@ resulting objects and functions are again cached to replace the
 previoulsy cached results.
 .PP
 .SH OBJECTS
+.SS OVERVIEW
+Bashrun is composed out of a set of user configurable \fBobjects\fP
+that control different aspects of application launching and terminal
+window management:
+
+\fBModes\fP control the appearance and behavior of the terminal
+hosting the bashrun session, such as the default modes \fIlauncher\fP
+and \fIterminal\fP mentioned above.
+
+\fBActions\fP can be bound to key sequences and handle user input in
+different ways, such as launching a command in a terminal or looking
+up words in a dictionary client.
+
+\fBTerminals\fP allow the user to specify different terminal command
+lines to be used for launching console applications, and can be
+associated with specific commands or command lines.
+
+\fBRules\fP associate \fBactions\fP with specific commands or command
+lines, e.g. to automatically launch certain commands in a
+\fBterminal\fP. Regular expressions allow fine grained control over
+command matching.
+
+\fPHandlers\fP provide a flexible mechanism for rewriting
+non-executable commands, using regular expression matching,
+substitution and file test operators, thus offering a way to implement
+stuff like file associations or web shortcuts. They also provide a
+simple interface to programmable completion.
+
+\fBPlugins\fP allow flexible inclusion and distribution of user
+created configuration objects.
 .SS MODES
 \fBmode\fP objects provide a way to run multiple instances of bashrun
 with different settings. They define a terminal command line used to
@@ -370,6 +409,11 @@ will be implicitly appended to the \fIterm-run\fP \fBrule\fP (see
 \fBRULES\fP below). This means that commands matched by a
 \fBterminal\fP will always be run in that \fBterminal\fP, even if this
 was not explicitly requested by the current \fPaction\fP.
+
+.SS BOOKMARKS
+For each \fBbookmark\fP object, a stub function by the same name is
+defined that runs the \fIbrowse\fP action for the \fBbookmark\fP
+name. Bookmarks can thus be completed like regular commands.
 
 .SS RULES
 Rule objects associate \fBactions\fP with specific commands or command
@@ -669,6 +713,7 @@ Increase terminal height by one line.
 Decrease terminal width by one column.
 .IP \fBresize-right\fP\ (\fBC-→\fP)
 Increase terminal width by one column.
+.SH PLUGINS
 .SH FEEDBACK
 Please file bugs on the sourceforge bug tracker:
 
