@@ -474,11 +474,6 @@
     +bind resize-down  '\e[1;5B' 'C-down'
     +bind resize-left  '\e[1;5D' 'C-left'
     +bind resize-right '\e[1;5C' 'C-right'
-
-    +bind run-as '\eu'
-
-    +bind kill-to-xclip   '\ek'
-    +bind yank-from-xclip '\ey'
 }
 
 +configure-vi-mode () { 

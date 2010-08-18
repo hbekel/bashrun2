@@ -27,17 +27,23 @@
 
     +mode-terminal-init() {
 
-	+keymap emacs
+      local keymaps="emacs"
+      §set? vi && keymaps="vi-insert vi-command"
+
+      for keymap in $keymaps; do	    
+	+keymap "$keymap"
+
 	+unbind run      '\C-m'
 	+unbind run      '\C-j'
 	+unbind term-run '\e\C-m'
 	+unbind pass     '\ew'
 	+unbind quit     '\C-q'
 	+unbind abort    '\C-g'
-
+	
 	+bind run '\e\C-m'
-	+bind term-run '\et'
-    }    
+	+bind term-run '\et'	
+      done
+    }
 }
 
 +configure-core-terminals () {
@@ -178,6 +184,7 @@
     
     +action 'term-page'
     --description 'Run command in terminal and page'
+    --depends '$PAGER'
     --input 1
     --core 1
     
@@ -195,7 +202,8 @@
     }
     
     +action 'term-hold'
-    --description 'Run command in terminal and hold'
+    --description 'Run command in terminal and hold'    
+    --depends 'tput'
     --input 1
     --core 1
     
@@ -214,6 +222,7 @@
 
     +action 'term-notify'
       --description 'Run command in terminal and hold for two seconds'
+      --depends 'tput sleep'
       --core 1
       --input 1
 
@@ -259,7 +268,7 @@
     +action 'su-term-page'
     --description 'Run command in terminal as root and page'
     --input 1
-    --depends 'su'
+    --depends 'su $PAGER'
     --core 1
     
     +action-su-term-page () 
@@ -272,7 +281,7 @@
     +action 'su-term-hold'
     --description 'Run command in terminal as root and hold'
     --input 1
-    --depends 'su'
+    --depends 'su tput'
     --core 1
     
     +action-su-term-hold () 
@@ -286,7 +295,7 @@
       --description 'Run command in terminal as root and hold for two seconds'
       --core 1
       --input 1    
-      --depends 'su'
+      --depends 'su tput sleep'
     
     +action-su-term-notify () 
     { 
@@ -338,6 +347,7 @@
 
     +action 'copy-to-clipboard'
       --description "Copy command output to clipboard"
+      --depends 'xclip'
       --core 1
 
     function +action-copy-to-clipboard {
@@ -355,7 +365,8 @@
     }
     
     +action 'browse'
-      --description 'Open page in $BROWSER'
+      --description 'Open url in browser'
+      --depends '$BROWSER'
       --input 1
       --core 1
     
@@ -366,7 +377,8 @@
     }
     
     +action 'google-search'
-      --description 'Google words using $BROWSER'
+      --description 'Google words'
+      --depends '$BROWSER'
       --input 1
       --core 1
     
@@ -377,7 +389,8 @@
     }
     
     +action 'dict-lookup'
-      --description 'Lookup words in $DICT'
+      --description 'Lookup words in dictionary'
+      --depends '$DICT'
       --input 1
       --core 1
     
@@ -400,22 +413,23 @@
 
     +action 'bashrun-bindings'
     --description 'Show current keybindings'
+    --depends '$PAGER'
     --input 0
     --remote 0
     --core 1
     
     function +action-bashrun-bindings {
 
-	local tmpfile=$bashrun_cache_home/keybindings
+	local tmpfile="$bashrun_cache_home/keybindings"
 	if [[ ! -f "$tmpfile" ]]; then
-	    §print_bindings > $tmpfile
+	    §bindings.print > "$tmpfile"
 	    §bindings.modified 0
 
 	elif §bindings.modified?; then
-	    §print_bindings > $tmpfile
+	    §bindings.print > "$tmpfile"
 	    §bindings.modified 0
 	fi
-	command "cat $tmpfile"
+	command "cat '$tmpfile'"
 	action term-page
     }
 

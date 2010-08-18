@@ -12,6 +12,7 @@
 §function.clone "§action.new" "§action._new"
 §function.clone "§actions.dump" "§actions._dump"
 §function.clone "§action.code" "§action._code"
+§function.clone "§action.get_depends" "§action._get_depends"
 
 ################################################################################
 
@@ -27,6 +28,10 @@ function §action.new {
 	    return 0
 	}"
     fi
+}
+
+function §action.get_depends {
+    §interpolate "$(§action._get_depends)"
 }
 
 function §action.bind {

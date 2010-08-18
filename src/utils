@@ -275,56 +275,6 @@ function §ks2kn {
     printf '%s' "$keyname"
 }
 
-function §print_bindings {
-
-    local w="\033[1;37m" # white
-    local r="\033[1;31m" # red
-    local g="\033[1;32m" # green 
-    local b="\033[1;34m" # blue
-    local c="\033[1;36m" # cyan
-    local m="\033[1;35m" # magenta
-    local y="\033[1;33m" # yellow
-    local n="\033[0m"    # none
-
-    local mode="$(§readline.get_setting 'editing-mode')"
-    local keymaps="emacs"
-    local keymap id ids covered action keyname
-    
-    if [[ "$mode" == "vi" ]]; then
-	keymaps="vi-insert vi-command"
-    fi
-    mode+="-mode"
-    
-    for keymap in $keymaps; do
-	ids="$(§bindings.select keymap "$keymap")"
-	[[ -z "$ids" ]] && continue
-
-	printf '%b' "${w}Bashrun Keybindings$n ($c$mode$n, keymap: $c$keymap$n):\n\n"
-
-	covered=""
-
-	for id in $ids; do
-	    §bindings.seek "$id"
-	    §binding.bound? || continue
-
-	    action="$(§binding.get_action)"
-	    if §actions.seek "$action"; then
-		keyname="$(§binding.get_keyname)"
-		[[ " $covered " =~ " $keyname " ]] && continue
-			
-		printf '%b' "\t$b$keyname$n\t"
-		printf '%b' "$(§interpolate "$(§action.get_description)")"
-		if [[ -n "$(§action.get_depends)" ]]; then
-    		    printf '%b' " ($(§action.print_depends))"
-		fi
-		printf '\n'
-		covered+="$keyname "
-	    fi
-	done
-	printf '\n'
-    done	
-}
-
 function §tilde_path {
     # replace $HOME with a tilde for printing
     local path="$1"
