@@ -95,6 +95,8 @@ function §config.get_funcname { # $wanted
 
 function §configs.restore {
 
+    §separator "Creating/Restoring configuration"
+
     source $bashrun_site/core
     source $bashrun_rcfile
 
@@ -126,7 +128,7 @@ function §config.restore {
 
 	    # restore the previous dump unless reconfiguring	    
 	    if [[ "$state" == "restoring" ]]; then
-		§debug "restoring " -v "$restore"
+		§debug "restore" -v "$restore"
 		. "$bashrun_cache_home/$restore"
 	    fi
 

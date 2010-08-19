@@ -8,6 +8,9 @@
 .SH SYNOPSIS
 \fBbashrun\fP [\fIoptions\fP] [\fIcommand\fP [\fIargs\fP]] [-- \fItermopts\fP]
 
+\fBbashrun --mode\fP \fIterminal\fP [...]
+
+\fBeval\fP \fI\[dq]$(bashrun --remote-control)\[dq]\fP
 .SH DESCRIPTION
 \fBbashrun\fP adds application launching capabilities to interactive
 bash sessions, suitable for use in a graphical user environment.
@@ -15,16 +18,17 @@ bash sessions, suitable for use in a graphical user environment.
 In its default setup, \fBbashrun\fP provides an application launcher
 in the fashion of a simple run dialog by starting an interactive bash
 session in a small \fB__TERMINAL_NAME__\fP(1) terminal window
-(\fIlauncher\fP mode).
+(the builtin \fIlauncher\fP mode).
 
-The \fBbashrun\fP engine can also be installed in an interactive bash
-session, allowing the user to seamlessly launch graphical and terminal
-applications from the command line (\fIterminal\fP mode).
+Alternatively, the builtin \fIterminal\fP mode starts an interactive
+bash session in a regular \fB__TERMINAL_NAME__\fP(1) terminal window
+and transparently adds bashrun's application launching capabilities,
+allowing the user to seamlessly launch graphical and terminal
+applications from the command line.
 
 An existing bashrun session can also be used remotely from any
 interactive bash session by sourcing a lightweight remote interface
 (see \fBREMOTE INTERFACE\fP).
-
 .SH GETTING STARTED
 .SS Using bashrun as a run dialog
 Start bashrun from the command line or with a keybinding in your
@@ -41,7 +45,7 @@ console application. To launch it in a terminal, press Alt-Enter.
 
 Bring up bashrun again and press F1 to view a complete list of
 keybindings and available actions.
-.SS Using bashrun in a regular terminal
+.SS Using bashrun in a managed terminal
 Start bashrun with \fIbashrun --mode terminal\fP. It will launch a
 bashrun session in \fIterminal\fP mode, creating a standard sized
 terminal window. 
@@ -58,11 +62,35 @@ at any time, regardless of whether it is behind other windows or on
 another desktop. Run \fIbashrun --help\fP or see \fBCOMMAND LINE
 INTERFACE\fP for a list of available options and commands.
 
+Use \fIterminal\fP mode if you want to use a dedicated, bashrun
+augmented terminal that can be brought up front with a single
+keybinding in your window manager or desktop environment.
+.SS Using bashrun remotely
+In a terminal not started by bashrun, run the command
+
+.nf
+  eval "$(bashrun --remote-control)"
+.fi
+
+A lightweight remote interface to an existing bashrun \fIlauncher\fP
+session will be installed in the current bash session. Bashrun's
+keybindings will be enabled in a similar way as in \fIterminal\fP
+mode, i.e. Alt-Enter can be used to launch commands in the background,
+and Alt-t can be used to launch commands in a terminal. Non-executable
+commands will also be passed on to the remote bashrun session,
+providing access to \fBhandler\fP processing. \fBBookmarks\fP and
+\fBhandler\fP completion will be available as well.
+
+Use this method if you want transparent remote access to bashrun's
+features from any terminal.
 .SS Configuring bashrun
 To configure bashrun, either edit the the system wide configuration
 \fI__SYSCONFDIR__/xdg/bashrun/bashrun.rc\fP or create the directory
 \fI~/.config/bashrun/\fP and copy the configuration file into this
-directory.
+directory. The default configuration file contains extensivly
+commented examples that should help to get you started. After editing
+the configuration file, either restart bashrun or press Alt-r to make
+changes take effect.
 .SH COMMAND LINE INTERFACE
 The \fBbashrun\fP executable provides a command line interface to
 bashrun sessions and can be used to create, select and control bashrun
@@ -202,9 +230,11 @@ the \fI+configure-terminals\fP function will create a new
 and \fBgeometry\fP properties:
 .PP
 .RS
+.nf
 +terminal 'small' 
   --command 'urxvt -g %g -e bash -c %@'
   --geometry '40x12'
+.fi
 .RE
 .PP
 Note that if an \fBobject initializer\fP refers to a previously defined
@@ -213,8 +243,10 @@ object of the same type using the same \fBname\fP, then subsequent
 creating a new object, i.e. the above example could also be written as
 .PP
 .RS
+.nf
 +terminal 'small' --command 'urxvt -g %g -e bash -c %@'
 +terminal 'small' --geometry '40x12'
+.fi
 .RE
 .PP
 Multiple arguments to \fBproperty definitions\fP are usually
@@ -248,8 +280,8 @@ lines to be used for launching console applications, and can be
 associated with specific commands or command lines.
 
 \fBRules\fP associate \fBactions\fP with specific commands or command
-lines, e.g. to automatically launch certain commands in a
-\fBterminal\fP. Regular expressions allow fine grained control over
+lines, e.g. to automatically launch certain commands with root
+priviledges. Regular expressions allow fine grained control over
 command matching.
 
 \fPHandlers\fP provide a flexible mechanism for rewriting
@@ -261,10 +293,10 @@ simple interface to programmable completion.
 \fBPlugins\fP allow flexible inclusion and distribution of user
 created configuration objects.
 .SS MODES
-\fBmode\fP objects provide a way to run multiple instances of bashrun
-with different settings. They define a terminal command line used to
-launch a bashrun session and further control the sessions general
-appearance and behavior.
+\fBmode\fP objects provide a way to configure and run multiple
+instances of bashrun with different settings. They define a terminal
+command line used to launch a bashrun session and further control the
+sessions general appearance and behavior.
 
 .IP \fB\-\-terminal\fP\ <\fIcommand\ template\fP>
 
@@ -373,6 +405,10 @@ Defines the command line used to run the given command as a \fBbash\fP
 shell command. Within this string, patterns prefixed with \fI%\fP will
 be replaced with their corresponding values in the same way as
 described above for the \fB+mode --terminal\fP.
+
+Note that since the \fI-c\fP option to \fBbash\fP expects a single
+argument, \fI%@\fP should be used as the pattern to insert the shell
+command into the resulting command line.
 
 .IP \fB\-\-geometry\fP\ <\fIgeometry\fP>\ (default:\ \fIempty\fP)
 
@@ -585,10 +621,15 @@ function:
 Get or set the command. If no \fIvalue\fP is given, print the current
 command on stdout. If a \fIvalue\fP is given, set the current commmand
 to \fIvalue\fP.
-.IP \fBquote-command\fP
-Quote the command in a way that can be reused as shell input.
 .IP \fBline\fP
 Print the complete command line entered by the user to stdout.
+.IP \fBword\fP
+Print the first word of the command line entered by the user to
+stdout. Note that any environment variable assignments at the
+beginning of the line will be skipped when determining the command
+word.
+.IP \fBquote-command\fP
+Quote the command in a way that can be reused as shell input.
 .IP \fBaction\fP\ <\fIname\fP>
 Run the action function of the \fBaction\fP denoted by \fIname\fP on
 the current command.
@@ -713,8 +754,8 @@ Increase terminal height by one line.
 Decrease terminal width by one column.
 .IP \fBresize-right\fP\ (\fBC-→\fP)
 Increase terminal width by one column.
-.SH PLUGINS
-.SH FEEDBACK
+.SH ENVIRONMENT
+.SH BUGS AND FEEDBACK
 Please file bugs on the sourceforge bug tracker:
 
 http://sourceforge.net/tracker/?atid=1116177&group_id=241477

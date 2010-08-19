@@ -122,7 +122,6 @@
     # +terminal default --command 'Eterm -e bash -c %@'
     # +terminal default --command 'roxterm -e bash -c %@'
     # +terminal default --command 'konsole -e bash -c %@'
-
     # +terminal default --command 'Terminal -x bash -c %@'
     # +terminal default --command 'gnome-terminal -e bash\ -c\ %@@'
     # +terminal default --command 'terminator -x bash -c %@'    
@@ -178,10 +177,10 @@
     +rule su-term-notify
       --match '/^/etc/(rc|init)\.d/'
       # the su-term-notify action is used here to run any commandline
-      # beginning with '/etc/rc.d' as root and show it's output in the
-      # 'notify' terminal, closing the terminal after two
-      # seconds. Note that in this case, the su-term-notify function
-      # chooses to use the 'notify' terminal by default.
+      # beginning with '/etc/rc.d' or '/etc/init.d' as root and show
+      # it's output in the 'notify' terminal, closing the terminal
+      # after two seconds. Note that in this case, the su-term-notify
+      # action chooses to use the 'notify' terminal by default.
 }
 
 +configure-handlers () {
@@ -257,8 +256,8 @@
     +handler tlds
       --match '\.(org|net|com)$'
       --action browse
-      # Another url handler that matches the end of the commandline,
-      # looking for a common toplevel domain.
+      # Another simple url handler that matches the end of the
+      # commandline, looking for a common toplevel domain.
 
     +handler google
       --match '^gg:(.+)'

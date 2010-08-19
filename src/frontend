@@ -220,7 +220,11 @@ EOF
 function version {
     . "$bashrun_site/globals" 2> /dev/null
     printf '%s\n' \
-	"bashrun $bashrun_version Copyright (C) 2010 Henning Bekel <h.bekel@googlemail.com>"
+	"bashrun $bashrun_version Copyright (C) 2010 Henning Bekel <h.bekel@googlemail.com>
+License GPLv2: GNU GPL version 2 <http://gnu.org/licenses/gpl.html>
+
+This is free software; you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law."
 }
 
 function usage {
@@ -244,8 +248,8 @@ function usage {
     hide      : hide window 
     toggle    : hide if visible, show if hidden
     smart     : move window up front if not focused/visible, hide otherwise  
-    wid       : print window id
-    pid       : print pid of bashrun session
+    wid       : print terminal window id
+    pid       : print process id of bashrun session
     debug     : toggle debugging
     reload    : reload configuration
     restart   : restart bashrun 

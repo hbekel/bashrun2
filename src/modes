@@ -60,7 +60,7 @@ function §mode.init {
     local onunmap="$(§mode.get_onunmap)"
 
     if §function.defined? "+mode-$name-init"; then
-	§debug -v "+mode-$name-init"
+	§separator "Running +mode-$name-init"
 	+mode-$name-init
     fi
 
