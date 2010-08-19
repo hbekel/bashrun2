@@ -111,7 +111,7 @@
     --core 1
     
     +action-abort () {
-	§bash4 && READLINE_LINE=""
+	READLINE_LINE=""
 	§window.unmap
 	return 1
     }

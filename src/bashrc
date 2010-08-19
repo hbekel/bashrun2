@@ -28,7 +28,7 @@ source $bashrun_site/registry
 source $bashrun_site/message
 source $bashrun_site/bootstrap
 
-# register this instance unless we're not launched by the
+# register this instance if we're launched by the
 # frontend... (needs to happen early on)
 (( bashrun_frontend )) && §registry.add
 

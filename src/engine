@@ -8,7 +8,7 @@ bashrun_engine_ready="$bashrun_cache_home/${bashrun_mode}-ready"
 
 bashrun_action=''
 bashrun_execmode='&'
-bashrun_logfile=${bashrun_logfile:-/dev/null}
+bashrun_logfile="${bashrun_logfile:-/dev/null}"
 bashrun_cmd_not_found_handle=0
 bashrun_action_return_value=-1
 bashrun_status="Initializing..."
@@ -54,25 +54,23 @@ function §engine.init {
     # init exec mode
     bashrun_execmode='&'
 
-    # install command_not_found_handle for bash>=4 -> handle
-    if §bash4; then
-	function command_not_found_handle {
-	    if (( $(§mode.get_cmdnfh) )); then
-		if §engine.idle?; then
-		    bashrun_from_cmdnfh=1 §engine.action run 0 "$*"
-		    return 0
-		fi
+    # install command_not_found_handle
+    function command_not_found_handle {
+	if (( $(§mode.get_cmdnfh) )); then
+	    if §engine.idle?; then
+		bashrun_from_cmdnfh=1 §engine.action run 0 "$*"
+		return 0
 	    fi
-	    	   
-	    local self="$(§function.code command_not_found_handle)"
-	    unset -f command_not_found_handle
-	    $*
-	    eval "$self"
-	    return 127
-	}
-    fi
+	fi
+	
+	local self="$(§function.code command_not_found_handle)"
+	unset -f command_not_found_handle
+	$*
+	eval "$self"
+	return 127
+    }
 
-    # create the experimental remote interface
+    # create the remote interface
     §remote.interface.create
 
     # set traps: shutdown on EXIT and TERM, remote invocation on USR1

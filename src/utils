@@ -4,9 +4,6 @@
 
 bashrun_debug_action=0
 
-function §bash3 { (( ${BASH_VERSINFO[0]} == 3 )); }
-function §bash4 { (( ${BASH_VERSINFO[0]} == 4 )); }
-
 function §defined? {
     [[ "${!1-X}" == "${!1-Y}" ]]
 }
@@ -74,12 +71,12 @@ function §interpolate {
     local val=""
 
     while [[ "$str" =~ \$([A-Za-z0-9_]+) ]]; do
-	var=${BASH_REMATCH[1]}
-	val=${!var}
-	val=${val//\$/__DoLlArSiGn__}
-	str=${str/\$$var/$val}
+	var="${BASH_REMATCH[1]}"
+	val="${!var}"
+	val="${val//\$/__DoLlArSiGn__}"
+	str="${str/\$$var/$val}"
     done
-    str=${str//__DoLlArSiGn__/\$}
+    str="${str//__DoLlArSiGn__/\$}"
     printf '%s\n' "$str"
 }
 
@@ -140,33 +137,33 @@ function §debug {
 
     # print function name
     
-    local _func=${FUNCNAME[1]}
-    _func=${_func//}
-    _func=${_func/§/}
+    local _func="${FUNCNAME[1]}"
+    _func="${_func//}"
+    _func="${_func/§/}"
     
-    local _from=${FUNCNAME[2]}
-    _from=${_from//}
-    _from=${_from:-shell}
+    local _from="${FUNCNAME[2]}"
+    _from="${_from//}"
+    _from="${_from:-shell}"
 
     case $1 in	
 	fail)
-	    col=$r
+	    col="$r"
 	    shift
 	    ;;
 	warn)
-	    col=$y
+	    col="$y"
 	    shift
 	    ;;
 	info)
-	    col=$g
+	    col="$g"
 	    shift
 	    ;;
 	emph)
-	    col=$c
+	    col="$c"
 	    shift
 	    ;;
 	*)
-	    col=$g
+	    col="$g"
 	    ;;
     esac
     
@@ -214,20 +211,18 @@ function §separator {
 	    ;;
     esac
 
-    local title=$1
-    local width=${2:-$COLUMNS}
+    local title="$1"
+    local width="${2:-$COLUMNS}"
+    local line=""
     
     printf '%b' "$b" >&2
     if [[ -n "$title" ]]; then
 	(( width = width - ${#title} - 4 )) 
 	printf '%b' "$prefix $y$title$b " >&2
     fi
-    
-    local i=0;
-    for (( i=1; i<=$width; i++ )); do
-	printf '%s' "-" >&1
-    done
-    
+
+    printf -v line '%*s' "$width" 
+    printf "%s" "${line// /-}" >&2
     printf '%b' "$n" >&2
 }
 
@@ -238,7 +233,7 @@ function §prepare_logfile {
 	bashrun_logfile="/dev/null"
     fi
  
-    # touch unless exists
+    # create logfile unless it exists
     if [[ ! -e "$bashrun_logfile" ]]; then
 	§debug "creating logfile $bashrun_logfile"
 	touch "$bashrun_logfile"
@@ -246,13 +241,13 @@ function §prepare_logfile {
 
     # revert to /dev/null unless writable
     if [[ ! -w "$bashrun_logfile" ]]; then
-	§debug "logfile $bashrun_logfile is not writeable"
+	§debug "logfile $bashrun_logfile is not writeable, using /dev/null"
 	bashrun_logfile="/dev/null"
     fi
 }
 
 function §ks2kn {
-    local keyseq=$1
+    local keyseq="$1"
 
     if §keynames.seek "$keyseq"; then
 	printf '%s' "$(§keyname.get_name)"
@@ -260,17 +255,17 @@ function §ks2kn {
     fi
 
     local enter="Ret"
-    local keyname=$keyseq
+    local keyname="$keyseq"
 
-    keyname=${keyname/\\e/M-}
-    keyname=${keyname/\\C-/C-}
-    keyname=${keyname/\\M-/M-}
-    keyname=${keyname/\\C-/C-}
-    keyname=${keyname/\\\?/?}
+    keyname="${keyname/\\e/M-}"
+    keyname="${keyname/\\C-/C-}"
+    keyname="${keyname/\\M-/M-}"
+    keyname="${keyname/\\C-/C-}"
+    keyname="${keyname/\\\?/?}"
 
-    keyname=${keyname/C-m/$enter}
+    keyname="${keyname/C-m/$enter}"
     if [[ "$keyname" =~ [a-zA-z]$enter ]]; then
-	keyname=${keyname/$enter/-$enter}
+	keyname="${keyname/$enter/-$enter}"
     fi
     printf '%s' "$keyname"
 }
@@ -278,6 +273,6 @@ function §ks2kn {
 function §tilde_path {
     # replace $HOME with a tilde for printing
     local path="$1"
-    path=${path/$HOME/\~}
+    path="${path/$HOME/\~}"
     printf '%s' "$path"
 }
