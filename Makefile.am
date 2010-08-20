@@ -7,6 +7,7 @@ src/actions \
 src/bashrc \
 src/bashrun \
 src/bindings \
+src/brwctl.h \
 src/bookmarks \
 src/bootstrap \
 src/command \

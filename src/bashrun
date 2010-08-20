@@ -31,6 +31,11 @@ fi
 # setup global variables
 source __PREFIX__/share/bashrun/globals
 
+# bootstrap if cache or data home don't exist
+if [[ ! -e "$bashrun_cache_home" || ! -e "$bashrun_data_home" ]]; then
+    source "$bashrun_site/bootstrap"
+fi
+
 # check if another frontend process is currently running
 lock="$bashrun_cache_home/bashrun.lck"
 if [[ -f "$lock" ]]; then
@@ -44,11 +49,6 @@ touch "$lock"
 # remove lock on exit or term
 trap '[[ -f "$lock" ]] && rm "$lock"' EXIT
 trap '[[ -f "$lock" ]] && rm "$lock"' TERM
-
-# bootstrap if cache or data home don't exist
-if [[ ! -e "$bashrun_cache_home" || ! -e "$bashrun_data_home" ]]; then
-    source "$bashrun_site/bootstrap"
-fi
 
 # set default mode and command
 mode="launcher"
