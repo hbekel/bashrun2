@@ -172,7 +172,9 @@
      
       --match '/^ls/'
       # the term-page action is used to show the output of any
-      # commandline beginning with "ls", paged in a terminal.
+      # commandline beginning with "ls", paged in a terminal. Note
+      # that the 'small' terminal defined above matches /^ls/ as well,
+      # thus it will be used here.
 
     +rule su-term-notify
       --match '/^/etc/(rc|init)\.d/'

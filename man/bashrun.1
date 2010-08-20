@@ -1,7 +1,4 @@
-.\" Process this file with
-.\" groff -man -Tascii bashrun.1
-.\"
-.TH BASHRUN 1 "2010-06-28" "Linux" "User manuals"
+.TH BASHRUN 1 "2010-08-19" "Linux" "User manuals"
 .SH NAME
 \fBbashrun\fP \- launch applications from interactive bash sessions
 
@@ -18,17 +15,16 @@ bash sessions, suitable for use in a graphical user environment.
 In its default setup, \fBbashrun\fP provides an application launcher
 in the fashion of a simple run dialog by starting an interactive bash
 session in a small \fB__TERMINAL_NAME__\fP(1) terminal window
-(the builtin \fIlauncher\fP mode).
+(builtin \fIlauncher\fP mode).
 
-Alternatively, the builtin \fIterminal\fP mode starts an interactive
-bash session in a regular \fB__TERMINAL_NAME__\fP(1) terminal window
-and transparently adds bashrun's application launching capabilities,
-allowing the user to seamlessly launch graphical and terminal
-applications from the command line.
+The builtin \fIterminal\fP mode starts an interactive bash session in
+a regular \fB__TERMINAL_NAME__\fP(1) terminal window and transparently
+adds bashrun's application launching capabilities, allowing the user
+to seamlessly launch graphical and terminal applications from the
+command line.
 
 An existing bashrun session can also be used remotely from any
-interactive bash session by sourcing a lightweight remote interface
-(see \fBREMOTE INTERFACE\fP).
+interactive bash session by sourcing a lightweight remote interface.
 .SH GETTING STARTED
 .SS Using bashrun as a run dialog
 Start bashrun from the command line or with a keybinding in your
@@ -66,7 +62,7 @@ Use \fIterminal\fP mode if you want to use a dedicated, bashrun
 augmented terminal that can be brought up front with a single
 keybinding in your window manager or desktop environment.
 .SS Using bashrun remotely
-In a terminal not started by bashrun, run the command
+In an interactive bash session not started by bashrun, run the command
 
 .nf
   eval "$(bashrun --remote-control)"
@@ -90,7 +86,7 @@ To configure bashrun, either edit the the system wide configuration
 directory. The default configuration file contains extensivly
 commented examples that should help to get you started. After editing
 the configuration file, either restart bashrun or press Alt-r to make
-changes take effect.
+changes take effect. See \fBCONFIGURATION\fP for further details.
 .SH COMMAND LINE INTERFACE
 The \fBbashrun\fP executable provides a command line interface to
 bashrun sessions and can be used to create, select and control bashrun
@@ -174,17 +170,6 @@ following locations:
 /etc/xdg/bashrun/bashrun.rc
 .fi \fP
 .RE
-.PP
-A plugin specified for inclusion with the \fB+plugins\fP directive
-(see \fBPLUGINS\fP below) will be searched for in the following
-locations:
-.PP
-.RS
-.nf\fI
-~/.config/bashrun/plugins/<plugin-name>.rc
-/etc/xdg/bashrun/plugins/<plugin-name>.rc
-.fi \fP
-.RE
 .SS SYNTAX
 Configuration files are bash scripts that will be \fIsourced\fP during
 the startup of the bashrun session. These scripts are responsible for
@@ -204,10 +189,6 @@ For example, \fBmode\fP objects are configured by a function named
 .RS
 \fI+configure-modes\fP
 .RE
-.PP
-In addtion, the functions \fI+configure-emacs-mode\fP and
-\fI+configure-vi-mode\fP are used to configure keybindings for the
-respective editing modes. See \fBKEYBINDINGS\fP for details.
 .PP
 An \fBobject definition\fP consists of an \fBobject initializer\fP,
 optionally followed by one or more object \fBproperty definitions\fP on the
@@ -252,6 +233,54 @@ creating a new object, i.e. the above example could also be written as
 Multiple arguments to \fBproperty definitions\fP are usually
 concatenated into a single string separated by spaces, unless
 otherwise indicated.
+.SS KEYBINDINGS
+.PP
+The configuration functions \fI+configure-emacs-mode\fP and
+\fI+configure-vi-mode\fP are used to configure keybindings for the
+respective editing modes. Within these functions, the following
+directives may be used:
+.IP \fB+keymap\fP\ <\fIkeymap\fP>
+Set the target keymap for subsequent bind directives.
+.IP \fB+bind\fP\ <\fIaction\fP>\ <\fIkeyseq\fP>\ [<\fIkeyname\fP>]
+Bind an action to a key sequence, optionally supplying a human
+readable key name. See \fBreadline\fP(1) on how to specify key
+bindings.
+.IP \fB+unbind\fP\ <\fIaction\fP>\ [<\fIkeyseq\fP>]
+Unbind an action from a key sequence. If the key sequence is omitted,
+the action will be unbound from the last key sequence that was
+previously bound to. If a key sequence was bound to a readline
+function or macro prior to having been bound to a bashrun action, the
+original readline binding will be restored. E.g. unbinding the
+\fIrun\fP \fBaction\fP from \fI\\C-m\fP (enter) will automatically
+rebind \fI\\C-m\fP to readline's \fBaccept-line\fP function.
+.IP \fB+rebind\fP\ <\fIaction\fP>
+Rebind the action to the key sequence that it was previously bound to,
+if any.
+.SS PLUGINS
+The \fB+plugins\fP directive can be used to include one or more named
+\fBplugins\fP into the main configuration file, and must appear at the
+top level of the configuration file, i.e. outside of any
+\fP+configure\fP function. A \fBplugin\fP may contain additional
+object definitions that will be added to the objects defined by the
+main configuration file. The \fBplugin\fP files will be searched for
+in the following locations:
+.PP
+.RS
+.nf\fI
+~/.config/bashrun/plugins/<plugin-name>.rc
+/etc/xdg/bashrun/plugins/<plugin-name>.rc
+.fi \fP
+.RE
+.PP
+For each object type, a plugin may define a \fP+configure\fP function
+using the following naming scheme:
+.PP
+.RS
+\fB+configure-\fP<\fIplugin-name\fP>\fB-\fP<\fItype\fP>\fBs\fP
+.RE
+.PP
+Configuration functions provided by plugins will be run before those
+defined in the main configuration file.
 .SS CACHING
 The results of a specific \fI+configure\fP function are cached in
 \fIXDG_CACHE_HOME/bashrun\fP. Objects of the corresponding type and
@@ -293,7 +322,7 @@ simple interface to programmable completion.
 \fBPlugins\fP allow flexible inclusion and distribution of user
 created configuration objects.
 .SS MODES
-\fBmode\fP objects provide a way to configure and run multiple
+\fBMode\fP objects provide a way to configure and run multiple
 instances of bashrun with different settings. They define a terminal
 command line used to launch a bashrun session and further control the
 sessions general appearance and behavior.
@@ -391,7 +420,6 @@ A function that will be run when the corresponding mode to is
 initialized. This is a good place to refine the default setup or to
 set bash settings such as \fBPS1\fP or \fBHISTFILE\fP for a specific
 mode.
-
 .SS TERMINALS
 \fBterminal\fP objects define different terminal command lines to use
 for launching commands in. Commands can be matched and associated with
@@ -445,12 +473,10 @@ will be implicitly appended to the \fIterm-run\fP \fBrule\fP (see
 \fBRULES\fP below). This means that commands matched by a
 \fBterminal\fP will always be run in that \fBterminal\fP, even if this
 was not explicitly requested by the current \fPaction\fP.
-
 .SS BOOKMARKS
 For each \fBbookmark\fP object, a stub function by the same name is
 defined that runs the \fIbrowse\fP action for the \fBbookmark\fP
 name. Bookmarks can thus be completed like regular commands.
-
 .SS RULES
 Rule objects associate \fBactions\fP with specific commands or command
 lines. The \fBrule\fP name must correspond to the name of an existing
@@ -470,7 +496,6 @@ slashes (i.e \fB/\fP\fIpattern\fP\fB/\fP), then the pattern is matched
 as a regular expression on the complete command line. Note that
 slashes inside the regular expression do \fInot\fP have to be escaped
 with a backslash in this notation.
-
 .SS HANDLERS
 Handler objects can be used to match, test against and rewrite
 non-executable command lines and then either execute the resulting
@@ -568,9 +593,7 @@ possible completions used for the \fIword\fP given by the
 \fB--complete\fP property of the corresponding \fBhandler\fP. If no
 such function is defined, standard bash completion will instead be
 installed for the \fPword\fP.
-
 .SS ACTIONS
-
 \fBAction\fP objects implement the core functionality of bashrun by
 handling user input in arbitrarily complex ways. Actions can be
 invoked directly by the user via key bindings or remotely from the
