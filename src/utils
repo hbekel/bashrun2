@@ -273,6 +273,6 @@ function §ks2kn {
 function §tilde_path {
     # replace $HOME with a tilde for printing
     local path="$1"
-    path="${path/$HOME/\~}"
+    path="${path/$HOME/~}"
     printf '%s' "$path"
 }

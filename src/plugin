@@ -1,6 +1,11 @@
 # -*- shell-script -*-
 
-bashrun_plugin_dirs="$bashrun_config_home/plugins $bashrun_config_dirs/plugins"
+bashrun_plugin_dirs="$bashrun_config_home/plugins " 
+for dir in $bashrun_config_dirs; do
+    bashrun_plugin_dirs+="$dir/plugins "
+done
+unset dir
+
 bashrun_plugins_checked="$bashrun_cache_home/plugins-checked"
 
 function §plugin.find {
