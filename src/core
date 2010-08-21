@@ -183,8 +183,7 @@
     }
     
     +action 'term-page'
-    --description 'Run command in terminal and page'
-    --depends '$PAGER'
+    --description 'Run command in terminal and page ($PAGER)'
     --input 1
     --core 1
     
@@ -266,9 +265,9 @@
     }
     
     +action 'su-term-page'
-    --description 'Run command in terminal as root and page'
+    --description 'Run command in terminal as root and page ($PAGER)'
     --input 1
-    --depends 'su $PAGER'
+    --depends 'su'
     --core 1
     
     +action-su-term-page () 
@@ -365,8 +364,7 @@
     }
     
     +action 'browse'
-      --description 'Open url in browser'
-      --depends '$BROWSER'
+      --description 'Open url ($BROWSER)'
       --input 1
       --core 1
     
@@ -377,8 +375,7 @@
     }
     
     +action 'google-search'
-      --description 'Google words'
-      --depends '$BROWSER'
+      --description 'Google words ($BROWSER)'
       --input 1
       --core 1
     
@@ -389,8 +386,7 @@
     }
     
     +action 'dict-lookup'
-      --description 'Lookup words in dictionary'
-      --depends '$DICT'
+      --description 'Lookup words in dictionary ($DICT)'
       --input 1
       --core 1
     
@@ -412,8 +408,7 @@
     }
 
     +action 'bashrun-bindings'
-    --description 'Show current keybindings'
-    --depends '$PAGER'
+    --description 'Show current keybindings ($PAGER)'
     --input 0
     --remote 0
     --core 1
