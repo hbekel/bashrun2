@@ -39,7 +39,6 @@
 	    
 	wanted="${dirs[i]}"	    
 	[[ -n "$query" ]] && wanted+="/$query"
-	wanted="${wanted//\/\//\/}" 
 
 	if [[ -z "$test" ]]; then
 	    printf '%s\n' "$wanted"

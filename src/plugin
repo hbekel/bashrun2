@@ -1,23 +1,9 @@
 # -*- shell-script -*-
 
-bashrun_plugin_dirs="$bashrun_config_home/plugins " 
-for dir in $bashrun_config_dirs; do
-    bashrun_plugin_dirs+="$dir/plugins "
-done
-unset dir
-
 bashrun_plugins_checked="$bashrun_cache_home/plugins-checked"
 
 function §plugin.find {
-
-    local wanted="${1}"
-    local dir=""
-    local file=""
-
-    for dir in $bashrun_plugin_dirs; do
-	file="$dir/${wanted}.rc"
-	[[ -f "$file" ]] && printf '%s' "$file"
-    done
+    §xdg -e config "bashrun/plugins/${1}.rc"
 }
 
 function §plugin.check {
