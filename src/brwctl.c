@@ -202,8 +202,8 @@ static int show() {
   map();
   current();
   raise();
-  focus();
   activate();
+  focus();
   return 0;
 }
 
