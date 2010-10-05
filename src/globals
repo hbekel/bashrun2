@@ -61,7 +61,7 @@ fi
 bashrun_major_version=1
 bashrun_minor_version=0
 bashrun_bugfix_version=0
-bashrun_release_version=rc1
+bashrun_release_version=rc2
 
 # create version string
 bashrun_version="${bashrun_major_version}.${bashrun_minor_version}.${bashrun_bugfix_version}"

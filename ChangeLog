@@ -1,0 +1,12 @@
+2010-10-05  Henning Bekel <h.bekel@googlemail.com>
+
+	* Announced version 1.0.0rc2
+	* Fixed errors caused by using env vars in action dependencies
+	* Fixed xdg lookup failures with multiple XDG_CONFIG_DIRS
+	* Improved lookup functions for plugin files
+	* Improved method to show/hide terminal
+
+2010-08-21  Henning Bekel <h.bekel@googlemail.com>
+
+	* Announced version 1.0.0rc1
+
