@@ -15,22 +15,22 @@ PAGER=${PAGER:-less -R}
 DICT=${DICT:-dict}
 
 # load xdg basedir utility
-source __PREFIX__/share/bashrun/xdgbase
+source __PREFIX__/share/bashrun2/xdgbase
 
 # setup paths
-bashrun_site=__PREFIX__/share/bashrun
-bashrun_config_dirs="$(§xdg config-dirs bashrun)"
-bashrun_config_home="$(§xdg config-home bashrun)"
-bashrun_data_home="$(§xdg data-home bashrun)"
-bashrun_cache_home="$(§xdg cache-home bashrun)"
+bashrun_site=__PREFIX__/share/bashrun2
+bashrun_config_dirs="$(§xdg config-dirs bashrun2)"
+bashrun_config_home="$(§xdg config-home bashrun2)"
+bashrun_data_home="$(§xdg data-home bashrun2)"
+bashrun_cache_home="$(§xdg cache-home bashrun2)"
 
 # setup rcfile
-bashrun_rcfile="$(§xdg -e config bashrun/bashrun.rc)"
+bashrun_rcfile="$(§xdg -e config bashrun2/bashrun2.rc)"
 
 if [[ -z "$bashrun_rcfile" ]]; then
     source "$bashrun_site/message"
 
-    files="$(§xdg config bashrun/bashrun.rc)"
+    files="$(§xdg config bashrun2/bashrun2.rc)"
     files="${files//$'\n'/\\n}"
 
     §message "Error" \
@@ -48,7 +48,7 @@ if [[ -z "$bashrun_rcfile" ]]; then
           prefix as defined by the XDG Base Directory Specification by
           using the configure option '--sysconfdir=/etc'.
 
-        If you have installed bashrun by using the package manager of
+        If you have installed bashrun2 by using the package manager of
         your distribution, please consider reporting this as a bug
         to the maintainer of the distribution package.
 
@@ -58,10 +58,10 @@ if [[ -z "$bashrun_rcfile" ]]; then
 fi
 
 # define version info
-bashrun_major_version=1
-bashrun_minor_version=0
+bashrun_major_version=0
+bashrun_minor_version=1
 bashrun_bugfix_version=0
-bashrun_release_version=rc2
+bashrun_release_version=""
 
 # create version string
 bashrun_version="${bashrun_major_version}.${bashrun_minor_version}.${bashrun_bugfix_version}"

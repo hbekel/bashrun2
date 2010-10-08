@@ -3,7 +3,7 @@
 bashrun_plugins_checked="$bashrun_cache_home/plugins-checked"
 
 function §plugin.find {
-    §xdg -e config "bashrun/plugins/${1}.rc"
+    §xdg -e config "bashrun2/plugins/${1}.rc"
 }
 
 function §plugin.check {

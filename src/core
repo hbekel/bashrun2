@@ -117,7 +117,7 @@
     }
 
     +action 'quit'
-    --description 'Exit bashrun'
+    --description 'Exit bashrun2'
     --input 0
     --remote 0
     --core 1
@@ -396,14 +396,14 @@
     }
     
     +action 'bashrun-manual'
-      --description 'Show bashrun manual'
+      --description 'Show bashrun2 manual'
       --input 0
       --remote 0
       --depends 'man'
       --core 1
     
     function +action-bashrun-manual {
-	command "bashrun"
+	command "bashrun2"
 	action show-manual
     }
 

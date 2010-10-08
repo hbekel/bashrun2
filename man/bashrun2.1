@@ -1,18 +1,18 @@
-.TH BASHRUN 1 "2010-08-19" "Linux" "User manuals"
+.TH BASHRUN2 1 "2010-08-19" "Linux" "User manuals"
 .SH NAME
-\fBbashrun\fP \- launch applications from interactive bash sessions
+\fBbashrun2\fP \- launch applications from interactive bash sessions
 
 .SH SYNOPSIS
-\fBbashrun\fP [\fIoptions\fP] [\fIcommand\fP [\fIargs\fP]] [-- \fItermopts\fP]
+\fBbashrun2\fP [\fIoptions\fP] [\fIcommand\fP [\fIargs\fP]] [-- \fItermopts\fP]
 
-\fBbashrun --mode\fP \fIterminal\fP [...]
+\fBbashrun2 --mode\fP \fIterminal\fP [...]
 
 \fBeval\fP \fI\[dq]$(bashrun --remote-control)\[dq]\fP
 .SH DESCRIPTION
-\fBbashrun\fP adds application launching capabilities to interactive
+\fBbashrun2\fP adds application launching capabilities to interactive
 bash sessions, suitable for use in a graphical user environment.
 
-In its default setup, \fBbashrun\fP provides an application launcher
+In its default setup, \fBbashrun2\fP provides an application launcher
 in the fashion of a simple run dialog by starting an interactive bash
 session in a small \fB__TERMINAL_NAME__\fP(1) terminal window
 (builtin \fIlauncher\fP mode).
@@ -25,6 +25,7 @@ command line.
 
 An existing bashrun session can also be used remotely from any
 interactive bash session by sourcing a lightweight remote interface.
+
 .SH GETTING STARTED
 .SS Using bashrun as a run dialog
 Start bashrun from the command line or with a keybinding in your
@@ -81,14 +82,14 @@ Use this method if you want transparent remote access to bashrun's
 features from any terminal.
 .SS Configuring bashrun
 To configure bashrun, either edit the the system wide configuration
-\fI__SYSCONFDIR__/xdg/bashrun/bashrun.rc\fP or create the directory
-\fI~/.config/bashrun/\fP and copy the configuration file into this
+\fI__SYSCONFDIR__/xdg/bashrun2/bashrun2.rc\fP or create the directory
+\fI~/.config/bashrun2/\fP and copy the configuration file into this
 directory. The default configuration file contains extensivly
 commented examples that should help to get you started. After editing
 the configuration file, either restart bashrun or press Alt-r to make
 changes take effect. See \fBCONFIGURATION\fP for further details.
 .SH COMMAND LINE INTERFACE
-The \fBbashrun\fP executable provides a command line interface to
+The \fBbashrun2\fP executable provides a command line interface to
 bashrun sessions and can be used to create, select and control bashrun
 sessions running in different \fBmodes\fP. It can manage a single
 bashrun session for each \fBmode\fP object defined in the
@@ -157,7 +158,7 @@ Exit the bashrun session.
 Synonymous with exit.
 .SH CONFIGURATION
 .SS FILES
-Bashrun follows the \fBXDG Base Directory Specification\fP to locate
+Bashrun2 follows the \fBXDG Base Directory Specification\fP to locate
 configuration files. If the environment variables
 \fIXDG_CONFIG_DIRS\fP and \fI XDG_CONFIG_HOME\fP have not been set,
 are empty or include only the default directories defined by the xdg
@@ -166,8 +167,8 @@ following locations:
 .PP
 .RS
 .nf\fI
-~/.config/bashrun/bashrun.rc
-/etc/xdg/bashrun/bashrun.rc
+~/.config/bashrun2/bashrun2.rc
+/etc/xdg/bashrun2/bashrun2.rc
 .fi \fP
 .RE
 .SS SYNTAX
@@ -267,8 +268,8 @@ in the following locations:
 .PP
 .RS
 .nf\fI
-~/.config/bashrun/plugins/<plugin-name>.rc
-/etc/xdg/bashrun/plugins/<plugin-name>.rc
+~/.config/bashrun2/plugins/<plugin-name>.rc
+/etc/xdg/bashrun2/plugins/<plugin-name>.rc
 .fi \fP
 .RE
 .PP
@@ -283,7 +284,7 @@ Configuration functions provided by plugins will be run before those
 defined in the main configuration file.
 .SS CACHING
 The results of a specific \fI+configure\fP function are cached in
-\fIXDG_CACHE_HOME/bashrun\fP. Objects of the corresponding type and
+\fIXDG_CACHE_HOME/bashrun2\fP. Objects of the corresponding type and
 associated helper functions will be restored from the cache on
 subsequent invocations, until the code of the \fI+configure\fP
 function changes, upon which the function is again run and the

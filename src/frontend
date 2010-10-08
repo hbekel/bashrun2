@@ -41,7 +41,7 @@ function create_modeinfo {
 
     # get requested mode
     if ! §modes.seek "$mode"; then
-	printf '%s\n' "bashrun: error: no such mode: \`$mode', exiting..."
+	printf '%s\n' "bashrun2: error: no such mode: \`$mode', exiting..."
 	exit 1
     fi
     §mode.write_info
@@ -118,7 +118,7 @@ function launch {
 	    bashrun_feedback=$feedback \
             bashrun_debug=$bashrun_debug \
             $(§terminal.expand "$terminal" \
-                 'bash --rcfile __PREFIX__/share/bashrun/bashrc' \
+                 'bash --rcfile __PREFIX__/share/bashrun2/bashrc' \
                  "$mode" "$geometry" "$font" "$termopts $termfix")" 
                
     # trim whitespace
@@ -205,7 +205,7 @@ function remote_control_code {
     cat <<EOF
 if [[ -n "\$DISPLAY" ]] && ! shopt -p login_shell &>/dev/null; then
   if ! (( bashrun )); then
-     remote_control="\${XDG_CACHE_HOME:-\$HOME/.cache}/bashrun/remote.bash"
+     remote_control="\${XDG_CACHE_HOME:-\$HOME/.cache}/bashrun2/remote.bash"
 
      if [[ -f "\$remote_control" ]]; then
        . "\$remote_control"
@@ -220,7 +220,7 @@ EOF
 function version {
     . "$bashrun_site/globals" 2> /dev/null
     printf '%s\n' \
-	"bashrun $bashrun_version Copyright (C) 2010 Henning Bekel <h.bekel@googlemail.com>
+	"bashrun2 $bashrun_version Copyright (C) 2010 Henning Bekel <h.bekel@googlemail.com>
 License GPLv2: GNU GPL version 2 <http://gnu.org/licenses/gpl.html>
 
 This is free software; you are free to change and redistribute it.
@@ -228,7 +228,7 @@ There is NO WARRANTY, to the extent permitted by law."
 }
 
 function usage {
-    printf '%s\n' "Usage: bashrun [options] [command [args]] [-- termopts]
+    printf '%s\n' "Usage: bashrun2 [options] [command [args]] [-- termopts]
 
   Options: 
 
@@ -249,18 +249,18 @@ function usage {
     toggle    : hide if visible, show if hidden
     smart     : move window up front if not focused/visible, hide otherwise  
     wid       : print terminal window id
-    pid       : print process id of bashrun session
+    pid       : print process id of bashrun2 session
     debug     : toggle debugging
     reload    : reload configuration
-    restart   : restart bashrun 
-    quit,exit : terminate bashrun
+    restart   : restart bashrun2 
+    quit,exit : terminate bashrun2
 
     su <cmd>         : run <cmd> as root, using bashrun for password entry
     do <act> [<cmd>] : remotely invoke <action> [<cmd>]
 
   Press F1 in bashrun to list the current keybindings.
 
-  For more information, see bashrun(1) or visit http://bashrun.sourceforge.net
+  For more information, see bashrun2(1) or visit http://bashrun.sourceforge.net
 "
 
 }

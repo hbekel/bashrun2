@@ -19,7 +19,7 @@ function §engine.init {
     
     §engine.busy
 
-    §separator "Bashrun $bashrun_version"
+    §separator "Bashrun2 $bashrun_version"
 
     §debug -v "rcfile" "->" -c "$(§tilde_path $bashrun_rcfile)"
 

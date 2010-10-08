@@ -170,7 +170,7 @@ function §message {
 	    fi
 	    ;;
 	xmessage)
-	    xmessage "Bashrun $title:"$'\n\n'"$text" &>/dev/null
+	    xmessage "Bashrun2 $title:"$'\n\n'"$text" &>/dev/null
 	    ;;
 	
 	zenity)
@@ -178,7 +178,7 @@ function §message {
 	    [[ "$title" =~ rror ]] && type="--error"
 	    [[ "$title" =~ arning ]] && type="--warning"
 
-	    zenity $type --title "Bashrun $title" --text "$text" &>/dev/null
+	    zenity $type --title "Bashrun2 $title" --text "$text" &>/dev/null
 	    ;;
 	
 	kdialog)
@@ -186,7 +186,7 @@ function §message {
 	    [[ "$title" =~ rror ]] && type="--error"
 	    [[ "$title" =~ arning ]] && type="--sorry"
 
-	    kdialog --title "Bashrun $title" $type "$text"$'\n' &>/dev/null
+	    kdialog --title "Bashrun2 $title" $type "$text"$'\n' &>/dev/null
 	    ;;
 
 	notify-send)
@@ -195,7 +195,7 @@ function §message {
 
 	printf)	    	    
 	    printf '%b' "\x07"
-	    printf '%b\n' "Bashrun $title:\n\n$text"
+	    printf '%b\n' "Bashrun2 $title:\n\n$text"
     esac
 }
 

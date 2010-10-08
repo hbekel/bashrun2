@@ -37,20 +37,20 @@ satisfied on the target system.
 Default terminals
 =================
 
-The default configuration file shipped with bashrun assumes xterm to
+The default configuration file shipped with bashrun2 assumes xterm to
 be available on the target system. If xterm is not available, the user
 will be presented with an appropriate error message, recommending to
-either install xterm or to set up bashrun to use a different
+either install xterm or to set up bashrun2 to use a different
 terminal. 
 
-If you want to build bashrun using a default terminal other than
+If you want to build bashrun2 using a default terminal other than
 xterm, please use the ./configure options
 
 --with-terminal=TEMPLATE
 --with-exec-terminal=TEMPLATE
 
 to specify the default command templates to be used for the terminal
-to launch bashrun in, as well as the terminal to launch console
+to launch bashrun2 in, as well as the terminal to launch console
 applications in. For example, to use urxvt instead of xterm by
 default:
 
@@ -60,7 +60,7 @@ $ ./configure \
   --with-terminal='urxvt -g %g -name %n %o -e %*' \
   --with-exec-terminal='urxvt -g %g -e bash -c %@'
 
-(See the default config file ./etc/bashrun.rc for examples of using
+(See the default config file ./etc/bashrun2.rc for examples of using
 other common terminals and the manual for details on command
 templates)
 

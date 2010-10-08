@@ -2,7 +2,7 @@
 
 ################################################################################
 
-bashrun_remote=$bashrun_data_home/$bashrun_mode-remote
+bashrun_remote="$bashrun_data_home/$bashrun_mode-remote"
 bashrun_remote_interface=""
 
 ################################################################################
@@ -12,7 +12,7 @@ function §remote.run {
     declare -a words
     local cwd action command
 
-    if [[ -f $bashrun_remote ]]; then
+    if [[ -f "$bashrun_remote" ]]; then
 	
 	mapfile -t words < "$bashrun_remote"
 	cwd="${words[0]}"
@@ -32,7 +32,7 @@ function §remote.run {
 	kill -WINCH $$
 
 	# remove command file
-	rm $bashrun_remote
+	rm "$bashrun_remote"
 
     else
 	§debug warn "no command pending in" -v "$bashrun_remote"

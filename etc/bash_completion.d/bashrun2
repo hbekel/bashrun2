@@ -1,6 +1,6 @@
 # -*- shell-script -*-
 
-function _bashrun {
+function _bashrun2 {
 
     COMPREPLY=()
     local cur="${COMP_WORDS[COMP_CWORD]}"
@@ -11,18 +11,18 @@ function _bashrun {
     local commands="show hide toggle smart exit quit reload restart su do wid pid"
 
     local modes=()
-    local modesfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/modes"
+    local modesfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun2/modes"
 
     [[ -f "$modesfile" ]] &&  modes=( $(<$modesfile) )
     modes="${modes[@]}"
 
     local actions=()
-    local actionsfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/actions"
+    local actionsfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun2/actions"
 
     [[ -f "$actionsfile" ]] &&  actions=( $(<${actionsfile}) )
     actions="${actions[@]}"
 
-    if [[ "$prev" == "bashrun" ]]; then
+    if [[ "$prev" == "bashrun"2 ]]; then
 	COMPREPLY=( $(compgen -W "$options $commands" -- "${cur}") )
 	return 0
     fi
@@ -44,4 +44,4 @@ function _bashrun {
 
     return 0
 }
-complete -F _bashrun bashrun
+complete -F _bashrun2 bashrun2

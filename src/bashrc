@@ -7,7 +7,7 @@
 ################################################################################
 
 # source global variables
-source __PREFIX__/share/bashrun/globals
+source __PREFIX__/share/bashrun2/globals
 
 # when launched by the frontend, source the user's ~/.bashrc
 if (( bashrun_frontend )) && [[ -f "$HOME/.bashrc" ]]; then
@@ -19,7 +19,7 @@ source $bashrun_site/objects
 §objects.site $bashrun_site
 §objects.cache_home $bashrun_cache_home
 §objects.data_home $bashrun_cache_home
-§objects.namespace "bashrun"
+§objects.namespace "bashrun2"
 
 # source utilities 
 source $bashrun_site/utils

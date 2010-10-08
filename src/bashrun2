@@ -1,7 +1,7 @@
 #!/bin/bash
 ######################################################################
 #
-# Bashrun 1.0.0rc1 -- launch applications from interactive bash sessions
+# Bashrun2 0.1.0 -- launch applications from interactive bash sessions
 # Copyright (C) 2010 Henning Bekel <h.bekel@googlemail.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -24,12 +24,12 @@
 # if no arguments are given, attempt to map an existing launcher as
 # fast as possible first...
 if [[ $# -eq 0 ]]; then    
-    widfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/launcher-wid"
+    widfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun2/launcher-wid"
     [[ -f "$widfile" ]] && brwctl "$(<$widfile)" show
 fi
 
 # setup global variables
-source __PREFIX__/share/bashrun/globals
+source __PREFIX__/share/bashrun2/globals
 
 # bootstrap if cache or data home don't exist
 if [[ ! -e "$bashrun_cache_home" || ! -e "$bashrun_data_home" ]]; then
@@ -82,7 +82,7 @@ until [[ "$1" == "--" || "${1:0:1}" != '-' ]]; do
 	    exit 0
 	    ;;	
 	*)
-	    printf '%s\n' "bashrun: error: unknown option: $1" >&2
+	    printf '%s\n' "bashrun2: error: unknown option: $1" >&2
 	    usage
 	    exit 1
 	    ;;
@@ -163,7 +163,7 @@ case "$command" in
 	printf '%s\n' "$wid"
 	;;
     pid)
-	pidfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun/$mode-pid"
+	pidfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun2/$mode-pid"
 	if wait_until '[[ -f "$pidfile" ]]'; then
 	    printf '%s\n' "$(<$pidfile)"
 	else
@@ -175,7 +175,7 @@ case "$command" in
 	    remote su-run "${args[@]}"
 	else
 	    printf '%s\n' \
-		"bashrun: error: command \`su' requires at least one argument: <cmd>" >&2
+		"bashrun2: error: command \`su' requires at least one argument: <cmd>" >&2
 	    exit 1
 	fi
 	;;
@@ -184,7 +184,7 @@ case "$command" in
 	    remote "${args[@]}"
 	else
 	    printf '%s\n' \
-		"bashrun: error: command \`do' requires at least one argument: <action> [<cmd>]" >&2
+		"bashrun2: error: command \`do' requires at least one argument: <action> [<cmd>]" >&2
 	    exit 1
 	fi
 	;;
@@ -195,7 +195,7 @@ case "$command" in
 	remote quit
 	export bashrun_debug
 	rm "$lock" &>/dev/null
-	exec bashrun -m "$mode"	-- $termopts
+	exec bashrun2 -m "$mode" -- $termopts
 	;;
     debug)
 	remote debug
@@ -205,7 +205,7 @@ case "$command" in
 	remote quit
 	;;    
     *)
-	printf '%s\n' "bashrun: error: unknown command: $command" >&2
+	printf '%s\n' "bashrun2: error: unknown command: $command" >&2
 	exit 1
 esac 
 exit 0

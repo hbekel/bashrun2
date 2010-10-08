@@ -1,11 +1,11 @@
 SUBDIRS = src etc man
-EXTRA_DIST = etc/bashrun.rc \
+EXTRA_DIST = etc/bashrun2.rc \
 etc/plugins/terminal.rc \
-etc/bash_completion.d/bashrun \
-man/bashrun.1 \
+etc/bash_completion.d/bashrun2 \
+man/bashrun2.1 \
 src/actions \
 src/bashrc \
-src/bashrun \
+src/bashrun2 \
 src/bindings \
 src/brwctl.h \
 src/bookmarks \

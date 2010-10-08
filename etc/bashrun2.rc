@@ -1,21 +1,21 @@
-### bashrun 1.0.0rc1 configuration ### -*- shell-script -*-
+### bashrun2 0.1.0 configuration ### -*- shell-script -*-
 #
 # This is the system-wide configuration file for bashrun.
 #
-# User configuration files go into ~/.config/bashrun, or
-# $XDG_CONFIG_HOME/bashrun if $XDG_CONFIG_HOME has been modified.
+# User configuration files go into ~/.config/bashrun2, or
+# $XDG_CONFIG_HOME/bashrun2 if $XDG_CONFIG_HOME has been modified.
 #
 # Changes to this file require a reload of bashrun (Alt-r).
 #
-# Please see bashrun(1) for all the details on configuration.
+# Please see bashrun2(1) for all the details on configuration.
 
 +plugins terminal
 # The "+plugins" directive can be used to load plugins. The plugin
 # "terminal" is distributed with bashrun and allow it to be used in a
-# regular terminal, e.g. use 'bashrun --mode terminal'.
+# regular terminal, e.g. use 'bashrun2 --mode terminal'.
 # 
-# See /etc/xdg/bashrun/plugins/terminal.rc. Copy this file to
-# ~/.config/bashrun/plugins/ if you want to adjust it.
+# See /etc/xdg/bashrun2/plugins/terminal.rc. Copy this file to
+# ~/.config/bashrun2/plugins/ if you want to adjust it.
 
 +configure-modes () {
 
@@ -71,9 +71,9 @@
           # This fuction, if defined, will be called for the default
 	  # mode "launcher" during startup. Here you can configure
 	  # anything that is specific to this mode only. See
-	  # bashrun(1) for alternatives.
+	  # bashrun2(1) for alternatives.
 
-	  HISTFILE="${XDG_DATA_HOME:-$HOME/.local/share}/bashrun/history"	
+	  HISTFILE="${XDG_DATA_HOME:-$HOME/.local/share}/bashrun2/history"
 	  PS1='>'
 
 	  stty -ixon       # disable flow control, allows to bind C-Q
@@ -81,7 +81,7 @@
       }
 
     # For more options and a detailed description of modes, see
-    # bashrun(1)
+    # bashrun2(1)
 }
 
 +configure-terminals () {
@@ -365,7 +365,7 @@
     # Alternatively use the completion of the "browse" handler
     # defined above.
 
-    +bookmark bashrun.sourceforge.net
+    +bookmark bashrun2.googlecode.come
     +bookmark archlinux.org
 }
 
@@ -374,7 +374,7 @@
     # You can define and use your own actions here, as well as
     # redefine the properties and/or behavior of the buitin default
     # actions. For details on how to write custom actions or change
-    # default actions, see bashrun(1).
+    # default actions, see bashrun2(1).
     #
     # Some examples:
       
@@ -433,6 +433,7 @@
     #   See readine(1) on how to specify key sequences. In short,
     #   '\ex' means Alt-x and '\C-x' means Control-x.
 
+    ########################################
     +keymap emacs
 
     +bind pass '\ew'
@@ -479,7 +480,8 @@
 
 +configure-vi-mode () { 
 
-    +keymap vi-command
+    ########################################
+    +keymap vi-command 
 
     +bind pass '\ew'
     +bind abort  '\C-g'
@@ -521,7 +523,9 @@
     +bind resize-down  '\e[1;5B' 'C-down'
     +bind resize-left  '\e[1;5D' 'C-left'
     +bind resize-right '\e[1;5C' 'C-right'
+    
 
+    ########################################
     +keymap vi-insert
 
     +bind pass '\ew'

@@ -195,7 +195,7 @@ function §handlers.install_completion {
 		§remote.interface.add "$(§function.code +handler-$name-complete)"
 		§remote.interface.add "$compfunc"
 		§remote.interface.add \
-		    "function $prefix { bashrun do run \"$prefix \$@\"; }"
+		    "function $prefix { bashrun2 do run \"$prefix \$@\"; }"
 		§remote.interface.add \
 		    "complete -o filenames -F '_bashrun_$name' '$prefix'"
 	    fi	
