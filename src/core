@@ -71,7 +71,7 @@
     +template urxvtc --bashrun_options "+sb $urxvt_fixes"
     +template mrxvt --bashrun_options "+sb -ht +showmenu"
     +template mlterm --bashrun_options "-s=false $mlterm_fixes"
-    +template aterm  
+    +template aterm
 }
 
 +configure-core-rules () {

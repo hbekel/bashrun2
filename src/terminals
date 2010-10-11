@@ -106,14 +106,17 @@ function §terminal.expand {
     fi
 
     if [[ "$template" =~ [^\\]%f ]]; then
+	§quote font
 	template="$(§replace "$template" "%f" "$font")"
     fi
 
     if [[ "$template" =~ [^\\]%t ]]; then
+	§quote foreground
 	template="$(§replace "$template" "%t" "$foreground")"
     fi
 
     if [[ "$template" =~ [^\\]%b ]]; then
+	§quote background
 	template="$(§replace "$template" "%b" "$background")"
     fi
 
