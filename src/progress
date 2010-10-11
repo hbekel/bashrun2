@@ -80,7 +80,7 @@ function §progress.enabled? {
     bashrun_progress_active=0
 
     if §progress.enabled?; then
-	tput cvvis >&2
+	tput cnorm >&2
 	tput cr >&2
 	tput el >&2
 	tput cr >&2

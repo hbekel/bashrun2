@@ -133,7 +133,7 @@
       # "term-notify" and "su-term-notify".
       
     +terminal small
-      --command 'urxvt -g %g -fn %f -e bash -c %@'
+      --command urxvt
       --geometry '160x48'
       --font 'xft:fixed'
       --match 'htop' '/^ls/'

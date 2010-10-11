@@ -34,10 +34,11 @@ function create_modeinfo {
     [[ -f "$errorfile" ]] && rm "$errorfile"
     
     # load modes from configuration file
-    §configs.restore_core "modes" &>/dev/null
-    §configs.collect_user_configs "modes"
+    §configs.restore_core &>/dev/null
+    §configs.collect_user_configs "modes|terminals"
 
     §configs.seek "modes" && §config.restore 
+    §configs.seek "terminals" && §config.restore 
 
     # get requested mode
     if ! §modes.seek "$mode"; then
@@ -99,16 +100,19 @@ function launch {
 	exit 1
     fi
 
+    # add terminal options from +mode --options
+    termopts+=" $options"
+
     # fix known issues with xterm or *rxvt's...
     if [[ "$prog" == "xterm" ]]; then
-	termfix='-xrm XTerm**metaSendsEscape:True'
+	termopts+=' -xrm XTerm**metaSendsEscape:True '
 
-    elif [[ "$prog" =~ *rxvtc? ]]; then
+    elif [[ "$prog" =~ .+?rxvtc? ]]; then
 	# enable ctrl-arrow keys
-	termfix='-keysym.Control-Up "\033[1;5A" '
-	termfix+='-keysym.Control-Down "\033[1;5B" '
-	termfix+='-keysym.Control-Left "\033[1;5D" '
-	termfix+='-keysym.Control-Right "\033[1;5C"'
+	termopts+=' -keysym.Control-Up "\033[1;5A"'
+	termopts+=' -keysym.Control-Down "\033[1;5B"'
+	termopts+=' -keysym.Control-Left "\033[1;5D"'
+	termopts+=' -keysym.Control-Right "\033[1;5C"'
     fi
 
     # create terminal command
@@ -119,12 +123,14 @@ function launch {
             bashrun_debug=$bashrun_debug \
             $(§terminal.expand "$terminal" \
                  'bash --rcfile __PREFIX__/share/bashrun2/bashrc' \
-                 "$mode" "$geometry" "$font" "$termopts $termfix")" 
+                 "bashrun-$mode" "$geometry" \
+                 "$font" "$foreground" "$background" \
+                 "$termopts")" 
                
     # trim whitespace
     launch="$(printf '%s\n' "$launch" | sed 's/[ \t]\+/ /g')"
 
-    §debug -c "$mode:" -n "$launch"
+    (( bashrun_debug )) && printf '%s\n' "$launch"
 
     # file to flag aborts
     abort="$bashrun_cache_home/${mode}-abort"
@@ -145,7 +151,7 @@ function launch {
                      the following terminal command line is correct:
 
                      $(§terminal.expand "$terminal" '...' \
-                        "$mode" "$geometry" "$font" "$termopts")
+                        "$mode" "$geometry" "$font" "$foreground" "$background" "$termopts")
 
                      (See the config directive '+mode $mode --terminal')
 

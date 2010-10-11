@@ -7,6 +7,9 @@
                  "terminal=__TERMINAL__" \
                  "geometry=80x24" \
                  "font" \
+                 "foreground" \
+                 "background" \
+                 "options" \
                  "completion=complete" \
                  "unmap:b=0" \
                  "feedback:b=0" \
@@ -79,18 +82,31 @@ function §mode.write_info {
     local file="$bashrun_cache_home/${mode}-info"
     
     local terminal="$(§mode.get_terminal)"
+    local geometry="$(§mode.get_geometry 0)"
+    local font="$(§mode.get_font)"
+    local foreground="$(§mode.get_foreground)"
+    local background="$(§mode.get_background)"
+    local options="$(§mode.get_options)"
+    local feedback="$(§mode.get_feedback)"
     local onmap="$(§mode.get_onmap)"
     local onunmap="$(§mode.get_onunmap)"
 
-    §quote terminal onmap onunmap
+    if §templates.seek "$terminal"; then
+	terminal="$(§template.create_commandline "bashrun" "bashrun-$mode" "$geometry" "$font" "$foreground" "$background" "$options")"
+    fi
+
+    §quote terminal font foreground background options onmap onunmap
 
     printf '%s\n' "# mode info
           pid=$$
           wid=$WINDOWID
 	  terminal=$terminal
-          geometry=$(§mode.get_geometry 0)
-          font=$(§mode.get_font)        
-          feedback=$(§mode.get_feedback)
+          geometry=$geometry
+          font=$font
+          foreground=$foreground
+          background=$background 
+          options=$options
+          feedback=$feedback
           onmap=$onmap
           onunmap=$onunmap" > $file
 }

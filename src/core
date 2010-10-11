@@ -53,6 +53,13 @@
     +terminal notify 
       --command '__EXEC_TERMINAL__'
       --geometry "40x4+0+0"
+
+    +template xterm
+    +template urxvt
+    +template urxvtc
+    +template mrxvt
+    +template aterm
+    +template mlterm
 }
 
 +configure-core-rules () {
