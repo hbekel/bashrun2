@@ -54,12 +54,24 @@
       --command '__EXEC_TERMINAL__'
       --geometry "40x4+0+0"
 
-    +template xterm
-    +template urxvt
-    +template urxvtc
-    +template mrxvt
-    +template aterm
-    +template mlterm
+    # terminal command line templates
+
+    # xterm needs metaSendsEscape for Alt-x bindings
+    local xterm_fixes='-xrm XTerm**metaSendsEscape:True'
+
+    # mlterm needs these for Alt-x bindings
+    local mlterm_fixes='-k esc -K alt'
+
+    # urxvt needs these keysyms for Ctrl-arrow bindings
+    local urxvt_fixes='-keysym.Control-Up "\033[1;5A" -keysym.Control-Down "\033[1;5B" '
+    urxvt_fixes+='-keysym.Control-Left "\033[1;5D" -keysym.Control-Right "\033[1;5C"'
+
+    +template xterm --bashrun_options "+sb $xterm_fixes"
+    +template urxvt --bashrun_options "+sb $urxvt_fixes"
+    +template urxvtc --bashrun_options "+sb $urxvt_fixes"
+    +template mrxvt --bashrun_options "+sb -ht +showmenu"
+    +template mlterm --bashrun_options "-s=false $mlterm_fixes"
+    +template aterm  
 }
 
 +configure-core-rules () {

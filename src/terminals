@@ -22,6 +22,7 @@
                  "foreground=-fg %t" \
                  "background=-bg %b" \
                  "bashrun=-e %*" \
+                 "bashrun_options=+sb" \
                  "execute=-e bash -c %@"
 
 ################################################################################
@@ -253,6 +254,7 @@ function §template.create_commandline {
     fi
 
     if [[ "$type" == "bashrun" ]]; then
+	template+="$(§template.get_bashrun_options) "
 	template+="$(§template.get_bashrun)"
     else
 	template+="$(§template.get_execute)"

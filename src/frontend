@@ -103,18 +103,6 @@ function launch {
     # add terminal options from +mode --options
     termopts+=" $options"
 
-    # fix known issues with xterm or *rxvt's...
-    if [[ "$prog" == "xterm" ]]; then
-	termopts+=' -xrm XTerm**metaSendsEscape:True '
-
-    elif [[ "$prog" =~ .+?rxvtc? ]]; then
-	# enable ctrl-arrow keys
-	termopts+=' -keysym.Control-Up "\033[1;5A"'
-	termopts+=' -keysym.Control-Down "\033[1;5B"'
-	termopts+=' -keysym.Control-Left "\033[1;5D"'
-	termopts+=' -keysym.Control-Right "\033[1;5C"'
-    fi
-
     # create terminal command
     launch="bashrun=1 \
             bashrun_frontend=1 \
