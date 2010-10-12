@@ -33,10 +33,11 @@ function create_modeinfo {
     fi
     [[ -f "$errorfile" ]] && rm "$errorfile"
     
-    # load modes from configuration file
+    # load modes and templates from configuration file
     §configs.restore_core &>/dev/null
-    §configs.collect_user_configs "modes|templates"
 
+    # load user defined modes
+    §configs.collect_user_configs "modes|templates"
     §configs.seek "modes" && §config.restore 
     §configs.seek "templates" && §config.restore 
 

@@ -75,6 +75,24 @@
     +template mrxvt --bashrun_options "+sb -ht +showmenu"
     +template mlterm --bashrun_options "-s=false $mlterm_fixes"
     +template aterm
+
+    +template Eterm
+      --classname "-n%n"
+      --geometry "-g%g"
+      --font "-F%f"
+      --foreground "-f%t"
+      --background "-b%b"
+      --bashrun_options "--scrollbar=0"
+
+    +template gnome-terminal
+      --classname "--name=%n"
+      --geometry "--geometry=%g"
+      --font ""
+      --foreground ""
+      --background ""
+      --bashrun "-e %@"
+      --execute "-e bash\ -c\ %@@"
+      --bashrun_options "--hide-menubar"
 }
 
 +configure-core-rules () {
