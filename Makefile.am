@@ -29,6 +29,7 @@ src/readline \
 src/registry \
 src/remote \
 src/rules \
+src/templates \
 src/terminals \
 src/utils \
 src/window \

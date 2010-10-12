@@ -34,7 +34,7 @@ source $bashrun_site/bootstrap
 
 # setup progress bar
 source $bashrun_site/progress
-§progress.new "Initializing... [objects]"
+§progress.new "Loading... [objects]"
 
 # continue sourcing utilities
 source $bashrun_site/config
@@ -46,6 +46,7 @@ source $bashrun_site/completion
 
 # source objects
 source $bashrun_site/modes
+source $bashrun_site/templates
 source $bashrun_site/terminals
 source $bashrun_site/actions
 source $bashrun_site/bindings

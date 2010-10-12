@@ -11,7 +11,7 @@ bashrun_execmode='&'
 bashrun_logfile="${bashrun_logfile:-/dev/null}"
 bashrun_cmd_not_found_handle=0
 bashrun_action_return_value=-1
-bashrun_status="Initializing..."
+bashrun_status="Loading..."
 
 ################################################################################
 
@@ -39,8 +39,10 @@ function §engine.init {
     §configs.restore
 
     # initialize objects
+    §progress.update 90 "$bashrun_status [engine]"
+    §objects.init "§progress.update +1"
+
     §progress.update 100 "$bashrun_status [engine]"
-    §objects.init
 
     # seek to the current mode
     §modes.seek "$bashrun_mode";
@@ -69,7 +71,6 @@ function §engine.init {
 	eval "$self"
 	return 127
     }
-
     # create the remote interface
     §remote.interface.create
 

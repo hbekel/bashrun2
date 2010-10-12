@@ -30,8 +30,6 @@
 §function.clone "§terminal.set_match" "§terminal._set_match"
 §function.clone "§terminals.init" "§terminals._init"
 §function.clone "§terminal.get_command" "§terminal._get_command"
-§function.clone "§terminals.dump" "§terminals._dump"
-§function.clone "§templates.dump" "§templates._dump"
 
 function §terminal.set_match {
 
@@ -93,7 +91,9 @@ function §terminal.expand {
     fi
 
     if §templates.seek "$template"; then
-	template="$(§template.create_commandline "execute" "$classname" "$geometry" "$font" "$foreground" "$background" "$options")"
+	template="$(§template.create_commandline \
+                    "execute" "$classname" "$geometry" \
+                    "$font" "$foreground" "$background" "$options")"
     fi
 
     # insert classname, geometry, font and options
@@ -137,11 +137,11 @@ function §terminal.expand {
 		§quote ${#method} command
 	    fi
 	    
-	# insert command into template
+	    # insert command into template
 	    template="$(§replace "$template" "%$method" "$command")"
 	    
 	else
-	# append command to template
+	# append unquoted command to template
 	    template+=" $command"
 	fi
     fi
@@ -210,58 +210,4 @@ function §terminals.get_match {
     data="${data:18:${#data}-19}"    
     data="declare -a $1=$data"
     printf '%s' "$data"
-}
-
-function §templates.dump {
-    §templates._dump "${1:-terminals.dump}" append
-}
-
-function §terminals.dump {
-    §terminals._dump "${1:-terminals.dump}"
-    §templates.dump "${1:-terminals.dump}" append
-}
-
-function §template.create_commandline {
-    local type="$1"
-    local classname="$2"
-    local geometry="$3"
-    local font="$4"
-    local foreground="$5"
-    local background="$6"
-    local options="$7"
-
-    local template="$(§template.get_name) "
-    
-    if [[ -n "$classname" ]]; then
-	template+="$(§template.get_classname) "
-    fi
-    
-    if [[ -n "$geometry" ]]; then
-	template+="$(§template.get_geometry) "
-    fi
-    
-    if [[ -n "$font" ]]; then
-	template+="$(§template.get_font) "
-    fi
-
-    if [[ -n "$foreground" ]]; then
-	template+="$(§template.get_foreground) "
-    fi
-
-    if [[ -n "$background" ]]; then
-	template+="$(§template.get_background) "
-    fi
-    
-    if [[ -n "$options" ]]; then
-	template+="%o ";
-    fi
-
-    if [[ "$type" == "bashrun" ]]; then
-	template+="$(§template.get_bashrun_options) "
-	template+="$(§template.get_bashrun)"
-    else
-	template+="$(§template.get_execute)"
-    fi
-    
-    printf '%s' "$template"
 }

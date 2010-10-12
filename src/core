@@ -53,6 +53,9 @@
     +terminal notify 
       --command '__EXEC_TERMINAL__'
       --geometry "40x4+0+0"
+}
+
++configure-core-templates () {
 
     # terminal command line templates
 

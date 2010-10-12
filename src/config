@@ -117,7 +117,7 @@ function §config.restore {
     local state="restoring"
     local name=""
 
-    §progress.update +9 "$bashrun_status [$type]"
+    §progress.update +7 "$bashrun_status [$type]"
 
     for name in $(§config.get_names); do
 	[[ "$name" == "core" ]] && continue

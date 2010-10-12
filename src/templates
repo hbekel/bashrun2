@@ -1,0 +1,62 @@
+# -*- shell-script -*-
+
+################################################################################
+
+§class "template" --with-interface \
+    --properties "name" \
+                 "classname=-name %n" \
+                 "geometry=-g %g" \
+                 "font=-fn %f" \
+                 "foreground=-fg %t" \
+                 "background=-bg %b" \
+                 "bashrun=-e %*" \
+                 "bashrun_options=+sb" \
+                 "execute=-e bash -c %@"
+
+################################################################################
+
+function §template.create_commandline {
+
+    local type="$1"
+    local classname="$2"
+    local geometry="$3"
+    local font="$4"
+    local foreground="$5"
+    local background="$6"
+    local options="$7"
+
+    local template="$(§template.get_name) "
+    
+    if [[ -n "$classname" ]]; then
+	template+="$(§template.get_classname) "
+    fi
+    
+    if [[ -n "$geometry" ]]; then
+	template+="$(§template.get_geometry) "
+    fi
+    
+    if [[ -n "$font" ]]; then
+	template+="$(§template.get_font) "
+    fi
+
+    if [[ -n "$foreground" ]]; then
+	template+="$(§template.get_foreground) "
+    fi
+
+    if [[ -n "$background" ]]; then
+	template+="$(§template.get_background) "
+    fi
+    
+    if [[ -n "$options" ]]; then
+	template+="%o ";
+    fi
+
+    if [[ "$type" == "bashrun" ]]; then
+	template+="$(§template.get_bashrun_options) "
+	template+="$(§template.get_bashrun)"
+    else
+	template+="$(§template.get_execute)"
+    fi
+    
+    printf '%s' "$template"
+}

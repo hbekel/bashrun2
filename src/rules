@@ -87,14 +87,19 @@ function §rules.apply {
     §rules.seek_start
 
     # run in terminal if this command is linked against a console library
-    if [[ "$(ldd $(which $word))" =~ (curses|slang|termbox|rhtv|newt) ]]; then
+    if [[ "$(type -t $word)" == "file" ]]; then
 
-	§debug -v "$word" "is linked against" \
-	    -v "lib${BASH_REMATCH[1]}" "->" -y "term-run" 
+	local libs="n?cursesw?|slang|termbox|rhtv|newt|aa"
 
-	§actions.seek "term-run"
-	§action.run
-	return 0
+	if [[ "$(ldd $(which $word))" =~ (lib($libs)\.(so|a)[^ ]+) ]]; then
+
+	    §debug -v "$word" "is linked against" \
+		-v "${BASH_REMATCH[1]}" "->" -y "term-run" 
+	    
+	    §actions.seek "term-run"
+	    §action.run
+	    return 0
+	fi
     fi
 
     # no rule applied if we end up here

@@ -10,7 +10,7 @@ function create_modeinfo {
     §objects.namespace "bashrun"
     
     for file in utils readline message config plugin registry \
-	progress terminals window modes core; do
+	progress templates terminals window modes core; do
 	source "$bashrun_site/$file"
     done
 
@@ -35,10 +35,10 @@ function create_modeinfo {
     
     # load modes from configuration file
     §configs.restore_core &>/dev/null
-    §configs.collect_user_configs "modes|terminals"
+    §configs.collect_user_configs "modes|templates"
 
     §configs.seek "modes" && §config.restore 
-    §configs.seek "terminals" && §config.restore 
+    §configs.seek "templates" && §config.restore 
 
     # get requested mode
     if ! §modes.seek "$mode"; then
