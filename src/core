@@ -96,6 +96,7 @@
 }
 
 +configure-core-rules () {
+    +rule run --match 'mplayer'
     +rule term-page --match 'dict'
  }
 
