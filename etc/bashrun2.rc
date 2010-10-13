@@ -1,77 +1,72 @@
 ### bashrun2 0.1.0 configuration ### -*- shell-script -*-
 #
-# This is the system-wide configuration file for bashrun.
+# This is the system-wide configuration file for bashrun2.
 #
-# User configuration files go into ~/.config/bashrun2, or
-# $XDG_CONFIG_HOME/bashrun2 if $XDG_CONFIG_HOME has been modified.
+# To configure for local users, Copy this file to
+# ~/.config/bashrun2/bashrun2.rc
 #
 # Changes to this file require a reload of bashrun (Alt-r).
 #
 # Please see bashrun2(1) for all the details on configuration.
 
-+plugins terminal
-# The "+plugins" directive can be used to load plugins. The plugin
-# "terminal" is distributed with bashrun and allow it to be used in a
-# regular terminal, e.g. use 'bashrun2 --mode terminal'.
-# 
-# See /etc/xdg/bashrun2/plugins/terminal.rc. Copy this file to
-# ~/.config/bashrun2/plugins/ if you want to adjust it.
-
 +configure-modes () {
 
+    # This is the default "launcher" mode that provides the run dialog:
+
     +mode launcher
-      # This is the default "launcher" mode that provides a terminal
-      # in the fashion of a run dialog.
 
+      # Terminal to use for the run dialog. Bashrun has builtin
+      # support for xterm, urxvt, urxvtc, mrxvt, mlterm and
+      # aterm.
       --terminal '__TERMINAL__'
-      #
-      # This setting replaces the former XTERM, XTERM_OPTIONS, FGCOLOR
-      # and BGCOLOR settings.
 
+      # Geometry or geometries to use for the terminal window. If more
+      # than one geometry is given, the cycle-size action (Ctrl-l)
+      # will allow cycling through these geometries.
       --geometry '40x1' '40x8'
-      # Set the geometry or geometries to use for the terminal
-      # window. If more than one geometry is used, the cycle-size
-      # action (Ctrl-l) will allow you to cycle through these
-      # geometries.
-      #
-      # This replaces the former (SMALL|LARGE)_(COLUMNS|LINES)
-      # settings.
 
-      --completion 'menu-complete complete 8'
-      # Set the readline completion function to use with tab. The
-      # first word of this string specifies the completion to use by
-      # default. The second word, if given, specifies an alternative
-      # completion type to use when the size of the terminal is
-      # greater or equal to the number of lines given in the third
-      # word.
-      #
-      # This replaces the former COMPLETION_TYPE,
-      # ALTERNATIVE_COMPLETION_TYPE and COMPLETION_THRESHOLD settings.
+      # Terminal font to use for this terminal. Ignored if empty or not set.
+      --font ''
 
-      --unmap on
-      # Whether to unmap the window after running a command. Setting
-      # this value to "off" is equivalent to using KEEP_OPEN=yes in
-      # previous versions.
+      # Terminal colors. Ignored if empty or not set. 
+      --foreground 'grey'
+      --background 'black'
 
-      --feedback on
-      # Whether to show feedback in the form of a progress bar during
-      # startup.
+      # Additional command line options to the terminal.
+      --options ''
 
-      # --onmap 'transset-df -a 0.75'       
-      # A command to run after the window has been mapped and
+      # The readline completion type to use with tab ("complete",
+      # "menu-complete" or "quiet-complete"). The first argument
+      # specifies the completion type to use by default. The second
+      # argument, if given, specifies an alternative completion type
+      # to use when the height of the terminal is greater or equal to
+      # the number of lines given in the third argument.
+      --completion 'menu-complete' 'complete' '8'
+
+      # Hide the window after each command.
+      --unmap true
+
+      # Show feedback in a progress bar during startup/reload.
+      --feedback true
+
+      # Command to run after the window has been mapped and
       # focused. 
-      #
-      # This setting replaces the former POST_MAP_COMMAND.
+      # --onmap 'transset-df -a 0.75'       
 
+      # Command to run after the window has been unmapped.
+      # --onunmap ''       
+
+      # A logfile to redirect command output to.
       --logfile '/dev/null'
-      # Set the logfile to redirect command output to. This replaces
-      # the former LOGFILE setting.
 
       function +mode-launcher-init {	
-          # This fuction, if defined, will be called for the default
-	  # mode "launcher" during startup. Here you can configure
-	  # anything that is specific to this mode only. See
-	  # bashrun2(1) for alternatives.
+	  # Function to run during startup. This is the place to setup
+	  # bash stuff like default programs, history file, prompts,
+	  # terminal settings, etc.
+
+	  PAGER='less'
+	  DICT='dict'
+	  BROWSER='firefox'
 
 	  HISTFILE="${XDG_DATA_HOME:-$HOME/.local/share}/bashrun2/history"
 	  PS1='>'
@@ -79,38 +74,17 @@
 	  stty -ixon       # disable flow control, allows to bind C-Q
 	  set -o ignoreeof # prevent C-d on an empty line from exiting	  
       }
-
-    # For more options and a detailed description of modes, see
-    # bashrun2(1)
 }
 
 +configure-terminals () {
 
-    # Configure terminals to launch commands in. In the string given
-    # by --command, the following strings have special meaning:
-    #
-    #    %* : replaced with the actual command to run. 
-    #    %@ : replaced with the actual command to run, quoted to
-    #         appear as a single argument.
-    #      
-    #         Consequtive @'s add another level of quoting, e.g. %@@
-    #         quotes two times, %@@@ quotes three times, and so on.
-    #
-    #    %g : replaced with the string given by --geometry.
-    #    %f : replaced with the string given by --font.
-    #
-    # If neither %* or %@ is given, the command is appended to the end
-    # of the string without further quoting.
-    
-    # The following two terminals, called "default" and
-    # "notify", are always defined:
+    # Configure terminals to launch commands in.
 
+    # The default terminal is used to execute commands in if no other
+    # terminal has been explicitly requested by an action:
     +terminal default 
       --command '__EXEC_TERMINAL__'
 
-    # The default terminal is used to execute commands if no other
-    # terminal has been explicitly requested by an action.
-    #
     # Some examples on how to run shell commands in common terminals:
     #
     # +terminal default --command '__EXEC_TERMINAL__'
@@ -135,7 +109,7 @@
     +terminal small
       --command urxvt
       --geometry '160x48'
-      --font 'xft:fixed'
+      --font 'fixed'
       --match 'htop' '/^ls/'
 
       # An example of using urxvt with a small font. 
@@ -365,7 +339,7 @@
     # Alternatively use the completion of the "browse" handler
     # defined above.
 
-    +bookmark bashrun2.googlecode.come
+    +bookmark bashrun2.googlecode.com
     +bookmark archlinux.org
 }
 
@@ -549,3 +523,5 @@
     +bind resize-left  '\e[1;5D' 'C-left'
     +bind resize-right '\e[1;5C' 'C-right'
 }
+
++plugins terminal
