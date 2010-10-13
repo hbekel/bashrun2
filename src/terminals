@@ -4,7 +4,7 @@
 
 §class "terminal" --with-interface \
     --properties "name" \
-                 "command=__EXEC_TERMINAL__" \
+                 "command" \
                  "classname" \
                  "geometry=80x24" \
                  "font" \
@@ -49,8 +49,20 @@ function §terminals.init {
 }
 
 function §terminal.init {
-   §terminal.set_cache ""
-   §terminal.get_command &>/dev/null
+   
+    §terminal.set_cache ""
+    local self="$(§terminal.get_name)";
+    
+    # use the default terminal's command if --command is omitted
+    if [[ -z "$(§terminal._get_command)" ]]; then
+	if §terminals.seek "default"; then
+	    local default="$(§terminal._get_command)"
+	    §terminals.seek "$self"
+	    §terminal.set_command "$default"
+	fi
+    fi
+    
+    §terminal.get_command &>/dev/null
 }
 
 function §terminal.get_command {
@@ -73,6 +85,7 @@ function §terminal.get_command {
 }
 
 function §terminal.expand {
+    
     local template="$1"
     local command="$2"
     local classname="$3"
