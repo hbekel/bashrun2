@@ -7,6 +7,7 @@
                  "terminal=__TERMINAL__" \
                  "geometry=80x24" \
                  "font" \
+                 "boldfont" \
                  "foreground" \
                  "background" \
                  "options" \
@@ -84,6 +85,7 @@ function §mode.write_info {
     local terminal="$(§mode.get_terminal)"
     local geometry="$(§mode.get_geometry 0)"
     local font="$(§mode.get_font)"
+    local boldfont="$(§mode.get_boldfont)"
     local foreground="$(§mode.get_foreground)"
     local background="$(§mode.get_background)"
     local options="$(§mode.get_options)"
@@ -92,10 +94,10 @@ function §mode.write_info {
     local onunmap="$(§mode.get_onunmap)"
 
     if §templates.seek "$terminal"; then
-	terminal="$(§template.create_commandline "bashrun" "bashrun-$mode" "$geometry" "$font" "$foreground" "$background" "$options")"
+	terminal="$(§template.create_commandline "bashrun" "bashrun-$mode" "$geometry" "$font" "$boldfont" "$foreground" "$background" "$options")"
     fi
 
-    §quote terminal font foreground background options onmap onunmap
+    §quote terminal font boldfont foreground background options onmap onunmap
 
     printf '%s\n' "# mode info
           pid=$$
@@ -103,6 +105,7 @@ function §mode.write_info {
 	  terminal=$terminal
           geometry=$geometry
           font=$font
+          boldfont=$boldfont
           foreground=$foreground
           background=$background 
           options=$options

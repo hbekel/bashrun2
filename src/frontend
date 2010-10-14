@@ -113,7 +113,7 @@ function launch {
             $(§terminal.expand "$terminal" \
                  'bash --rcfile __PREFIX__/share/bashrun2/bashrc' \
                  "bashrun-$mode" "$geometry" \
-                 "$font" "$foreground" "$background" \
+                 "$font" "$boldfont" "$foreground" "$background" \
                  "$termopts")" 
                
     # trim whitespace
@@ -140,7 +140,8 @@ function launch {
                      the following terminal command line is correct:
 
                      $(§terminal.expand "$terminal" '...' \
-                        "$mode" "$geometry" "$font" "$foreground" "$background" "$termopts")
+                        "$mode" "$geometry" "$font" "$boldfont" \
+                        "$foreground" "$background" "$termopts")
 
                      (See the config directive '+mode $mode --terminal')
 

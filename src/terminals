@@ -8,22 +8,12 @@
                  "classname" \
                  "geometry=80x24" \
                  "font" \
+                 "boldfont" \
                  "foreground" \
                  "background" \
                  "options" \
                  "match:a" \
                  "cache:t"
-
-§class "template" --with-interface \
-    --properties "name" \
-                 "classname=-name %n" \
-                 "geometry=-g %g" \
-                 "font=-fn %f" \
-                 "foreground=-fg %t" \
-                 "background=-bg %b" \
-                 "bashrun=-e %*" \
-                 "bashrun_options=+sb" \
-                 "execute=-e bash -c %@"
 
 ################################################################################
 
@@ -74,11 +64,12 @@ function §terminal.get_command {
 	local classname="$(§terminal.get_classname)"
 	local geometry="$(§terminal.get_geometry)"
 	local font="$(§terminal.get_font)"
+	local boldfont="$(§terminal.get_boldfont)"
 	local foreground="$(§terminal.get_foreground)"
 	local background="$(§terminal.get_background)"
 	local options="$(§terminal.get_options)"
 	
-	cached="$(§terminal.expand "$command" "" "$classname" "$geometry" "$font" "$foreground" "$background" "$options")"
+	cached="$(§terminal.expand "$command" "" "$classname" "$geometry" "$font" "$boldfont" "$foreground" "$background" "$options")"
 	§terminal.set_cache "$cached"	
     fi
     printf '%s' "$cached"
@@ -91,9 +82,10 @@ function §terminal.expand {
     local classname="$3"
     local geometry="$4"
     local font="$5"
-    local foreground="$6"
-    local background="$7"
-    local options="$8"
+    local boldfont="$6"
+    local foreground="$7"
+    local background="$8"
+    local options="$9"
     
     local word="" tmp="" method=""
     declare -i i=0
@@ -106,7 +98,7 @@ function §terminal.expand {
     if §templates.seek "$template"; then
 	template="$(§template.create_commandline \
                     "execute" "$classname" "$geometry" \
-                    "$font" "$foreground" "$background" "$options")"
+                    "$font" "$boldfont" "$foreground" "$background" "$options")"
     fi
 
     # insert classname, geometry, font and options
@@ -123,18 +115,27 @@ function §terminal.expand {
 	template="$(§replace "$template" "%f" "$font")"
     fi
 
-    if [[ "$template" =~ [^\\]%t ]]; then
-	§quote foreground
-	template="$(§replace "$template" "%t" "$foreground")"
+    if [[ "$template" =~ [^\\]%b ]]; then
+	§quote boldfont
+	template="$(§replace "$template" "%b" "$boldfont")"
     fi
 
-    if [[ "$template" =~ [^\\]%b ]]; then
+    if [[ "$template" =~ [^\\]%F ]]; then
+	§quote foreground
+	template="$(§replace "$template" "%F" "$foreground")"
+    fi
+
+    if [[ "$template" =~ [^\\]%B ]]; then
 	§quote background
-	template="$(§replace "$template" "%b" "$background")"
+	template="$(§replace "$template" "%B" "$background")"
     fi
 
     if [[ "$template" =~ [^\\]%o ]]; then
 	template="$(§replace "$template" "%o" "$options")"
+    fi
+
+    if [[ "$template" =~ [^\\]%% ]]; then
+	template="$(§replace "$template" "%%" "%")"
     fi
 
     # insert command if given...

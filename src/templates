@@ -7,8 +7,9 @@
                  "classname=-name %n" \
                  "geometry=-g %g" \
                  "font=-fn %f" \
-                 "foreground=-fg %t" \
-                 "background=-bg %b" \
+                 "boldfont=-fb %b" \
+                 "foreground=-fg %F" \
+                 "background=-bg %B" \
                  "bashrun=-e %*" \
                  "bashrun_options=+sb" \
                  "execute=-e bash -c %@"
@@ -21,9 +22,10 @@ function §template.create_commandline {
     local classname="$2"
     local geometry="$3"
     local font="$4"
-    local foreground="$5"
-    local background="$6"
-    local options="$7"
+    local boldfont="$5"
+    local foreground="$6"
+    local background="$7"
+    local options="$8"
 
     local template="$(§template.get_name) "
     
@@ -37,6 +39,10 @@ function §template.create_commandline {
     
     if [[ -n "$font" ]]; then
 	template+="$(§template.get_font) "
+    fi
+
+    if [[ -n "$boldfont" ]]; then
+	template+="$(§template.get_boldfont) "
     fi
 
     if [[ -n "$foreground" ]]; then
@@ -57,6 +63,5 @@ function §template.create_commandline {
     else
 	template+="$(§template.get_execute)"
     fi
-    
     printf '%s' "$template"
 }

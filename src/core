@@ -73,21 +73,26 @@
     +template urxvt --bashrun_options "+sb $urxvt_fixes"
     +template urxvtc --bashrun_options "+sb $urxvt_fixes"
     +template mrxvt --bashrun_options "+sb -ht +showmenu"
-    +template mlterm --bashrun_options "-s=false $mlterm_fixes"
     +template aterm
+
+    +template mlterm 
+      --boldfont "" 
+      --bashrun_options "-s=false $mlterm_fixes"
 
     +template Eterm
       --classname "-n%n"
       --geometry "-g%g"
       --font "-F%f"
-      --foreground "-f%t"
-      --background "-b%b"
+      --boldfont "--bold-font=%B"
+      --foreground "-f%F"
+      --background "-b%B"
       --bashrun_options "--scrollbar=0"
 
     +template gnome-terminal
       --classname "--name=%n"
       --geometry "--geometry=%g"
       --font ""
+      --boldfont ""
       --foreground ""
       --background ""
       --bashrun "-e %@"
