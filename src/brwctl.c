@@ -126,8 +126,6 @@ int main(int argc, char **argv)
       size(width, height, 1);
     }
   }
-  
-  XCloseDisplay(dpy);
   exit(ret);
 }
 
