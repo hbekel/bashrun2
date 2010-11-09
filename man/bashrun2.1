@@ -1,4 +1,4 @@
-.TH BASHRUN2 1 "2010-08-19" "Linux" "User manuals"
+.TH BASHRUN2 1 "2010-10-14" "Linux" "User manuals"
 .SH NAME
 \fBbashrun2\fP \- launch applications from interactive bash sessions
 
@@ -323,41 +323,17 @@ simple interface to programmable completion.
 \fBPlugins\fP allow flexible inclusion and distribution of user
 created configuration objects.
 .SS MODES
-\fBMode\fP objects provide a way to configure and run multiple
-instances of bashrun with different settings. They define a terminal
-command line used to launch a bashrun session and further control the
-sessions general appearance and behavior.
-
-.IP \fB\-\-terminal\fP\ <\fIcommand\ template\fP>
+\fBMode\fP objects are used to configure different modes of operation
+for bashrun. They define the terminal to use for the bashrun session
+and control general appearance and behavior.
+.IP \fB\-\-terminal\fP\ <\fIname\fP>
 
 default:\ \fI__TERMINAL__\fP
 
-The terminal command template defines the terminal to be used for
-bashrun. Within this string, patterns prefixed with \fI%\fP will be
-replaced with their corresponding values. 
-.RS
-.IP \fI%*\fP 
-is replaced with the actual command to be run by the terminal. It
-should appear as the value for the execute option of your terminal of
-choice, e.g use \fI-e %*\fP at the end of the string for most terminals.
-.IP \fI%@\fP 
-is replaced with the actual command to run, quoted to appear as a
-single argument. Consequtive \fI@\fP's add another level of quoting,
-e.g. \fI%@@\fP quotes two times, \fI%@@@\fP quotes three times, and so
-on.
-.IP \fI%n\fP
-is replaced by the string \fIbashrun-\fP<\fImode-name\fP> and must
-be set as the window class name of your terminal, e.g. use \fI-name
-%n\fP for urxvt or xterm.
-.IP \fI%g\fP
-is replaced with the first word of the string given by the
-\fB--geometry\fP property, see below.
-.IP \fI%f\fP 
-is replaced with the string given by the \fB--font\fP property.
-.IP \fI%o\fP
-is replaced by any additional terminal options given on the bashrun
-command line after \fI--\fP.
-.RE
+The terminal used for bashrun. Supported terminals include
+\fBxterm\fP, \fBurxvt\fP, \fBmrxvt\fP, \fBmlterm\fP and
+\fBaterm\fP. Generic support for other terminals can be added as well,
+see \fBGENERIC TERMINAL SUPPORT\fP below.
 
 .IP \fB\-\-geometry\fP\ <\fIgeometry1\fP\ [\fIgeometry2\fP]...>\ (default:\ \fI40x1\ 40x8\fP)
 
@@ -367,7 +343,23 @@ action (Ctrl-l) will allow you to cycle through these
 geometries.
 .IP \fB\-\-font\fP\ <\fIfont\fP>\ (default:\ \fIempty\fP)
 
-Set the value of the \fI%f\fP pattern for the terminal command template.
+The regular terminal font.
+
+.IP \fB\-\-boldfont\fP\ <\fIfont\fP>\ (default:\ \fIempty\fP)
+
+The bold terminal font.
+
+.IP \fB\-\-foreground\fP\ <\fIfont\fP>\ (default:\ \fIempty\fP)
+
+The terminal foreground color.
+
+.IP \fB\-\-background\fP\ <\fIfont\fP>\ (default:\ \fIempty\fP)
+
+The terminal background color.
+
+.IP \fB\-\-options\fP\ <\fIstring\fP>\ (default:\ \fIempty\fP)
+
+Generic terminal options to be included in the terminal command line.
 
 .IP \fB\-\-completion\fP\ <\fItype\fP\ [\fIalternative\fP\ \fIthreshold\fP]> 
 
@@ -430,22 +422,34 @@ a specific terminal objects using the \fB--match\fP property.
 
 default: \fI__EXEC_TERMINAL__\fP
 
-Defines the command line used to run the given command as a \fBbash\fP
-shell command. Within this string, patterns prefixed with \fI%\fP will
-be replaced with their corresponding values in the same way as
-described above for the \fB+mode --terminal\fP.
-
-Note that since the \fI-c\fP option to \fBbash\fP expects a single
-argument, \fI%@\fP should be used as the pattern to insert the shell
-command into the resulting command line.
+The terminal command. Supported terminals include \fBxterm\fP,
+\fBurxvt\fP, \fBmrxvt\fP, \fBmlterm\fP and \fBaterm\fP. Generic
+support for other terminals can be added as well, see \fBGENERIC
+TERMINAL SUPPORT\fP below.
 
 .IP \fB\-\-geometry\fP\ <\fIgeometry\fP>\ (default:\ \fIempty\fP)
 
-Set the value of the \fI%g\fP pattern for the terminal command template.
+The X geometry of the terminal.
 
 .IP \fB\-\-font\fP\ <\fIfont\fP>\ (default:\ \fIempty\fP)
 
-Set the value of the \fI%f\fP pattern for the terminal command template.
+The regular terminal font.
+
+.IP \fB\-\-boldfont\fP\ <\fIfont\fP>\ (default:\ \fIempty\fP)
+
+The bold terminal font.
+
+.IP \fB\-\-foreground\fP\ <\fIfont\fP>\ (default:\ \fIempty\fP)
+
+The terminal foreground color.
+
+.IP \fB\-\-background\fP\ <\fIfont\fP>\ (default:\ \fIempty\fP)
+
+The terminal background color.
+
+.IP \fB\-\-options\fP\ <\fIstring\fP>\ (default:\ \fIempty\fP)
+
+Generic terminal options to be included in the terminal command line.
 
 .IP \fB\-\-match\fP\ <\fIpattern\fP>\ [...]\ (default:\ \fIempty\fP)
 
@@ -634,10 +638,10 @@ function determines how to proceed further. If the function returns
 \fBcommand\fP function (see below) is executable and will proceed to
 spawn a new instance of bash to execute the command. If the function
 returns \fI1\fP, the action terminates immediately, possibly unmapping
-the terminal window if requested by the \fB+mode --teminal\fP
+the terminal window if requested by the \fB+mode --unmap\fP
 property. If the function returns \fI2\fP, then the action terminates
-without unmapping the terminal window, regardless of the value of the
-\fB+mode --teminal\fP property.
+without ever unmapping the terminal window, ignoring the value of
+\fB+mode --unmap\fP.
 .PP
 The following functions are defined during execution of the action
 function:
@@ -702,7 +706,7 @@ configuration file and modify it accordingly.
 .IP \fBpass\fP\ (\fBM-w\fP)
 Run a command directly in the bashrun shell session.
 .IP \fBabort\fP\ (\fBC-g\fP)
-Clear the comman line and hide the terminal window.
+Clear the command line and hide the terminal window.
 .IP \fBbashrun-bindings\fP\ (\fBF1\fP)
 Show the current keybindings in a terminal.
 .IP \fBbashrun-manual\fP\ (\fBF2\fP)
@@ -778,6 +782,39 @@ Increase terminal height by one line.
 Decrease terminal width by one column.
 .IP \fBresize-right\fP\ (\fBC-→\fP)
 Increase terminal width by one column.
+.SH GENERIC TERMINAL SUPPORT
+Generic support for terminals can be added by supplying a template
+string of the required terminal command line to the \fB+mode --terminal\fP
+or \fP+terminal --command\fP properties.
+
+Template strings may contain the following format specifiers:
+.RS
+.IP \fI%*\fP 
+The command to be run by the terminal. It should appear as the value
+for the execute option of your terminal of choice, e.g use \fI-e %*\fP
+at the end of the string for most terminals.
+.IP \fI%@\fP 
+The command to be run by the terminal, quoted to appear as a single
+argument. Consequtive \fI@\fP's add another level of quoting,
+e.g. \fI%@@\fP quotes two times, \fI%@@@\fP quotes three times, and so
+on.
+.IP \fI%n\fP
+The string \fIbashrun-\fP<\fImode-name\fP>. Must be set as the window
+class name of your terminal, e.g. use \fI-name %n\fP for urxvt or
+xterm.
+.IP \fI%g\fP
+The value of the \fB--geometry\fP property.
+.IP \fI%f\fP 
+The value of the \fB--font\fP property.
+.IP \fI%b\fP 
+The value of the \fB--boldfont\fP property.
+.IP \fI%o\fP
+The value of the \fB--options\fP property plus any additional terminal
+options given on the command line after \fI--\fP.
+.IP \fI%%\fP
+is replaced by a literal percent sign (\fI%\fP) 
+.RE
+
 .SH ENVIRONMENT
 .SH BUGS AND FEEDBACK
 Please file bugs on the sourceforge bug tracker:

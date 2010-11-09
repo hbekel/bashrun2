@@ -105,14 +105,6 @@
       --geometry '40x4+0+0'
       # ^ A small terminal for notifications, used by the default actions
       # "term-notify" and "su-term-notify".
-      
-    +terminal small
-      --command urxvt
-      --geometry '160x48'
-      --font 'fixed'
-      --match 'htop' '/^ls/'
-
-      # An example of using urxvt with a small font. 
 }
 
 +configure-rules () {
@@ -357,8 +349,9 @@
       --depends 'su'
 
       function +action-run-as {
-	  +action-run
+	  action run
 	  user --prompt
+	  return 0
       }
 
     +action kill-to-xclip
