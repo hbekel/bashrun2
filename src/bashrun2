@@ -23,9 +23,8 @@
 
 # if no arguments are given, attempt to map an existing launcher as
 # fast as possible first...
-if [[ $# -eq 0 ]]; then    
-    widfile="${XDG_CACHE_HOME:-$HOME/.cache}/bashrun2/launcher-wid"
-    [[ -f "$widfile" ]] && brwctl "$(<$widfile)" show
+if [[ $# -eq 0 || "$1" == "show" ]]; then
+    brwctl bashrun-launcher show
 fi
 
 # setup global variables
