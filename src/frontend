@@ -112,7 +112,7 @@ function launch {
             bashrun_debug=$bashrun_debug \
             $(§terminal.expand "$terminal" \
                  'bash --rcfile __PREFIX__/share/bashrun2/bashrc' \
-                 "bashrun-$mode" "$geometry" \
+                 "bashrun2-$mode" "$geometry" \
                  "$font" "$boldfont" "$foreground" "$background" \
                  "$termopts")" 
                
@@ -149,7 +149,7 @@ function launch {
     } &
 
     # wait until the terminal window exists...
-    wait_until "brwctl bashrun-$mode &>/dev/null" "[[ -f '$abort' ]]"
+    wait_until "brwctl bashrun2-$mode &>/dev/null" "[[ -f '$abort' ]]"
     status=$?
 
     if (( status == 1 )); then
@@ -165,7 +165,7 @@ function launch {
     
     # get the window id of the newly created window, update mode info
     # and prepare the §window class
-    wid="$(brwctl bashrun-$mode)"    
+    wid="$(brwctl bashrun2-$mode)"    
     printf "%s\n" "wid=$wid" >> "$modeinfo"
     source_window
 
@@ -191,7 +191,7 @@ function remote {
 	    # wait until the remote session has removed the file
 	    wait_until "[[ ! -e '$remote' ]]"
     else
-	printf '%s\n' "bashrun: error: bashrun-$mode not ready"
+	printf '%s\n' "bashrun: error: bashrun2-$mode not ready"
 	return 1
     fi
     return 0

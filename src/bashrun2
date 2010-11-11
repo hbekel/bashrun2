@@ -21,10 +21,10 @@
 #
 ######################################################################
 
-# if no arguments are given, attempt to map an existing launcher as
+# if no arguments are given, attempt to map an existing run-dialog as
 # fast as possible first...
 if [[ $# -eq 0 || "$1" == "show" ]]; then
-    brwctl bashrun-launcher show
+    brwctl bashrun2-run-dialog show
 fi
 
 # setup global variables
@@ -50,7 +50,7 @@ trap '[[ -f "$lock" ]] && rm "$lock"' EXIT
 trap '[[ -f "$lock" ]] && rm "$lock"' TERM
 
 # set default mode and command
-mode="launcher"
+mode="run-dialog"
 command="show"
 
 # load frontend functions
@@ -124,7 +124,7 @@ fi
 # launch a new instance if necessary...
 launched=0
 
-if ! brwctl bashrun-$mode &>/dev/null; then # no existing instance
+if ! brwctl bashrun2-$mode &>/dev/null; then # no existing instance
     
     # don't launch a new instance for these commands:
     if [[ "$command" =~ ^(exit|quit)$ ]]; then

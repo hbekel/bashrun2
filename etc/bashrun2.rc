@@ -11,9 +11,9 @@
 
 +configure-modes () {
 
-    # This is the default "launcher" mode that provides the run dialog:
+    # This is the default "run-dialog" mode that provides the run dialog:
 
-    +mode launcher
+    +mode run-dialog
 
       # Terminal to use for the run dialog. Bashrun has builtin
       # support for xterm, urxvt, urxvtc, mrxvt, mlterm and
@@ -59,7 +59,7 @@
       # A logfile to redirect command output to.
       --logfile '/dev/null'
 
-      function +mode-launcher-init {	
+      function +mode-run-dialog-init {	
 	  # Function to run during startup. This is the place to setup
 	  # bash stuff like default programs, history file, prompts,
 	  # terminal settings, etc.

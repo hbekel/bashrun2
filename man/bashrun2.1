@@ -5,9 +5,6 @@
 .SH SYNOPSIS
 \fBbashrun2\fP [\fIoptions\fP] [\fIcommand\fP [\fIargs\fP]] [-- \fItermopts\fP]
 
-\fBbashrun2 --mode\fP \fIterminal\fP [...]
-
-\fBeval\fP \fI\[dq]$(bashrun --remote-control)\[dq]\fP
 .SH DESCRIPTION
 \fBbashrun2\fP adds application launching capabilities to interactive
 bash sessions, suitable for use in a graphical user environment.
@@ -15,7 +12,7 @@ bash sessions, suitable for use in a graphical user environment.
 In its default setup, \fBbashrun2\fP provides an application launcher
 in the fashion of a simple run dialog by starting an interactive bash
 session in a small \fB__TERMINAL_NAME__\fP(1) terminal window
-(builtin \fIlauncher\fP mode).
+(the builtin \fIrun-dialog\fP mode).
 
 The builtin \fIterminal\fP mode starts an interactive bash session in
 a regular \fB__TERMINAL_NAME__\fP(1) terminal window and transparently
@@ -30,7 +27,7 @@ interactive bash session by sourcing a lightweight remote interface.
 .SS Using bashrun as a run dialog
 Start bashrun from the command line or with a keybinding in your
 window manager or desktop environment. Bashrun will start in its
-default mode \fIlauncher\fP. It will create an interactive bash
+default mode \fIrun-dialog\fP. It will create an interactive bash
 session in a small one-line \fB__TERMINAL_NAME__\fP(1) terminal and
 initialize the bashrun engine.
 
@@ -50,7 +47,7 @@ terminal window.
 Pressing Enter will run commands in the current shell as usual. You
 can launch applications in the background now by pressing
 Alt-Enter. To launch a console application in a new terminal, press
-Alt-t. All other keybindings remain the same as in \fIlauncher\fP
+Alt-t. All other keybindings remain the same as in \fIrun-dialog\fP
 mode.
 
 Bind a key in your window manager or desktop environment to run
@@ -69,7 +66,7 @@ In an interactive bash session not started by bashrun, run the command
   eval "$(bashrun --remote-control)"
 .fi
 
-A lightweight remote interface to an existing bashrun \fIlauncher\fP
+A lightweight remote interface to an existing bashrun \fIrun-dialog\fP
 session will be installed in the current bash session. Bashrun's
 keybindings will be enabled in a similar way as in \fIterminal\fP
 mode, i.e. Alt-Enter can be used to launch commands in the background,
@@ -96,7 +93,7 @@ bashrun session for each \fBmode\fP object defined in the
 configuration file.
 
 Modes are selected by the \fB-m\fP or \fB\--mode\fP option. If no
-\fBmode\fP is specified, the default \fBmode\fP \fIlauncher\fP is
+\fBmode\fP is specified, the default \fBmode\fP \fIrun-dialog\fP is
 used.
 
 If no session is currently running in the selected \fBmode\fP, then a
@@ -109,7 +106,7 @@ then applied to the newly created session, unless it is either
 .SS OPTIONS
 .IP \fB-m\fP,\ \fB--mode\fP\ \fImode\fP
 Select mode to launch or control. In the absence
-of this option, the default mode \fIlauncher\fP is used.
+of this option, the default mode \fIrun-dialog\fP is used.
 .IP \fB--remote-control\fP
 Print bash code to install a remote control interface to an existing
 bashrun session. See \fBREMOTE CONTROL INTERFACE\fP.
@@ -298,7 +295,7 @@ that control different aspects of application launching and terminal
 window management:
 
 \fBModes\fP control the appearance and behavior of the terminal
-hosting the bashrun session, such as the default modes \fIlauncher\fP
+hosting the bashrun session, such as the default modes \fIrun-dialog\fP
 and \fIterminal\fP mentioned above.
 
 \fBActions\fP can be bound to key sequences and handle user input in
@@ -446,6 +443,10 @@ The terminal foreground color.
 .IP \fB\-\-background\fP\ <\fIfont\fP>\ (default:\ \fIempty\fP)
 
 The terminal background color.
+
+.IP \fB\-\-classname\fP\ <\fIstring\fP>\ (default:\ \fInone\fP)
+
+Name portion of the WM_CLASS window property.
 
 .IP \fB\-\-options\fP\ <\fIstring\fP>\ (default:\ \fIempty\fP)
 
@@ -799,7 +800,7 @@ argument. Consequtive \fI@\fP's add another level of quoting,
 e.g. \fI%@@\fP quotes two times, \fI%@@@\fP quotes three times, and so
 on.
 .IP \fI%n\fP
-The string \fIbashrun-\fP<\fImode-name\fP>. Must be set as the window
+The string \fIbashrun2-\fP<\fImode-name\fP>. Must be set as the window
 class name of your terminal, e.g. use \fI-name %n\fP for urxvt or
 xterm.
 .IP \fI%g\fP
@@ -808,6 +809,10 @@ The value of the \fB--geometry\fP property.
 The value of the \fB--font\fP property.
 .IP \fI%b\fP 
 The value of the \fB--boldfont\fP property.
+.IP \fI%F\fP
+The value of the \fB--foreground\fP property.
+.IP \fI%B\fP 
+The value of the \fB--background\fP property.
 .IP \fI%o\fP
 The value of the \fB--options\fP property plus any additional terminal
 options given on the command line after \fI--\fP.

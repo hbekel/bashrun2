@@ -4,7 +4,7 @@
 
 +configure-core-modes () {
 
-    +mode launcher
+    +mode run-dialog
       --terminal '__TERMINAL__'
       --geometry '40x1 40x8'
       --completion 'menu-complete complete 8'
@@ -12,7 +12,7 @@
       --feedback true
       --logfile '/dev/null'
 
-    +mode-launcher-init () {	
+    +mode-run-dialog-init () {	
 	
 	HISTFILE="$($bashrun_data_home/history)"
 	PS1='>'

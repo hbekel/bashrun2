@@ -10,7 +10,7 @@ function §registry.add {
     
     # remove stale wid and pid files
     if [[ -f "$widfile" ]]; then	
-	if [[ ! "$(brwctl "$(<$widfile)" class? 2>/dev/null)" =~ bashrun-$mode ]];
+	if [[ ! "$(brwctl "$(<$widfile)" class? 2>/dev/null)" =~ bashrun2-$mode ]];
 	then
 	    rm "$widfile"
 	    rm "$pidfile"
