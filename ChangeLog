@@ -1,6 +1,16 @@
+2010-11-13  Henning Bekel <h.bekel@googlemail.com>
+
+	* Released bashrun2 version 0.1.0
+	* Fixed messed up return values in brwctl
+	* Added builtin support for common terminals
+	* Added autodetection of console applications
+	* Added --boldfont option for modes and terminals
+	* Added --foreground and --background color options
+	        for modes and terminal objects
+
 2010-10-05  Henning Bekel <h.bekel@googlemail.com>
 
-	* Announced version 1.0.0rc2
+	* Announced bashrun version 1.0.0rc2
 	* Fixed errors caused by using env vars in action dependencies
 	* Fixed xdg lookup failures with multiple XDG_CONFIG_DIRS
 	* Improved lookup functions for plugin files
@@ -8,5 +18,5 @@
 
 2010-08-21  Henning Bekel <h.bekel@googlemail.com>
 
-	* Announced version 1.0.0rc1
+	* Announced bashrun version 1.0.0rc1
 

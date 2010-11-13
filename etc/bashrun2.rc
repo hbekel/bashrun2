@@ -11,28 +11,28 @@
 
 +configure-modes () {
 
-    # This is the default "run-dialog" mode that provides the run dialog:
+    # The default "run-dialog" mode:
 
     +mode run-dialog
 
-      # Terminal to use for the run dialog. Bashrun has builtin
-      # support for xterm, urxvt, urxvtc, mrxvt, mlterm and
-      # aterm.
+      # Terminal to use for bashrun. Supported terminals are xterm,
+      # urxvt, urxvtc, mrxvt, mlterm and aterm:
       --terminal '__TERMINAL__'
 
       # Geometry or geometries to use for the terminal window. If more
       # than one geometry is given, the cycle-size action (Ctrl-l)
-      # will allow cycling through these geometries.
+      # will allow cycling through these geometries:
       --geometry '40x1' '40x8'
 
-      # Terminal font to use for this terminal. Ignored if empty or not set.
+      # Terminal fonts to use for this terminal. Ignored if empty or not set.
       --font ''
+      --boldfont ''
 
       # Terminal colors. Ignored if empty or not set. 
       --foreground 'grey'
       --background 'black'
 
-      # Additional command line options to the terminal.
+      # Additional command line options to the terminal:
       --options ''
 
       # The readline completion type to use with tab ("complete",
@@ -85,26 +85,12 @@
     +terminal default 
       --command '__EXEC_TERMINAL__'
 
-    # Some examples on how to run shell commands in common terminals:
-    #
-    # +terminal default --command '__EXEC_TERMINAL__'
-    # +terminal default --command 'rxvt -e bash -c %@'
-    # +terminal default --command 'xterm -e bash -c %@'
-    # +terminal default --command 'urxvt -e bash -c %@'
-    # +terminal default --command 'mrxvt -e bash -c %@'
-    # +terminal default --command 'aterm -e bash -c %@'
-    # +terminal default --command 'Eterm -e bash -c %@'
-    # +terminal default --command 'roxterm -e bash -c %@'
-    # +terminal default --command 'konsole -e bash -c %@'
-    # +terminal default --command 'Terminal -x bash -c %@'
-    # +terminal default --command 'gnome-terminal -e bash\ -c\ %@@'
-    # +terminal default --command 'terminator -x bash -c %@'    
+    # A small terminal for notifications, used by the default actions
+    # "term-notify" and "su-term-notify".
 
     +terminal notify 
       --command '__EXEC_TERMINAL__'
       --geometry '40x4+0+0'
-      # ^ A small terminal for notifications, used by the default actions
-      # "term-notify" and "su-term-notify".
 }
 
 +configure-rules () {
@@ -122,33 +108,21 @@
     # expression, since the enclosing slashes are used solely to
     # denote a regular expression to bashrun.
     #
-    # This is the equivalent of the RULES array used in previous
-    # versions.
-    #
     # Some examples:
 
     +rule term-page
-      --match 'dict'
-      # the the term-page action is used to show the output of the
-      # "dict" program, paged in the default terminal. If you want to
-      # use a different dict client, set the DICT environment variable
-      # to the executable name of the client, e.g. DICT=kdict. Doing
-      # this is similar to using the DICT_CLIENT setting in previous
-      # versions.
-     
-      --match '/^ls/'
-      # the term-page action is used to show the output of any
-      # commandline beginning with "ls", paged in a terminal. Note
-      # that the 'small' terminal defined above matches /^ls/ as well,
-      # thus it will be used here.
+      --match 'dict'  # page the output of dict in a new terminal
+      --match '/^ls/' # page the output of any command beginning with
+                      # "ls" in a new terminal
+
+    # Run any commandline beginning with '/etc/rc.d' or '/etc/init.d'
+    # as root and show it's output in the 'notify' terminal, closing
+    # the terminal after two seconds:
 
     +rule su-term-notify
       --match '/^/etc/(rc|init)\.d/'
-      # the su-term-notify action is used here to run any commandline
-      # beginning with '/etc/rc.d' or '/etc/init.d' as root and show
-      # it's output in the 'notify' terminal, closing the terminal
-      # after two seconds. Note that in this case, the su-term-notify
-      # action chooses to use the 'notify' terminal by default.
+
+    # For a list of all available default actions, see bashrun2(1).
 }
 
 +configure-handlers () {
@@ -242,30 +216,11 @@
       --action browse
       # The same as above, but uses google's "Feeling Lucky" function.
 
-    +handler freshmeat-search
-      --match '^fm:(.+)'  
-      --command 'freshmeat.net/search/?q=%1&section=projects'
-      --action browse
-
-    +handler sourceforge-project
-      --match '^sf:(.+)'  
-      --command 'sourceforge.net/projects/%1/'
-      --action browse
-      
-    +handler sourceforge-website
-      --match '^sw:(.+)' 
-      --command '%1.sourceforge.net/'
-      --action browse
-
-    +handler aur-search
-      --match 'aur:(.+)'
-      --command 'aur.archlinux.org/packages.php?K=%1&do_Search=Go'
-      --action browse
-
     +handler ftp
       --match '^ftp://(.+)' 
       --command 'ncftp'
       --action term-run 
+      # Open ftp:// urls with an ftp client
 
     +handler gimp
       --match '\.jpe?g$'
@@ -309,18 +264,17 @@
 
     +handler file
       --fallback true
-      --test 'f!x'
+      --test 'f'
       --command "xdg-open %1"
       # handle files universally with xdg-open, see xdg-open(1)
+
+    # Uncomment the following handler to google anything not
+    # matched by a previous handler:
 
     # +handler google-fallback
     #  --fallback 1
     #  --command  "www.google.com/search?q=%1"
     #  --action browse
-
-    # The "directory" handler is the equivalent of the former
-    # DIRHANDLER setting. The "google-fallback" handler, if present,
-    # is equivalent to using GOOGLE_FALLBACK=yes in previous versions.
 }
 
 +configure-bookmarks () {
@@ -337,10 +291,10 @@
 
 +configure-actions () {
 
-    # You can define and use your own actions here, as well as
-    # redefine the properties and/or behavior of the buitin default
-    # actions. For details on how to write custom actions or change
-    # default actions, see bashrun2(1).
+    # You can define your own actions here, as well as redefine the
+    # properties and/or behavior of the buitin default actions. For
+    # details on how to write custom actions or change default
+    # actions, see bashrun2(1).
     #
     # Some examples:
       
@@ -447,6 +401,8 @@
 
 +configure-vi-mode () { 
 
+    # Bind actions to key sequences for readline's vi-mode:
+
     ########################################
     +keymap vi-command 
 
@@ -516,5 +472,9 @@
     +bind resize-left  '\e[1;5D' 'C-left'
     +bind resize-right '\e[1;5C' 'C-right'
 }
+
+# Load additional plugins. The "terminal" plugin is provided with
+# bashrun and adds a mode to run bashrun session in a regular
+# terminal. To use this mode, run "bashrun2 --mode terminal"
 
 +plugins terminal

@@ -59,5 +59,4 @@ $ ./configure \
   --with-terminal='urxvt' \
   --with-exec-terminal='urxvt'
 
-Supported bashrun terminals are xterm, urxvt, mrxvt, mlterm and aterm.
-
+Supported terminals are xterm, urxvt, mrxvt, mlterm and aterm.

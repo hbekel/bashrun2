@@ -60,7 +60,7 @@
     # terminal command line templates
 
     # xterm needs metaSendsEscape for Alt-x bindings
-    local xterm_fixes='-xrm XTerm**metaSendsEscape:True'
+    local xterm_fixes='-xrm XTerm**metaSendsEscape:True -xrm XTerm**allowWindowOps:True'
 
     # mlterm needs these for Alt-x bindings
     local mlterm_fixes='-k esc -K alt'

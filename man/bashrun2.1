@@ -1,4 +1,4 @@
-.TH BASHRUN2 1 "2010-10-14" "Linux" "User manuals"
+.TH BASHRUN2 1 "2010-11-12" "Linux" "User manuals"
 .SH NAME
 \fBbashrun2\fP \- launch applications from interactive bash sessions
 
@@ -20,12 +20,12 @@ adds bashrun's application launching capabilities, allowing the user
 to seamlessly launch graphical and terminal applications from the
 command line.
 
-An existing bashrun session can also be used remotely from any
+An existing bashrun session may also be used remotely from any
 interactive bash session by sourcing a lightweight remote interface.
 
 .SH GETTING STARTED
 .SS Using bashrun as a run dialog
-Start bashrun from the command line or with a keybinding in your
+Start \fIbashrun2\fP from the command line or with a keybinding in your
 window manager or desktop environment. Bashrun will start in its
 default mode \fIrun-dialog\fP. It will create an interactive bash
 session in a small one-line \fB__TERMINAL_NAME__\fP(1) terminal and
@@ -33,14 +33,15 @@ initialize the bashrun engine.
 
 Type a command to launch a graphical application and press
 Enter. Bashrun will launch the application and then hide the terminal
-window. Now run bashrun again. The terminal window will be shown again
-and you can enter another command. This time, type the name of a
-console application. To launch it in a terminal, press Alt-Enter.
+window. Now run \fIbashrun2\fP again. The terminal window will be
+shown again and you can enter another command. This time, type the
+name of a console application. To launch it in a terminal, press
+Alt-Enter.
 
 Bring up bashrun again and press F1 to view a complete list of
 keybindings and available actions.
 .SS Using bashrun in a managed terminal
-Start bashrun with \fIbashrun --mode terminal\fP. It will launch a
+Start bashrun with \fIbashrun2 --mode terminal\fP. It will launch a
 bashrun session in \fIterminal\fP mode, creating a standard sized
 terminal window. 
 
@@ -51,9 +52,9 @@ Alt-t. All other keybindings remain the same as in \fIrun-dialog\fP
 mode.
 
 Bind a key in your window manager or desktop environment to run
-\fIbashrun --mode terminal\fP and use it to bring the window up front
+\fIbashrun2 --mode terminal\fP and use it to bring the window up front
 at any time, regardless of whether it is behind other windows or on
-another desktop. Run \fIbashrun --help\fP or see \fBCOMMAND LINE
+another desktop. Run \fIbashrun2 --help\fP or see \fBCOMMAND LINE
 INTERFACE\fP for a list of available options and commands.
 
 Use \fIterminal\fP mode if you want to use a dedicated, bashrun
@@ -83,8 +84,9 @@ To configure bashrun, either edit the the system wide configuration
 \fI~/.config/bashrun2/\fP and copy the configuration file into this
 directory. The default configuration file contains extensivly
 commented examples that should help to get you started. After editing
-the configuration file, either restart bashrun or press Alt-r to make
-changes take effect. See \fBCONFIGURATION\fP for further details.
+the configuration file, either restart bashrun or bring it up and
+press Alt-r to make changes take effect. See \fBCONFIGURATION\fP for
+further details.
 .SH COMMAND LINE INTERFACE
 The \fBbashrun2\fP executable provides a command line interface to
 bashrun sessions and can be used to create, select and control bashrun
@@ -124,8 +126,8 @@ default command if no command has been specified.
 .IP \fBhide\fP
 Unmap the terminal window.
 .IP \fBtoggle\fP
-If the terminal window is not mapped, \fBshow\fP it. If the terminal window
-is mapped, \fBhide\fP it.
+If the terminal window is not mapped, \fBshow\fP it. If the terminal
+window is mapped, \fBhide\fP it.
 .IP \fBsmart\fP
 If the terminal window is not mapped, not on the current desktop,
 obscured by other windows or not focused, then \fBshow\fP it. If none
@@ -137,8 +139,8 @@ Remotely invoke \fIaction\fP with
 the terminal window is shown before invoking the action to allow
 the user to enter a password.
 .IP \fBsu\fP\ \fIshell-command\fP
-Remotely invoke the \fIsu-run\fP action with \fIshell-command\fP. This is
-the equivalent to \fBdo\fP \fIsu-run\fP \fIshell-command\fP.
+Remotely invoke the \fIsu-run\fP action with \fIshell-command\fP. This
+is the equivalent to \fBdo\fP \fIsu-run\fP \fIshell-command\fP.
 .IP \fBwid\fP
 Report the window id of the terminal window.
 .IP \fBpid\fP
@@ -189,9 +191,9 @@ For example, \fBmode\fP objects are configured by a function named
 .RE
 .PP
 An \fBobject definition\fP consists of an \fBobject initializer\fP,
-optionally followed by one or more object \fBproperty definitions\fP on the
-same line, followed by one ore more single object \fBproperty definitions\fP
-on subsequent lines:
+optionally followed by one or more object \fBproperty definitions\fP
+on the same line, followed by one ore more single object \fBproperty
+definitions\fP on subsequent lines:
 .PP
 .RS
 \fB+\fP<\fItype\fP> \fB'\fP<\fIname\fP>\fB'\fP [\fB--\fP<\fIproperty-name\fP> \fB'\fP<\fIargs\fP>\fB'\fP...]
@@ -211,19 +213,20 @@ and \fBgeometry\fP properties:
 .RS
 .nf
 +terminal 'small' 
-  --command 'urxvt -g %g -e bash -c %@'
+  --command 'urxvt'
   --geometry '40x12'
 .fi
 .RE
 .PP
-Note that if an \fBobject initializer\fP refers to a previously defined
-object of the same type using the same \fBname\fP, then subsequent
-\fBproperty definitions\fP will apply to the existing objects instead of
-creating a new object, i.e. the above example could also be written as
+Note that if an \fBobject initializer\fP refers to a previously
+defined object of the same type using the same \fBname\fP, then
+subsequent \fBproperty definitions\fP will apply to the existing
+objects instead of creating a new object, i.e. the above example could
+also be written as
 .PP
 .RS
 .nf
-+terminal 'small' --command 'urxvt -g %g -e bash -c %@'
++terminal 'small' --command 'urxvt'
 +terminal 'small' --geometry '40x12'
 .fi
 .RE
@@ -295,8 +298,8 @@ that control different aspects of application launching and terminal
 window management:
 
 \fBModes\fP control the appearance and behavior of the terminal
-hosting the bashrun session, such as the default modes \fIrun-dialog\fP
-and \fIterminal\fP mentioned above.
+hosting the bashrun session, such as the default modes
+\fIrun-dialog\fP and \fIterminal\fP mentioned above.
 
 \fBActions\fP can be bound to key sequences and handle user input in
 different ways, such as launching a command in a terminal or looking
@@ -308,7 +311,7 @@ associated with specific commands or command lines.
 
 \fBRules\fP associate \fBactions\fP with specific commands or command
 lines, e.g. to automatically launch certain commands with root
-priviledges. Regular expressions allow fine grained control over
+privileges. Regular expressions allow fine grained control over
 command matching.
 
 \fPHandlers\fP provide a flexible mechanism for rewriting
@@ -482,7 +485,13 @@ was not explicitly requested by the current \fPaction\fP.
 .SS BOOKMARKS
 For each \fBbookmark\fP object, a stub function by the same name is
 defined that runs the \fIbrowse\fP action for the \fBbookmark\fP
-name. Bookmarks can thus be completed like regular commands.
+name. Bookmarks can thus be completed like regular commands. Example:
+.PP
+.RS
+.nf
++bookmark 'www.google.com'
+.fi
+.RE
 .SS RULES
 Rule objects associate \fBactions\fP with specific commands or command
 lines. The \fBrule\fP name must correspond to the name of an existing
@@ -788,21 +797,21 @@ Generic support for terminals can be added by supplying a template
 string of the required terminal command line to the \fB+mode --terminal\fP
 or \fP+terminal --command\fP properties.
 
-Template strings may contain the following format specifiers:
+Template strings may contain the following format specifiers which
+will be replaced by their corresponding values:
 .RS
 .IP \fI%*\fP 
-The command to be run by the terminal. It should appear as the value
-for the execute option of your terminal of choice, e.g use \fI-e %*\fP
-at the end of the string for most terminals.
+The command to be run by the terminal, unquoted.
 .IP \fI%@\fP 
 The command to be run by the terminal, quoted to appear as a single
 argument. Consequtive \fI@\fP's add another level of quoting,
 e.g. \fI%@@\fP quotes two times, \fI%@@@\fP quotes three times, and so
 on.
 .IP \fI%n\fP
-The string \fIbashrun2-\fP<\fImode-name\fP>. Must be set as the window
-class name of your terminal, e.g. use \fI-name %n\fP for urxvt or
-xterm.
+For +mode objects, this is replaced with the string
+\fIbashrun2-\fP<\fImode-name\fP>, and needs to be set as the name
+portion of the terminals WM_CLASS property. For terminal objects, the
+value of the \fB--classname\fP property is used.
 .IP \fI%g\fP
 The value of the \fB--geometry\fP property.
 .IP \fI%f\fP 
@@ -817,14 +826,49 @@ The value of the \fB--background\fP property.
 The value of the \fB--options\fP property plus any additional terminal
 options given on the command line after \fI--\fP.
 .IP \fI%%\fP
-is replaced by a literal percent sign (\fI%\fP) 
+is replaced by a literal percent sign (\fI%\fP)
 .RE
+.PP
+Examples:
+.PP
+.nf
++mode 
+  --terminal 'urxvt -n %n -g %g -fn %f -fb %b -fg %F -bg %B %o -e %*'
 
-.SH ENVIRONMENT
++terminal 
+  --command 'urxvt -n %n -g %g -fn %f -fb %b -fg %F -bg %B %o -e bash -c %@'
+.ni
+.SH KNOWN\ ISSUES
+Xterm has occasionally been found to freeze during resizing, requiring
+at least a SIGTERM to close it.
+.PP
+For XTerm, the \fBallowWindowOps\fP resource needs to be set to
+\fBTrue\fP to allow window resizing. This is enabled by default. Note
+that setting \fBallowSendEvents\fP to \fBTrue\fP will forcefully
+disable \fBallowWindowOps\fP in XTerm.
+.PP
+In order for meta keybindings (prefixed with \fB\\e\fP or \fB\\M-\fP)
+to work with the Alt or Meta key, the terminal needs to be configured
+to translate your meta key to an escape. For XTerm, this can be
+enabled by setting the \fBmetaSendsEscape\fP resource to
+\fBTrue\fP. This is enabled in the default configuration for
+xterm. For URxvt, the \fBmeta8\fP resource needs to be set to
+\fBFalse\fP (which is the default setting for URxvt).
+.SH FILES
+.IP \fI/etc/xdg/bashrun2/bashrun2.rc\fP
+System-wide configuration file
+.IP \fI/etc/xdg/bashrun2/plugins/\fP
+System-wide plugin directory
+.IP \fI$HOME/.config/bashrun2/bashrun2.rc\fP
+User configuration file
+.IP \fI$HOME/.config/bashrun2/plugins/\fP
+User plugin directory
+.IP \fI/usr/bin/brwctl\fP
+Small utilty program for window management
 .SH BUGS AND FEEDBACK
-Please file bugs on the sourceforge bug tracker:
+Please file bugs and feature requests on the googlecode issue tracker:
 
-http://sourceforge.net/tracker/?atid=1116177&group_id=241477
+http://code.google.com/p/bashrun2/issues
 
 Also feel free to mail me directly using the email adress
 below. Questions, comments, suggestions, feedback of any kind is

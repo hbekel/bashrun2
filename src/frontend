@@ -256,7 +256,7 @@ function usage {
 
   Press F1 in bashrun to list the current keybindings.
 
-  For more information, see bashrun2(1) or visit http://bashrun.sourceforge.net
+  For more information, see bashrun2(1) or visit http://bashrun2.googlecode.com
 "
 
 }
