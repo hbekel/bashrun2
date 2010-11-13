@@ -1,5 +1,10 @@
 2010-11-13  Henning Bekel <h.bekel@googlemail.com>
 
+	* Released bashrun2 version 0.1.1
+	* Minor bugfixes
+
+2010-11-13  Henning Bekel <h.bekel@googlemail.com>
+
 	* Released bashrun2 version 0.1.0
 	* Fixed messed up return values in brwctl
 	* Added builtin support for common terminals
