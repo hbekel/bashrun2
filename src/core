@@ -72,6 +72,7 @@
     +template xterm --bashrun_options "+sb $xterm_fixes"
     +template urxvt --bashrun_options "+sb $urxvt_fixes"
     +template urxvtc --bashrun_options "+sb $urxvt_fixes"
+    +template urxvtcd --bashrun_options "+sb $urxvt_fixes"
     +template mrxvt --bashrun_options "+sb -ht +showmenu"
     +template aterm
 
