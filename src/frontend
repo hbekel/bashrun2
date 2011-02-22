@@ -65,7 +65,7 @@ function source_window {
 
 function launch {
     
-    for file in utils terminals; do
+    for file in utils templates terminals; do
 	source "$bashrun_site/$file" &>/dev/null
     done
 

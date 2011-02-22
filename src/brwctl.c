@@ -310,8 +310,12 @@ static int search_window (char *classname, Window w) {
       return 0;
     }
     else {
-      XGetClassHint(dpy, current, class);
+      XGetClassHint(dpy, current, class);      
       if (class->res_name != NULL) {
+
+	// FIXME: check if WM_STATE is defined to determine whether it's a toplevel window !
+	// printf("0x%x = %s, %s\n", (unsigned int)current, class->res_name, class->res_class);
+
 	if (strcmp(classname, class->res_name) == 0) {
 	  win = current;
 	  XFree(children);
