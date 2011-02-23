@@ -1,14 +1,18 @@
 # -*- shell-script -*-
 
-function create_modeinfo {
+function init_objects {
 
-    # initialize object system
     source "$bashrun_site/objects"
     §objects.site "$bashrun_site"
     §objects.cache_home "$bashrun_cache_home"
     §objects.data_home "$bashrun_cache_home"
     §objects.namespace "bashrun"
-    
+}
+
+function create_modeinfo {
+
+    init_objects
+
     for file in utils readline message config plugin registry \
 	progress templates terminals window modes core; do
 	source "$bashrun_site/$file"
@@ -65,12 +69,14 @@ function source_window {
 
 function launch {
     
+    init_objects
+
     for file in utils templates terminals; do
-	source "$bashrun_site/$file" &>/dev/null
+	source "$bashrun_site/$file"
     done
 
     # cleanup possibly stale cache files
-    for suffix in wid pid ready do; do
+    for suffix in wid pid ready abort; do
 	[[ -f "$mode-$suffix" ]] && rm "$mode-$suffix"
     done
 	
