@@ -100,7 +100,7 @@ function §objects.select { # key value [which=0]-> "id1 id2..."
 	    ids="$ids ${_objects[$i]}"
 	    [[ which -eq 0 ]] && break
 	    
-	elif [[ "$wanted" =~ ^/.+?/$ ]]; then
+	elif [[ "$wanted" =~ ^/.+/$ ]]; then
 	    # regexp given
 	    regexp=${wanted:1:${#wanted}-2}
 	    

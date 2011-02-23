@@ -32,7 +32,7 @@ function §command.get_line {
     local histtimeformat=$HISTTIMEFORMAT
     unset HISTTIMEFORMAT
 
-    [[ $(history 1) =~ \ +[0-9]+?\ +(.+?) ]]
+    [[ $(history 1) =~ \ +[0-9]+\ +(.+) ]]
     bashrun_command_line=${BASH_REMATCH[1]}
     
     if [[ -n "$histtimeformat" ]]; then
@@ -149,6 +149,12 @@ function §command.add_su {
 
 	    stty "$stty"
 	done
+    else
+	if §cygwin?; then
+	    if [[ "$user" == "root" ]]; then
+		user="$(§mode.get_superuser)"
+	    fi
+	fi
     fi
 
     # run the command itself in the background
@@ -205,7 +211,7 @@ function §command.add_terminal {
 			   "->" -c "$(§terminal.get_name)"
 		    break;
 
-		elif [[ "$spec" =~ ^/.+?/ ]]; then # regexp given
+		elif [[ "$spec" =~ ^/.+/ ]]; then # regexp given
 		    spec=${spec:1:${#spec}-2}
 
 		    if [[ "$command" =~ $spec ]]; then # regex match
@@ -241,7 +247,7 @@ function §command.add_hold {
 
     bashrun_original_command="$bashrun_command"
 
-    if [[ "$bashrun_command" =~ ^\(.+?\)$ ]]; then
+    if [[ "$bashrun_command" =~ ^\(.+\)$ ]]; then
 	bashrun_command=${BASH_REMATCH[1]}
     fi
     

@@ -63,7 +63,7 @@ function §rules.apply {
 		fi
 		return 0
 	    else
-		if [[ "$spec" =~ /.+?/ ]]; then
+		if [[ "$spec" =~ /.+/ ]]; then
 		    # regexp given
 		    regexp=${spec:1:${#spec}-2}
 

@@ -12,6 +12,40 @@ function §set? {
     (set -o | grep "$1" | grep on) &>/dev/null
 }
 
+function §check_deps {
+
+    local deps="sed grep tput stty kill sleep ldd uname"
+    local missing dep
+
+    for dep in $deps; do
+	if ! type -t "$dep" &> /dev/null; then
+	    [[ "$missing" =~ $dep ]] || missing+="$dep "        
+	fi
+    done
+
+    if [[ -n "$missing" ]]; then
+	source "$bashrun_site/message"
+	§message "Error" \
+	    "External dependencies not met:
+
+             $missing
+
+             Please install these programs and/or put them on your PATH."
+	exit 1
+    fi
+}
+
+function §cygwin? {
+    [[ "$(uname)" =~ CYGWIN ]]
+}
+
+function §winch {
+    if [[ "$(stty -a)" =~ rows\ ([0-9]+)\;\ columns\ ([0-9]+) ]]; then
+	LINES="${BASH_REMATCH[1]}"
+	COLUMNS="${BASH_REMATCH[2]}"
+    fi
+}
+
 function §function.defined? {
     [[ "$(type -t $1 2> /dev/null)" == "function" ]]
 }

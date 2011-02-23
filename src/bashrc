@@ -32,6 +32,12 @@ source $bashrun_site/bootstrap
 # frontend... (needs to happen early on)
 (( bashrun_frontend )) && §registry.add
 
+# install cygwin workarounds
+if §cygwin?; then
+    §winch
+    trap §winch WINCH
+fi
+    
 # setup progress bar
 source $bashrun_site/progress
 §progress.new "Loading... [objects]"

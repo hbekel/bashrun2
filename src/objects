@@ -141,7 +141,7 @@ function §class {
 
     # get property names, default values and types from property specs
     for property in "${properties[@]}"; do
-	if [[ "$property" =~ ([^:=]+?)(:([^=]+?))?(=(.+?))? ]]; then
+	if [[ "$property" =~ ([^:=]+)(:([^=]+))?(=(.+))? ]]; then
 	    property="${BASH_REMATCH[1]}"
 	    types[${#types[@]}]="${BASH_REMATCH[3]}"
 	    defaults[${#defaults[@]}]="${BASH_REMATCH[5]}"
@@ -195,7 +195,7 @@ function §class {
     local access='rw'
 
     for property in "${properties[@]}"; do
-	if [[ "$property" =~ ([^:=]+?)(:([^=]+?))?(=(.+?))? ]]; then
+	if [[ "$property" =~ ([^:=]+)(:([^=]+))?(=(.+))? ]]; then
 	    property="${BASH_REMATCH[1]}"
 	    access="${BASH_REMATCH[3]}"
 	    [[ "$access" == "b" ]] && access="rwb"

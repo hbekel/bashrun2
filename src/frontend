@@ -216,7 +216,7 @@ EOF
 function version {
     . "$bashrun_site/globals" 2> /dev/null
     printf '%s\n' \
-	"bashrun2 $bashrun_version Copyright (C) 2010 Henning Bekel <h.bekel@googlemail.com>
+	"bashrun2 $bashrun_version Copyright (C) 2010, 2011 Henning Bekel <h.bekel@googlemail.com>
 License GPLv2: GNU GPL version 2 <http://gnu.org/licenses/gpl.html>
 
 This is free software; you are free to change and redistribute it.

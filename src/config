@@ -208,7 +208,7 @@ function §configs.collect_user_configs {
 	# parse the function name to determine the identifier, the
 	# name and the type
 	
-	[[ "$function" =~ ^(\+configure-([^-]+?)?-?($types)) ]] || continue
+	[[ "$function" =~ ^(\+configure-([^-]+)?-?($types)) ]] || continue
 
 	function="${BASH_REMATCH[1]}"
 	type="${BASH_REMATCH[3]}"
