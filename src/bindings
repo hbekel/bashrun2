@@ -177,7 +177,7 @@ function §bindings.print {
 		[[ " $covered " =~ " $keyname " ]] && continue
 			
 		printf '%b' "\t$b$keyname$n\t"
-		printf '%b' "$(§interpolate "$(§action.get_description)")"
+		printf '%b' "$(§interpolate "$(§action.get_description)" check)"
 		if [[ -n "$(§action.get_depends)" ]]; then
     		    printf '%b' " ($(§action.print_depends))"
 		fi

@@ -103,11 +103,28 @@ function §interpolate {
     local str="$1"
     local var=""
     local val=""
+    local word=""
+    local col=""
+
+    local r="\033[0;31m" # red
+    local g="\033[0;32m" # green 
+    local n="\033[0m"    # none
 
     while [[ "$str" =~ \$([A-Za-z0-9_]+) ]]; do
 	var="${BASH_REMATCH[1]}"
 	val="${!var}"
 	val="${val//\$/__DoLlArSiGn__}"
+
+	if (( $# > 1 )); then
+	    for word in $val; do break; done
+	    if type "$word" &>/dev/null; then
+		col="$g"
+	    else
+		col="$r"
+	    fi
+	    val="$col$val$n"
+	fi
+
 	str="${str/\$$var/$val}"
     done
     str="${str//__DoLlArSiGn__/\$}"
