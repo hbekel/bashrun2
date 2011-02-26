@@ -12,6 +12,7 @@ bashrun_logfile="${bashrun_logfile:-/dev/null}"
 bashrun_cmd_not_found_handle=0
 bashrun_action_return_value=-1
 bashrun_status="Loading..."
+bashrun_lock=0
 
 ################################################################################
 
