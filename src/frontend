@@ -184,6 +184,7 @@ function remote {
 
     local remote="$bashrun_data_home/$mode-remote"
     local ready="$bashrun_cache_home/${mode}-ready"
+    local pid=0
 
     # wait until the remote instance is ready
     if wait_until "[[ -f '$ready' ]]"; then
@@ -192,13 +193,17 @@ function remote {
 	    printf "$PWD\n$1\n${@:2}\n" > "$remote"
 
             # send SIGUSR1 to bashrun to pick it up (see §remote)
-	    kill -USR1 "$(<$bashrun_cache_home/${mode}-pid)"
+	    pid="$(<$bashrun_cache_home/${mode}-pid)"
+	    if ! kill -USR1 "$pid"; then
+		printf '%s\n' "bashrun2: error: Unable to send SIGUSR1 to bashrun2 process $pid"
+		exit 1
+	    fi
 
 	    # wait until the remote session has removed the file
 	    wait_until "[[ ! -e '$remote' ]]"
     else
-	printf '%s\n' "bashrun: error: bashrun2-$mode not ready"
-	return 1
+	printf '%s\n' "bashrun2: error: bashrun2-$mode not ready"
+	exit 1
     fi
     return 0
 }

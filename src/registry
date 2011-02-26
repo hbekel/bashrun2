@@ -9,25 +9,13 @@ function §registry.add {
     local pidfile="$bashrun_cache_home/${mode}-pid"
     
     # remove stale wid and pid files
-    if [[ -f "$widfile" ]]; then	
-	if [[ ! "$(brwctl "$(<$widfile)" class? 2>/dev/null)" =~ bashrun2-$mode ]];
-	then
-	    rm "$widfile"
-	    rm "$pidfile"
-	else
-	    return 1
-	fi
-    fi 
+    [[ -f "$widfile" ]] && rm "$widfile" 
+    [[ -f "$pidfile" ]] && rm "$pidfile"
     
-    if [[ ! -f "$pidfile" ]]; then	
-	printf '%s' "$$" > "$pidfile"
-    fi
-
-    if [[ ! -f "$widfile" ]]; then	
-	printf '%s' "$WINDOWID" > "$widfile"
-	return 0
-    fi
-    return 1
+    # write new wid and pidfile
+    printf '%s' "$$" > "$pidfile"
+    printf '%s' "$WINDOWID" > "$widfile"
+    return 0
 }
 
 function §registry.remove {
