@@ -72,28 +72,18 @@ function §window.size {
 	if [[ "$1" =~ ([0-9]+)x([0-9]+) ]]; then
 	    local w=${BASH_REMATCH[1]}
 	    local h=${BASH_REMATCH[2]}
-	    if [[ "$TERM" =~ rxvt|xterm ]]; then
-		printf "\e[8;${h};${w}t"; 
-	    else
-		brwctl $bashrun_window_id $hint $w $h
-	    fi
+	    brwctl $bashrun_window_id $hint $w $h
 	    bashrun_window_width=$w
 	    bashrun_window_height=$h
 	fi
     fi
 
     if (( $# == 2 )); then
-	if [[ "$TERM" =~ rxvt|xterm ]]; then
-	    printf "\e[8;${2};${1}t"; 
-	else
-	    brwctl $bashrun_window_id $hint $1 $2
-	fi
+	brwctl $bashrun_window_id $hint $1 $2
 	bashrun_window_width=$1
 	bashrun_window_height=$2
     fi 
-        
-    # §window.terminal? && kill -WINCH $$
-
+    
     # apply completion threshold if necessary
     §window.terminal? && §completion.set $(§mode.get_completion)
     return 0

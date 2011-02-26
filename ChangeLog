@@ -1,3 +1,13 @@
+2010-??-??  Henning Bekel <h.bekel@googlemail.com>
+
+	* Released bashrun2 version 0.2.0
+	* Added experimental support for cygwin/cygwin-x
+	* Added mode option --superuser for use with cygwin
+	* Added built-in support for using (debians) urxvtcd script
+	        (suggested by lighter.84)
+	* Fixed failure to color all deps in keybinding display
+	* Fixed failures to launch/remote after unclean shutdown
+
 2010-11-13  Henning Bekel <h.bekel@googlemail.com>
 
 	* Released bashrun2 version 0.1.1

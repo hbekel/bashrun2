@@ -482,29 +482,23 @@
     --core 1
     
     function +action-cycle-size {
-	if [[ $bashrun_lock == 0 ]]; then
-	    bashrun_lock=1
-	    if ! (( bashrun_debug )); then
-		if [[ -n "$(§mode.get_geometry 1)" ]]; then
-
-		    local current="$(§mode.get_current)"
-		    ((current+=1))
-
-		    local next="$(§mode.get_geometry $current)"
-		    if [[ -z "$next" ]]; then
-			current=0
-		    fi
-		    next="$(§mode.get_geometry $current)"
-
-		    §window.size --hint "$next"
-		    §mode.set_current $current	
+	if ! (( bashrun_debug )); then
+	    if [[ -n "$(§mode.get_geometry 1)" ]]; then
+		
+		local current="$(§mode.get_current)"
+		((current+=1))
+		
+		local next="$(§mode.get_geometry $current)"
+		if [[ -z "$next" ]]; then
+		    current=0
 		fi
+		next="$(§mode.get_geometry $current)"
+		
+		§window.size --hint "$next"
+		§mode.set_current $current	
 	    fi
-	    tput clear
-	    bashrun_lock=0
-	else
-	    echo "blocked"
 	fi
+	tput clear
 	return 2
     }
 
