@@ -1,12 +1,14 @@
-2010-??-??  Henning Bekel <h.bekel@googlemail.com>
+2010-27-02  Henning Bekel <h.bekel@googlemail.com>
 
 	* Released bashrun2 version 0.2.0
-	* Added experimental support for cygwin/cygwin-x
-	* Added mode option --superuser for use with cygwin
+	* Added Runtime checks for required external programs
+	* Added mode option --netwmstate to set window properties
 	* Added built-in support for using (debians) urxvtcd script
 	        (suggested by lighter.84)
-	* Fixed failure to color all deps in keybinding display
-	* Fixed failures to launch/remote after unclean shutdown
+	* Added experimental support for cygwin/cygwin-x
+	* Added mode option --superuser for use with cygwin
+	* Fixed problems with launch/remote after unclean shutdown
+	* Fixed colored dependencies in keybinding display
 
 2010-11-13  Henning Bekel <h.bekel@googlemail.com>
 

@@ -397,10 +397,26 @@ A command to be run after the terminal window has been mapped.
 
 A command to be run after the terminal window has been unmapped.
 
+.IP \fB\-\-netwmstate\fP\ <\fIstring\fP>\ (default:\ \fIempty\fP)
+
+A space separated list of NetWM state properties to apply to the
+window when it is shown. Possible values are \fImodal\fP,
+\fIsticky\fP, \fImaximized_vert\fP, \fImaximized_horz\fP,
+\fIshaded\fP, \fIskip_taskbar\fP, \fIskip_pager\fP, \fIhidden\fP,
+\fIfullscreen\fP, \fIabove\fP and \fIbelow\fP. Note that your wm needs
+to properly support these properties in order for them to have any
+effect. It is usually better to use your wm's native facilities to set
+such properties.
+
 .IP \fB\-\-feedback\fP\ <\fIboolean\fP>\ (default:\ \fItrue\fP)
 
 Show feedback in the form of a progress bar when creating/restoring
 the configuration.
+
+.IP \fB\-\-superuser\fP\ <\fIstring\fP>\ (default:\ \fIAdministrator\fP)
+
+Set the name of the superuser to use for \fBsu-*\fP actions when
+running under cygwin.
 
 .IP \fB\-\-logfile\fP\ <\fIfilename\fP>\ (default:\ \fI/dev/null\fP)
 
@@ -840,8 +856,9 @@ Examples:
   --command 'urxvt -n %n -g %g -fn %f -fb %b -fg %F -bg %B %o -e bash -c %@'
 .ni
 .SH KNOWN\ ISSUES
-Xterm has occasionally been found to freeze during resizing, requiring
-at least a SIGTERM to close it.
+Bash may freeze when resizing the terminal window and will need to be
+forcefully terminated in this case. This issue is currently being
+investigated.
 .PP
 For XTerm, the \fBallowWindowOps\fP resource needs to be set to
 \fBTrue\fP to allow window resizing. This is enabled by default. Note
@@ -852,9 +869,9 @@ In order for meta keybindings (prefixed with \fB\\e\fP or \fB\\M-\fP)
 to work with the Alt or Meta key, the terminal needs to be configured
 to translate your meta key to an escape. For XTerm, this can be
 enabled by setting the \fBmetaSendsEscape\fP resource to
-\fBTrue\fP. This is enabled in the default configuration for
-xterm. For URxvt, the \fBmeta8\fP resource needs to be set to
-\fBFalse\fP (which is the default setting for URxvt).
+\fBTrue\fP. When using XTerm, bashrun will set this resource to
+\fBTrue\fP by default. For URxvt, the \fBmeta8\fP resource needs to be
+set to \fBFalse\fP (which is already the default setting in URxvt).
 .SH FILES
 .IP \fI/etc/xdg/bashrun2/bashrun2.rc\fP
 System-wide configuration file
