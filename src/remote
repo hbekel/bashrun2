@@ -29,7 +29,10 @@ function §remote.run {
 
 	# we need to force a redisplay of the prompt
         # since readline didn't get an accept-line:
-	kill -WINCH $$
+	if ! §cygwin?; then
+	    # cygwin will interpret WINCH as USR1 (?)
+	    kill -WINCH $$
+	fi
 
 	# remove command file
 	rm "$bashrun_remote"
