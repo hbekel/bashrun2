@@ -63,6 +63,7 @@ function source_window {
     function §mode.get_geometry { printf '%s' "$geometry"; }    
     function §mode.get_onmap { printf '%s' "$onmap"; }    
     function §mode.get_onunmap { printf '%s' "$onunmap"; }    
+    function §mode.get_netwmstate { printf '%s' "$netwmstate"; }    
 
     §window.id "$wid"
 }

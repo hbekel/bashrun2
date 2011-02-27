@@ -125,6 +125,14 @@ int main(int argc, char **argv)
       height = (int)strtol(argv[++i], NULL, 0);
       size(width, height, 1);
     }
+    
+    if (strcmp(cmd, "state") == 0) {
+      if (i+2 > argc-1) {
+	fprintf(stderr, "Usage: state <add|remove|toggle> <property>\n");
+	exit(1);
+      }
+      state(argv[i+1], argv[i+2]);
+    }
   }
   exit(ret);
 }
@@ -172,7 +180,7 @@ static int has_focus() {
 
 static int activate() {
   int r;
-  r = message("_NET_ACTIVE_WINDOW", 2L, 0, 0, 0, 0);
+  r = message(win, "_NET_ACTIVE_WINDOW", 2L, 0, 0, 0, 0);
   return r;
 }
 
@@ -193,7 +201,7 @@ static int current() {
   }
   free(data);
 
-  return message("_NET_WM_DESKTOP", desktop, 2L, 0, 0, 0);
+  return message(win, "_NET_WM_DESKTOP", desktop, 2L, 0, 0, 0);
 }
 
 static int show() {
@@ -255,7 +263,43 @@ static int size(int width, int height, int hint) {
   return r;
 }
 
-static int message(char *msg, 
+static int state(char *action_str, char *prop_str) {
+  int r = 0;
+  int i;
+  unsigned long action;
+  Atom prop_atom;
+  char prop_name[512];
+
+  for(i=0; i<strlen(prop_str); i++) {
+    prop_str[i] = toupper(prop_str[i]);
+  }
+  
+  if (strcmp(action_str, "add") == 0) {
+    action = _NET_WM_STATE_ADD;
+  }
+  else if (strcmp(action_str, "remove") == 0) {
+    action = _NET_WM_STATE_REMOVE;
+  }
+  else if (strcmp(action_str, "toggle") == 0) {
+    action = _NET_WM_STATE_TOGGLE;
+  }
+  else {
+    exit(1);
+  }
+  
+  if(strcmp(prop_str, "modal") == 0)
+    XSetTransientForHint(dpy, win, root);
+
+  snprintf(prop_name, 15+strlen(prop_str), "_NET_WM_STATE_%s", prop_str);
+
+  prop_atom = XInternAtom(dpy, prop_name, False);
+
+  r = message(win, "_NET_WM_STATE", action, (unsigned long)prop_atom, 0, 0, 0);
+
+  return r;
+}
+
+static int message(Window w, char *msg,
 	    unsigned long data0, 
 	    unsigned long data1, 
 	    unsigned long data2, 
@@ -270,7 +314,7 @@ static int message(char *msg,
     event.xclient.serial = 0;
     event.xclient.send_event = True;
     event.xclient.message_type = XInternAtom(dpy, msg, False);
-    event.xclient.window = win;
+    event.xclient.window = w;
     event.xclient.format = 32;
     event.xclient.data.l[0] = data0;
     event.xclient.data.l[1] = data1;
@@ -279,6 +323,7 @@ static int message(char *msg,
     event.xclient.data.l[4] = data4;
     
     r = XSendEvent(dpy, root, False, mask, &event);
+    XSync(dpy, False);
     return r;
 }
 

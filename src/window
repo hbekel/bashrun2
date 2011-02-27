@@ -91,14 +91,24 @@ function §window.size {
  
 function §window.map {
 
+    local states="$(§mode.get_netwmstate)"
+    local state=""
+
     # apply default size if debugging
     if (( bashrun_debug )); then	 
 	§window.size --hint "80x24"
     fi
 
     # map the window
-    brwctl $bashrun_window_id show    
+    brwctl $bashrun_window_id show
 
+    # apply +mode --netwm-state
+    if [[ -n "$states" ]]; then
+	for state in $states; do
+	    brwctl $bashrun_window_id state add "$state"
+	done
+    fi
+    
     # call user supplied onmap handler
     $(§mode.get_onmap)
     

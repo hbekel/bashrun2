@@ -14,6 +14,7 @@
                  "completion=complete" \
                  "unmap:b=0" \
                  "feedback:b=0" \
+                 "netwmstate" \
                  "onmap" \
                  "onunmap" \
                  "cmdnfh:b=0" \
@@ -93,12 +94,14 @@ function §mode.write_info {
     local feedback="$(§mode.get_feedback)"
     local onmap="$(§mode.get_onmap)"
     local onunmap="$(§mode.get_onunmap)"
+    local netwmstate="$(§mode.get_netwmstate)"
 
     if §templates.seek "$terminal"; then
 	terminal="$(§template.create_commandline "bashrun" "bashrun2-$mode" "$geometry" "$font" "$boldfont" "$foreground" "$background" "$options")"
     fi
 
-    §quote terminal font boldfont foreground background options onmap onunmap
+    §quote terminal font boldfont foreground background \
+	options onmap onunmap netwmstate
 
     printf '%s\n' "# mode info
           pid=$$
@@ -112,7 +115,8 @@ function §mode.write_info {
           options=$options
           feedback=$feedback
           onmap=$onmap
-          onunmap=$onunmap" > $file
+          onunmap=$onunmap
+          netwmstate=$netwmstate" > $file
 }
 
 function §mode.reset {

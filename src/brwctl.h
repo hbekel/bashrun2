@@ -13,9 +13,10 @@ static int current();
 static int show();
 static int pos(int, int);
 static int size(int, int, int);
+static int state(char*, char*);
 static int get_class();
 static int search_window(char*, Window);
-static int message(char*, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long);
+static int message(Window, char*, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long);
 static unsigned char *property(Window, Atom, long*, Atom*, int*);
 static int bad_window(Display*, XErrorEvent*);
 
