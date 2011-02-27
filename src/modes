@@ -19,7 +19,7 @@
                  "onunmap" \
                  "cmdnfh:b=0" \
                  "logfile=/dev/null" \
-                 "superuser=root" \
+                 "superuser=Administrator" \
                  "current=0"
 
 §function.clone "§mode.get_geometry" "§mode._get_geometry"
