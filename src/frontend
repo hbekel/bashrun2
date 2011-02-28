@@ -78,7 +78,9 @@ function launch {
 
     # cleanup possibly stale cache files
     for suffix in wid pid ready abort; do
-	[[ -f "$mode-$suffix" ]] && rm "$mode-$suffix"
+	if [[ -f "$bashrun_cache_home/$mode-$suffix" ]]; then
+	    rm "$bashrun_cache_home/$mode-$suffix"
+	fi
     done
 	
     # launch a standard sized terminal in debug mode...
@@ -185,18 +187,17 @@ function remote {
 
     local remote="$bashrun_data_home/$mode-remote"
     local ready="$bashrun_cache_home/${mode}-ready"
-    local pid=0
+    local pidfile="$bashrun_cache_home/${mode}-pid"
 
     # wait until the remote instance is ready
-    if wait_until "[[ -f '$ready' ]]"; then
+    if wait_until "[[ -f $ready && -f $pidfile ]]"; then
 	
             # put "cwd" "<action> <cmd>" in the "remote" file	
 	    printf "$PWD\n$1\n${@:2}\n" > "$remote"
 
             # send SIGUSR1 to bashrun to pick it up (see §remote)
-	    pid="$(<$bashrun_cache_home/${mode}-pid)"
-	    if ! kill -USR1 "$pid"; then
-		printf '%s\n' "bashrun2: error: Unable to send SIGUSR1 to bashrun2 process $pid"
+	    if ! kill -USR1 "$(<$pidfile)"; then
+		printf '%s\n' "bashrun2: error: Unable to send SIGUSR1 to bashrun2 process $(<$pidfile)"
 		exit 1
 	    fi
 

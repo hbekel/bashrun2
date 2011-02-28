@@ -75,10 +75,9 @@ function §engine.init {
     # create the remote interface
     §remote.interface.create
 
-    # set traps: shutdown on EXIT and TERM, remote invocation on USR1
-    trap §engine.shutdown TERM
-    trap §engine.shutdown EXIT
-    trap §remote.run SIGUSR1
+    # set traps
+    trap §engine.shutdown TERM EXIT HUP
+    trap §remote.run USR1
 
     # reset the reload flag
     bashrun_engine_reload=0

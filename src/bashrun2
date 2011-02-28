@@ -94,7 +94,9 @@ done
 
 # get info about the selected mode
 modeinfo="$bashrun_cache_home/${mode}-info"
-[[ ! -f "$modeinfo" ]] && create_modeinfo
+if [[ ! -f "$modeinfo" ]]; then
+    create_modeinfo
+fi
 source "$modeinfo"
 
 # get command argument, if any
