@@ -1,3 +1,10 @@
+2011-03-02  Henning Bekel <h.bekel@googlemail.com>
+
+	* Released bashrun2 version 0.2.1
+	* Fixed failure to properly remove stale cache files after
+	        unclean shutdown (e.g. hard reset or SIGKILL)
+	* Fixed remote commands launched twice under cygwin
+
 2011-27-02  Henning Bekel <h.bekel@googlemail.com>
 
 	* Released bashrun2 version 0.2.0
