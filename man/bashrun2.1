@@ -1,4 +1,4 @@
-.TH BASHRUN2 1 "2010-11-12" "Linux" "User manuals"
+.TH BASHRUN2 1 "2011-03-02" "Linux" "User manuals"
 .SH NAME
 \fBbashrun2\fP \- launch applications from interactive bash sessions
 
@@ -331,9 +331,9 @@ and control general appearance and behavior.
 default:\ \fI__TERMINAL__\fP
 
 The terminal used for bashrun. Supported terminals include
-\fBxterm\fP, \fBurxvt\fP, \fBmrxvt\fP, \fBmlterm\fP and
-\fBaterm\fP. Generic support for other terminals can be added as well,
-see \fBGENERIC TERMINAL SUPPORT\fP below.
+\fBxterm\fP, \fBurxvt\fP, \fBurxvtc\fP, \fBurxvtcd\fP, \fBmrxvt\fP,
+\fBmlterm\fP and \fBaterm\fP. Generic support for other terminals can
+be added as well, see \fBGENERIC TERMINAL SUPPORT\fP below.
 
 .IP \fB\-\-geometry\fP\ <\fIgeometry1\fP\ [\fIgeometry2\fP]...>\ (default:\ \fI40x1\ 40x8\fP)
 
@@ -812,7 +812,7 @@ Increase terminal width by one column.
 .SH GENERIC TERMINAL SUPPORT
 Generic support for terminals can be added by supplying a template
 string of the required terminal command line to the \fB+mode --terminal\fP
-or \fP+terminal --command\fP properties.
+or \fB+terminal --command\fP properties.
 
 Template strings may contain the following format specifiers which
 will be replaced by their corresponding values:
@@ -846,6 +846,13 @@ options given on the command line after \fI--\fP.
 is replaced by a literal percent sign (\fI%\fP)
 .RE
 .PP
+Note that any format specifier that appears in the template string
+will always be replaced with its corresponding value, even if the the
+value is an empty string. So you should make sure that format
+specifiers whose value is derived from an option are not empty
+(e.g. the corresponding option is set) to avoid constructing an
+invalid command line.
+.PP
 Examples:
 .PP
 .nf
@@ -855,6 +862,7 @@ Examples:
 +terminal 
   --command 'urxvt -n %n -g %g -fn %f -fb %b -fg %F -bg %B %o -e bash -c %@'
 .ni
+.PP
 .SH KNOWN\ ISSUES
 Bash may freeze when resizing the terminal window and will need to be
 forcefully terminated in this case. This issue is currently being

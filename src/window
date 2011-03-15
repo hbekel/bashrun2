@@ -82,8 +82,10 @@ function §window.size {
 	brwctl $bashrun_window_id $hint $1 $2
 	bashrun_window_width=$1
 	bashrun_window_height=$2
-    fi 
-    
+    fi
+    COLUMNS=$bashrun_window_width
+    LINES=$bashrun_window_height
+
     # apply completion threshold if necessary
     §window.terminal? && §completion.set $(§mode.get_completion)
     return 0
