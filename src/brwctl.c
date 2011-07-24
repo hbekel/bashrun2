@@ -40,6 +40,10 @@ int main(int argc, char **argv)
       start=2;
     }
     else { // no window found
+      if (strcmp(argv[1], "focused") == 0) {
+	printf("%d\n", (int)get_focused());
+	exit(0);
+      }
       exit(ret);
     }
   }
@@ -86,7 +90,7 @@ int main(int argc, char **argv)
       else
 	exit(1);
     }
-
+    
     if (strcmp(cmd, "activate") == 0)
       activate();
 
@@ -171,11 +175,15 @@ static int focus() {
   return r;
 }
 
-static int has_focus() {
+static Window get_focused() {
   Window focus_return;
   int revert_to_return;
   XGetInputFocus(dpy, &focus_return, &revert_to_return);
-  return (win == (Window)focus_return) ? 1 : 0;
+  return (Window)focus_return;
+}
+
+static int has_focus() {
+  return (win == get_focused()) ? 1 : 0;
 }
 
 static int activate() {

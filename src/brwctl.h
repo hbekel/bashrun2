@@ -8,6 +8,7 @@ static int is_mapped();
 static int raise();
 static int focus();
 static int has_focus();
+static Window get_focused();
 static int activate();
 static int current();
 static int show();

@@ -4,6 +4,7 @@ bashrun_window_id=""
 bashrun_window_width=$COLUMNS
 bashrun_window_height=$LINES
 bashrun_window_mapped=1
+bashrun_window_previous=0
 
 function §window.id {
     
@@ -101,6 +102,9 @@ function §window.map {
 	§window.size --hint "80x24"
     fi
 
+    # remember the previously focused window
+    bashrun_window_previous="$(brwctl focused)"
+
     # map the window
     brwctl $bashrun_window_id show
 
@@ -126,6 +130,9 @@ function §window.unmap {
 
     # call user supplied onunmap handler    
     $(§mode.get_onunmap)
+
+    brwctl focus $bashrun_window_previous
+    brwctl activate $bashrun_window_previous
 
     bashrun_window_mapped=0
     return 0
