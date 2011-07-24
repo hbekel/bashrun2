@@ -47,7 +47,7 @@ function +plugins {
 		    §debug -v "$name" "->" -c "$(§tilde_path $file)"
 		    source "$file"
 		fi
-		[[ -f "$errorfile" ]] && rm "$errorfile"
+		[[ -f "$errorfile" ]] && /bin/rm "$errorfile"
 	    else
 		if §plugin.check "$file" "$name"; then
 		    §debug -v "$name" "->" -c "$(§tilde_path $file)"

@@ -27,7 +27,7 @@ bashrun_keymap='emacs' # will be initialized in engine.init
 
 function §bindings.init {
     local file="$bashrun_cache_home/keybindings"
-    [[ -f "$file" ]] && rm "$file"
+    [[ -f "$file" ]] && /bin/rm "$file"
 
     §bindings._init
 }
@@ -104,7 +104,7 @@ function §bindings.dump {
     local file="$(§objects.data_home)/${1:-bindings.dump}"
     local remote_bindings="$bashrun_cache_home/remote-bindings.bash"
 
-    [[ -f "$remote_bindings" ]] && rm "$remote_bindings"
+    [[ -f "$remote_bindings" ]] && /bin/rm "$remote_bindings"
 
     §bindings._dump "${1:-bindings.dump}"
 

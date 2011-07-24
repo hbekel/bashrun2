@@ -35,7 +35,7 @@ function create_modeinfo {
 	§debug "using" -c "$(§tilde_path $bashrun_rcfile)"
 	source "$bashrun_rcfile"
     fi
-    [[ -f "$errorfile" ]] && rm "$errorfile"
+    [[ -f "$errorfile" ]] && /bin/rm "$errorfile"
     
     # load modes and templates from configuration file
     §configs.restore_core &>/dev/null
@@ -79,7 +79,7 @@ function launch {
     # cleanup possibly stale cache files
     for suffix in wid pid ready abort; do
 	if [[ -f "$bashrun_cache_home/$mode-$suffix" ]]; then
-	    rm "$bashrun_cache_home/$mode-$suffix"
+	    /bin/rm "$bashrun_cache_home/$mode-$suffix"
 	fi
     done
 	
@@ -106,7 +106,7 @@ function launch {
                  (as defined by the config directive '+mode $mode
                  --terminal')"
 
-	rm "$modeinfo"
+	/bin/rm "$modeinfo"
 	exit 1
     fi
 
@@ -140,7 +140,7 @@ function launch {
 	   touch "$abort"
 
 	   # remove possibly bogus modeinfo
-	   [[ -f "$modeinfo" ]] && rm "$modeinfo"	   
+	   [[ -f "$modeinfo" ]] && /bin/rm "$modeinfo"	   
 
 	   # notify user
 	   source "$bashrun_site/message"
@@ -167,7 +167,7 @@ function launch {
     fi
 
     if (( status == 2 )) || [[ -f "$abort" ]]; then
-	rm "$abort" 
+	/bin/rm "$abort" 
 	§debug fail "failed" -n "$error"
 	exit 1
     fi

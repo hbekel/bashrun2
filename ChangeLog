@@ -1,3 +1,10 @@
+2011-07-24  Henning Bekel <h.bekel@googlemail.com>
+
+	* Released bashrun2 version 0.2.2
+	* Fixed clashed with rm/cp aliases (Issue #5)
+	* Fixed failure to update LINES/COLUMNS in cygwin
+	* Fixed always focus previous window after unmap
+
 2011-03-02  Henning Bekel <h.bekel@googlemail.com>
 
 	* Released bashrun2 version 0.2.1

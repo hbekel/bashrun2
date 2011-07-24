@@ -9,8 +9,8 @@ function §registry.add {
     local pidfile="$bashrun_cache_home/${mode}-pid"
     
     # remove stale wid and pid files
-    [[ -f "$widfile" ]] && rm "$widfile" 
-    [[ -f "$pidfile" ]] && rm "$pidfile"
+    [[ -f "$widfile" ]] && /bin/rm "$widfile" 
+    [[ -f "$pidfile" ]] && /bin/rm "$pidfile"
     
     # write new wid and pidfile
     printf '%s' "$$" > "$pidfile"
@@ -24,11 +24,11 @@ function §registry.remove {
     local pidfile="$bashrun_cache_home/${bashrun_mode:-terminal}-pid"
 
     if [[ -f "$pidfile" ]]; then
-	rm "$pidfile"
+	/bin/rm "$pidfile"
     fi
 
     if [[ -f "$widfile" ]]; then
-	rm "$widfile"
+	/bin/rm "$widfile"
     fi
 
 }

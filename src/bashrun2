@@ -1,7 +1,7 @@
 #!/bin/bash
 ######################################################################
 #
-# Bashrun2 0.2.1 -- launch applications from interactive bash sessions
+# Bashrun2 0.2.2 -- launch applications from interactive bash sessions
 # Copyright (C) 2010, 2011 Henning Bekel <h.bekel@googlemail.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,8 @@ fi
 touch "$lock"
 
 # remove lock on exit or term
-trap '[[ -f "$lock" ]] && rm "$lock"' EXIT
-trap '[[ -f "$lock" ]] && rm "$lock"' TERM
+trap '[[ -f "$lock" ]] && /bin/rm "$lock"' EXIT
+trap '[[ -f "$lock" ]] && /bin/rm "$lock"' TERM
 
 # set default mode and command
 mode="run-dialog"
@@ -199,7 +199,7 @@ case "$command" in
     restart)
 	remote quit
 	export bashrun_debug
-	rm "$lock" &>/dev/null
+	/bin/rm "$lock" &>/dev/null
 	exec bashrun2 -m "$mode" -- $termopts
 	;;
     debug)

@@ -35,7 +35,7 @@ function §remote.run {
 	fi
 
 	# remove command file
-	rm "$bashrun_remote"
+	/bin/rm "$bashrun_remote"
 
     else
 	§debug warn "no command pending in" -v "$bashrun_remote"
@@ -91,7 +91,7 @@ function §remote.interface.create {
     local bindings="$bashrun_cache_home/remote-bindings.bash"
     local bookmarks="$bashrun_cache_home/remote-bookmarks.bash"
 
-    cp "$bashrun_site/interface" "$interface"
+    /bin/cp "$bashrun_site/interface" "$interface"
     printf '%s\n' "$bashrun_remote_interface" >> "$interface"
 
     printf '%s\n' "source $bindings" >> "$interface"

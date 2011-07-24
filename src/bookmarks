@@ -24,7 +24,7 @@ function §bookmarks.dump {
     local remote_bookmarks="$bashrun_cache_home/remote-bookmarks.bash"
     local name=""
 
-    [[ -f "$remote_bookmarks" ]] && rm "$remote_bookmarks"
+    [[ -f "$remote_bookmarks" ]] && /bin/rm "$remote_bookmarks"
 
     §bookmarks._dump "$1"
 

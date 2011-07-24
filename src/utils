@@ -79,7 +79,7 @@ function §syntax? {
 
     bash -n "$1" &> "$errorfile"
     errors="$(<$errorfile)"
-    [[ -z "$errors" ]] && rm "$errorfile"
+    [[ -z "$errors" ]] && /bin/rm "$errorfile"
 
     [[ -z "$errors" ]]
 }

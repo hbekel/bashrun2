@@ -283,7 +283,7 @@ function §engine.reload {
     §separator "reloading engine..."
     §window.map
 
-    rm $bashrun_engine_ready &>/dev/null
+    /bin/rm $bashrun_engine_ready &>/dev/null
 
     §objects.clear    
     §engine.init
@@ -307,14 +307,14 @@ function §engine.shutdown {
     # remove ready flag, remove mode-info
     for suffix in ready info; do
 	file="$bashrun_cache_home/${bashrun_mode}-$suffix"
-	[[ -f "$file" ]] && rm "$file"
+	[[ -f "$file" ]] && /bin/rm "$file"
     done
 
     # remove plugin check and errors file
-    rm "$bashrun_plugins_checked" &>/dev/null
+    /bin/rm "$bashrun_plugins_checked" &>/dev/null
 
     # remove remote command file (required for remote quit)
-    rm "$bashrun_remote" &>/dev/null
+    /bin/rm "$bashrun_remote" &>/dev/null
 
     §debug "exit"
     exit 0

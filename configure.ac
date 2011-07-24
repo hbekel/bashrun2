@@ -2,8 +2,8 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.65])
-AC_INIT([bashrun2], [0.2.1], [h.bekel@googlemail.com], [], [http://bashrun2.googlecode.com])
-AM_INIT_AUTOMAKE(bashrun2, 0.2.1)
+AC_INIT([bashrun2], [0.2.2], [h.bekel@googlemail.com], [], [http://bashrun2.googlecode.com])
+AM_INIT_AUTOMAKE(bashrun2, 0.2.2)
 
 # Checks for programs.
 AC_PROG_SED
