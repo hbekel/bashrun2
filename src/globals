@@ -11,7 +11,7 @@ bashrun_frontend=${bashrun_frontend:-0}
 
 # setup user environment vars used by bashrun
 BROWSER=${BROWSER:-firefox}
-PAGER=${PAGER:-less -R}
+PAGER=${PAGER:-less}
 DICT=${DICT:-dict}
 
 # load xdg basedir utility
