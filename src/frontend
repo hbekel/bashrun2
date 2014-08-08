@@ -201,6 +201,9 @@ function remote {
 		exit 1
 	    fi
 
+	    # force bash to handle signal now (required as of bash 4.3)
+	    kill -INT "$(<$pidfile)"
+
 	    # wait until the remote session has removed the file
 	    wait_until "[[ ! -e '$remote' ]]"
     else
