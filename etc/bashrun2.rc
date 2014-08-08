@@ -116,7 +116,7 @@
                       # "ls" in a new terminal
 
     # Run any commandline beginning with '/etc/rc.d' or '/etc/init.d'
-    # as root and show it's output in the 'notify' terminal, closing
+    # as root and show its output in the 'notify' terminal, closing
     # the terminal after two seconds:
 
     +rule su-term-notify
