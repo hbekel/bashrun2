@@ -102,7 +102,7 @@
 }
 
 +configure-core-rules () {
-    +rule run --match 'mplayer'
+    +rule run --match 'mplayer' 'emacs'
     +rule term-page --match 'dict'
  }
 
