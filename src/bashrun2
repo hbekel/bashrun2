@@ -1,8 +1,8 @@
 #!/bin/bash
 ######################################################################
 #
-# Bashrun2 0.2.2 -- launch applications from interactive bash sessions
-# Copyright (C) 2010, 2011 Henning Bekel <h.bekel@googlemail.com>
+# Bashrun2 0.2.3 -- launch applications from interactive bash sessions
+# Copyright (C) 2010-2014 Henning Bekel <h.bekel@googlemail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

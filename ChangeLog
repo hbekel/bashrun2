@@ -1,3 +1,12 @@
+2014-08-09  Henning Bekel <h.bekel@googlemail.com>
+
+	* Released bashrun2 version 0.2.3
+	* Fixed remote invocation fails using bash 4.3
+	* Fixed don't force default PAGER or BROWSER (Issue #7)
+	* Fixed emacs misdiagnosed as teminal app (Issue #10)
+	* Fixed typo in bashrun.rc (Issue #9)
+	* Fixed automake warnings removed
+
 2011-07-24  Henning Bekel <h.bekel@googlemail.com>
 
 	* Released bashrun2 version 0.2.2
