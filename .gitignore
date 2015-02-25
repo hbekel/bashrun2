@@ -1,0 +1,15 @@
+TODO-NODIST
+
+aclocal.m4
+autom4te.cache/*
+*Makefile.in
+*Makefile
+configure
+config.log
+config.status
+*.tar.gz
+
+src/*.o
+src/*.o.*
+src/.deps/*
+src/brwctl
