@@ -13,3 +13,4 @@ src/*.o
 src/*.o.*
 src/.deps/*
 src/brwctl
+src/brwctl.exe

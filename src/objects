@@ -172,12 +172,16 @@ function §class {
 
     # create object source file from object template...
     local names="${property_names[@]}"
-
     local defaults="$(declare -p defaults)"
-    defaults="${defaults:21:${#defaults}-22}"
-
     local types="$(declare -p types)"
-    types="${types:18:${#types}-19}"
+
+    if §bash44?; then
+        defaults="${defaults:20:${#defaults}-20}"
+        types="${types:17:${#types}-17}"
+    else
+        defaults="${defaults:21:${#defaults}-22}"
+        types="${types:18:${#types}-19}"
+    fi
     
     cat "$_objects_site/object" | \
 	sed "s|_objects_keys=()|_objects_keys=($names)|" | \
@@ -288,7 +292,12 @@ function §${name}.set_${key} {
     declare -a a=("\$@");
     
     local data="\$(declare -p a)";
-    data="\${data:14:\${#data}-15}";    
+
+    if §bash44?; then
+        data="\${data:13:\${#data}-13}";
+    else
+        data="\${data:14:\${#data}-15}";
+    fi
 
     _${NAME}s[\$_${NAME}s_position+$field]="\$data";
     _${NAME}s_modified=1;

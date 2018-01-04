@@ -221,7 +221,13 @@ function §terminals.get_match {
     §terminals.seek "$saved"
 
     local data="$(declare -p match)"
-    data="${data:18:${#data}-19}"    
+
+    if §bash44?; then
+        data="${data:17:${#data}-17}"
+    else
+        data="${data:18:${#data}-19}"
+    fi
+    
     data="declare -a $1=$data"
     printf '%s' "$data"
 }

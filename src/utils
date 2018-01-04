@@ -12,6 +12,12 @@ function §set? {
     (set -o | grep "$1" | grep on) &>/dev/null
 }
 
+function §bash44? {
+    local current="${BASH_VERSINFO[0]}${BASH_VERSINFO[1]}"
+    if (( current >= 44 )); then return 0; fi
+    return 1
+}
+
 function §check_deps {
 
     local deps="sed grep tput stty kill sleep ldd uname"
