@@ -60,7 +60,7 @@ fi
 # define version info
 bashrun_major_version=0
 bashrun_minor_version=2
-bashrun_bugfix_version=3
+bashrun_bugfix_version=4
 bashrun_release_version=""
 
 # create version string

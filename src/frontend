@@ -232,7 +232,7 @@ EOF
 function version {
     . "$bashrun_site/globals" 2> /dev/null
     printf '%s\n' \
-	"bashrun2 $bashrun_version Copyright (C) 2010-2014 Henning Bekel <h.bekel@googlemail.com>
+	"bashrun2 $bashrun_version Copyright (C) 2010-2018 Henning Bekel <h.bekel@googlemail.com>
 License GPLv2: GNU GPL version 2 <http://gnu.org/licenses/gpl.html>
 
 This is free software; you are free to change and redistribute it.
@@ -272,9 +272,7 @@ function usage {
 
   Press F1 in bashrun to list the current keybindings.
 
-  For more information, see bashrun2(1) or visit http://bashrun2.googlecode.com
-"
-
+  For more information see bashrun2(1) and https://github.com/hbekel/bashrun2"
 }
 
 function wait_until { 
