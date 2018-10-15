@@ -468,6 +468,13 @@ The terminal background color.
 
 Name portion of the WM_CLASS window property.
 
+.IP \fB\-\-title\fP\ <\fIstring\fP>\ (default:\ \fInone\fP)
+
+Title of the terminal window.
+
+If not specified, the command executed in this terminal will be used
+as the window title.
+
 .IP \fB\-\-options\fP\ <\fIstring\fP>\ (default:\ \fIempty\fP)
 
 Generic terminal options to be included in the terminal command line.
@@ -683,6 +690,11 @@ Print the first word of the command line entered by the user to
 stdout. Note that any environment variable assignments at the
 beginning of the line will be skipped when determining the command
 word.
+.IP \fBtitle\fP
+Set the title to be used in case this command is run in a
+terminal. Note that this command must be called before the terminal
+command line is constructed, i.e. before \fBterminal\fP, \fBpager\fP
+or \fBhold\fP is called.
 .IP \fBquote-command\fP
 Quote the command in a way that can be reused as shell input.
 .IP \fBaction\fP\ <\fIname\fP>

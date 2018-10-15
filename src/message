@@ -94,7 +94,7 @@ function §message {
 	zenity|notify-send)
             # split input into chunks at \n\n
 	    text="$1"
-	    text="$(printf '%s\n' "$text" | sed 's/^ *//g')"
+	    text="$(printf '%s\n' "$text" | sed -E 's/^ *//g')"
 	    text=${text//$'\n'$'\n'/__SePaRaToR__}
 	    text=${text//$'\n'/ }
 	    text=${text//__SePaRaToR__/$'\n\n'}	    

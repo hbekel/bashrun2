@@ -8,6 +8,7 @@ bashrun_command_word=''
 bashrun_command_hold=''
 bashrun_command_page=''
 bashrun_command_su=''
+bashrun_command_title=''
 bashrun_original_command=''
 
 function §command.unquote {
@@ -230,7 +231,7 @@ function §command.add_terminal {
 
     # expand the terminal command
     terminal_command="$(§terminal.get_command)"
-    bashrun_command="$(§terminal.expand "$terminal_command" "$bashrun_command")"
+    bashrun_command="$(§terminal.expand "$terminal_command" "$bashrun_command" "$bashrun_command")"
 
     §debug -v "$bashrun_command"
 
@@ -281,5 +282,6 @@ function §command.reset {
     bashrun_command_hold=''
     bashrun_command_page=''
     bashrun_command_su=''
+    bashrun_command_title=''
     bashrun_original_command=''
 }

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ######################################################################
 #
 # Bashrun2 0.2.4 -- launch applications from interactive bash sessions

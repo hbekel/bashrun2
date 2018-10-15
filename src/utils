@@ -89,7 +89,7 @@ function §function.exported? () {
 }	
 
 function §function.code {
-    printf '%s\n' "$(type $1 | sed '1 d')"
+    printf '%s\n' "$(type $1 | sed -E '1 d')"
 }
 
 function §function.clone {

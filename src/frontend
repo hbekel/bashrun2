@@ -121,7 +121,7 @@ function launch {
             bashrun_debug=$bashrun_debug \
             $(§terminal.expand "$terminal" \
                  'bash --rcfile __PREFIX__/share/bashrun2/bashrc' \
-                 "bashrun2-$mode" "$geometry" \
+                 "bashrun2" "bashrun2-$mode" "$geometry" \
                  "$font" "$boldfont" "$foreground" "$background" \
                  "$termopts")" 
                
@@ -149,7 +149,7 @@ function launch {
                      the following terminal command line is correct:
 
                      $(§terminal.expand "$terminal" '...' \
-                        "$mode" "$geometry" "$font" "$boldfont" \
+                        "bashrun2" "$mode" "$geometry" "$font" "$boldfont" \
                         "$foreground" "$background" "$termopts")
 
                      (See the config directive '+mode $mode --terminal')

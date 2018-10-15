@@ -6,6 +6,7 @@
     --properties "name" \
                  "command" \
                  "classname" \
+		 "title" \
                  "geometry=80x24" \
                  "font" \
                  "boldfont" \
@@ -20,6 +21,8 @@
 §function.clone "§terminal.set_match" "§terminal._set_match"
 §function.clone "§terminals.init" "§terminals._init"
 §function.clone "§terminal.get_command" "§terminal._get_command"
+§function.clone "§terminal.get_title" "§terminal._get_title"
+§function.clone "§terminal.get_classname" "§terminal._get_classname"
 
 function §terminal.set_match {
 
@@ -55,37 +58,58 @@ function §terminal.init {
     §terminal.get_command &>/dev/null
 }
 
+function §terminal.get_title {
+
+    if [[ -n "$(§terminal._get_title)" ]]; then
+	§terminal._get_title
+
+    elif [[ -n "$bashrun_command_title" ]]; then
+	 §debug -v "title (bashrun_command_title)" "->" -v "$bashrun_command_title"
+	 printf "$bashrun_command_title"
+
+    else
+	§debug -v "title (bashrun_command)" "->" -v "$bashrun_command"
+	printf "$bashrun_command"
+    fi
+}
+
+function §terminal.get_classname {
+    if [[ -n "$(§terminal._get_classname)" ]]; then
+	§terminal._get_classname
+    else
+	§debug -v "classname" "->" -v "$bashrun_command_word"
+	printf "$bashrun_command_word"
+    fi
+}
+
 function §terminal.get_command {
     
     local command="$(§terminal._get_command)"
-    local cached="$(§terminal.get_cache)"
 
-    if [[ -z "$cached" ]]; then
-	local classname="$(§terminal.get_classname)"
-	local geometry="$(§terminal.get_geometry)"
-	local font="$(§terminal.get_font)"
-	local boldfont="$(§terminal.get_boldfont)"
-	local foreground="$(§terminal.get_foreground)"
-	local background="$(§terminal.get_background)"
-	local options="$(§terminal.get_options)"
+    local title="$(§terminal.get_title)"
+    local classname="$(§terminal.get_classname)"
+    local geometry="$(§terminal.get_geometry)"
+    local font="$(§terminal.get_font)"
+    local boldfont="$(§terminal.get_boldfont)"
+    local foreground="$(§terminal.get_foreground)"
+    local background="$(§terminal.get_background)"
+    local options="$(§terminal.get_options)"
 	
-	cached="$(§terminal.expand "$command" "" "$classname" "$geometry" "$font" "$boldfont" "$foreground" "$background" "$options")"
-	§terminal.set_cache "$cached"	
-    fi
-    printf '%s' "$cached"
+    printf '%s' "$(§terminal.expand "$command" "" "$title" "$classname" "$geometry" "$font" "$boldfont" "$foreground" "$background" "$options")"
 }
 
 function §terminal.expand {
     
     local template="$1"
     local command="$2"
-    local classname="$3"
-    local geometry="$4"
-    local font="$5"
-    local boldfont="$6"
-    local foreground="$7"
-    local background="$8"
-    local options="$9"
+    local title="$3"
+    local classname="$4"
+    local geometry="$5"
+    local font="$6"
+    local boldfont="$7"
+    local foreground="$8"
+    local background="$9"
+    local options="$10"
     
     local word="" tmp="" method=""
     declare -i i=0
@@ -97,13 +121,17 @@ function §terminal.expand {
 
     if §templates.seek "$template"; then
 	template="$(§template.create_commandline \
-                    "execute" "$classname" "$geometry" \
+                    "execute" "$title" "$classname" "$geometry" \
                     "$font" "$boldfont" "$foreground" "$background" "$options")"
     fi
     
-    # insert classname, geometry, font and options
+    # insert title classname, geometry, font and options
+    if [[ "$template" =~ [^\\]%t ]]; then
+	template="$(§replace "$template" "%t" "'$title'")"
+    fi
+
     if [[ "$template" =~ [^\\]%n ]]; then
-	template="$(§replace "$template" "%n" "$classname")"
+	template="$(§replace "$template" "%n" "'$classname'")"
     fi
 
     if [[ "$template" =~ [^\\]%g ]]; then

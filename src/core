@@ -79,9 +79,11 @@
 
     +template mlterm 
       --boldfont "" 
+      --title "-T %t"
       --bashrun_options "-s=false $mlterm_fixes"
 
     +template Eterm
+      --title "-T%t"
       --classname "-n%n"
       --geometry "-g%g"
       --font "-F%f"
@@ -91,6 +93,7 @@
       --bashrun_options "--scrollbar=0"
 
     +template gnome-terminal
+      --title "--title=%t"
       --classname "--name=%n"
       --geometry "--geometry=%g"
       --font ""
@@ -237,6 +240,7 @@
     
     +action-term-page () 
     { 
+	title "$(command)"
  	if ! executable?; then
 	    if ! handlers; then
 		return 1
@@ -255,7 +259,8 @@
     --core 1
     
     +action-term-hold () 
-    { 
+    {
+	title "$(command)"	
  	if ! executable?; then
 	    if ! handlers; then
 		return 1

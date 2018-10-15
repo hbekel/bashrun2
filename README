@@ -22,6 +22,10 @@ Note that if you don't use an explicit --sysconfdir option,
 $sysconfdir will default to $prefix/etc and will likely result in the
 need to adjust XDG_CONFIG_DIRS as described above.
 
+If you encounter errors during build (such as make complaining that a
+specific version of aclocal can not be found), you may need to install
+GNU autotools and run 'autoreconf -i' before running ./configure again.
+
 Runtime dependencies
 ====================
 

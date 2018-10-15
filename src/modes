@@ -97,7 +97,7 @@ function §mode.write_info {
     local netwmstate="$(§mode.get_netwmstate)"
 
     if §templates.seek "$terminal"; then
-	terminal="$(§template.create_commandline "bashrun" "bashrun2-$mode" "$geometry" "$font" "$boldfont" "$foreground" "$background" "$options")"
+	terminal="$(§template.create_commandline "bashrun" "bashrun2" "bashrun2-$mode" "$geometry" "$font" "$boldfont" "$foreground" "$background" "$options")"
     fi
 
     §quote terminal font boldfont foreground background \

@@ -4,6 +4,7 @@
 
 §class "template" --with-interface \
     --properties "name" \
+                 "title=-title %t" \
                  "classname=-name %n" \
                  "geometry=-g %g" \
                  "font=-fn %f" \
@@ -19,15 +20,20 @@
 function §template.create_commandline {
 
     local type="$1"
-    local classname="$2"
-    local geometry="$3"
-    local font="$4"
-    local boldfont="$5"
-    local foreground="$6"
-    local background="$7"
-    local options="$8"
+    local title="$2"
+    local classname="$3"    
+    local geometry="$4"
+    local font="$5"
+    local boldfont="$6"
+    local foreground="$7"
+    local background="$8"
+    local options="$9"
 
     local template="$(§template.get_name) "
+
+    if [[ -n "$title" ]]; then
+	template+="$(§template.get_title) "
+    fi
     
     if [[ -n "$classname" ]]; then
 	template+="$(§template.get_classname) "

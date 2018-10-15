@@ -316,6 +316,10 @@ function §action.api.enable {
     }
     function line { printf "%s\n" "$bashrun_command_line"; }
 
+    function title {
+	[[ -z "$bashrun_command_title" ]] && bashrun_command_title="$@"
+    }
+    
     function quote-command { §quote bashrun_command; }
 
     function executable? {
@@ -346,6 +350,7 @@ function §action.api.disable {
 	    command \
 	    word \
 	    line \
+	    title \
 	    executable? \
 	    builtin? \
 	    bookmark? \
