@@ -100,7 +100,7 @@ function §terminal.expand {
                     "execute" "$classname" "$geometry" \
                     "$font" "$boldfont" "$foreground" "$background" "$options")"
     fi
-
+    
     # insert classname, geometry, font and options
     if [[ "$template" =~ [^\\]%n ]]; then
 	template="$(§replace "$template" "%n" "$classname")"
@@ -159,7 +159,7 @@ function §terminal.expand {
 	    template+=" $command"
 	fi
     fi
-
+    §debug "expanded" "->" "$template"
     printf '%s' "$template"
 }
 

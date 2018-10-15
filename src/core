@@ -48,8 +48,9 @@
 
 +configure-core-terminals () {
     
-    +terminal default --command '__EXEC_TERMINAL__'
-
+    +terminal default
+      --command '__EXEC_TERMINAL__'
+    
     +terminal notify 
       --command '__EXEC_TERMINAL__'
       --geometry "40x4+0+0"
@@ -135,7 +136,7 @@
 
       function +action-reload {
 	  bashrun_status="Reloading..."
-	  tput civis >&2
+	  tput $(§civis) >&2
 	  bashrun_engine_reload=1
 	  return 2
       }

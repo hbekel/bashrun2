@@ -10,6 +10,9 @@ AC_PROG_SED
 AC_PROG_AWK
 AC_PROG_CC
 
+AM_CFLAGS="-I/usr/local/include"
+AM_LDFLAGS="-L/usr/local/lib"
+
 # Checks for libraries.
 AC_CHECK_LIB(X11, XOpenDisplay,
   LIBS="$LIBS -lX11",

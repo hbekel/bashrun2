@@ -336,7 +336,7 @@ function §action.api.enable {
     function terminal { §command.add_terminal "$1"; }
     function hold { §command.add_hold "$1"; }
     function pager { §command.add_pager; }    
-    function user { tput cr; tput el; map; §command.add_su "${1:-root}"; }
+    function user { tput cr; tput $(§el); map; §command.add_su "${1:-root}"; }
     function map { §window.map; tput cr; }
 }
 

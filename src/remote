@@ -33,8 +33,10 @@ function §remote.run {
 	    # cygwin will interpret WINCH as USR1 (?)
 	    kill -WINCH $$
 
-	    # force bash to handle signal now (required as of bash 4.3)
-	    kill -INT "$(<$pidfile)"
+	    if §bash43?; then
+		# force bash to handle signal now (required for bash 4.3)
+		kill -INT "$(<$pidfile)"
+	    fi
 	fi
 
 	# remove command file

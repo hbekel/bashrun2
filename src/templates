@@ -12,7 +12,7 @@
                  "background=-bg %B" \
                  "bashrun=-e %*" \
                  "bashrun_options=+sb" \
-                 "execute=-e bash -c %@"
+                 "execute=-e bash -c %@"		 
 
 ################################################################################
 

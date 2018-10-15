@@ -290,7 +290,7 @@ function §engine.reload {
 
     §window.map
     
-    (( bashrun_debug == 0 )) && tput reset
+    tput $(§cnorm)
     
     §separator "engine reloaded"
 }

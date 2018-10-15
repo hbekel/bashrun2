@@ -1,10 +1,8 @@
 TODO-NODIST
 
-aclocal.m4
 autom4te.cache/*
-*Makefile.in
 *Makefile
-configure
+*Makefile.in
 config.log
 config.status
 *.tar.gz

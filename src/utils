@@ -12,6 +12,12 @@ function §set? {
     (set -o | grep "$1" | grep on) &>/dev/null
 }
 
+function §bash43? {
+    local current="${BASH_VERSINFO[0]}${BASH_VERSINFO[1]}"
+    if (( current >= 44 )); then return 0; fi
+    return 1
+}
+
 function §bash44? {
     local current="${BASH_VERSINFO[0]}${BASH_VERSINFO[1]}"
     if (( current >= 44 )); then return 0; fi
@@ -45,11 +51,33 @@ function §cygwin? {
     [[ "$(uname)" =~ CYGWIN ]]
 }
 
+function §freebsd? {
+    [[ "$(uname)" =~ FreeBSD ]]
+}
+
 function §winch {
     if [[ "$(stty -a)" =~ rows\ ([0-9]+)\;\ columns\ ([0-9]+) ]]; then
 	LINES="${BASH_REMATCH[1]}"
 	COLUMNS="${BASH_REMATCH[2]}"
     fi
+}
+
+function §el() {
+    local cap=el
+    §freebsd? && cap=ce
+    printf $cap
+}
+
+function §cnorm() {
+    local cap=cnorm
+    §freebsd? && cap=ve
+    printf $cap
+}
+
+function §civis() {
+    local cap=civis
+    §freebsd? && cap=vi
+    printf $cap
 }
 
 function §function.defined? {

@@ -88,11 +88,11 @@ function §command.executable? {
 
     if [[ "$type" == "file" ]]; then
 	if type -p $word &> /dev/null; then
-	    §debug -v "$word" "->" -v "$type" "-> type -p $word ? ->" -g "yes"
+	    §debug -v "$word" "->" -v "$type" "->" -c "type -p $word ?" "->" -g "yes"
 	    return 0
 	fi
 	if [[ -x $word ]]; then
-	    §debug -v "$word" "->" -v "$type" "-> +x $word ? ->" -g "yes"
+	    §debug -v "$word" "->" -v "$type" "->" -c "+x $word ?" "->" -g "yes"
 	    return 0
 	fi
     fi
@@ -138,7 +138,7 @@ function §command.add_su {
     # prompt for username
     if [[ "$user" == "--prompt" ]]; then
 	until [[ -n "$user" && "$user" != "--prompt" ]]; do
-	    tput el
+	    tput $(§el)
 	    tput cr
 	    printf '%b' 'Username: '
 
@@ -253,7 +253,7 @@ function §command.add_hold {
     
     if [[ -z "$bashrun_command_hold" ]]; then
         bashrun_command_hold="$bashrun_command";
-	bashrun_command="tput civis;(${bashrun_command});$method"
+	bashrun_command="tput $(§civis);(${bashrun_command});$method"
 	§debug -v "$bashrun_command"
     else
 	§debug "already using hold with" -v "$bashrun_command_hold"
