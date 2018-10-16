@@ -1,9 +1,6 @@
 bin_PROGRAMS = brwctl
 brwctl_SOURCES = brwctl.c
 
-AM_CFLAGS = -Wall $(CFLAGS) -I/usr/local/include
-AM_LDFLAGS = $(LDFLAGS) -L/usr/local/lib
-
 bin_SCRIPTS = bashrun2
 
 sitedir = $(datadir)/@PACKAGE@
