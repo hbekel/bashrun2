@@ -109,7 +109,7 @@ function §terminal.expand {
     local boldfont="$7"
     local foreground="$8"
     local background="$9"
-    local options="$10"
+    local options="${10}"
     
     local word="" tmp="" method=""
     declare -i i=0
@@ -131,7 +131,7 @@ function §terminal.expand {
     fi
 
     if [[ "$template" =~ [^\\]%n ]]; then
-	template="$(§replace "$template" "%n" "'$classname'")"
+	template="$(§replace "$template" "%n" "$classname")"
     fi
 
     if [[ "$template" =~ [^\\]%g ]]; then
