@@ -187,6 +187,8 @@ function §terminal.expand {
 	    template+=" $command"
 	fi
     fi
+    §load_icon "$bashrun_command_word"
+    
     §debug "expanded" "->" "$template"
     printf '%s' "$template"
 }

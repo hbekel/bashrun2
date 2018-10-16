@@ -23,6 +23,8 @@ bashrun_config_dirs="$(§xdg config-dirs bashrun2)"
 bashrun_config_home="$(§xdg config-home bashrun2)"
 bashrun_data_home="$(§xdg data-home bashrun2)"
 bashrun_cache_home="$(§xdg cache-home bashrun2)"
+bashrun_icon_dir="$bashrun_config_dirs/icons"
+bashrun_icon_home="$bashrun_config_home/icons"
 
 # setup rcfile
 bashrun_rcfile="$(§xdg -e config bashrun2/bashrun2.rc)"

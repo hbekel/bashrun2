@@ -361,3 +361,35 @@ function §tilde_path {
     path="${path/$HOME/~}"
     printf '%s' "$path"
 }
+
+function §load_icons {
+    §load_icon_directory "$bashrun_icon_dir"
+    §load_icon_directory "$bashrun_icon_home"
+}
+
+function §load_icon_directory {
+    local dir="$1"
+
+    if [[ -d "$dir" ]]; then
+	for icon in $dir/*.png; do
+	    echo "$(basename -s .png $icon)*iconFile: $icon" | xrdb -merge
+	done
+    fi
+}
+
+function §load_icon {
+    local name="$1"
+    local candidate=""
+    local icon=""
+
+    candidate="$bashrun_icon_dir/$name.png"
+    [[ -f "$candidate" ]] && icon="$candidate"
+
+    candidate="$bashrun_icon_home/$name.png"
+    [[ -f "$candidate" ]] && icon="$candidate"
+
+    if [[ -n "$icon" ]]; then
+	echo "$name*iconFile: $icon" | xrdb -merge
+	§debug -v "icon:" "->" -v "$name" "->" -v "$icon"
+    fi
+}
