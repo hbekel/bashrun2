@@ -9,8 +9,10 @@ bashrun_debug=${bashrun_debug:-0}
 bashrun_feedback=${bashrun_feedback:-0}
 bashrun_frontend=${bashrun_frontend:-0}
 
+source __PREFIX__/share/bashrun2/utils
+
 # setup user environment vars used by bashrun
-BROWSER=${BROWSER:-firefox}
+BROWSER=${BROWSER:-$(§browser)}
 PAGER=${PAGER:-less}
 DICT=${DICT:-dict}
 

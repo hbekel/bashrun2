@@ -393,3 +393,19 @@ function §load_icon {
 	§debug -v "icon:" "->" -v "$name" "->" -v "$icon"
     fi
 }
+
+function §browser {
+    local browsers=(firefox chromium chrome opera \
+			    netsurf icecat iceweasel safari \
+			    konqueror midori dillo sensible-browser xdg-open)
+    
+    local browser="xdg-open"
+    
+    for browser in "${browsers[@]}"; do
+	if which $browser &> /dev/null; then
+	    break
+	fi
+    done
+
+    printf "$browser"
+}

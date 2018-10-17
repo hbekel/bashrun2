@@ -64,10 +64,6 @@
 	  # bash stuff like default programs, history file, prompts,
 	  # terminal settings, etc.
 
-	  BROWSER=${BROWSER:-firefox}
-	  PAGER=${PAGER:-less}
-	  DICT=${DICT:-dict}
-
 	  HISTFILE="${XDG_DATA_HOME:-$HOME/.local/share}/bashrun2/history"
 	  PS1='>'
 

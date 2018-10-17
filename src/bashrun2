@@ -31,7 +31,6 @@ fi
 source __PREFIX__/share/bashrun2/globals
 
 # check external dependencies
-source "$bashrun_site/utils"
 §check_deps
 
 # bootstrap if cache or data home don't exist
