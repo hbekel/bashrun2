@@ -86,6 +86,9 @@ function §engine.init {
     §engine.ready
     §engine.idle
 
+    # load icons from icon directories
+    §load_icons
+    
     §debug emph -y "done"
     §separator
     §progress.reset

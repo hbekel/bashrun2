@@ -34,9 +34,6 @@ source __PREFIX__/share/bashrun2/globals
 source "$bashrun_site/utils"
 §check_deps
 
-# load icons from icon directories
-§load_icons
-
 # bootstrap if cache or data home don't exist
 if [[ ! -e "$bashrun_cache_home" || ! -e "$bashrun_data_home" ]]; then
     source "$bashrun_site/bootstrap"
