@@ -4,6 +4,12 @@ Installation
 For a standard installation under /usr, please use
 
 ./configure --prefix=/usr --sysconfdir=/etc
+make
+sudo make install
+
+The header file x11/Xlib.h needs to be present on your system. Your
+distribution should provide this file from a package named libx11,
+libx11-devel packageor similar.
 
 Explicitly setting $sysconfdir to '/etc' is necessary to install in
 compliance with the XDG Base Directory Specification.
@@ -46,7 +52,7 @@ The default configuration file shipped with bashrun2 assumes xterm to
 be available on the target system. If xterm is not available, the user
 will be presented with an appropriate error message, recommending to
 either install xterm or to set up bashrun2 to use a different
-terminal. 
+terminal.
 
 If you want to build bashrun2 using a default terminal other than
 xterm, please use the ./configure options

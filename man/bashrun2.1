@@ -506,6 +506,22 @@ will be implicitly appended to the \fIterm-run\fP \fBrule\fP (see
 \fBRULES\fP below). This means that commands matched by a
 \fBterminal\fP will always be run in that \fBterminal\fP, even if this
 was not explicitly requested by the current \fPaction\fP.
+
+\fBIcon\ support\ for\ terminal\ windows\fP
+
+On startup, if either \fB$HOME/.config/bashrun2/icons\fP or
+\fB$SYSCONFDIR/xdg/bashrun2/icons\fP exists, bashrun will add an X resource
+for each .png file found in these directories, in the format
+
+    \fB<basename-of-icon>*iconFile: <full-path-of-icon>\fP
+
+In addition, every time a command is launched in the terminal, bashrun
+will attempt to load an icon resource in the same manner, based on the
+first word on the commandline or the explicitly set terminal title.
+
+Icons from the users configuration directory take precedence over
+those found in the system-wide configuration directory.
+
 .SS BOOKMARKS
 For each \fBbookmark\fP object, a stub function by the same name is
 defined that runs the \fIbrowse\fP action for the \fBbookmark\fP

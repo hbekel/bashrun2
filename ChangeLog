@@ -1,6 +1,13 @@
 2020-12-15  Henning Liebenau <henning.liebenau@protonmail.com>
 
 	* Released bashrun2 version 0.2.5
+	* Added --title option for terminals
+	* Added use commandline as terminal title
+	* Added icon support for terminals based on command
+	* Added missing autoconf files (#3)
+	* Added configure check for x11/Xlib.h (#4)
+	* Added support for FreeBSD
+	* Improved README
 	* Updated contact information
 
 2018-01-05  Henning Bekel <h.bekel@googlemail.com>
