@@ -1,4 +1,4 @@
-.TH BASHRUN2 1 "2011-03-02" "Linux" "User manuals"
+.TH BASHRUN2 1 "2020-12-15" "Linux" "User manuals"
 .SH NAME
 \fBbashrun2\fP \- launch applications from interactive bash sessions
 
@@ -43,7 +43,7 @@ keybindings and available actions.
 .SS Using bashrun in a managed terminal
 Start bashrun with \fIbashrun2 --mode terminal\fP. It will launch a
 bashrun session in \fIterminal\fP mode, creating a standard sized
-terminal window. 
+terminal window.
 
 Pressing Enter will run commands in the current shell as usual. You
 can launch applications in the background now by pressing
@@ -118,7 +118,7 @@ Enable debugging on startup
 Show usage information
 .IP \fB-v\fP,\ \fB--version\fP
 Show version information
-.SS COMMANDS 
+.SS COMMANDS
 .IP \fBshow\fP
 Show the terminal window. Maps the window, moves it to the current
 desktop, moves it above other windows and focuses it. This is the
@@ -178,7 +178,7 @@ definitions\fP as well as additional helper function definitions for a
 specific type of object.
 .PP
 For each object type, bashrun will look for a function
-named 
+named
 .PP
 .RS
 \fB+configure-\fP<\fItype\fP>\fBs\fP
@@ -212,7 +212,7 @@ and \fBgeometry\fP properties:
 .PP
 .RS
 .nf
-+terminal 'small' 
++terminal 'small'
   --command 'urxvt'
   --geometry '40x12'
 .fi
@@ -362,7 +362,7 @@ The terminal background color.
 
 Generic terminal options to be included in the terminal command line.
 
-.IP \fB\-\-completion\fP\ <\fItype\fP\ [\fIalternative\fP\ \fIthreshold\fP]> 
+.IP \fB\-\-completion\fP\ <\fItype\fP\ [\fIalternative\fP\ \fIthreshold\fP]>
 
 default:\ \fImenu-complete complete 8\fP
 
@@ -484,7 +484,7 @@ Generic terminal options to be included in the terminal command line.
 Add one or more \fIpattern\fPs to match commands or command lines
 with. If an \fBaction\fP requests the command to be run in a terminal,
 then if the \fIpattern\fP matches, this terminal is chosen to run the
-command in. 
+command in.
 
 If \fIpattern\fP is a single word, it will be matched verbatim against
 the first word of the command line. If the pattern is delimited by
@@ -500,7 +500,7 @@ command and an \fBaction\fP has requested the command to be run in a
 terminal. The default \fInotify\fP \fBterminal\fP is a small terminal
 used by the default \fBactions\fP \fIterm-notify\fP and
 \fIsu-term-notify\fP (see \fBDEFAULT ACTIONS\fP below).
- 
+
 Note that any \fIpatterns\fP associated with a \fBterminal\fP object
 will be implicitly appended to the \fIterm-run\fP \fBrule\fP (see
 \fBRULES\fP below). This means that commands matched by a
@@ -547,7 +547,7 @@ not an exported function, an alias or an executable) then an attempt
 is made to successively match the command line against each of
 \fBhandlers\fP, in the order in which they are defined in the
 configuration files.
-    
+
 If the regular expression given with \fB--match\fP matches the
 commandline, then an optional file test pattern given with
 \fB--test\fP is applied. If no test was specified or if the supplied
@@ -557,7 +557,7 @@ or, if the regexp contains subexpressions within parenthesis, an
 attempt will be made to substitute the occurence of \fI%\fP<\fI1\fP-\fI9\fP>
 in the value of \fB--command\fP with the contents of the corresponding
 subexpression match.
-    
+
 The \fB--action\fP property may be used to delegate the resulting
 string to a specific \fBaction\fP for further processing. If no
 \fBaction\fP was given, the resulting string is assumed to constitute
@@ -579,7 +579,7 @@ below).
 The test \fIexpression\fP is a series of characters corresponding to
 the unary file test operators defined in section \fBCONDITIONAL
 EXPRESSIONS\fP of the
-.BR bash (1) 
+.BR bash (1)
 manual. The individual file tests will each be performed on the
 complete command line. If one of the these tests fails, the test as a
 whole fails and the handler is skipped. File tests can be negated by
@@ -734,7 +734,7 @@ Test whether the command is a bash builtin command.
 Test whether the command is a bashrun \fBbookmark\fP.
 .SS BUILTIN ACTIONS
 This section describes the default \fBactions\fP defined in bashrun,
-along with their default keybindings. 
+along with their default keybindings.
 
 If you wish to change the implementation of a default action, enter
 debug mode, type \fB+action\fP <\fIname\fP> \fB--code\fP and press
@@ -829,9 +829,9 @@ or \fB+terminal --command\fP properties.
 Template strings may contain the following format specifiers which
 will be replaced by their corresponding values:
 .RS
-.IP \fI%*\fP 
+.IP \fI%*\fP
 The command to be run by the terminal, unquoted.
-.IP \fI%@\fP 
+.IP \fI%@\fP
 The command to be run by the terminal, quoted to appear as a single
 argument. Consequtive \fI@\fP's add another level of quoting,
 e.g. \fI%@@\fP quotes two times, \fI%@@@\fP quotes three times, and so
@@ -843,13 +843,13 @@ portion of the terminals WM_CLASS property. For terminal objects, the
 value of the \fB--classname\fP property is used.
 .IP \fI%g\fP
 The value of the \fB--geometry\fP property.
-.IP \fI%f\fP 
+.IP \fI%f\fP
 The value of the \fB--font\fP property.
-.IP \fI%b\fP 
+.IP \fI%b\fP
 The value of the \fB--boldfont\fP property.
 .IP \fI%F\fP
 The value of the \fB--foreground\fP property.
-.IP \fI%B\fP 
+.IP \fI%B\fP
 The value of the \fB--background\fP property.
 .IP \fI%o\fP
 The value of the \fB--options\fP property plus any additional terminal
@@ -868,10 +868,10 @@ invalid command line.
 Examples:
 .PP
 .nf
-+mode 
++mode
   --terminal 'urxvt -n %n -g %g -fn %f -fb %b -fg %F -bg %B %o -e %*'
 
-+terminal 
++terminal
   --command 'urxvt -n %n -g %g -fn %f -fb %b -fg %F -bg %B %o -e bash -c %@'
 .ni
 .PP
@@ -911,7 +911,7 @@ Also feel free to mail me directly using the email adress
 below. Questions, comments, suggestions, feedback of any kind is
 greatly appreciated.
 .SH AUTHOR
-Henning Bekel <h.bekel at googlemail dot com> (english and german)
+Henning Liebenau <henning dot liebenau at protonmail dot com>
 .SH "SEE ALSO"
 .BR bash (1)
 .BR readline (3)

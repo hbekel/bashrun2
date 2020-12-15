@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-######################################################################
+############################################################################
 #
-# Bashrun2 0.2.4 -- launch applications from interactive bash sessions
-# Copyright (C) 2010-2018 Henning Bekel <h.bekel@googlemail.com>
+# Bashrun2 0.2.5 -- launch applications from interactive bash sessions
+# Copyright (C) 2010-2020 Henning Liebenau <henning.liebenau@protonmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 #
-######################################################################
+############################################################################
 
 # if no arguments are given, attempt to map an existing run-dialog as
 # fast as possible first...
@@ -67,9 +67,9 @@ until [[ "$1" == "--" || "${1:0:1}" != '-' ]]; do
 	    exit 0
  	    ;;
 	-h|--help)
- 	    usage 
+ 	    usage
 	    exit 0
- 	    ;;    
+ 	    ;;
 	-m|--mode)
  	    mode="$2"
  	    shift; shift
@@ -82,7 +82,7 @@ until [[ "$1" == "--" || "${1:0:1}" != '-' ]]; do
 	--remote-control)
 	    remote_control_code
 	    exit 0
-	    ;;	
+	    ;;
 	*)
 	    printf '%s\n' "bashrun2: error: unknown option: $1" >&2
 	    usage
@@ -109,7 +109,7 @@ declare -a args
 termopts=""
 
 if [[ $# -gt 0 ]]; then
-    target="args"    
+    target="args"
     for arg; do
 
 	if [[ "$arg" == "--" ]]; then
@@ -130,7 +130,7 @@ fi
 launched=0
 
 if ! brwctl bashrun2-$mode &>/dev/null; then # no existing instance
-    
+
     # don't launch a new instance for these commands:
     if [[ "$command" =~ ^(exit|quit)$ ]]; then
 	exit 1
@@ -156,7 +156,7 @@ case "$command" in
 	;;
     hide)
 	§window.unmap &>/dev/null
-	;;	
+	;;
     toggle)
 	§window.toggle &>/dev/null
 	;;
@@ -207,9 +207,9 @@ case "$command" in
 	;;
     exit|quit)
 	remote quit
-	;;    
+	;;
     *)
 	printf '%s\n' "bashrun2: error: unknown command: $command" >&2
 	exit 1
-esac 
+esac
 exit 0

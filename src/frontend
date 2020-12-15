@@ -29,21 +29,21 @@ function create_modeinfo {
              $errors
 
              Aborting. Please fix and retry."
-	
+
 	exit 1
     else
 	§debug "using" -c "$(§tilde_path $bashrun_rcfile)"
 	source "$bashrun_rcfile"
     fi
     [[ -f "$errorfile" ]] && /bin/rm "$errorfile"
-    
+
     # load modes and templates from configuration file
     §configs.restore_core &>/dev/null
 
     # load user defined modes
     §configs.collect_user_configs "modes|templates"
-    §configs.seek "modes" && §config.restore 
-    §configs.seek "templates" && §config.restore 
+    §configs.seek "modes" && §config.restore
+    §configs.seek "templates" && §config.restore
 
     # get requested mode
     if ! §modes.seek "$mode"; then
@@ -60,16 +60,16 @@ function source_window {
     bashrun_mode="$mode"
     source "$bashrun_site/window"
 
-    function §mode.get_geometry { printf '%s' "$geometry"; }    
-    function §mode.get_onmap { printf '%s' "$onmap"; }    
-    function §mode.get_onunmap { printf '%s' "$onunmap"; }    
-    function §mode.get_netwmstate { printf '%s' "$netwmstate"; }    
+    function §mode.get_geometry { printf '%s' "$geometry"; }
+    function §mode.get_onmap { printf '%s' "$onmap"; }
+    function §mode.get_onunmap { printf '%s' "$onunmap"; }
+    function §mode.get_netwmstate { printf '%s' "$netwmstate"; }
 
     §window.id "$wid"
 }
 
 function launch {
-    
+
     init_objects
 
     for file in utils templates terminals; do
@@ -82,7 +82,7 @@ function launch {
 	    /bin/rm "$bashrun_cache_home/$mode-$suffix"
 	fi
     done
-	
+
     # launch a standard sized terminal in debug mode...
     if (( bashrun_debug )); then
 	geometry="80x24"
@@ -123,8 +123,8 @@ function launch {
                  'bash --rcfile __PREFIX__/share/bashrun2/bashrc' \
                  "bashrun2" "bashrun2-$mode" "$geometry" \
                  "$font" "$boldfont" "$foreground" "$background" \
-                 "$termopts")" 
-               
+                 "$termopts")"
+
     # trim whitespace
     launch="$(printf '%s\n' "$launch" | sed -E 's/[ \t]\+/ /g')"
 
@@ -134,13 +134,13 @@ function launch {
     abort="$bashrun_cache_home/${mode}-abort"
 
     # launch the terminal command
-    error="$(eval "$launch" 2>&1)" || { 
+    error="$(eval "$launch" 2>&1)" || {
 
-	   # terminal command failed	
+	   # terminal command failed
 	   touch "$abort"
 
 	   # remove possibly bogus modeinfo
-	   [[ -f "$modeinfo" ]] && /bin/rm "$modeinfo"	   
+	   [[ -f "$modeinfo" ]] && /bin/rm "$modeinfo"
 
 	   # notify user
 	   source "$bashrun_site/message"
@@ -167,14 +167,14 @@ function launch {
     fi
 
     if (( status == 2 )) || [[ -f "$abort" ]]; then
-	/bin/rm "$abort" 
+	/bin/rm "$abort"
 	§debug fail "failed" -n "$error"
 	exit 1
     fi
-    
+
     # get the window id of the newly created window, update mode info
     # and prepare the §window class
-    wid="$(brwctl bashrun2-$mode)"    
+    wid="$(brwctl bashrun2-$mode)"
     printf "%s\n" "wid=$wid" >> "$modeinfo"
     source_window
 
@@ -191,8 +191,8 @@ function remote {
 
     # wait until the remote instance is ready
     if wait_until "[[ -f $ready && -f $pidfile ]]"; then
-	
-            # put "cwd" "<action> <cmd>" in the "remote" file	
+
+            # put "cwd" "<action> <cmd>" in the "remote" file
 	    printf "$PWD\n$1\n${@:2}\n" > "$remote"
 
             # send SIGUSR1 to bashrun to pick it up (see §remote)
@@ -222,7 +222,7 @@ if [[ -n "\$DISPLAY" ]] && ! shopt -p login_shell &>/dev/null; then
      if [[ -f "\$remote_control" ]]; then
        . "\$remote_control"
      fi
-     
+
      unset remote_control
   fi
 fi
@@ -232,7 +232,8 @@ EOF
 function version {
     . "$bashrun_site/globals" 2> /dev/null
     printf '%s\n' \
-	"bashrun2 $bashrun_version Copyright (C) 2010-2018 Henning Bekel <h.bekel@googlemail.com>
+	"bashrun2 $bashrun_version
+Copyright (C) 2010-2020 Henning Liebenau <henning.liebenau@protonmail.com>
 License GPLv2: GNU GPL version 2 <http://gnu.org/licenses/gpl.html>
 
 This is free software; you are free to change and redistribute it.
@@ -242,7 +243,7 @@ There is NO WARRANTY, to the extent permitted by law."
 function usage {
     printf '%s\n' "Usage: bashrun2 [options] [command [args]] [-- termopts]
 
-  Options: 
+  Options:
 
     -v, --version    : show version information and exit
     -h, --help       : show this message and exit
@@ -251,20 +252,20 @@ function usage {
 
     --remote-control : show code to load remote control interface and exit
 
-    -- <termopts>    : terminate argument processing and add the remaining 
+    -- <termopts>    : terminate argument processing and add the remaining
                      : arguments to the terminal command line
 
-  Commands: 
-       
+  Commands:
+
     show      : show window, move to current desktop and focus
-    hide      : hide window 
+    hide      : hide window
     toggle    : hide if visible, show if hidden
-    smart     : move window up front if not focused/visible, hide otherwise  
+    smart     : move window up front if not focused/visible, hide otherwise
     wid       : print terminal window id
     pid       : print process id of bashrun2 session
     debug     : toggle debugging
     reload    : reload configuration
-    restart   : restart bashrun2 
+    restart   : restart bashrun2
     quit,exit : terminate bashrun2
 
     su <cmd>         : run <cmd> as root, using bashrun for password entry
@@ -275,7 +276,7 @@ function usage {
   For more information see bashrun2(1) and https://github.com/hbekel/bashrun2"
 }
 
-function wait_until { 
+function wait_until {
 
     local wait_condition="${1:-:}"
     local break_condition="${2:-false}"

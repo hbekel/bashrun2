@@ -64,10 +64,9 @@ fi
 # define version info
 bashrun_major_version=0
 bashrun_minor_version=2
-bashrun_bugfix_version=4
+bashrun_bugfix_version=5
 bashrun_release_version=""
 
 # create version string
 bashrun_version="${bashrun_major_version}.${bashrun_minor_version}.${bashrun_bugfix_version}"
 [[ -n "$bashrun_release_version" ]] && bashrun_version="$bashrun_version${bashrun_release_version}"
-

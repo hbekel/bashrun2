@@ -1,4 +1,4 @@
-### bashrun2 0.2.4 configuration ### -*- shell-script -*-
+### bashrun2 0.2.5 configuration ### -*- shell-script -*-
 #
 # This is the system-wide configuration file for bashrun2.
 #
@@ -28,7 +28,7 @@
       --font ''
       --boldfont ''
 
-      # Terminal colors. Ignored if empty or not set. 
+      # Terminal colors. Ignored if empty or not set.
       --foreground 'grey'
       --background 'black'
 
@@ -50,16 +50,16 @@
       --feedback true
 
       # Command to run after the window has been mapped and
-      # focused. 
-      # --onmap 'transset-df -a 0.75'       
+      # focused.
+      # --onmap 'transset-df -a 0.75'
 
       # Command to run after the window has been unmapped.
-      # --onunmap ''       
+      # --onunmap ''
 
       # A logfile to redirect command output to.
       --logfile '/dev/null'
 
-      function +mode-run-dialog-init {	
+      function +mode-run-dialog-init {
 	  # Function to run during startup. This is the place to setup
 	  # bash stuff like default programs, history file, prompts,
 	  # terminal settings, etc.
@@ -68,7 +68,7 @@
 	  PS1='>'
 
 	  stty -ixon       # disable flow control, allows to bind C-Q
-	  set -o ignoreeof # prevent C-d on an empty line from exiting	  
+	  set -o ignoreeof # prevent C-d on an empty line from exiting
       }
 }
 
@@ -78,13 +78,13 @@
 
     # The default terminal is used to execute commands in if no other
     # terminal has been explicitly requested by an action:
-    +terminal default 
+    +terminal default
       --command '__EXEC_TERMINAL__'
 
     # A small terminal for notifications, used by the default actions
     # "term-notify" and "su-term-notify".
 
-    +terminal notify 
+    +terminal notify
       --command '__EXEC_TERMINAL__'
       --geometry '40x4+0+0'
 }
@@ -160,7 +160,7 @@
       # commandline to be used with the show-info action, which pages
       # "info bash" in the default terminal, unless the "info" program
       # has been associated with a specific terminal object.
-      
+
     +handler manual
       --match '(.+)\?'
       --command '%1'
@@ -186,7 +186,7 @@
       # which open the bookmark string using $BROWSER.
 
     +handler http
-      --match '^(www|https?)'   
+      --match '^(www|https?)'
       --action browse
       # A simple url handler, for lines beginning with http, https or
       # www.
@@ -213,9 +213,9 @@
       # The same as above, but uses google's "Feeling Lucky" function.
 
     +handler ftp
-      --match '^ftp://(.+)' 
+      --match '^ftp://(.+)'
       --command 'ncftp'
-      --action term-run 
+      --action term-run
       # Open ftp:// urls with an ftp client
 
     +handler gimp
@@ -239,7 +239,7 @@
       # mplayer.
 
     +handler command-help
-      --match '^\?(.+)'  
+      --match '^\?(.+)'
       --command '%1 --help'
       --action term-page
       # E.g. ?bash pages "bash --help" in a terminal
@@ -250,7 +250,7 @@
     # previous handler. The first two of these use a file test
     # operator given in --test to check whether the commandline is a
     # path to a directory or a file, respectively.
-    
+
     +handler directory
       --fallback true
       --test 'd'
@@ -293,7 +293,7 @@
     # actions, see bashrun2(1).
     #
     # Some examples:
-      
+
     +action run-as
       --description 'Run command as user (prompts for username)'
       --depends 'su'
@@ -305,29 +305,29 @@
       }
 
     +action kill-to-xclip
-      --description 'Kill whole line and copy to clipboard' 
+      --description 'Kill whole line and copy to clipboard'
       --depends 'xclip'
 
-      function +action-kill-to-xclip { 
+      function +action-kill-to-xclip {
 	  command "printf '%s' \"$(line)\" | xclip"
 	  return 0
       }
 
     +action yank-from-xclip
-      --description 'Yank clipboard contents' 
+      --description 'Yank clipboard contents'
       --input no
       --depends 'xclip'
 
        function +action-yank-from-xclip {
- 
+
 	   local text="$(xclip -o)"
 	   declare -i size=${#text}
-	   
+
 	   local pre="${READLINE_LINE:0:$READLINE_POINT}"
 	   local post="${READLINE_LINE:$READLINE_POINT}"
-	   
+
 	   READLINE_LINE="$pre$text$post"
-	   
+
 	   (( READLINE_POINT += size ))
 	   return 2
        }
@@ -336,8 +336,8 @@
 +configure-emacs-mode () {
 
     # Bind actions to key sequences for readline's emacs-mode:
-    # 
-    # +keymap <keymap> 
+    #
+    # +keymap <keymap>
     #
     #   The +keymap directive can be used to change the target keymap
     #   for subsequent +bind directives.
@@ -395,12 +395,12 @@
     +bind resize-right '\e[1;5C' 'C-right'
 }
 
-+configure-vi-mode () { 
++configure-vi-mode () {
 
     # Bind actions to key sequences for readline's vi-mode:
 
     ########################################
-    +keymap vi-command 
+    +keymap vi-command
 
     +bind pass '\ew'
     +bind abort  '\C-g'
@@ -442,7 +442,7 @@
     +bind resize-down  '\e[1;5B' 'C-down'
     +bind resize-left  '\e[1;5D' 'C-left'
     +bind resize-right '\e[1;5C' 'C-right'
-    
+
 
     ########################################
     +keymap vi-insert

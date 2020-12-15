@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.65])
-AC_INIT([bashrun2], [0.2.4], [h.bekel@googlemail.com], [], [https://github.com/hbekel/bashrun2])
+AC_INIT([bashrun2], [0.2.5], [henning.liebenau@protonmail.com], [], [https://github.com/hbekel/bashrun2])
 AM_INIT_AUTOMAKE
 
 # Checks for programs.
@@ -33,7 +33,7 @@ AC_ARG_WITH(terminal,
     ac_with_terminal="$withval"
     ac_with_terminal_name="$withval"
     ],
-    
+
   [
     ac_with_terminal='xterm'
     ac_with_terminal_name='xterm'
