@@ -126,7 +126,7 @@ function launch {
                  "$termopts")"
 
     # trim whitespace
-    launch="$(printf '%s\n' "$launch" | sed -E 's/[ \t]\+/ /g')"
+    launch="$(printf '%s\n' "$launch" | sed -E 's/[ \t]+/ /g')"
 
     (( bashrun_debug )) && printf '%s\n' "$launch"
 
