@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 ############################################################################
 #
-# Bashrun2 0.2.5 -- launch applications from interactive bash sessions
+# Bashrun2 -- launch applications from interactive bash sessions
 # Copyright (C) 2010-2020 Henning Liebenau <henning.liebenau@protonmail.com>
 #
 # This program is free software; you can redistribute it and/or modify

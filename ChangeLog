@@ -1,3 +1,8 @@
+2020-12-22  Henning Liebenau <henning.liebenau@protonmail.com>
+
+	* Released bashrun2 version 0.2.6
+	* Fixed bug preventing some terminals to launch
+
 2020-12-15  Henning Liebenau <henning.liebenau@protonmail.com>
 
 	* Released bashrun2 version 0.2.5
